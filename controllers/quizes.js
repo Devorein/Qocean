@@ -7,9 +7,29 @@ const asyncHandler = require('../middleware/async');
 exports.getQuizes = asyncHandler(async (req, res, next) => {
   let query;
 
-  let queryStr = JSON.stringify(req.query);
+  const reqQuery = {...req.query};
+
+  // Fields to exclude
+  const excludeFields = ['select','sort'];
+  excludeFields.forEach(param=> delete reqQuery[param]);
+
+  let queryStr = JSON.stringify(reqQuery);
+
+  // Create mongodb operators
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,match=>`$${match}`);
   query = Quiz.find(JSON.parse(queryStr));
+
+  // Getting the selected fields using projection
+  if(req.query.select){
+    const fields = req.query.select.split(",").join(" ");
+    query = query.select(fields);
+  }
+
+  if(req.query.sort){
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  }else query = query.sort("-createdAt");
+
   const quizes = await query;
   res.status(200).json({ success: true, count: quizes.length, data: quizes });
 });
