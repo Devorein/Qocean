@@ -10,7 +10,8 @@ const QuizSchema = new mongoose.Schema(
       trim: true,
       minlength: [3, 'Name can not be less than 3 characters'],
 			maxlength: [50, 'Name can not be more than 50 characters']
-		},
+    },
+		averageDuration: Number,
 		slug: String,
 		createdAt: {
 			type: Date,

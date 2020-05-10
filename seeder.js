@@ -21,22 +21,24 @@ mongoose.connect(process.env.MONGO_URI, {
 const quizes = JSON.parse(fs.readFileSync(`${__dirname}/data/quiz.json`,'UTF-8'));
 
 // Import into db
-const importData = async()=>{
+const importData = async(exit=true)=>{
   try{
     await Quiz.create(quizes);
     console.log(`Quizes imported ...`.green.inverse);
-    process.exit();
+    if(exit)
+      process.exit();
   }catch(err){
     console.error(err);
     process.exit();
   }
 }
 
-const deleteData = async()=>{
+const deleteData = async(exit=true)=>{
   try{
     await Quiz.deleteMany();
     console.log(`Quizes destroyed ...`.red.inverse);
-    process.exit();
+    if(exit)
+      process.exit();
   }catch(err){
     console.error(err);
     process.exit();
@@ -45,3 +47,10 @@ const deleteData = async()=>{
 
 if(process.argv[2] === "-i") importData();
 else if(process.argv[2] === "-d") deleteData();
+else if(process.argv[2] === "-b"){
+  (async()=>{
+    await deleteData(false);
+    await importData(false);
+    process.exit();
+  })();
+};

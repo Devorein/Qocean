@@ -5,8 +5,13 @@ const asyncHandler = require('../middleware/async');
 // @desc: Get all quizes
 // @route: GET /api/v1/quizes
 exports.getQuizes = asyncHandler(async (req, res, next) => {
-	const quizes = await Quiz.find({});
-	res.status(200).json({ success: true, count: quizes.length, data: quizes });
+  let query;
+
+  let queryStr = JSON.stringify(req.query);
+  queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,match=>`$${match}`);
+  query = Quiz.find(JSON.parse(queryStr));
+  const quizes = await query;
+  res.status(200).json({ success: true, count: quizes.length, data: quizes });
 });
 
 // @desc: Get single quiz
