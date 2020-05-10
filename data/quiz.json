@@ -1,5 +1,6 @@
 [
   {
+    "_id": "5eb78eacffe758058c7303cd",
     "name": "1.2 Getting Started - A Short History of Git",
     "subject": "Git",
     "tags": [
@@ -12,6 +13,7 @@
     "favourite": false
   },
   {
+    "_id": "5eb78ec6ffe758058c7303ce",
     "name": "Introduction to MongoDB - Getting Started",
     "subject": "MongoDB",
     "tags": [
@@ -24,6 +26,7 @@
     "favourite": true
   },
   {
+    "_id": "5eb78efbffe758058c7303d0",
     "name": "User Guide - Configuring ESLint",
     "subject": "ESLint",
     "tags": [
