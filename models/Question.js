@@ -9,11 +9,6 @@ const QuestionSchema = new mongoose.Schema({
 		required: [ true, 'Please provide the question' ],
 		trim: true
 	},
-	type: {
-		type: String,
-		enum: [ 'MCQ', 'FIB', 'TF', 'MS', 'FC', 'Snippet' ],
-		required: [ true, 'Please provide the question type' ]
-	},
 	weight: {
 		type: Number,
 		default: 1
@@ -28,7 +23,9 @@ const QuestionSchema = new mongoose.Schema({
 	},
 	timeAllocated: {
 		type: Number,
-		default: 30
+		default: 30,
+		min: 15,
+		max: 120
 	},
 	createdAt: {
 		type: Date,
@@ -38,16 +35,23 @@ const QuestionSchema = new mongoose.Schema({
 		type: String,
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
 		default: 'Easy'
-	}
+	},
+	favourite: {
+		type: Boolean,
+		default: false
+	},
+	image: String
 });
 
 const TypeQuestionSchema = extendSchema(QuestionSchema, {
 	answers: {
-		type: [ String ],
+		type: [ [ String ] ],
 		required: [ true, 'Please provide answers' ]
 	},
-	alternates: {
-		type: [ String ]
+	type: {
+		type: String,
+		enum: [ 'FIB', 'Snippet' ],
+		required: [ true, 'Please provide the question type' ]
 	},
 	timeAllocated: {
 		type: Number,
@@ -59,6 +63,11 @@ const FCQuestionSchema = extendSchema(QuestionSchema, {
 	answer: {
 		type: String,
 		required: [ true, 'Please provide an answer' ]
+	},
+	type: {
+		type: String,
+		enum: [ 'FC' ],
+		required: [ true, 'Please provide the question type' ]
 	},
 	addToScore: {
 		type: Boolean,
@@ -75,6 +84,11 @@ const ClickQuestionSchema = extendSchema(QuestionSchema, {
 		type: [ Number ],
 		required: [ true, 'Please provide answers' ]
 	},
+	type: {
+		type: String,
+		enum: [ 'MCQ', 'MS' ],
+		required: [ true, 'Please provide the question type' ]
+	},
 	option1: {
 		type: String,
 		required: [ true, 'Please provide first option' ]
@@ -89,10 +103,15 @@ const ClickQuestionSchema = extendSchema(QuestionSchema, {
 });
 
 const TFQuestionSchema = extendSchema(QuestionSchema, {
-	answers: {
+	answer: {
 		type: String,
 		required: [ true, 'Please provide answers' ],
 		enum: [ 'True', 'False' ]
+	},
+	type: {
+		type: String,
+		enum: [ 'TF' ],
+		required: [ true, 'Please provide the question type' ]
 	}
 });
 
