@@ -1,4 +1,5 @@
 const Question = require('../models/Question');
+const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
@@ -29,5 +30,19 @@ exports.getQuestion = asyncHandler(async function(req, res, next) {
 		path: 'quiz',
 		select: 'name'
 	});
+	res.status(200).json({ success: true, data: question });
+});
+
+// @desc: Create a question
+// @route: GET /api/v1/quizes/:quizId/questions
+// @access: Private
+// ! Validators for each question type needs to be done
+
+exports.createQuestion = asyncHandler(async function(req, res, next) {
+	req.body.quiz = req.params.quizId;
+	const quiz = await Quiz.findById(req.params.quizId);
+	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${id} found`, 404));
+
+	const question = await Question.create(req.body);
 	res.status(200).json({ success: true, data: question });
 });
