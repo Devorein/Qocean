@@ -6,10 +6,12 @@
     "answers": [
       1
     ],
-    "option1": "Linus Torvalds",
-    "option2": "Brian Kerginhan",
-    "option3": "Dennis Ritchie",
-    "option4": "Bjarne Struostroup",
+    "options": [
+      "Linus Torvalds",
+      "Brian Kerginhan",
+      "Dennis Ritchie",
+      "Bjarne Struostroup"
+    ],
     "addToScore": false
   },
   {
@@ -19,11 +21,13 @@
     "answers": [
       1
     ],
-    "option1": "Nichalas C Zakas",
-    "option2": "Ryan Dahl",
-    "option3": "Dan Abramov",
-    "option4": "Kyle Simpson",
-    "option5": "Chris Ferdenandi",
+    "options": [
+      "Nichalas C Zakas",
+      "Ryan Dahl",
+      "Dan Abramov",
+      "Kyle Simpson",
+      "Chris Ferdenandi"
+    ],
     "timeAllocated": 60
   },
   {
@@ -49,11 +53,13 @@
       3,
       5
     ],
-    "option1": "Javascript",
-    "option2": "Dart",
-    "option3": "JSX",
-    "option4": "Python",
-    "option5": "Typescript",
+    "options": [
+      "Javascript",
+      "Dart",
+      "JSX",
+      "Python",
+      "Typescript"
+    ],
     "favourite": true
   },
   {
@@ -64,10 +70,12 @@
       1,
       4
     ],
-    "option1": "git add",
-    "option2": "git reduce",
-    "option3": "git current",
-    "option4": "git commit"
+    "options": [
+      "git add",
+      "git reduce",
+      "git current",
+      "git commit"
+    ]
   },
   {
     "question": "What is git",

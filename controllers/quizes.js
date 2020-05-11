@@ -5,58 +5,58 @@ const asyncHandler = require('../middleware/async');
 // @desc: Get all quizes
 // @route: GET /api/v1/quizes
 exports.getQuizes = asyncHandler(async (req, res, next) => {
-  let query;
+	let query;
 
-  const reqQuery = {...req.query};
+	const reqQuery = { ...req.query };
 
-  // Fields to exclude
-  const excludeFields = ['select','sort','page','limit'];
-  excludeFields.forEach(param=> delete reqQuery[param]);
+	// Fields to exclude
+	const excludeFields = [ 'select', 'sort', 'page', 'limit' ];
+	excludeFields.forEach((param) => delete reqQuery[param]);
 
-  let queryStr = JSON.stringify(reqQuery);
+	let queryStr = JSON.stringify(reqQuery);
 
-  // Create mongodb operators
-  queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g,match=>`$${match}`);
-  query = Quiz.find(JSON.parse(queryStr));
+	// Create mongodb operators
+	queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
+	query = Quiz.find(JSON.parse(queryStr)).populate('questions');
 
-  // Getting the selected fields using projection
-  if(req.query.select){
-    const fields = req.query.select.split(",").join(" ");
-    query = query.select(fields);
-  }
+	// Getting the selected fields using projection
+	if (req.query.select) {
+		const fields = req.query.select.split(',').join(' ');
+		query = query.select(fields);
+	}
 
-  if(req.query.sort){
-    const sortBy = req.query.sort.split(",").join(" ");
-    query = query.sort(sortBy);
-  }else query = query.sort("-createdAt");
+	if (req.query.sort) {
+		const sortBy = req.query.sort.split(',').join(' ');
+		query = query.sort(sortBy);
+	} else query = query.sort('-createdAt');
 
-  // Pagination 
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
-  const total = await Quiz.countDocuments();
-  
-  query = query.skip(startIndex).limit(limit);
+	// Pagination
+	const page = parseInt(req.query.page) || 1;
+	const limit = parseInt(req.query.limit) || 10;
+	const startIndex = (page - 1) * limit;
+	const endIndex = page * limit;
+	const total = await Quiz.countDocuments();
 
-  // Pagination result
-  const pagination = {};
-  if(endIndex < total){
-    pagination.next = {
-      page: page+1,
-      limit
-    }
-  }
+	query = query.skip(startIndex).limit(limit);
 
-  if(startIndex > 0){
-    pagination.prev = {
-      page: page-1,
-      limit
-    }
-  }
+	// Pagination result
+	const pagination = {};
+	if (endIndex < total) {
+		pagination.next = {
+			page: page + 1,
+			limit
+		};
+	}
 
-  const quizes = await query;
-  res.status(200).json({ success: true, count: quizes.length,pagination, data: quizes });
+	if (startIndex > 0) {
+		pagination.prev = {
+			page: page - 1,
+			limit
+		};
+	}
+
+	const quizes = await query;
+	res.status(200).json({ success: true, count: quizes.length, pagination, data: quizes });
 });
 
 // @desc: Get single quiz
@@ -85,7 +85,8 @@ exports.updateQuiz = asyncHandler(async (req, res, next) => {
 // @desc: Delete single quiz
 // @route: DELETE /api/v1/quizes/:id
 exports.deleteQuiz = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.findByIdAndDelete(req.params.id);
+	const quiz = await Quiz.findById(req.params.id);
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
+	await quiz.remove();
 	res.status(200).json({ success: true, data: quiz });
 });

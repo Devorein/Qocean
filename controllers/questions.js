@@ -11,7 +11,11 @@ exports.getQuestions = asyncHandler(async function(req, res, next) {
 	let query;
 
 	if (req.params.quizId) query = Question.find({ quiz: req.params.quizId });
-	else query = Question.find();
+	else
+		query = Question.find().populate({
+			path: 'quiz',
+			select: 'name'
+		});
 	const questions = await query;
 	res.status(200).json({ success: true, count: questions.length, data: questions });
 });
