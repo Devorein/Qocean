@@ -11,6 +11,7 @@ dotenv.config({ path: './config/config.env' });
 
 // Route files
 const quizes = require('./routes/quizes');
+const questions = require('./routes/questions');
 
 // Connect to database
 connectDB();
@@ -25,6 +26,7 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
 // Mount routers
 app.use('/api/v1/quizes', quizes);
+app.use('/api/v1/questions', questions);
 app.use(errorHandler);
 
 const { PORT = 5000 } = process.env;

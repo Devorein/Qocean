@@ -19,7 +19,8 @@ const QuestionSchema = new mongoose.Schema({
 	},
 	quiz: {
 		type: mongoose.Schema.ObjectId,
-		required: [ true, 'Please provide the quiz id' ]
+		required: [ true, 'Please provide the quiz id' ],
+		ref: 'Quiz'
 	},
 	addToScore: {
 		type: Boolean,
