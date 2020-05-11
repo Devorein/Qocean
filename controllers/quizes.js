@@ -10,7 +10,7 @@ exports.getQuizes = asyncHandler(async (req, res, next) => {
   const reqQuery = {...req.query};
 
   // Fields to exclude
-  const excludeFields = ['select','sort'];
+  const excludeFields = ['select','sort','page','limit'];
   excludeFields.forEach(param=> delete reqQuery[param]);
 
   let queryStr = JSON.stringify(reqQuery);
@@ -30,8 +30,33 @@ exports.getQuizes = asyncHandler(async (req, res, next) => {
     query = query.sort(sortBy);
   }else query = query.sort("-createdAt");
 
+  // Pagination 
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  const total = await Quiz.countDocuments();
+  
+  query = query.skip(startIndex).limit(limit);
+
+  // Pagination result
+  const pagination = {};
+  if(endIndex < total){
+    pagination.next = {
+      page: page+1,
+      limit
+    }
+  }
+
+  if(startIndex > 0){
+    pagination.prev = {
+      page: page-1,
+      limit
+    }
+  }
+
   const quizes = await query;
-  res.status(200).json({ success: true, count: quizes.length, data: quizes });
+  res.status(200).json({ success: true, count: quizes.length,pagination, data: quizes });
 });
 
 // @desc: Get single quiz
