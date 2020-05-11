@@ -30,6 +30,7 @@ exports.getQuestion = asyncHandler(async function(req, res, next) {
 		path: 'quiz',
 		select: 'name'
 	});
+	if (!question) return next(new ErrorResponse(`No question with the id of ${req.params.id} found`), 404);
 	res.status(200).json({ success: true, data: question });
 });
 
@@ -51,7 +52,7 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // @route: PUT /api/v1/questions/:id
 // @access: Private
 // ! Validators for each question type needs to be done
-
+// ! Batch Update questions
 exports.updateQuestion = asyncHandler(async function(req, res, next) {
 	let question = await Question.findById(req.params.id);
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
@@ -59,5 +60,17 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 		new: true,
 		runValidators: true
 	});
+	res.status(200).json({ success: true, data: question });
+});
+
+// @desc: Delete a question
+// @route: DELETE /api/v1/questions/:id
+// @access: Private
+// ! Validators for each question type needs to be done
+// ! Batch Delete questions
+exports.deleteQuestion = asyncHandler(async function(req, res, next) {
+	let question = await Question.findById(req.params.id);
+	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
+	question = await question.remove();
 	res.status(200).json({ success: true, data: question });
 });
