@@ -11,6 +11,12 @@ const QuizSchema = new mongoose.Schema(
 			minlength: [ 3, 'Name can not be less than 3 characters' ],
 			maxlength: [ 50, 'Name can not be more than 50 characters' ]
 		},
+		rating: {
+			type: Number,
+			max: 10,
+			min: 1,
+			default: 5
+		},
 		averageDuration: Number,
 		slug: String,
 		createdAt: {
