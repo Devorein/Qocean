@@ -29,6 +29,15 @@ const QuestionSchema = new mongoose.Schema({
 	timeAllocated: {
 		type: Number,
 		default: 30
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now
+	},
+	difficulty: {
+		type: String,
+		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
+		default: 'Easy'
 	}
 });
 
