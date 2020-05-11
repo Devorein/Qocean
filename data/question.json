@@ -1,149 +1,147 @@
-{
-  "MCQ": [
-    {
-      "question": "Who created Git",
-      "type": "MCQ",
-      "quiz": "5eb78eacffe758058c7303cd",
-      "answers": [
-        1
-      ],
-      "option1": "Linus Torvalds",
-      "option2": "Brian Kerginhan",
-      "option3": "Dennis Ritchie",
-      "option4": "Bjarne Struostroup",
-      "addToScore": false
-    },
-    {
-      "question": "Who created ESLint",
-      "type": "MCQ",
-      "quiz": "5eb78efbffe758058c7303d0",
-      "answers": [
-        1
-      ],
-      "option1": "Nichalas C Zakas",
-      "option2": "Ryan Dahl",
-      "option3": "Dan Abramov",
-      "option4": "Kyle Simpson",
-      "option5": "Chris Ferdenandi",
-      "timeAllocated": 60
-    }
-  ],
-  "T/F": [
-    {
-      "question": "Is mongodb a No-SQL database",
-      "type": "T/F",
-      "quiz": "5eb78ec6ffe758058c7303ce",
-      "answer": "True",
-      "weight": 4
-    },
-    {
-      "question": "Was git founded in 2006",
-      "type": "T/F",
-      "quiz": "5eb78eacffe758058c7303cd",
-      "answer": "False",
-      "difficulty": "Advanced"
-    }
-  ],
-  "MS": [
-    {
-      "question": "Which languages does ESLint supports",
-      "type": "MS",
-      "quiz": "5eb78efbffe758058c7303d0",
-      "answers": [
-        1,
-        3,
-        5
-      ],
-      "option1": "Javascript",
-      "option2": "Dart",
-      "option3": "JSX",
-      "option4": "Python",
-      "option5": "Typescript",
-      "favourite": true
-    },
-    {
-      "question": "Which of the following are git commands",
-      "type": "MS",
-      "quiz": "5eb78eacffe758058c7303cd",
-      "answers": [
-        1,
-        4
-      ],
-      "option1": "git add",
-      "option2": "git reduce",
-      "option3": "git current",
-      "option4": "git commit"
-    }
-  ],
-  "FC": [
-    {
-      "question": "What is git",
-      "quiz": "5eb78eacffe758058c7303cd",
-      "answer": "Git is a distributed version-control system for tracking changes in source code during software development.",
-      "addToScore": false
-    },
-    {
-      "question": "What is ESLint",
-      "quiz": "5eb78efbffe758058c7303d0",
-      "answer": "ESLint is a static code analysis tool for identifying problematic patterns found in JavaScript code",
-      "addToScore": true
-    }
-  ],
-  "FIB": [
-    {
-      "question": "Git is a {_} {_} system for tracking changes in source code during software development.",
-      "quiz": "5eb78eacffe758058c7303cd",
-      "type": "FIB",
-      "answers": [
-        [
-          "distributed"
-        ],
-        [
-          "version-control",
-          "version control"
-        ]
-      ],
-      "timeAllocated": 75
-    },
-    {
-      "question": "ESLint is a {_} code {_} tool for identifying problematic patterns found in {_} code",
-      "quiz": "5eb78efbffe758058c7303d0",
-      "type": "FIB",
-      "answers": [
-        [
-          "static"
-        ],
-        [
-          "analysis"
-        ],
-        [
-          "Javascript",
-          "javascript"
-        ]
-      ],
-      "timeAllocated": 75
-    }
-  ],
-  "Snippet": [
-    {
-      "question": "Write the command to use admin database",
-      "quiz": "5eb78ec6ffe758058c7303ce",
-      "type": "Snippet",
-      "answers": [
-        [
-          "use admin"
-        ]
+[
+  {
+    "question": "Who created Git",
+    "type": "MCQ",
+    "quiz": "5eb78eacffe758058c7303cd",
+    "answers": [
+      1
+    ],
+    "option1": "Linus Torvalds",
+    "option2": "Brian Kerginhan",
+    "option3": "Dennis Ritchie",
+    "option4": "Bjarne Struostroup",
+    "addToScore": false
+  },
+  {
+    "question": "Who created ESLint",
+    "type": "MCQ",
+    "quiz": "5eb78efbffe758058c7303d0",
+    "answers": [
+      1
+    ],
+    "option1": "Nichalas C Zakas",
+    "option2": "Ryan Dahl",
+    "option3": "Dan Abramov",
+    "option4": "Kyle Simpson",
+    "option5": "Chris Ferdenandi",
+    "timeAllocated": 60
+  },
+  {
+    "question": "Is mongodb a No-SQL database",
+    "type": "TF",
+    "quiz": "5eb78ec6ffe758058c7303ce",
+    "answer": "True",
+    "weight": 4
+  },
+  {
+    "question": "Was git founded in 2006",
+    "type": "TF",
+    "quiz": "5eb78eacffe758058c7303cd",
+    "answer": "False",
+    "difficulty": "Advanced"
+  },
+  {
+    "question": "Which languages does ESLint supports",
+    "type": "MS",
+    "quiz": "5eb78efbffe758058c7303d0",
+    "answers": [
+      1,
+      3,
+      5
+    ],
+    "option1": "Javascript",
+    "option2": "Dart",
+    "option3": "JSX",
+    "option4": "Python",
+    "option5": "Typescript",
+    "favourite": true
+  },
+  {
+    "question": "Which of the following are git commands",
+    "type": "MS",
+    "quiz": "5eb78eacffe758058c7303cd",
+    "answers": [
+      1,
+      4
+    ],
+    "option1": "git add",
+    "option2": "git reduce",
+    "option3": "git current",
+    "option4": "git commit"
+  },
+  {
+    "question": "What is git",
+    "type": "FC",
+    "quiz": "5eb78eacffe758058c7303cd",
+    "answers": [
+      [
+        "Git is a distributed version-control system for tracking changes in source code during software development."
       ]
-    },
-    {
-      "question": "Write the command to add all files in current directory to stage",
-      "quiz": "5eb78eacffe758058c7303cd",
-      "type": "Snippet",
-      "answers": [
-        [
-          "git add ."
-        ]
+    ],
+    "addToScore": false
+  },
+  {
+    "question": "What is ESLint",
+    "type": "FC",
+    "quiz": "5eb78efbffe758058c7303d0",
+    "answers": [
+      [
+        "ESLint is a static code analysis tool for identifying problematic patterns found in JavaScript code"
       ]
-    }
-  ]
-}
+    ],
+    "addToScore": true
+  },
+  {
+    "question": "Git is a {_} {_} system for tracking changes in source code during software development.",
+    "quiz": "5eb78eacffe758058c7303cd",
+    "type": "FIB",
+    "answers": [
+      [
+        "distributed"
+      ],
+      [
+        "version-control",
+        "version control"
+      ]
+    ],
+    "timeAllocated": 75
+  },
+  {
+    "question": "ESLint is a {_} code {_} tool for identifying problematic patterns found in {_} code",
+    "quiz": "5eb78efbffe758058c7303d0",
+    "type": "FIB",
+    "answers": [
+      [
+        "static"
+      ],
+      [
+        "analysis"
+      ],
+      [
+        "Javascript",
+        "javascript"
+      ]
+    ],
+    "timeAllocated": 75
+  },
+  {
+    "question": "Write the command to use admin database",
+    "quiz": "5eb78ec6ffe758058c7303ce",
+    "type": "Snippet",
+    "answers": [
+      [
+        "use admin"
+      ]
+    ]
+  },
+  {
+    "question": "Write the command to add all files in current directory to stage",
+    "quiz": "5eb78eacffe758058c7303cd",
+    "type": "Snippet",
+    "answers": [
+      [
+        "git add ."
+      ]
+    ]
+  }
+]

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const extendSchema = require('../utils/extendSchema');
 
 const QuestionSchema = new mongoose.Schema({
 	question: {
@@ -8,6 +7,11 @@ const QuestionSchema = new mongoose.Schema({
 		minlength: [ 3, 'Question cant be less than 3 characters' ],
 		required: [ true, 'Please provide the question' ],
 		trim: true
+	},
+	type: {
+		type: String,
+		enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ],
+		required: [ true, 'Please provide the question type' ]
 	},
 	weight: {
 		type: Number,
@@ -34,88 +38,24 @@ const QuestionSchema = new mongoose.Schema({
 	difficulty: {
 		type: String,
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
-		default: 'Easy'
+		default: 'Beginner'
 	},
 	favourite: {
 		type: Boolean,
 		default: false
 	},
-	image: String
-});
-
-const TypeQuestionSchema = extendSchema(QuestionSchema, {
+	image: {
+		type: String,
+		default: null
+	},
 	answers: {
 		type: [ [ String ] ],
 		required: [ true, 'Please provide answers' ]
 	},
-	type: {
-		type: String,
-		enum: [ 'FIB', 'Snippet' ],
-		required: [ true, 'Please provide the question type' ]
-	},
-	timeAllocated: {
-		type: Number,
-		default: 60
+	options: {
+		type: [ String ],
+		required: true
 	}
 });
 
-const FCQuestionSchema = extendSchema(QuestionSchema, {
-	answer: {
-		type: String,
-		required: [ true, 'Please provide an answer' ]
-	},
-	type: {
-		type: String,
-		enum: [ 'FC' ],
-		required: [ true, 'Please provide the question type' ]
-	},
-	addToScore: {
-		type: Boolean,
-		default: false
-	},
-	timeAllocated: {
-		type: Number,
-		default: 45
-	}
-});
-
-const ClickQuestionSchema = extendSchema(QuestionSchema, {
-	answers: {
-		type: [ Number ],
-		required: [ true, 'Please provide answers' ]
-	},
-	type: {
-		type: String,
-		enum: [ 'MCQ', 'MS' ],
-		required: [ true, 'Please provide the question type' ]
-	},
-	option1: {
-		type: String,
-		required: [ true, 'Please provide first option' ]
-	},
-	option2: {
-		type: String,
-		required: [ true, 'Please provide second option' ]
-	},
-	option3: String,
-	option4: String,
-	option5: String
-});
-
-const TFQuestionSchema = extendSchema(QuestionSchema, {
-	answer: {
-		type: String,
-		required: [ true, 'Please provide answers' ],
-		enum: [ 'True', 'False' ]
-	},
-	type: {
-		type: String,
-		enum: [ 'TF' ],
-		required: [ true, 'Please provide the question type' ]
-	}
-});
-
-module.exports = mongoose.model('TypeQuestion', TypeQuestionSchema);
-module.exports = mongoose.model('FCQuestion', FCQuestionSchema);
-module.exports = mongoose.model('ClickQuestion', ClickQuestionSchema);
-module.exports = mongoose.model('TFQuestion', TFQuestionSchema);
+module.exports = mongoose.model('Question', QuestionSchema);
