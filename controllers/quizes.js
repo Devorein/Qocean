@@ -111,7 +111,7 @@ exports.quizPhotoUpload = asyncHandler(async (req, res, next) => {
 	file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
 		if (err) return next(new ErrorResponse(`Problem with file upload`, 500));
 		await Quiz.findByIdAndUpdate(quiz._id, {
-			photo: file.name
+			image: file.name
 		});
 		res.status(200).json({ success: true, data: file.name });
 	});
