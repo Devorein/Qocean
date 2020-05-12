@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 
 const errorHandler = require('./middleware/error');
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/quizes', quizes);
 app.use('/api/v1/questions', questions);
 app.use('/api/v1/auth', auth);
+app.use(cookieParser);
 app.use(errorHandler);
 
 const { PORT = 5000 } = process.env;
