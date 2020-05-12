@@ -59,4 +59,33 @@ const QuestionSchema = new mongoose.Schema({
 	}
 });
 
+QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
+	const obj = await this.aggregate([
+		{
+			$match: { quiz: quizId }
+		},
+		{
+			$group: {
+				_id: '$quiz',
+				averageTimeAllocated: { $avg: '$timeAllocated' }
+			}
+		}
+	]);
+	try {
+		await this.model('Quiz').findByIdAndUpdate(quizId, {
+			averageTimeAllocated: obj[0].averageTimeAllocated
+		});
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+QuestionSchema.post('save', function() {
+	this.constructor.getAverageTimeAllocated(this.quiz);
+});
+
+QuestionSchema.pre('remove', function() {
+	this.constructor.getAverageTimeAllocated(this.quiz);
+});
+
 module.exports = mongoose.model('Question', QuestionSchema);

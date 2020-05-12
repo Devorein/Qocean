@@ -17,7 +17,15 @@ const QuizSchema = new mongoose.Schema(
 			min: 1,
 			default: 5
 		},
-		averageDuration: Number,
+		averageTimeAllocated: {
+			type: Number,
+			default: 30
+		},
+		averageDifficulty: {
+			type: String,
+			default: 'Beginner',
+			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
+		},
 		slug: String,
 		createdAt: {
 			type: Date,
