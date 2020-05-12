@@ -43,3 +43,11 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 	res.status(statusCode).cookie('token', token, options).json({ success: true, token });
 };
+
+exports.getMe = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user._id);
+	res.status(200).json({
+		success: true,
+		data: user
+	});
+});
