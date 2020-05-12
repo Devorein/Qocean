@@ -1,4 +1,3 @@
-const path = require('path');
 const Question = require('../models/Question');
 const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
@@ -71,23 +70,5 @@ exports.deleteQuestion = asyncHandler(async function(req, res, next) {
 // @route: PUT /api/v1/questions/:id/photo
 // @access: Private
 exports.questionPhotoUpload = asyncHandler(async (req, res, next) => {
-	const question = await Question.findById(req.params.id);
-	if (!question) return next(new ErrorResponse(`Question not found with id of ${req.params.id}`, 404));
-	if (!req.files) return next(new ErrorResponse(`Please upload a file`, 400));
-	const { file } = req.files;
-
-	if (!file.mimetype.startsWith('image/')) return next(new ErrorResponse(`Please upload an image file`, 400));
-
-	if (file.size > process.env.FILE_UPLOAD_SIZE)
-		return next(new ErrorResponse(`Photo larger than ${process.env.FILE_UPLOAD_SIZE / 1000000}mb`, 400));
-
-	file.name = `question_${question._id}${path.parse(file.name).ext}`;
-
-	file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
-		if (err) return next(new ErrorResponse(`Problem with file upload`, 500));
-		await Question.findByIdAndUpdate(question._id, {
-			image: file.name
-		});
-		res.status(200).json({ success: true, data: file.name });
-	});
+	res.status(200).json(res.imageUpload);
 });

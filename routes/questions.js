@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const Question = require('../models/Question');
 const advancedResults = require('../middleware/advancedResults');
+const imageUpload = require('../middleware/imageUpload');
 
 const {
 	getQuestions,
@@ -29,6 +30,6 @@ router
 	)
 	.post(createQuestion);
 router.route('/:id').get(getQuestion).put(updateQuestion).delete(deleteQuestion);
-router.route('/:id/photo').put(questionPhotoUpload);
+router.route('/:id/photo').put(imageUpload(Question, 'Question'), questionPhotoUpload);
 
 module.exports = router;
