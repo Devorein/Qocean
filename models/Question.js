@@ -80,12 +80,49 @@ QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
 	}
 };
 
+QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
+	const obj = await this.aggregate([
+		{
+			$match: { quiz: quizId }
+		},
+		{
+			$project: {
+				difficulty: {
+					$cond: {
+						if: { $eq: [ '$difficulty', 'Beginner' ] },
+						then: 3.33,
+						else: {
+							$cond: { if: { $eq: [ '$difficulty', 'Intermediate' ] }, then: 6.66, else: 10 }
+						}
+					}
+				}
+			}
+		},
+		{
+			$group: {
+				_id: '$quiz',
+				averageDifficulty: { $avg: '$difficulty' }
+			}
+		}
+	]);
+	try {
+		const parsed = parseFloat(obj[0].averageDifficulty);
+		await this.model('Quiz').findByIdAndUpdate(quizId, {
+			averageDifficulty: parsed <= 3.34 ? 'Beginner' : parsed <= 6.67 ? 'Intermediate' : 'Advanced'
+		});
+	} catch (err) {
+		console.log(err);
+	}
+};
+
 QuestionSchema.post('save', function() {
 	this.constructor.getAverageTimeAllocated(this.quiz);
+	this.constructor.getAverageDifficulty(this.quiz);
 });
 
 QuestionSchema.pre('remove', function() {
 	this.constructor.getAverageTimeAllocated(this.quiz);
+	this.constructor.getAverageDifficulty(this.quiz);
 });
 
 module.exports = mongoose.model('Question', QuestionSchema);
