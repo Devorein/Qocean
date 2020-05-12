@@ -12,6 +12,7 @@ dotenv.config({ path: './config/config.env' });
 
 const quizes = require('./routes/quizes');
 const questions = require('./routes/questions');
+const auth = require('./routes/auth');
 
 connectDB();
 
@@ -24,6 +25,7 @@ app.use(fileupload());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/quizes', quizes);
 app.use('/api/v1/questions', questions);
+app.use('/api/v1/auth', auth);
 app.use(errorHandler);
 
 const { PORT = 5000 } = process.env;
