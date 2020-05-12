@@ -26,9 +26,9 @@ const questions = JSON.parse(fs.readFileSync(`${__dirname}/data/question.json`, 
 const importData = async (exit = true) => {
 	try {
 		await Quiz.create(quizes);
-		// await Question.create(questions);
+		await Question.create(questions);
 		console.log(`Quizes imported ...`.green.inverse);
-		// console.log(`Questions imported ...`.green.inverse);
+		console.log(`Questions imported ...`.green.inverse);
 		if (exit) process.exit();
 	} catch (err) {
 		console.error(err);

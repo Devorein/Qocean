@@ -50,6 +50,10 @@ const QuizSchema = new mongoose.Schema(
 				default: '',
 				type: String
 			}
+		},
+		image: {
+			type: String,
+			default: null
 		}
 	},
 	{
