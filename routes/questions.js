@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const Question = require('../models/Question');
+const advancedResults = require('../middleware/advancedResults');
 
 const {
 	getQuestions,
@@ -10,7 +12,22 @@ const {
 	questionPhotoUpload
 } = require('../controllers/questions');
 
-router.route('/').get(getQuestions).post(createQuestion);
+router
+	.route('/')
+	.get(
+		advancedResults(
+			Question,
+			{
+				path: 'quiz',
+				select: 'name'
+			},
+			{
+				param: 'quizId'
+			}
+		),
+		getQuestions
+	)
+	.post(createQuestion);
 router.route('/:id').get(getQuestion).put(updateQuestion).delete(deleteQuestion);
 router.route('/:id/photo').put(questionPhotoUpload);
 

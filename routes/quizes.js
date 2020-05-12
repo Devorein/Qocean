@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const Quiz = require('../models/Quiz');
+const advancedResults = require('../middleware/advancedResults');
 
 const { getQuizes, getQuiz, createQuiz, updateQuiz, deleteQuiz, quizPhotoUpload } = require('../controllers/quizes');
 
@@ -7,7 +9,7 @@ const questionRouter = require('./questions');
 
 router.use('/:quizId/questions', questionRouter);
 
-router.route('/').get(getQuizes).post(createQuiz);
+router.route('/').get(advancedResults(Quiz, 'questions'), getQuizes).post(createQuiz);
 
 router.route('/:id/photo').put(quizPhotoUpload);
 
