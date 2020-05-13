@@ -34,6 +34,9 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 	req.body.quiz = req.params.quizId;
 	const quiz = await Quiz.findById(req.params.quizId);
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${id} found`, 404));
+	if (quiz.user.toString() !== req.user._id.toString())
+		return next(new ErrorResponse(`User not authorized to add a question to this quiz`, 401));
+
 	req.body.user = req.user._id;
 	const question = await Question.create(req.body);
 	res.status(200).json({ success: true, data: question });
@@ -48,7 +51,7 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 	let question = await Question.findById(req.params.id);
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
-		return next(new ErrorResponse(`User not authorized to delete question`, 401));
+		return next(new ErrorResponse(`User not authorized to update question`, 401));
 	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 		runValidators: true
