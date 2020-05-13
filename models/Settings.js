@@ -13,13 +13,15 @@ const SettingsSchema = new mongoose.Schema({
 		type: Boolean,
 		default: true
 	},
-  defaultTimeAllocated: {
-    type: Number,
-    default :30
-  }
+	defaultTimeAllocated: {
+		type: Number,
+		default: 30
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now
 	},
 	user: mongoose.Schema.ObjectId
 });
+
+module.exports = mongoose.model('Settings', SettingsSchema);

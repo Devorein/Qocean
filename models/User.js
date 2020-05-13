@@ -25,7 +25,25 @@ const UserSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	settings: mongoose.Schema.ObjectId
+	settings: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Settings'
+	},
+	questionNum: {
+		type: Number,
+		default: 0
+	},
+	quizNum: {
+		type: Number,
+		default: 0
+	},
+	version: {
+		type: String,
+		default: 'Rower',
+		enum: [ 'Rower', 'Sailor', 'Captain', 'Admin' ]
+	},
+	quizes: [ mongoose.Schema.ObjectId ],
+	questions: [ mongoose.Schema.ObjectId ]
 });
 
 UserSchema.methods.getSignedJwtToken = function() {
