@@ -16,6 +16,10 @@ const QuizSchema = new mongoose.Schema(
 			ref: 'User',
 			required: [ true, 'A question must be created by an user' ]
 		},
+		public: {
+			type: Boolean,
+			default: true
+		},
 		rating: {
 			type: Number,
 			max: 10,

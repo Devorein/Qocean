@@ -13,6 +13,10 @@ const FolderSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		required: [ true, 'Please provide an user' ]
 	},
+	public: {
+		type: Boolean,
+		default: true
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now

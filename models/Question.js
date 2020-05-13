@@ -46,6 +46,10 @@ const QuestionSchema = new mongoose.Schema({
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
 		default: 'Beginner'
 	},
+	public: {
+		type: Boolean,
+		default: true
+	},
 	favourite: {
 		type: Boolean,
 		default: false
