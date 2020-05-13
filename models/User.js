@@ -43,7 +43,13 @@ const UserSchema = new mongoose.Schema({
 		enum: [ 'Rower', 'Sailor', 'Captain', 'Admin' ]
 	},
 	quizes: [ mongoose.Schema.ObjectId ],
-	questions: [ mongoose.Schema.ObjectId ]
+	questions: [ mongoose.Schema.ObjectId ],
+	username: {
+		type: String,
+		minlength: [ 3, 'User name cant be less than 3 characters long' ],
+		maxlength: [ 10, 'User name cant be more than 10 characters long' ],
+		unique: true
+	}
 });
 
 UserSchema.methods.getSignedJwtToken = function() {

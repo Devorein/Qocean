@@ -5,7 +5,8 @@
     "password": "123456",
     "version": "Captain",
     "_id": "5ebb74772c952d08c0644884",
-    "settings": "5ebb74772c952d08c0644874"
+    "settings": "5ebb74772c952d08c0644874",
+    "username": "johndoe1"
   },
   {
     "name": "John Doe 2",
@@ -13,7 +14,8 @@
     "password": "123456",
     "version": "Sailor",
     "_id": "5ebb74772c952d08c0644885",
-    "settings": "5ebb74772c952d08c0644875"
+    "settings": "5ebb74772c952d08c0644875",
+    "username": "johndoe2"
   },
   {
     "name": "John Doe 3",
@@ -21,13 +23,15 @@
     "password": "123456",
     "version": "Rower",
     "_id": "5ebb74772c952d08c0644886",
-    "settings": "5ebb74772c952d08c0644876"
+    "settings": "5ebb74772c952d08c0644876",
+    "username": "johndoe3"
   },
   {
     "name": "John Doe 4",
     "email": "rower2@gmail.com",
     "password": "123456",
     "_id": "5ebb74772c952d08c0644887",
-    "settings": "5ebb74772c952d08c0644877"
+    "settings": "5ebb74772c952d08c0644877",
+    "username": "johndoe4"
   }
 ]
