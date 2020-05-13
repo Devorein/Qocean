@@ -6,7 +6,12 @@ const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router();
 
-router.route('/').put(protect, updateUser).delete(protect, deleteUser).get(advancedResults(User), getUsers);
+router.route('/').put(protect, updateUser).delete(protect, deleteUser).get(
+	advancedResults(User, null, {
+		exclude: [ 'quizes', 'questions', 'email', 'username' ]
+	}),
+	getUsers
+);
 router.route('/me').get(protect, getMe);
 router.route('/:userId').get(getUserById);
 

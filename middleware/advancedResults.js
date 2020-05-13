@@ -17,11 +17,14 @@ const advancedResults = (model, populate, option) =>
 			queryStr = { ...queryStr, [option.param.replace('Id', '')]: req.params[option.param] };
 			query = model.find(queryStr);
 		} else query = model.find(queryStr);
+
 		// Getting the selected fields using projection
+		let fields = '';
 		if (req.query.select) {
-			const fields = req.query.select.split(',').join(' ');
-			query = query.select(fields);
-		}
+			fields = req.query.select.split(',');
+			fields = option && option.exclude ? fields.filter((field) => !option.exclude.includes(field)) : fields;
+		} else fields = option && option.exclude ? option.exclude.map((field) => `-${field}`) : '';
+		query = query.select(fields);
 
 		if (req.query.sort) {
 			const sortBy = req.query.sort.split(',').join(' ');
