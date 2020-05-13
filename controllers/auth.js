@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Settings = require('../models/Settings');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
@@ -11,6 +12,11 @@ exports.register = asyncHandler(async (req, res, next) => {
 		role
 	});
 
+	const settings = await Settings.create({
+		user: user._id
+	});
+	user.settings = settings._id;
+	await user.save();
 	sendTokenResponse(user, 200, res);
 });
 

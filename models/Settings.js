@@ -21,7 +21,10 @@ const SettingsSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	user: mongoose.Schema.ObjectId
+	user: {
+		type: mongoose.Schema.ObjectId,
+		required: [ true, 'Settings must have a user' ]
+	}
 });
 
 module.exports = mongoose.model('Settings', SettingsSchema);
