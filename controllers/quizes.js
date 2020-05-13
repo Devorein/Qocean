@@ -20,6 +20,7 @@ exports.getQuiz = asyncHandler(async (req, res, next) => {
 // @desc: Create single quiz
 // @route: POST /api/v1/quizes/:id
 exports.createQuiz = asyncHandler(async (req, res, next) => {
+	req.body.user = req.user;
 	const quiz = await Quiz.create(req.body);
 	res.status(201).json({ success: true, data: quiz });
 });
