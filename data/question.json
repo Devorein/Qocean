@@ -12,7 +12,8 @@
       "Dennis Ritchie",
       "Bjarne Struostroup"
     ],
-    "addToScore": false
+    "addToScore": false,
+    "user": "5ebb74772c952d08c0644887"
   },
   {
     "question": "Who created ESLint",
@@ -28,21 +29,24 @@
       "Kyle Simpson",
       "Chris Ferdenandi"
     ],
-    "timeAllocated": 60
+    "timeAllocated": 60,
+    "user": "5ebb74772c952d08c0644885"
   },
   {
     "question": "Is mongodb a No-SQL database",
     "type": "TF",
     "quiz": "5eb78ec6ffe758058c7303ce",
     "answer": "True",
-    "weight": 4
+    "weight": 4,
+    "user": "5ebb74772c952d08c0644887"
   },
   {
     "question": "Was git founded in 2006",
     "type": "TF",
     "quiz": "5eb78eacffe758058c7303cd",
     "answer": "False",
-    "difficulty": "Advanced"
+    "difficulty": "Advanced",
+    "user": "5ebb74772c952d08c0644887"
   },
   {
     "question": "Which languages does ESLint supports",
@@ -60,7 +64,8 @@
       "Python",
       "Typescript"
     ],
-    "favourite": true
+    "favourite": true,
+    "user": "5ebb74772c952d08c0644885"
   },
   {
     "question": "Which of the following are git commands",
@@ -75,7 +80,8 @@
       "git reduce",
       "git current",
       "git commit"
-    ]
+    ],
+    "user": "5ebb74772c952d08c0644884"
   },
   {
     "question": "What is git",
@@ -86,7 +92,8 @@
         "Git is a distributed version-control system for tracking changes in source code during software development."
       ]
     ],
-    "addToScore": false
+    "addToScore": false,
+    "user": "5ebb74772c952d08c0644886"
   },
   {
     "question": "What is ESLint",
@@ -97,7 +104,8 @@
         "ESLint is a static code analysis tool for identifying problematic patterns found in JavaScript code"
       ]
     ],
-    "addToScore": true
+    "addToScore": true,
+    "user": "5ebb74772c952d08c0644884"
   },
   {
     "question": "Git is a {_} {_} system for tracking changes in source code during software development.",
@@ -112,7 +120,8 @@
         "version control"
       ]
     ],
-    "timeAllocated": 75
+    "timeAllocated": 75,
+    "user": "5ebb74772c952d08c0644885"
   },
   {
     "question": "ESLint is a {_} code {_} tool for identifying problematic patterns found in {_} code",
@@ -130,7 +139,8 @@
         "javascript"
       ]
     ],
-    "timeAllocated": 75
+    "timeAllocated": 75,
+    "user": "5ebb74772c952d08c0644887"
   },
   {
     "question": "Write the command to use admin database",
@@ -140,7 +150,8 @@
       [
         "use admin"
       ]
-    ]
+    ],
+    "user": "5ebb74772c952d08c0644885"
   },
   {
     "question": "Write the command to add all files in current directory to stage",
@@ -150,6 +161,7 @@
       [
         "git add ."
       ]
-    ]
+    ],
+    "user": "5ebb74772c952d08c0644886"
   }
 ]

@@ -34,7 +34,7 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 	req.body.quiz = req.params.quizId;
 	const quiz = await Quiz.findById(req.params.quizId);
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${id} found`, 404));
-
+	req.body.user = req.user._id;
 	const question = await Question.create(req.body);
 	res.status(200).json({ success: true, data: question });
 });
