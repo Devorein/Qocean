@@ -12,7 +12,11 @@ const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router();
+const questionRouter = require('../routes/questions');
+const quizRouter = require('../routes/quizes');
 
+router.use('/:userId/questions', questionRouter);
+router.use('/:userId/quizes', quizRouter);
 router.route('/').delete(protect, deleteUser).get(
 	advancedResults(User, null, {
 		exclude: [ 'quizes', 'questions', 'email', 'username' ]
@@ -23,5 +27,4 @@ router.put('/updatedetails', protect, updateUserDetails);
 router.put('/updatepassword', protect, updateUserPassword);
 router.route('/me').get(protect, getMe);
 router.route('/:userId').get(getUserById);
-
 module.exports = router;

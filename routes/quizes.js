@@ -11,7 +11,22 @@ const questionRouter = require('./questions');
 
 router.use('/:quizId/questions', questionRouter);
 
-router.route('/').get(advancedResults(Quiz, 'questions'), getQuizes).post(protect, createQuiz);
+router
+	.route('/')
+	.get(
+		advancedResults(
+			Quiz,
+			{
+				path: 'questions',
+				select: 'name type'
+			},
+			{
+				exclude: [ 'favourite', 'addToScore', 'weight', 'public', 'slug' ]
+			}
+		),
+		getQuizes
+	)
+	.post(protect, createQuiz);
 
 router.route('/:id/photo').put(protect, imageUpload(Quiz, 'Quiz'), quizPhotoUpload);
 

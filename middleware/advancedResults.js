@@ -13,8 +13,10 @@ const advancedResults = (model, populate, option) =>
 		// Create mongodb operators
 		queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
 		queryStr = JSON.parse(queryStr);
-		if (option && req.params[option.param]) {
-			queryStr = { ...queryStr, [option.param.replace('Id', '')]: req.params[option.param] };
+
+		if (Object.entries(req.params).length !== 0) {
+			const [ [ key, value ] ] = Object.entries(req.params);
+			queryStr = { ...queryStr, [key.replace('Id', '')]: value };
 			query = model.find(queryStr);
 		} else query = model.find(queryStr);
 

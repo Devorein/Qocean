@@ -17,16 +17,10 @@ const {
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Question,
-			{
-				path: 'quiz',
-				select: 'name'
-			},
-			{
-				param: 'quizId'
-			}
-		),
+		advancedResults(Question, {
+			path: 'quiz',
+			select: 'name'
+		}),
 		getQuestions
 	)
 	.post(protect, createQuestion);
