@@ -28,8 +28,11 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 // @desc: Update single quiz
 // @route: PUT /api/v1/quizes/:id
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+	let quiz = await Quiz.findById(req.params.id);
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
+	if (quiz.user.toString() !== req.user._id.toString())
+		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
+	quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 	res.status(200).json({ success: true, data: quiz });
 });
 
@@ -38,6 +41,8 @@ exports.updateQuiz = asyncHandler(async (req, res, next) => {
 exports.deleteQuiz = asyncHandler(async (req, res, next) => {
 	const quiz = await Quiz.findById(req.params.id);
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
+	if (quiz.user.toString() !== req.user._id.toString())
+		return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
 	await quiz.remove();
 	res.status(200).json({ success: true, data: quiz });
 });
