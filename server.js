@@ -15,6 +15,7 @@ const quizes = require('./routes/quizes');
 const questions = require('./routes/questions');
 const auth = require('./routes/auth');
 const user = require('./routes/user');
+const folder = require('./routes/folder');
 
 connectDB();
 
@@ -29,6 +30,7 @@ app.use('/api/v1/quizes', quizes);
 app.use('/api/v1/questions', questions);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', user);
+app.use('/api/v1/folders', folder);
 app.use(cookieParser);
 app.use(errorHandler);
 
