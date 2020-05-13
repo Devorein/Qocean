@@ -3,7 +3,7 @@ const Folder = require('../models/Folder');
 const router = express.Router({ mergeParams: true });
 const advancedResults = require('../middleware/advancedResults');
 
-const { getFolders } = require('../controllers/folder');
+const { getFolders, getFolderById } = require('../controllers/folder');
 
 router.route('/').get(
 	advancedResults(Folder, null, {
@@ -12,5 +12,7 @@ router.route('/').get(
 	}),
 	getFolders
 );
+
+router.route('/:id').get(getFolderById);
 
 module.exports = router;
