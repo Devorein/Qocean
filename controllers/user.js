@@ -12,7 +12,11 @@ exports.getUsers = asyncHandler(async function(req, res, next) {
 // @desc     Get user by id
 // @route    GET /api/v1/users/:userId
 // @access   Public
-exports.getUserById = asyncHandler(async function(req, res, next) {});
+exports.getUserById = asyncHandler(async function(req, res, next) {
+	const user = await User.findById(req.params.userId);
+	if (!user) return next(new ErrorResponse(`User not found with id of ${req.params.userId}`, 404));
+	res.status(200).json({ success: true, data: user });
+});
 
 // @desc     Update current user
 // @route    PUT /api/v1/users
