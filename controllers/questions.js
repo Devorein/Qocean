@@ -47,6 +47,8 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 exports.updateQuestion = asyncHandler(async function(req, res, next) {
 	let question = await Question.findById(req.params.id);
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
+	if (question.user.toString() !== req.user._id.toString())
+		return next(new ErrorResponse(`User not authorized to delete question`, 401));
 	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 		runValidators: true
@@ -62,6 +64,8 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 exports.deleteQuestion = asyncHandler(async function(req, res, next) {
 	let question = await Question.findById(req.params.id);
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
+	if (question.user.toString() !== req.user._id.toString())
+		return next(new ErrorResponse(`User not authorized to delete question`, 401));
 	question = await question.remove();
 	res.status(200).json({ success: true, data: question });
 });
