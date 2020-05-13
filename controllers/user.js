@@ -21,7 +21,23 @@ exports.getUserById = asyncHandler(async function(req, res, next) {
 // @desc     Update current user
 // @route    PUT /api/v1/users
 // @access   Private
-exports.updateUser = asyncHandler(async function(req, res, next) {});
+exports.updateUser = asyncHandler(async function(req, res, next) {
+	const updateFields = {
+		name: req.body.name,
+		email: req.body.email,
+		username: req.body.username
+	};
+
+	const user = await User.findByIdAndUpdate(req.user.id, updateFields, {
+		new: true,
+		runValidators: true
+	});
+
+	res.status(200).json({
+		success: true,
+		data: user
+	});
+});
 
 // @desc     Delete current user
 // @route    DELETE /api/v1/users
