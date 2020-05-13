@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const sendTokenResponse = require('../utils/sendTokenResponse');
 
 // @desc     Get all users
 // @route    GET /api/v1/users
@@ -18,10 +19,10 @@ exports.getUserById = asyncHandler(async function(req, res, next) {
 	res.status(200).json({ success: true, data: user });
 });
 
-// @desc     Update current user
-// @route    PUT /api/v1/users
+// @desc     Update current user details
+// @route    PUT /api/v1/users/updateDetails
 // @access   Private
-exports.updateUser = asyncHandler(async function(req, res, next) {
+exports.updateUserDetails = asyncHandler(async function(req, res, next) {
 	const updateFields = {
 		name: req.body.name,
 		email: req.body.email,
@@ -37,6 +38,21 @@ exports.updateUser = asyncHandler(async function(req, res, next) {
 		success: true,
 		data: user
 	});
+});
+
+// @desc     Update current user password
+// @route    PUT /api/v1/users/updatePassword
+// @access   Private
+exports.updateUserPassword = asyncHandler(async function(req, res, next) {
+	const user = await User.findById(req.user.id).select('+password');
+
+	// Check current password
+	const doesPassMatch = await user.matchPassword(req.body.currentPassword);
+	if (!doesPassMatch) return next(new ErrorResponse(`Password is incorrect`, 401));
+
+	user.password = req.body.newPassword;
+	await user.save();
+	sendTokenResponse(user, 200, res);
 });
 
 // @desc     Delete current user
