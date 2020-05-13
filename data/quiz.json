@@ -10,7 +10,8 @@
       "type": "Web",
       "link": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git"
     },
-    "favourite": false
+    "favourite": false,
+    "user": "5ebb74772c952d08c0644884"
   },
   {
     "_id": "5eb78ec6ffe758058c7303ce",
@@ -23,7 +24,8 @@
       "type": "Web",
       "link": "https://docs.mongodb.com/manual/tutorial/getting-started/"
     },
-    "favourite": true
+    "favourite": true,
+    "user": "5ebb74772c952d08c0644885"
   },
   {
     "_id": "5eb78efbffe758058c7303d0",
@@ -36,6 +38,7 @@
       "type": "Web",
       "link": "https://eslint.org/docs/user-guide/configuring"
     },
-    "favourite": false
+    "favourite": false,
+    "user": "5ebb74772c952d08c0644886"
   }
 ]

@@ -11,6 +11,10 @@ const QuizSchema = new mongoose.Schema(
 			minlength: [ 3, 'Name can not be less than 3 characters' ],
 			maxlength: [ 50, 'Name can not be more than 50 characters' ]
 		},
+		// user: {
+		// 	type: mongoose.Schema.ObjectId,
+		// 	required: [ true, 'A question must be created by an user' ]
+		// },
 		rating: {
 			type: Number,
 			max: 10,
