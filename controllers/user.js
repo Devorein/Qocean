@@ -58,7 +58,14 @@ exports.updateUserPassword = asyncHandler(async function(req, res, next) {
 // @desc     Delete current user
 // @route    DELETE /api/v1/users
 // @access   Private
-exports.deleteUser = asyncHandler(async function(req, res, next) {});
+exports.deleteUser = asyncHandler(async function(req, res, next) {
+	const user = await User.findById(req.user._id);
+	await user.remove();
+	res.status(200).json({
+		success: true,
+		data: user
+	});
+});
 
 // @desc     Get current user
 // @route    GET /api/v1/users/me

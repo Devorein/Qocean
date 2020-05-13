@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const Folder = require('./Folder');
+
 const { isAlphaNumericOnly, isStrongPassword } = require('../utils/validation');
 
 const UserSchema = new mongoose.Schema({
@@ -78,17 +80,25 @@ UserSchema.methods.matchPassword = async function(enteredPass) {
 	return await bcrypt.compare(enteredPass, this.password);
 };
 
-UserSchema.pre('save', async function(next) {
-	if (!this.isModified('password')) next();
-	const salt = await bcrypt.genSalt(10);
-	this.password = await bcrypt.hash(this.password, salt);
-});
-
 UserSchema.methods.getResetPasswordToken = function() {
 	const resetToken = crypto.randomBytes(20).toString('hex');
 	this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 	this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 	return resetToken;
 };
+
+UserSchema.pre('save', async function(next) {
+	if (!this.isModified('password')) next();
+	const salt = await bcrypt.genSalt(10);
+	this.password = await bcrypt.hash(this.password, salt);
+});
+
+UserSchema.pre('remove', async function(next) {
+	await this.model('Quiz').deleteMany({ user: this._id });
+	await this.model('Question').deleteMany({ user: this._id });
+	await this.model('Settings').deleteMany({ user: this._id });
+	await Folder.deleteMany({ user: this._id });
+	next();
+});
 
 module.exports = mongoose.model('User', UserSchema);
