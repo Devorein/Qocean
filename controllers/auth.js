@@ -3,6 +3,9 @@ const Settings = require('../models/Settings');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
+// @desc     Register
+// @route    POST /api/v1/auth/register
+// @access   Public
 exports.register = asyncHandler(async (req, res, next) => {
 	const { name, email, password, version, username } = req.body;
 	const user = await User.create({
@@ -21,6 +24,9 @@ exports.register = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(user, 200, res);
 });
 
+// @desc     Login user
+// @route    POST /api/v1/auth/login
+// @access   Public
 exports.login = asyncHandler(async (req, res, next) => {
 	const { email, password } = req.body;
 
@@ -39,6 +45,34 @@ exports.login = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(user, 200, res);
 });
 
+// @desc     Get current user
+// @route    GET /api/v1/auth/me
+// @access   Private
+exports.getMe = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user._id);
+	res.status(200).json({
+		success: true,
+		data: user
+	});
+});
+
+// @desc     Forgot password
+// @route    GET /api/v1/auth/forgotpassword
+// @access   Public
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+	const user = await User.findOne({ email: req.body.email });
+
+	if (!user) return next(new ErrorResponse(`There is no user with that email`, 404));
+
+	// Get reset token
+	const resetToken = user.getResetPasswordToken();
+	await user.save({ validateBeforeSave: false });
+	res.status(200).json({
+		success: true,
+		data: user
+	});
+});
+
 const sendTokenResponse = (user, statusCode, res) => {
 	const token = user.getSignedJwtToken();
 
@@ -50,11 +84,3 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 	res.status(statusCode).cookie('token', token, options).json({ success: true, token });
 };
-
-exports.getMe = asyncHandler(async (req, res, next) => {
-	const user = await User.findById(req.user._id);
-	res.status(200).json({
-		success: true,
-		data: user
-	});
-});
