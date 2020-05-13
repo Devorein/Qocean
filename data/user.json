@@ -2,7 +2,7 @@
   {
     "name": "John Doe 1",
     "email": "captain@gmail.com",
-    "password": "123456",
+    "password": "123456aB",
     "version": "Captain",
     "_id": "5ebb74772c952d08c0644884",
     "settings": "5ebb74772c952d08c0644874",
@@ -11,7 +11,7 @@
   {
     "name": "John Doe 2",
     "email": "sailor@gmail.com",
-    "password": "123456",
+    "password": "123456aB",
     "version": "Sailor",
     "_id": "5ebb74772c952d08c0644885",
     "settings": "5ebb74772c952d08c0644875",
@@ -20,7 +20,7 @@
   {
     "name": "John Doe 3",
     "email": "rower@gmail.com",
-    "password": "123456",
+    "password": "123456aB",
     "version": "Rower",
     "_id": "5ebb74772c952d08c0644886",
     "settings": "5ebb74772c952d08c0644876",
@@ -29,7 +29,7 @@
   {
     "name": "John Doe 4",
     "email": "rower2@gmail.com",
-    "password": "123456",
+    "password": "123456aB",
     "_id": "5ebb74772c952d08c0644887",
     "settings": "5ebb74772c952d08c0644877",
     "username": "johndoe4"

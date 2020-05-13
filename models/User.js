@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const { isAlphaNumericOnly, isStrongPassword } = require('../utils/validation');
+
 const UserSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -16,8 +18,14 @@ const UserSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: [ true, 'Please add a password' ],
-		minlength: 6,
-		select: false
+		minlength: [ 6, 'Password must be greater than six characters' ],
+		select: false,
+		validate: {
+			validator(v) {
+				return isStrongPassword(v);
+			},
+			message: () => `Password is not strong enough`
+		}
 	},
 	resetPasswordToken: String,
 	resetPasswordExpire: Date,
@@ -46,9 +54,16 @@ const UserSchema = new mongoose.Schema({
 	questions: [ mongoose.Schema.ObjectId ],
 	username: {
 		type: String,
+		required: [ true, 'Please provide an username' ],
 		minlength: [ 3, 'User name cant be less than 3 characters long' ],
 		maxlength: [ 10, 'User name cant be more than 10 characters long' ],
-		unique: true
+		unique: true,
+		validate: {
+			validator(v) {
+				return isAlphaNumericOnly(v);
+			},
+			message: () => `Invalid username`
+		}
 	}
 });
 
