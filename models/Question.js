@@ -124,12 +124,14 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 	}
 };
 
-QuestionSchema.post('save', function() {
+QuestionSchema.post('save', async function() {
+	await this.model('User').add(this.user, 'questions', this._id);
 	this.constructor.getAverageTimeAllocated(this.quiz);
 	this.constructor.getAverageDifficulty(this.quiz);
 });
 
-QuestionSchema.pre('remove', function() {
+QuestionSchema.pre('remove', async function() {
+	await this.model('User').remove(this.user, 'questions', this._id);
 	this.constructor.getAverageTimeAllocated(this.quiz);
 	this.constructor.getAverageDifficulty(this.quiz);
 });
