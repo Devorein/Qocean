@@ -13,7 +13,7 @@ class QuizCard extends Component {
 				<span className="quiz-card-item-averageTimeAllocated">{item.averageTime} secs</span>
 				<span className="quiz-card-item-subject">{item.subject}</span>
 				<span className="quiz-card-item-createdAt">{item.createdAt}</span>
-				{item.tags.map((tag) => <span>{tag}</span>)}
+				{item.tags.map((tag) => <span key={`${item._id}${tag}`}>{tag}</span>)}
 			</div>
 		);
 	}
