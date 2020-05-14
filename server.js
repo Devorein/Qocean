@@ -15,7 +15,7 @@ const quizes = require('./routes/quizes');
 const questions = require('./routes/questions');
 const auth = require('./routes/auth');
 const user = require('./routes/user');
-const { publicFolderRouter, privateFolderRouter } = require('./routes/folders');
+const folder = require('./routes/folders');
 
 connectDB();
 
@@ -30,8 +30,7 @@ app.use('/api/v1/quizes', quizes);
 app.use('/api/v1/questions', questions);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', user);
-app.use('/api/v1/folders', publicFolderRouter);
-app.use('/api/v1/folders', privateFolderRouter);
+app.use('/api/v1/folders', folder);
 app.use(cookieParser);
 app.use(errorHandler);
 

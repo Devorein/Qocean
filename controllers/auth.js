@@ -44,7 +44,6 @@ exports.login = asyncHandler(async (req, res, next) => {
 	// Check if pass matches
 	const isMatch = await user.matchPassword(password);
 	if (!isMatch) return next(new ErrorResponse(`Invalid credentials`, 401));
-
 	sendTokenResponse(user, 200, res);
 });
 
