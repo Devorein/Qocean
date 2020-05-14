@@ -31,9 +31,9 @@ const folders = JSON.parse(fs.readFileSync(`${__dirname}/data/folder.json`, 'UTF
 // Import into db
 const importData = async (exit = true) => {
 	try {
+		await User.create(users);
 		await Quiz.create(quizes);
 		await Question.create(questions);
-		await User.create(users);
 		await Environment.create(environments);
 		await Folder.create(folders);
 		console.log(`Quizes imported ...`.green.inverse);

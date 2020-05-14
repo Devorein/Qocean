@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 
@@ -23,6 +24,7 @@ const app = express();
 
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
+app.use(cors());
 app.use(express.json());
 app.use(fileupload());
 app.use(express.static(path.join(__dirname, 'public')));

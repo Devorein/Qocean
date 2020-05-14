@@ -24,7 +24,7 @@ const QuizSchema = new mongoose.Schema(
 			type: Number,
 			max: 10,
 			min: 1,
-			default: 5
+			default: 1
 		},
 		averageTimeAllocated: {
 			type: Number,
