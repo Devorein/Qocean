@@ -83,13 +83,13 @@ QuizSchema.virtual('questions', {
 });
 
 QuizSchema.pre('save', async function(next) {
-	await this.model('User').add(this.user, 'quizes', this._id);
+	await this.model('User').add(this.user, 'quizzes', this._id);
 	this.slug = slugify(this.name, { lower: true });
 	next();
 });
 
 QuizSchema.pre('remove', async function(next) {
-	await this.model('User').remove(this.user, 'quizes', this._id);
+	await this.model('User').remove(this.user, 'quizzes', this._id);
 	await this.model('Question').deleteMany({ quiz: this._id });
 	next();
 });

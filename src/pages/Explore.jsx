@@ -1,37 +1,25 @@
 import React, { Component } from 'react';
-import QuizList from '../components/List/QuizList';
-import FolderList from '../components/List/FolderList';
-import QuestionList from '../components/List/QuestionList';
-import EnvironmentList from '../components/List/EnvironmentList';
+import List from '../components/List/List';
 
 class Explore extends Component {
 	state = {
-		currentType: 'quizes'
+		currentType: 'quiz'
 	};
-	changeCurrentType = (type) => {
-		this.setState({
-			currentType: type
-		});
-	};
-	decideExploreResult = () => {
-		const { currentType } = this.state;
-		if (currentType === 'quizes') return <QuizList />;
-		else if (currentType === 'questions') return <QuestionList />;
-		else if (currentType === 'folders') return <FolderList />;
-		else if (currentType === 'environments') return <EnvironmentList />;
-		return <QuizList />;
-	};
+
 	render() {
+		const { currentType } = this.state;
 		return (
 			<div className="Explore page">
 				<div className="explore-types">
-					{[ 'Quizes', 'Questions', 'Folders', 'Environments' ].map((type) => {
+					{[ 'Quiz', 'Question', 'Folder', 'Environment', 'User' ].map((type) => {
 						return (
 							<div
 								key={type}
 								className={`explore-type explore-type-${type.toLowerCase()}`}
 								onClick={(e) => {
-									this.changeCurrentType(type.toLowerCase());
+									this.setState({
+										currentType: type.toLowerCase()
+									});
 								}}
 							>
 								{type}
@@ -39,7 +27,9 @@ class Explore extends Component {
 						);
 					})}
 				</div>
-				<div className="explore-results">{this.decideExploreResult()}</div>
+				<div className="explore-results">
+					<List type={currentType} />
+				</div>
 			</div>
 		);
 	}

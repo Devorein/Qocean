@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 // Read JSON files
-const quizes = JSON.parse(fs.readFileSync(`${__dirname}/data/quiz.json`, 'UTF-8'));
+const quizzes = JSON.parse(fs.readFileSync(`${__dirname}/data/quiz.json`, 'UTF-8'));
 const questions = JSON.parse(fs.readFileSync(`${__dirname}/data/question.json`, 'UTF-8'));
 const users = JSON.parse(fs.readFileSync(`${__dirname}/data/user.json`, 'UTF-8'));
 const environments = JSON.parse(fs.readFileSync(`${__dirname}/data/environment.json`, 'UTF-8'));
@@ -32,11 +32,11 @@ const folders = JSON.parse(fs.readFileSync(`${__dirname}/data/folder.json`, 'UTF
 const importData = async (exit = true) => {
 	try {
 		await User.create(users);
-		await Quiz.create(quizes);
+		await Quiz.create(quizzes);
 		await Question.create(questions);
 		await Environment.create(environments);
 		await Folder.create(folders);
-		console.log(`Quizes imported ...`.green.inverse);
+		console.log(`quizzes imported ...`.green.inverse);
 		console.log(`Questions imported ...`.green.inverse);
 		console.log(`Users imported ...`.green.inverse);
 		console.log(`Environments imported ...`.green.inverse);
@@ -55,7 +55,7 @@ const deleteData = async (exit = true) => {
 		await User.deleteMany();
 		await Environment.deleteMany();
 		await Folder.deleteMany();
-		console.log(`Quizes destroyed ...`.red.inverse);
+		console.log(`quizzes destroyed ...`.red.inverse);
 		console.log(`Questions destroyed ...`.red.inverse);
 		console.log(`User destroyed ...`.red.inverse);
 		console.log(`Environments destroyed ...`.red.inverse);

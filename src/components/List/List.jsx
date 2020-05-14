@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import QuizCard from '../Card/QuizCard';
+import Card from '../Card/Card';
+import plur from 'plur';
 
-class QuizList extends Component {
+class List extends Component {
 	state = {
 		data: []
 	};
 
 	componentDidMount() {
 		axios
-			.get('http://localhost:5001/api/v1/quizes')
+			.get(`http://localhost:5001/api/v1/${plur(this.props.type, 2)}`)
 			.then(({ data }) => {
 				this.setState({
 					data
@@ -21,23 +22,23 @@ class QuizList extends Component {
 	}
 	render() {
 		const { data: { data: list = [], success, count } } = this.state;
-
+		const { type } = this.props;
 		return (
-			<div className="list quiz-list">
+			<div className={`list ${type}-list`}>
 				{list.length !== 0 ? (
 					list.map((item, index) => {
 						return (
-							<div className="list-item quiz-list-item" key={item._id}>
-								<QuizCard item={item} index={index} />
+							<div className={`list-item ${type}-list-item`} key={item._id}>
+								<Card item={item} index={index} type={type} />
 							</div>
 						);
 					})
 				) : (
-					<div>No quizes found</div>
+					<div>{`No ${plur(type)} found`}</div>
 				)}
 			</div>
 		);
 	}
 }
 
-export default QuizList;
+export default List;

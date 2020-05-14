@@ -4,7 +4,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
 // @desc: Create single quiz
-// @route: POST /api/v1/quizes
+// @route: POST /api/v1/quizzes
 // @access: Private
 exports.createQuiz = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
@@ -13,7 +13,7 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 });
 
 // @desc: Update single quiz
-// @route: PUT /api/v1/quizes/:id
+// @route: PUT /api/v1/quizzes/:id
 // @access: Private
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
 	let quiz = await Quiz.findById(req.params.id);
@@ -25,7 +25,7 @@ exports.updateQuiz = asyncHandler(async (req, res, next) => {
 });
 
 // @desc: Delete single quiz
-// @route: DELETE /api/v1/quizes/:id
+// @route: DELETE /api/v1/quizzes/:id
 // @access: Private
 exports.deleteQuiz = asyncHandler(async (req, res, next) => {
 	const quiz = await Quiz.findById(req.params.id);
@@ -37,7 +37,7 @@ exports.deleteQuiz = asyncHandler(async (req, res, next) => {
 });
 
 // @desc: Upload a single quiz photo
-// @route: PUT /api/v1/quizes/:id/photo
+// @route: PUT /api/v1/quizzes/:id/photo
 // @access: Private
 exports.quizPhotoUpload = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.imageUpload);

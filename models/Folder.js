@@ -35,7 +35,7 @@ const FolderSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	quizes: [
+	quizzes: [
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Quiz'

@@ -1,7 +1,7 @@
 {
   "name": "qocean",
   "version": "1.0.0",
-  "description": "MERN App for creating killer quizes",
+  "description": "MERN App for creating killer quizzes",
   "main": "index.js",
   "private": true,
   "scripts": {
@@ -30,6 +30,7 @@
     "mongoose": "^5.9.13",
     "morgan": "^1.10.0",
     "nodemailer": "^6.4.6",
+    "plur": "^4.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",

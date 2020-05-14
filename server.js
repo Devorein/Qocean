@@ -12,7 +12,7 @@ const connectDB = require('./config/db');
 
 dotenv.config({ path: './config/config.env' });
 
-const quizes = require('./routes/quizes');
+const quizzes = require('./routes/quizzes');
 const questions = require('./routes/questions');
 const auth = require('./routes/auth');
 const user = require('./routes/user');
@@ -28,7 +28,7 @@ app.use(cors());
 app.use(express.json());
 app.use(fileupload());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/api/v1/quizes', quizes);
+app.use('/api/v1/quizzes', quizzes);
 app.use('/api/v1/questions', questions);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', user);

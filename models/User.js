@@ -46,7 +46,7 @@ const UserSchema = new mongoose.Schema({
 		type: Number,
 		default: 0
 	},
-	quizesCount: {
+	quizzesCount: {
 		type: Number,
 		default: 0
 	},
@@ -69,7 +69,7 @@ const UserSchema = new mongoose.Schema({
 			ref: 'Environment'
 		}
 	],
-	quizes: [ { type: mongoose.Schema.ObjectId, ref: 'Quiz' } ],
+	quizzes: [ { type: mongoose.Schema.ObjectId, ref: 'Quiz' } ],
 	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
 	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
 	username: {

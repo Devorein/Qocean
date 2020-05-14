@@ -4,7 +4,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
 // @desc: Create a question
-// @route: POST /api/v1/quizes
+// @route: POST /api/v1/quizzes
 // @access: Private
 // ! Validators for each question type needs to be done
 
