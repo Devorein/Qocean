@@ -7,12 +7,19 @@ const { protect } = require('../middleware/auth');
 
 const { getFolders, getFolderById, getCurrentUserFolders } = require('../controllers/folder');
 
-privateRouter.route('/').get(protect, advancedResults(Folder), getCurrentUserFolders);
+privateRouter.route('/').get(protect, advancedResults(Folder, 'quizes'), getCurrentUserFolders);
 publicRouter.route('/').get(
-	advancedResults(Folder, null, {
-		exclude: [ 'favourite', 'public' ],
-		match: { public: true }
-	}),
+	advancedResults(
+		Folder,
+		{
+			path: 'quizes',
+			select: 'name questionNum'
+		},
+		{
+			exclude: [ 'favourite', 'public' ],
+			match: { public: true }
+		}
+	),
 	getFolders
 );
 

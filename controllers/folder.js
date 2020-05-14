@@ -25,6 +25,5 @@ exports.getFolderById = asyncHandler(async (req, res, next) => {
 // @route: GET /api/v1/users/me/folders
 // @access: Private
 exports.getCurrentUserFolders = asyncHandler(async (req, res, next) => {
-	const folders = await Folder.find({ user: req.user._id }).populate('quizes');
-	res.status(200).json({ success: true, data: folders });
+	res.status(200).json(res.advancedResults);
 });

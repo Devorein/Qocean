@@ -1,9 +1,7 @@
-const advancedResults = (model, populate, option) =>
+const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
 		let query;
-
 		const reqQuery = { ...req.query };
-
 		// Fields to exclude
 		const excludeFields = [ 'select', 'sort', 'page', 'limit' ];
 		excludeFields.forEach((param) => delete reqQuery[param]);
@@ -13,7 +11,8 @@ const advancedResults = (model, populate, option) =>
 		// Create mongodb operators
 		queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
 		queryStr = JSON.parse(queryStr);
-		if (option && option.match) queryStr = { ...queryStr, ...option.match };
+		if (option.match) queryStr = { ...queryStr, ...option.match };
+		if (req.baseUrl.includes('/me')) queryStr.user = req.user._id;
 		if (Object.entries(req.params).length !== 0) {
 			const [ [ key, value ] ] = Object.entries(req.params);
 			queryStr = { ...queryStr, [key.replace('Id', '')]: value };
