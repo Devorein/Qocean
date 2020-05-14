@@ -35,10 +35,12 @@ const FolderSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	quizes: {
-		type: [ mongoose.Schema.ObjectId ],
-		ref: 'Quiz'
-	}
+	quizes: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Quiz'
+		}
+	]
 });
 
 module.exports = mongoose.model('Folder', FolderSchema);

@@ -13,7 +13,18 @@ exports.getFolders = asyncHandler(async (req, res, next) => {
 // @route: GET /api/v1/folders/:id
 // @access: Public
 exports.getFolderById = asyncHandler(async (req, res, next) => {
-	const folder = await Folder.findById(req.params.id).select('-favourite -public');
+	const folder = await Folder.findOne({ _id: req.params.id, public: true }).select('-favourite -public').populate({
+		path: 'quizes',
+		select: 'name'
+	});
 	if (!folder) return next(new ErrorResponse(`Folder not found with id of ${req.params.id}`, 404));
 	res.status(200).json({ success: true, data: folder });
+});
+
+// @desc: Get folders of current user
+// @route: GET /api/v1/users/me/folders
+// @access: Private
+exports.getCurrentUserFolders = asyncHandler(async (req, res, next) => {
+	const folders = await Folder.find({ user: req.user._id }).populate('quizes');
+	res.status(200).json({ success: true, data: folders });
 });
