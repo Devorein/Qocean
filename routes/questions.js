@@ -17,10 +17,9 @@ router
 			match: { public: true }
 		})
 	)
-	.post(protect, createQuestion)
-	.put(protect, updateQuestion)
-	.delete(protect, deleteQuestion);
+	.post(protect, createQuestion);
+router.route('/:id').put(protect, updateQuestion).delete(protect, deleteQuestion);
 
-router.route('/photo').put(protect, imageUpload(Question, 'Question'), questionPhotoUpload);
+router.route('/:id/photo').put(protect, imageUpload(Question, 'Question'), questionPhotoUpload);
 
 module.exports = router;

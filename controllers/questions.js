@@ -4,7 +4,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
 // @desc: Create a question
-// @route: GET /api/v1/quizes/:quizId/questions
+// @route: POST /api/v1/quizes
 // @access: Private
 // ! Validators for each question type needs to be done
 
@@ -26,12 +26,11 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // ! Validators for each question type needs to be done
 // ! Batch Update questions
 exports.updateQuestion = asyncHandler(async function(req, res, next) {
-	if (!req.query._id) return next(new ErrorResponse(`Provide the question id`, 400));
-	let question = await Question.findById(req.query._id);
-	if (!question) return next(new ErrorResponse(`No question with id ${req.query._id} exists`, 404));
+	let question = await Question.findById(req.params.id);
+	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update question`, 401));
-	question = await Question.findByIdAndUpdate(req.query._id, req.body, {
+	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 		runValidators: true
 	});
@@ -44,9 +43,8 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 // ! Validators for each question type needs to be done
 // ! Batch Delete questions
 exports.deleteQuestion = asyncHandler(async function(req, res, next) {
-	if (!req.query._id) return next(new ErrorResponse(`Provide the question id`, 400));
-	let question = await Question.findById(req.query._id);
-	if (!question) return next(new ErrorResponse(`No question with id ${req.query._id} exists`, 404));
+	let question = await Question.findById(req.params.id).select('question user type');
+	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete question`, 401));
 	question = await question.remove();

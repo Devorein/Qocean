@@ -24,10 +24,10 @@ router
 			}
 		)
 	)
-	.post(protect, createQuiz)
-	.put(protect, updateQuiz)
-	.delete(protect, deleteQuiz);
+	.post(protect, createQuiz);
 
-router.route('/photo').put(protect, imageUpload(Quiz, 'Quiz'), quizPhotoUpload);
+router.route('/:id').put(protect, updateQuiz).delete(protect, deleteQuiz);
+
+router.route('/:id/photo').put(protect, imageUpload(Quiz, 'Quiz'), quizPhotoUpload);
 
 module.exports = router;

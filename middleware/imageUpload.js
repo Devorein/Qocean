@@ -3,9 +3,8 @@ const path = require('path');
 
 const imageUpload = (model, name) =>
 	async function(req, res, next) {
-		if (!req.query._id) return next(new ErrorResponse(`Provide the ${name} id`, 400));
-		const result = await model.findById(req.query._id);
-		if (!result) return next(new ErrorResponse(`${name} not found with id of ${req.query._id}`, 404));
+		const result = await model.findById(req.params.id);
+		if (!result) return next(new ErrorResponse(`${name} not found with id of ${req.params.id}`, 404));
 		if (result.user.toString() !== req.user._id.toString())
 			return next(new ErrorResponse(`User not authorized to upload image for this resource`, 401));
 		if (!req.files) return next(new ErrorResponse(`Please upload a file`, 400));
