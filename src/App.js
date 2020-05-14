@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
-import axios from 'axios';
-import QuizList from './components/List/QuizList';
+import Nav from './components/Nav/Nav';
+import Create from './pages/Create';
+import Explore from './pages/Explore';
+import Self from './pages/Self';
+import Home from './pages/Home';
+
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 class App extends Component {
-	state = {
-		quizes: []
-	};
-	componentDidMount() {
-		axios.get('http://localhost:5001/api/v1/quizes').then((res) => {
-			this.setState({
-				quizes: res.data.data
-			});
-		});
-	}
 	render() {
 		return (
-			<ul>
-				<QuizList list={this.state.quizes} />
-			</ul>
+			<Router>
+				<div className="App">
+					<Nav />
+					<Switch>
+						<Route path="/" exact component={Home} />
+						<Route path="/create" exact component={Create} />
+						<Route path="/self" exact component={Self} />
+						<Route path="/explore" exact component={Explore} />
+					</Switch>
+				</div>
+			</Router>
 		);
 	}
 }
