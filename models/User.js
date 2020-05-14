@@ -40,15 +40,15 @@ const UserSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Settings'
 	},
-	folderCount: {
+	foldersCount: {
 		type: Number,
 		default: 0
 	},
-	questionCount: {
+	questionsCount: {
 		type: Number,
 		default: 0
 	},
-	quizCount: {
+	quizesCount: {
 		type: Number,
 		default: 0
 	},
@@ -95,12 +95,14 @@ UserSchema.methods.getResetPasswordToken = function() {
 UserSchema.statics.add = async function(userId, field, id) {
 	const user = await this.findById(userId);
 	user[field].push(id);
+	user[`${field}Count`] = parseInt(user[`${field}Count`]) + 1;
 	await user.save();
 };
 
 UserSchema.statics.remove = async function(userId, field, id) {
 	const user = await this.findById(userId);
 	user[field] = user[field].filter((_id) => _id.toString() !== id.toString());
+	user[`${field}Count`] = parseInt(user[`${field}Count`]) - 1;
 	await user.save();
 };
 
