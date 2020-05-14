@@ -16,6 +16,7 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 // @route: PUT /api/v1/quizes/:id
 // @access: Private
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
+	if (!req.query._id) return next(new ErrorResponse(`Provide the quiz id`, 400));
 	let quiz = await Quiz.findById(req.query._id);
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.query._id}`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
@@ -28,6 +29,7 @@ exports.updateQuiz = asyncHandler(async (req, res, next) => {
 // @route: DELETE /api/v1/quizes/:id
 // @access: Private
 exports.deleteQuiz = asyncHandler(async (req, res, next) => {
+	if (!req.query._id) return next(new ErrorResponse(`Provide the quiz id`, 400));
 	const quiz = await Quiz.findById(req.query._id);
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.query._id}`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())

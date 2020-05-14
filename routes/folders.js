@@ -23,8 +23,8 @@ router
 			}
 		)
 	)
-	.post(protect, createFolder);
-
-router.route('/:id').put(protect, updateFolder).delete(protect, deleteFolder);
+	.post(protect, createFolder)
+	.put(protect, updateFolder)
+	.delete(protect, deleteFolder);
 
 module.exports = router;

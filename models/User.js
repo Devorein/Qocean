@@ -40,11 +40,15 @@ const UserSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Settings'
 	},
-	questionNum: {
+	folderCount: {
 		type: Number,
 		default: 0
 	},
-	quizNum: {
+	questionCount: {
+		type: Number,
+		default: 0
+	},
+	quizCount: {
 		type: Number,
 		default: 0
 	},
@@ -53,8 +57,9 @@ const UserSchema = new mongoose.Schema({
 		default: 'Rower',
 		enum: [ 'Rower', 'Sailor', 'Captain', 'Admin' ]
 	},
-	quizes: [ mongoose.Schema.ObjectId ],
-	questions: [ mongoose.Schema.ObjectId ],
+	quizes: [ { type: mongoose.Schema.ObjectId, ref: 'Quiz' } ],
+	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
+	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
 	username: {
 		type: String,
 		required: [ true, 'Please provide an username' ],
@@ -85,6 +90,18 @@ UserSchema.methods.getResetPasswordToken = function() {
 	this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 	this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 	return resetToken;
+};
+
+UserSchema.statics.add = async function(userId, field, id) {
+	const user = await this.findById(userId);
+	user[field].push(id);
+	await user.save();
+};
+
+UserSchema.statics.remove = async function(userId, field, id) {
+	const user = await this.findById(userId);
+	user[field] = user[field].filter((_id) => _id.toString() !== id.toString());
+	await user.save();
 };
 
 UserSchema.pre('save', async function(next) {

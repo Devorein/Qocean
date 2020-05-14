@@ -43,4 +43,14 @@ const FolderSchema = new mongoose.Schema({
 	]
 });
 
+FolderSchema.pre('save', async function(next) {
+	await this.model('User').add(this.user, 'folders', this._id);
+	next();
+});
+
+FolderSchema.pre('remove', async function(next) {
+	await this.model('User').remove(this.user, 'folders', this._id);
+	next();
+});
+
 module.exports = mongoose.model('Folder', FolderSchema);

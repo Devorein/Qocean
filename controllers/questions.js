@@ -9,7 +9,7 @@ const asyncHandler = require('../middleware/async');
 // ! Validators for each question type needs to be done
 
 exports.createQuestion = asyncHandler(async function(req, res, next) {
-	if (!req.body.quiz) return next(new ErrorResponse(`Provide the question id`, 400));
+	if (!req.body.quiz) return next(new ErrorResponse(`Provide the quiz id`, 400));
 	const quiz = await Quiz.findById(req.body.quiz);
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${id} found`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
