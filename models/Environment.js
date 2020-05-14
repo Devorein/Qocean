@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SettingsSchema = new mongoose.Schema({
+const EnvironmentSchema = new mongoose.Schema({
 	theme: {
 		type: String,
 		default: 'Light'
@@ -23,8 +23,8 @@ const SettingsSchema = new mongoose.Schema({
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
-		required: [ true, 'Settings must have a user' ]
+		required: [ true, 'Environment must have a user' ]
 	}
 });
 
-module.exports = mongoose.model('Settings', SettingsSchema);
+module.exports = mongoose.model('Environment', EnvironmentSchema);

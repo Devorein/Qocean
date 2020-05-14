@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Env 1",
+    "theme": "Light",
+    "animation": true,
+    "sound": true,
+    "defaultTimeAllocated": 30,
+    "user": "5ebb74772c952d08c0644884",
+    "_id": "5ebb74772c952d08c0644874"
+  },
+  {
+    "name": "Env 2",
+    "theme": "Navy",
+    "animation": false,
+    "sound": false,
+    "defaultTimeAllocated": 45,
+    "user": "5ebb74772c952d08c0644885",
+    "_id": "5ebb74772c952d08c0644875"
+  },
+  {
+    "name": "Env 3",
+    "theme": "Dark",
+    "animation": false,
+    "sound": false,
+    "defaultTimeAllocated": 15,
+    "user": "5ebb74772c952d08c0644886",
+    "_id": "5ebb74772c952d08c0644876"
+  },
+  {
+    "name": "Env 4",
+    "theme": "Light",
+    "animation": true,
+    "sound": true,
+    "defaultTimeAllocated": 45,
+    "user": "5ebb74772c952d08c0644887",
+    "_id": "5ebb74772c952d08c0644877"
+  }
+]

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const Folder = require('./Folder');
+const Environment = require('./Environment');
 
 const { isAlphaNumericOnly, isStrongPassword } = require('../utils/validation');
 
@@ -36,10 +37,7 @@ const UserSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now
 	},
-	settings: {
-		type: mongoose.Schema.ObjectId,
-		ref: 'Settings'
-	},
+
 	foldersCount: {
 		type: Number,
 		default: 0
@@ -52,11 +50,25 @@ const UserSchema = new mongoose.Schema({
 		type: Number,
 		default: 0
 	},
+	environmentsCount: {
+		type: Number,
+		default: 1
+	},
+	currentEnvironment: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Environment'
+	},
 	version: {
 		type: String,
 		default: 'Rower',
 		enum: [ 'Rower', 'Sailor', 'Captain', 'Admin' ]
 	},
+	environments: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Environment'
+		}
+	],
 	quizes: [ { type: mongoose.Schema.ObjectId, ref: 'Quiz' } ],
 	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
 	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
@@ -110,12 +122,14 @@ UserSchema.pre('save', async function(next) {
 	if (!this.isModified('password')) next();
 	const salt = await bcrypt.genSalt(10);
 	this.password = await bcrypt.hash(this.password, salt);
+	const enviroment = await Environment.create({ user: this._id });
+	this.environments.push(enviroment._id);
 });
 
 UserSchema.pre('remove', async function(next) {
 	await this.model('Quiz').deleteMany({ user: this._id });
 	await this.model('Question').deleteMany({ user: this._id });
-	await this.model('Settings').deleteMany({ user: this._id });
+	await this.model('Environment').deleteMany({ user: this._id });
 	await Folder.deleteMany({ user: this._id });
 	next();
 });
