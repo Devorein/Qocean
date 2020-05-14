@@ -5,15 +5,24 @@ const privateRouter = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
 
-const { getFolders, getFolderById, getCurrentUserFolders } = require('../controllers/folder');
+const {
+	getFolders,
+	getFolderById,
+	getCurrentUserFolders,
+	createFolder,
+	updateFolder,
+	deleteFolder
+} = require('../controllers/folder');
 
-privateRouter.route('/').get(protect, advancedResults(Folder, 'quizes'), getCurrentUserFolders);
+privateRouter.use(protect);
+privateRouter.route('/').get(advancedResults(Folder, 'quizes'), getCurrentUserFolders).post(createFolder);
+privateRouter.route('/:id').put(updateFolder).delete(deleteFolder);
 publicRouter.route('/').get(
 	advancedResults(
 		Folder,
 		{
 			path: 'quizes',
-			select: 'name questionNum'
+			select: 'name questionCount'
 		},
 		{
 			exclude: [ 'favourite', 'public' ],
