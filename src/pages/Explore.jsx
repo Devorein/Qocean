@@ -1,13 +1,29 @@
 import React, { Component } from 'react';
 import List from '../components/List/List';
+import axios from 'axios';
+import plur from 'plur';
 
 class Explore extends Component {
 	state = {
-		currentType: 'quiz'
+		currentType: 'quiz',
+		data: []
 	};
 
+	refetchData = (type) => {
+		axios
+			.get(`http://localhost:5001/api/v1/${plur(type, 2)}`)
+			.then(({ data }) => {
+				this.setState({
+					data,
+					currentType: type.toLowerCase()
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 	render() {
-		const { currentType } = this.state;
+		const { currentType, data } = this.state;
 		return (
 			<div className="Explore page">
 				<div className="explore-types">
@@ -17,9 +33,7 @@ class Explore extends Component {
 								key={type}
 								className={`explore-type explore-type-${type.toLowerCase()}`}
 								onClick={(e) => {
-									this.setState({
-										currentType: type.toLowerCase()
-									});
+									this.refetchData(type);
 								}}
 							>
 								{type}
@@ -28,7 +42,7 @@ class Explore extends Component {
 					})}
 				</div>
 				<div className="explore-results">
-					<List type={currentType} />
+					<List type={currentType} data={data} />
 				</div>
 			</div>
 		);
