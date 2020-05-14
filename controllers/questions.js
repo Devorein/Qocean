@@ -3,36 +3,14 @@ const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
-// @desc: Get all questions
-// @route: GET /api/v1/questions
-// @route: GET /api/v1/quizes/:quizId/questions
-// @access: Public
-
-exports.getQuestions = asyncHandler(async function(req, res, next) {
-	res.status(200).json(res.advancedResults);
-});
-
-// @desc: Get a question
-// @route: GET /api/v1/questions/:id
-// @access: Public
-
-exports.getQuestion = asyncHandler(async function(req, res, next) {
-	const question = await Question.findById(req.params.id).populate({
-		path: 'quiz',
-		select: 'name'
-	});
-	if (!question) return next(new ErrorResponse(`No question with the id of ${req.params.id} found`), 404);
-	res.status(200).json({ success: true, data: question });
-});
-
 // @desc: Create a question
 // @route: GET /api/v1/quizes/:quizId/questions
 // @access: Private
 // ! Validators for each question type needs to be done
 
 exports.createQuestion = asyncHandler(async function(req, res, next) {
-	req.body.quiz = req.params.quizId;
-	const quiz = await Quiz.findById(req.params.quizId);
+	if (!req.body.quiz) return next(new ErrorResponse(`Provide the question id`, 400));
+	const quiz = await Quiz.findById(req.body.quiz);
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${id} found`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to add a question to this quiz`, 401));
@@ -48,11 +26,12 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // ! Validators for each question type needs to be done
 // ! Batch Update questions
 exports.updateQuestion = asyncHandler(async function(req, res, next) {
-	let question = await Question.findById(req.params.id);
-	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
+	if (!req.query._id) return next(new ErrorResponse(`Provide the question id`, 400));
+	let question = await Question.findById(req.query._id);
+	if (!question) return next(new ErrorResponse(`No question with id ${req.query._id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update question`, 401));
-	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
+	question = await Question.findByIdAndUpdate(req.query._id, req.body, {
 		new: true,
 		runValidators: true
 	});
@@ -65,8 +44,9 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 // ! Validators for each question type needs to be done
 // ! Batch Delete questions
 exports.deleteQuestion = asyncHandler(async function(req, res, next) {
-	let question = await Question.findById(req.params.id);
-	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
+	if (!req.query._id) return next(new ErrorResponse(`Provide the question id`, 400));
+	let question = await Question.findById(req.query._id);
+	if (!question) return next(new ErrorResponse(`No question with id ${req.query._id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete question`, 401));
 	question = await question.remove();

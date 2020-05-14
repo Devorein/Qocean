@@ -5,26 +5,22 @@ const advancedResults = require('../middleware/advancedResults');
 const imageUpload = require('../middleware/imageUpload');
 const { protect } = require('../middleware/auth');
 
-const {
-	getQuestions,
-	getQuestion,
-	createQuestion,
-	updateQuestion,
-	deleteQuestion,
-	questionPhotoUpload
-} = require('../controllers/questions');
+const { createQuestion, updateQuestion, deleteQuestion, questionPhotoUpload } = require('../controllers/questions');
+
+router.route('/me').get(protect, advancedResults(Question));
 
 router
 	.route('/')
 	.get(
-		advancedResults(Question, {
-			path: 'quiz',
-			select: 'name'
-		}),
-		getQuestions
+		advancedResults(Question, null, {
+			exclude: [ 'favourite', 'public', '__v' ],
+			match: { public: true }
+		})
 	)
-	.post(protect, createQuestion);
-router.route('/:id').get(getQuestion).put(protect, updateQuestion).delete(protect, deleteQuestion);
-router.route('/:id/photo').put(protect, imageUpload(Question, 'Question'), questionPhotoUpload);
+	.post(protect, createQuestion)
+	.put(protect, updateQuestion)
+	.delete(protect, deleteQuestion);
+
+router.route('/photo').put(protect, imageUpload(Question, 'Question'), questionPhotoUpload);
 
 module.exports = router;

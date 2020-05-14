@@ -3,6 +3,7 @@ const path = require('path');
 
 const imageUpload = (model, name) =>
 	async function(req, res, next) {
+		if (!req.query._id) return next(new ErrorResponse(`Provide the ${name} id`, 400));
 		const result = await model.findById(req.query._id);
 		if (!result) return next(new ErrorResponse(`${name} not found with id of ${req.query._id}`, 404));
 		if (result.user.toString() !== req.user._id.toString())
