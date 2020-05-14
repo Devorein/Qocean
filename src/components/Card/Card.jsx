@@ -1,14 +1,22 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 class QuestionCard extends Component {
+	flattenObject = (obj) => {
+		const { type } = this.props;
+		const entries = Object.entries(obj);
+		return entries.map(([ key, value ], index) => {
+			if (Object.prototype.toString.call(value) !== '[object Object]' && !Array.isArray(value))
+				return (
+					<div className={`${type}-${key}`} key={`${type}-${key}-${index}`}>
+						<div className={`${type}-${key}-key`}>{key}</div>
+						<div className={`${type}-${key}-value`}>{value}</div>
+					</div>
+				);
+		});
+	};
 	render() {
 		const { item, index, type } = this.props;
-		return (
-			<div className={`${type}-card`}>
-				<img src={item.image} alt={`${type.charAt(0).toUpperCase() + type.slice(1)} ${index + 1}`} />
-				<span className={`${type}-card-item-name`}>{item.name | item.question}</span>
-			</div>
-		);
+		return <div className={`${type}-card`}>{this.flattenObject(item)}</div>;
 	}
 }
 

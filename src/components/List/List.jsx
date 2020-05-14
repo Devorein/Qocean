@@ -8,7 +8,7 @@ class List extends Component {
 		data: []
 	};
 
-	componentDidMount() {
+	componentDidUpdate() {
 		axios
 			.get(`http://localhost:5001/api/v1/${plur(this.props.type, 2)}`)
 			.then(({ data }) => {
