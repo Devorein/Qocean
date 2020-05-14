@@ -3,22 +3,6 @@ const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
-// @desc: Get all quizes
-// @route: GET /api/v1/quizes
-// @access: Public
-exports.getQuizes = asyncHandler(async (req, res, next) => {
-	res.status(200).json(res.advancedResults);
-});
-
-// @desc: Get single quiz
-// @route: GET /api/v1/quizes/:id
-// @access: Public
-exports.getQuiz = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.findById(req.params.id);
-	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
-	res.status(200).json({ success: true, data: quiz });
-});
-
 // @desc: Create single quiz
 // @route: POST /api/v1/quizes/:id
 // @access: Private
@@ -32,11 +16,11 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 // @route: PUT /api/v1/quizes/:id
 // @access: Private
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
-	let quiz = await Quiz.findById(req.params.id);
-	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
+	let quiz = await Quiz.findById(req.query._id);
+	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.query._id}`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
-	quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+	quiz = await Quiz.findByIdAndUpdate(req.query._id, req.body, { new: true, runValidators: true });
 	res.status(200).json({ success: true, data: quiz });
 });
 
@@ -44,8 +28,8 @@ exports.updateQuiz = asyncHandler(async (req, res, next) => {
 // @route: DELETE /api/v1/quizes/:id
 // @access: Private
 exports.deleteQuiz = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.findById(req.params.id);
-	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
+	const quiz = await Quiz.findById(req.query._id);
+	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.query._id}`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
 	await quiz.remove();

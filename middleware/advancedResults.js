@@ -3,10 +3,10 @@ const ErrorResponse = require('../utils/errorResponse');
 const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
 		if (req.query._id) {
-			const result = await model.findOne({ _id: req.query._id, public: true }).select('-favourite -public').populate({
-				path: 'quizes',
-				select: 'name'
-			});
+			const result = await model
+				.findOne({ _id: req.query._id, public: true })
+				.select(option.exclude.map((field) => `-${field}`).join(' '))
+				.populate(populate);
 			if (!result) return next(new ErrorResponse(`Resource not found with id of ${req.query._id}`, 404));
 			res.status(200).json({ success: true, data: result });
 		} else {
