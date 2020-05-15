@@ -5,3 +5,7 @@ $dark-bg-l10: lighten($dark-bg-1, 10%);
 $dark-bg-l5: lighten($dark-bg-1, 5%);
 
 $dark-text-1: #c4c4c4;
+$dark-text-d5: darken($dark-text-1, 5%);
+$dark-text-d10: darken($dark-text-1, 10%);
+$dark-text-l5: lighten($dark-text-1, 5%);
+$dark-text-l10: lighten($dark-text-1, 10%);

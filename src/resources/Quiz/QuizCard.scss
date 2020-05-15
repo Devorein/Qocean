@@ -10,6 +10,10 @@
       cursor: pointer;
       text-align: center;
       font-weight: bolder;
+      a {
+        text-decoration: none;
+        color: $dark-text-d10;
+      }
     }
     &-subject {
       text-align: center;
@@ -31,7 +35,27 @@
     }
   }
   &-tertiary {
-    background-color: $dark-bg-d10;
-    width: 100%;
+    margin-top: 5px;
+    padding: 10px;
+    width: calc(100% - 20px);
+    &-item {
+      padding: 5px;
+      margin: 3px;
+      display: flex;
+      justify-content: space-between;
+      &-key {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+        background-color: $dark-bg-d5;
+      }
+      &-value {
+        word-wrap: normal;
+        word-break: break-all;
+        padding: 5px;
+        background-color: $dark-bg-1;
+      }
+    }
   }
 }
