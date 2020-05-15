@@ -1,4 +1,5 @@
 import React from 'react';
+import './CardTertiary.scss';
 
 function CardTertiary({ items, type, item }) {
 	return (
@@ -10,7 +11,7 @@ function CardTertiary({ items, type, item }) {
 						key={`${text}${item[key]}${index}`}
 					>
 						<div className={`card-tertiary-item-key ${type}-card-tertiary-item-key`}>{text}</div>
-						<div className={`card-tertiary-item-value ${type}-card-tertiary-item-value`}>{item[key]}s</div>
+						<div className={`card-tertiary-item-value ${type}-card-tertiary-item-value`}>{item[key]}</div>
 					</div>
 				);
 			})}
