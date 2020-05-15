@@ -39,6 +39,9 @@ exports.deleteEnvironment = asyncHandler(async (req, res, next) => {
 	if (!environment) return next(new ErrorResponse(`Environment not found with id of ${req.params.id}`, 404));
 	if (environment.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete environment`, 401));
-	await environment.remove();
-	res.status(200).json({ success: true, data: environment });
+	const totalDocs = await Environment.countDocuments({ user: req.user._id });
+	if (totalDocs > 1) {
+		await environment.remove();
+		res.status(200).json({ success: true, data: environment });
+	} else return next(new ErrorResponse(`You must have atleast one environment`, 400));
 });

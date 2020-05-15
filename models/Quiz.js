@@ -67,10 +67,16 @@ const QuizSchema = extendSchema(
 			type: String,
 			default: null
 		},
-		questionCount: {
+		questionsCount: {
 			type: Number,
 			default: 0
-		}
+		},
+		questions: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: 'Question'
+			}
+		]
 	},
 	{
 		toJSON: { virtuals: true },
@@ -78,16 +84,32 @@ const QuizSchema = extendSchema(
 	}
 );
 
-QuizSchema.virtual('questions', {
-	ref: 'Question',
-	localField: '_id',
-	foreignField: 'quiz',
-	justOne: false
-});
+// QuizSchema.virtual('questions', {
+// 	ref: 'Question',
+// 	localField: '_id',
+// 	foreignField: 'quiz',
+// 	justOne: false
+// });
+
+QuizSchema.statics.add = async function(quizId, field, id) {
+	const quiz = await this.findById(quizId);
+	quiz[field].push(id);
+	quiz[`${field}Count`] = quiz[field].length;
+	await quiz.save();
+};
+
+QuizSchema.statics.remove = async function(quizId, field, id) {
+	const quiz = await this.findById(quizId);
+	quiz[field] = quiz[field].filter((_id) => _id.toString() !== id.toString());
+	quiz[`${field}Count`] = quiz[field].length;
+	await quiz.save();
+};
 
 QuizSchema.pre('save', async function(next) {
-	await this.model('User').add(this.user, 'quizzes', this._id);
-	this.slug = slugify(this.name, { lower: true });
+	if (this.isModified('user')) {
+		await this.model('User').add(this.user, 'quizzes', this._id);
+		this.slug = slugify(this.name, { lower: true });
+	}
 	next();
 });
 

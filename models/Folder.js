@@ -14,11 +14,11 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		type: String,
 		default: 'default.svg'
 	},
-	quizCount: {
+	quizzesCount: {
 		type: Number,
 		default: 0
 	},
-	questionCount: {
+	questionsCount: {
 		type: Number,
 		default: 0
 	},

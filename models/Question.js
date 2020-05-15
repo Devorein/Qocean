@@ -111,14 +111,17 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 
 QuestionSchema.post('save', async function() {
 	await this.model('User').add(this.user, 'questions', this._id);
+	await this.model('Quiz').add(this.quiz, 'questions', this._id);
 	this.constructor.getAverageTimeAllocated(this.quiz);
 	this.constructor.getAverageDifficulty(this.quiz);
 });
 
 QuestionSchema.pre('remove', async function() {
-	await this.model('User').remove(this.user, 'questions', this._id);
-	this.constructor.getAverageTimeAllocated(this.quiz);
-	this.constructor.getAverageDifficulty(this.quiz);
+	const question = await this.model('Question').findById(this._id);
+	await this.model('User').remove(question.user, 'questions', question._id);
+	await this.model('Quiz').remove(question.quiz, 'questions', question._id);
+	this.constructor.getAverageTimeAllocated(question.quiz);
+	this.constructor.getAverageDifficulty(question.quiz);
 });
 
 module.exports = mongoose.model('Question', QuestionSchema);

@@ -11,7 +11,7 @@ const asyncHandler = require('../middleware/async');
 exports.createQuestion = asyncHandler(async function(req, res, next) {
 	if (!req.body.quiz) return next(new ErrorResponse(`Provide the quiz id`, 400));
 	const quiz = await Quiz.findById(req.body.quiz);
-	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${id} found`, 404));
+	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${req.body.quiz} found`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to add a question to this quiz`, 401));
 
