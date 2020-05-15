@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const extendSchema = require('../utils/extendSchema');
+const ResourceSchema = require('./Resource');
 
-const QuestionSchema = new mongoose.Schema({
+const QuestionSchema = extendSchema(ResourceSchema, {
 	question: {
 		type: String,
 		maxlength: [ 1000, 'Question cant be more than 1000 characters' ],
@@ -22,11 +24,6 @@ const QuestionSchema = new mongoose.Schema({
 		ref: 'Quiz',
 		required: [ true, 'Please provide the quiz id' ]
 	},
-	user: {
-		type: mongoose.Schema.ObjectId,
-		ref: 'User',
-		required: [ true, 'A question must be created by an user' ]
-	},
 	addToScore: {
 		type: Boolean,
 		default: true
@@ -37,22 +34,10 @@ const QuestionSchema = new mongoose.Schema({
 		min: 15,
 		max: 120
 	},
-	createdAt: {
-		type: Date,
-		default: Date.now
-	},
 	difficulty: {
 		type: String,
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
 		default: 'Beginner'
-	},
-	public: {
-		type: Boolean,
-		default: true
-	},
-	favourite: {
-		type: Boolean,
-		default: false
 	},
 	image: {
 		type: String,

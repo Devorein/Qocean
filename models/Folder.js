@@ -1,16 +1,15 @@
 const mongoose = require('mongoose');
+const extendSchema = require('../utils/extendSchema');
+const ResourceSchema = require('./Resource');
 
-const FolderSchema = new mongoose.Schema({
+const FolderSchema = extendSchema(ResourceSchema, {
 	name: {
 		type: String,
 		required: [ true, 'Please provide folder name' ],
 		minlength: [ 3, 'Folder name must be greater than 3 characters' ],
 		maxlength: [ 20, 'Folder name must be less than 20 characters' ]
 	},
-	favourite: {
-		type: Boolean,
-		default: false
-	},
+
 	icon: {
 		type: String,
 		default: 'default.svg'
@@ -22,18 +21,6 @@ const FolderSchema = new mongoose.Schema({
 	questionCount: {
 		type: Number,
 		default: 0
-	},
-	user: {
-		type: mongoose.Schema.ObjectId,
-		required: [ true, 'Please provide an user' ]
-	},
-	public: {
-		type: Boolean,
-		default: true
-	},
-	createdAt: {
-		type: Date,
-		default: Date.now
 	},
 	quizzes: [
 		{

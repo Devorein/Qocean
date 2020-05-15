@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const extendSchema = require('../utils/extendSchema');
+const ResourceSchema = require('./Resource');
 
-const EnvironmentSchema = new mongoose.Schema({
+const EnvironmentSchema = extendSchema(ResourceSchema, {
 	theme: {
 		type: String,
 		default: 'Light'
@@ -16,15 +18,17 @@ const EnvironmentSchema = new mongoose.Schema({
 	defaultTimeAllocated: {
 		type: Number,
 		default: 30
-	},
-	createdAt: {
-		type: Date,
-		default: Date.now
-	},
-	user: {
-		type: mongoose.Schema.ObjectId,
-		required: [ true, 'Environment must have a user' ]
 	}
+});
+
+EnvironmentSchema.pre('save', async function(next) {
+	await this.model('User').add(this.user, 'environments', this._id);
+	next();
+});
+
+EnvironmentSchema.pre('remove', async function(next) {
+	await this.model('User').remove(this.user, 'environments', this._id);
+	next();
 });
 
 module.exports = mongoose.model('Environment', EnvironmentSchema);

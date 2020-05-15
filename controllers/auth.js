@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const User = require('../models/User');
+const Environment = require('../models/Environment');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendEmail = require('../utils/sendEmail');
@@ -18,6 +19,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 		username
 	});
 
+	await Environment.create({ user: user._id });
 	sendTokenResponse(user, 200, res);
 });
 

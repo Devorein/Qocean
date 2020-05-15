@@ -36,9 +36,9 @@ const importData = async (exit = true) => {
 		await Question.create(questions);
 		await Environment.create(environments);
 		await Folder.create(folders);
-		console.log(`quizzes imported ...`.green.inverse);
-		console.log(`Questions imported ...`.green.inverse);
 		console.log(`Users imported ...`.green.inverse);
+		console.log(`Quizzes imported ...`.green.inverse);
+		console.log(`Questions imported ...`.green.inverse);
 		console.log(`Environments imported ...`.green.inverse);
 		console.log(`Folders imported ...`.green.inverse);
 		if (exit) process.exit();

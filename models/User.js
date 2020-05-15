@@ -3,15 +3,25 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const Folder = require('./Folder');
-const Environment = require('./Environment');
-
 const { isAlphaNumericOnly, isStrongPassword } = require('../utils/validation');
 
 const UserSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: [ true, 'Please add a name' ]
+	},
+	username: {
+		type: String,
+		required: [ true, 'Please provide an username' ],
+		minlength: [ 3, 'User name cant be less than 3 characters long' ],
+		maxlength: [ 10, 'User name cant be more than 10 characters long' ],
+		unique: true,
+		validate: {
+			validator(v) {
+				return isAlphaNumericOnly(v);
+			},
+			message: () => `Invalid username`
+		}
 	},
 	email: {
 		type: String,
@@ -52,7 +62,7 @@ const UserSchema = new mongoose.Schema({
 	},
 	environmentsCount: {
 		type: Number,
-		default: 1
+		default: 0
 	},
 	currentEnvironment: {
 		type: mongoose.Schema.ObjectId,
@@ -71,20 +81,7 @@ const UserSchema = new mongoose.Schema({
 	],
 	quizzes: [ { type: mongoose.Schema.ObjectId, ref: 'Quiz' } ],
 	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
-	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
-	username: {
-		type: String,
-		required: [ true, 'Please provide an username' ],
-		minlength: [ 3, 'User name cant be less than 3 characters long' ],
-		maxlength: [ 10, 'User name cant be more than 10 characters long' ],
-		unique: true,
-		validate: {
-			validator(v) {
-				return isAlphaNumericOnly(v);
-			},
-			message: () => `Invalid username`
-		}
-	}
+	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ]
 });
 
 UserSchema.methods.getSignedJwtToken = function() {
@@ -107,14 +104,14 @@ UserSchema.methods.getResetPasswordToken = function() {
 UserSchema.statics.add = async function(userId, field, id) {
 	const user = await this.findById(userId);
 	user[field].push(id);
-	user[`${field}Count`] = parseInt(user[`${field}Count`]) + 1;
+	user[`${field}Count`] = user[field].length;
 	await user.save();
 };
 
 UserSchema.statics.remove = async function(userId, field, id) {
 	const user = await this.findById(userId);
 	user[field] = user[field].filter((_id) => _id.toString() !== id.toString());
-	user[`${field}Count`] = parseInt(user[`${field}Count`]) - 1;
+	user[`${field}Count`] = user[field].length;
 	await user.save();
 };
 
@@ -122,15 +119,13 @@ UserSchema.pre('save', async function(next) {
 	if (!this.isModified('password')) next();
 	const salt = await bcrypt.genSalt(10);
 	this.password = await bcrypt.hash(this.password, salt);
-	const enviroment = await Environment.create({ user: this._id });
-	this.environments.push(enviroment._id);
 });
 
 UserSchema.pre('remove', async function(next) {
 	await this.model('Quiz').deleteMany({ user: this._id });
 	await this.model('Question').deleteMany({ user: this._id });
 	await this.model('Environment').deleteMany({ user: this._id });
-	await Folder.deleteMany({ user: this._id });
+	await this.model('Folder').deleteMany({ user: this._id });
 	next();
 });
 

@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const extendSchema = require('../utils/extendSchema');
+const ResourceSchema = require('./Resource');
 
-const QuizSchema = new mongoose.Schema(
+const QuizSchema = extendSchema(
+	ResourceSchema,
 	{
 		name: {
 			type: String,
