@@ -6,10 +6,7 @@
     "tags": [
       "Version Control"
     ],
-    "source": {
-      "type": "Web",
-      "link": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git"
-    },
+    "source": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git",
     "favourite": false,
     "user": "5ebb74772c952d08c0644884"
   },
@@ -20,10 +17,7 @@
     "tags": [
       "Database"
     ],
-    "source": {
-      "type": "Web",
-      "link": "https://docs.mongodb.com/manual/tutorial/getting-started/"
-    },
+    "source": "https://docs.mongodb.com/manual/tutorial/getting-started/",
     "favourite": true,
     "user": "5ebb74772c952d08c0644885"
   },
@@ -34,10 +28,7 @@
     "tags": [
       "Linter"
     ],
-    "source": {
-      "type": "Web",
-      "link": "https://eslint.org/docs/user-guide/configuring"
-    },
+    "source": "https://eslint.org/docs/user-guide/configuring",
     "favourite": false,
     "user": "5ebb74772c952d08c0644886"
   }

@@ -14,12 +14,18 @@ router
 	.get(
 		advancedResults(
 			Quiz,
+			[
+				{
+					path: 'questions',
+					select: 'question'
+				},
+				{
+					path: 'user',
+					select: 'username'
+				}
+			],
 			{
-				path: 'questions',
-				select: 'question'
-			},
-			{
-				exclude: [ 'favourite', 'public', '__v' ],
+				exclude: [ 'favourite', 'public', '__v', 'folders', 'foldersCount' ],
 				match: { public: true }
 			}
 		)

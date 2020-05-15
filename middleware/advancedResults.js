@@ -3,10 +3,12 @@ const ErrorResponse = require('../utils/errorResponse');
 const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
 		if (req.query._id) {
-			const result = await model
+			let query = model
 				.findOne({ _id: req.query._id, public: true })
-				.select(option.exclude.map((field) => `-${field}`).join(' '))
-				.populate(populate);
+				.select(option.exclude.map((field) => `-${field}`).join(' '));
+			if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
+			else query = query.populate(populate);
+			const result = await query;
 			if (!result) return next(new ErrorResponse(`Resource not found with id of ${req.query._id}`, 404));
 			res.status(200).json({ success: true, data: result });
 		} else {
@@ -47,7 +49,10 @@ const advancedResults = (model, populate, option = {}) =>
 
 			query = query.skip(startIndex).limit(limit);
 
-			if (populate) query = query.populate(populate);
+			if (populate) {
+				if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
+				else query = query.populate(populate);
+			}
 
 			// Pagination result
 			const pagination = {};

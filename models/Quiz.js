@@ -38,7 +38,6 @@ const QuizSchema = extendSchema(
 			default: 'Beginner',
 			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
 		},
-		slug: String,
 		createdAt: {
 			type: Date,
 			default: Date.now
@@ -53,15 +52,8 @@ const QuizSchema = extendSchema(
 			required: [ true, 'Please provide a subject' ]
 		},
 		source: {
-			type: {
-				required: true,
-				type: String,
-				enum: [ 'Web', 'Local' ]
-			},
-			link: {
-				default: '',
-				type: String
-			}
+			type: String,
+			default: ''
 		},
 		image: {
 			type: String,
@@ -109,10 +101,7 @@ QuizSchema.statics.remove = async function(quizId, field, id) {
 };
 
 QuizSchema.pre('save', async function(next) {
-	if (this.isModified('user')) {
-		await this.model('User').add(this.user, 'quizzes', this._id);
-		this.slug = slugify(this.name, { lower: true });
-	}
+	if (this.isModified('user')) await this.model('User').add(this.user, 'quizzes', this._id);
 	next();
 });
 

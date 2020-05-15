@@ -1,0 +1,37 @@
+@import "../../Utils/glovar.scss";
+
+.quiz-card {
+  &-primary {
+  }
+  &-secondary {
+    &-user {
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: bolder;
+    }
+    &-subject {
+      text-align: center;
+      background-color: $dark-bg-d5;
+      padding: 3px;
+      border-radius: 2px;
+      width: fit-content;
+      margin: 5px auto;
+      font-size: 15px;
+    }
+    &-tags {
+      display: flex;
+      justify-content: center;
+      &-item {
+        background-color: $dark-bg-d5;
+        padding: 3px;
+        font-size: 12px;
+      }
+    }
+  }
+  &-tertiary {
+    background-color: $dark-bg-d10;
+    width: 100%;
+  }
+}
