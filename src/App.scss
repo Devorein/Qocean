@@ -9,6 +9,7 @@ a {
   overflow: hidden;
   background-color: #2d2d2d;
   display: flex;
+  flex-direction: column;
 }
 
 ::-webkit-scrollbar {

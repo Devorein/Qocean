@@ -1,22 +1,28 @@
 @import "../../Utils/glovar.scss";
 
 .nav-links {
-  width: 250px;
-  height: 100vh;
+  width: 100vw;
+  height: fit-content;
   background-color: $dark-bg-1;
+  display: flex;
+  justify-content: space-around;
+
+  a {
+    height: 100%;
+    display: block;
+    flex-grow: 1;
+    margin: 5px;
+  }
 
   .nav-link {
     list-style-type: none;
     cursor: pointer;
-    width: 75%;
     color: $dark-text-1;
     background-color: $dark-bg-l5;
     padding: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
-    height: 60px;
     font-family: "Quantico";
     font-weight: bold;
     font-size: 20px;

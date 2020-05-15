@@ -3,7 +3,7 @@
 .Explore {
   display: flex;
   flex-direction: column;
-  margin: 20px;
+  position: relative;
 
   .explore-types {
     display: flex;
@@ -60,5 +60,11 @@
     justify-content: center;
     align-items: center;
     font-family: "Quantico";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    user-select: none;
   }
 }
