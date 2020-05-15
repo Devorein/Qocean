@@ -3,6 +3,10 @@ const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
 
 const EnvironmentSchema = extendSchema(ResourceSchema, {
+	name: {
+		type: String,
+		required: [ true, 'Please provide the name of the environment' ]
+	},
 	theme: {
 		type: String,
 		default: 'Light'

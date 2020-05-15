@@ -21,8 +21,8 @@ router
 			match: { public: true }
 		})
 	)
-	.post(createEnvironment);
+	.post(protect, createEnvironment);
 
-router.route('/:id').put(updateEnvironment).delete(deleteEnvironment);
+router.route('/:id').put(protect, updateEnvironment).delete(protect, deleteEnvironment);
 
 module.exports = router;
