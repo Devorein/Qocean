@@ -7,8 +7,8 @@ class QuizCard extends Component {
 		let { item, page, index } = this.props;
 		return (
 			<div className={`card quiz-card ${page}-card ${page}-quiz-card quiz-card-${index} ${page}-quiz-card-${index}`}>
-				<div className="quiz-card-primary card-primary">
-					<Link className="card-primary quiz-card-primary-item quiz-card-primary-name" to={`/quiz/${item._id}`}>
+				<div className="card-primary quiz-card-primary">
+					<Link className="card-primary-item quiz-card-primary-item quiz-card-primary-name" to={`/quiz/${item._id}`}>
 						{item.name}
 					</Link>
 				</div>
