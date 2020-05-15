@@ -71,10 +71,20 @@ const QuizSchema = extendSchema(
 			type: Number,
 			default: 0
 		},
+		foldersCount: {
+			type: Number,
+			default: 0
+		},
 		questions: [
 			{
 				type: mongoose.Schema.ObjectId,
 				ref: 'Question'
+			}
+		],
+		folders: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: 'Folder'
 			}
 		]
 	},
@@ -83,13 +93,6 @@ const QuizSchema = extendSchema(
 		toObject: { virtuals: true }
 	}
 );
-
-// QuizSchema.virtual('questions', {
-// 	ref: 'Question',
-// 	localField: '_id',
-// 	foreignField: 'quiz',
-// 	justOne: false
-// });
 
 QuizSchema.statics.add = async function(quizId, field, id) {
 	const quiz = await this.findById(quizId);
@@ -115,7 +118,8 @@ QuizSchema.pre('save', async function(next) {
 
 QuizSchema.pre('remove', async function(next) {
 	await this.model('User').remove(this.user, 'quizzes', this._id);
-	await this.model('Question').deleteMany({ quiz: this._id });
+	const questions = await this.model('Question').find({ quiz: this._id });
+	for (let i = 0; i < questions.length; i++) await questions[i].remove();
 	next();
 });
 

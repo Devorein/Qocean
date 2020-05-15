@@ -4,7 +4,7 @@ const router = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
 
-const { createFolder, updateFolder, deleteFolder } = require('../controllers/folder');
+const { createFolder, updateFolder, deleteFolder, quizToFolder } = require('../controllers/folder');
 
 router.route('/me').get(protect, advancedResults(Folder, 'quizzes'));
 
@@ -24,6 +24,9 @@ router
 		)
 	)
 	.post(protect, createFolder);
+
+router.route('/quiz').put(quizToFolder);
+
 router.route('/:id').put(protect, updateFolder).delete(protect, deleteFolder);
 
 module.exports = router;
