@@ -27,16 +27,18 @@ class Explore extends Component {
 		return (
 			<div className="Explore page">
 				<div className="explore-types">
-					{[ 'User', 'Quiz', 'Question', 'Folder', 'Environment' ].map((type) => {
+					{[ 'user', 'quiz', 'question', 'folder', 'environment' ].map((type) => {
 						return (
 							<span
 								key={type}
-								className={`explore-type explore-type-${type.toLowerCase()}`}
+								className={`explore-type explore-type-${type.toLowerCase()} ${this.state.currentType === type
+									? 'selected-type'
+									: ''}`}
 								onClick={(e) => {
 									this.refetchData(type);
 								}}
 							>
-								{type}
+								{type.charAt(0).toUpperCase() + type.slice(1)}
 							</span>
 						);
 					})}

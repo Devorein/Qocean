@@ -28,6 +28,9 @@
         transition: background-color 250ms ease-in-out;
       }
     }
+    .explore-type.selected-type {
+      background-color: $dark-bg-d5;
+    }
   }
   .explore-list {
     margin-top: 20px;
@@ -35,7 +38,8 @@
     border-radius: 5px;
     background-color: $dark-bg-d5;
     display: grid;
-    grid-template: repeat(3, 250px) / 1fr 1fr 1fr;
+    grid-template: 250px/ 1fr 1fr;
+    grid-auto-rows: 250px;
     padding: 10px;
     overflow: scroll;
 
@@ -48,5 +52,13 @@
       border-radius: 5px;
       overflow: auto;
     }
+  }
+  .no-data {
+    font-size: 30px;
+    color: $dark-text-1;
+    font-weight: bolder;
+    justify-content: center;
+    align-items: center;
+    font-family: "Quantico";
   }
 }

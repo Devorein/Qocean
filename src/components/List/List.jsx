@@ -12,7 +12,7 @@ class List extends Component {
 						return <Card item={item} index={index} type={type} key={item._id} page={page} />;
 					})
 				) : (
-					<div>{`No ${plur(type)} found`}</div>
+					<div className="no-data">{`No ${plur(type)} found`}</div>
 				)}
 			</div>
 		);
