@@ -19,7 +19,9 @@ exports.register = asyncHandler(async (req, res, next) => {
 		username
 	});
 
-	await Environment.create({ user: user._id });
+	const enviroment = await Environment.create({ user: user._id });
+	user.currentEnvironment = enviroment._id;
+	await user.save();
 	sendTokenResponse(user, 200, res);
 });
 
