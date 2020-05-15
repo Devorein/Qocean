@@ -29,6 +29,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.13",
     "morgan": "^1.10.0",
+    "node-sass": "^4.14.1",
     "nodemailer": "^6.4.6",
     "plur": "^4.0.0",
     "react": "^16.13.1",

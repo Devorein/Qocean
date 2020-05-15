@@ -1,0 +1,25 @@
+.nav-links {
+  width: 350px;
+  height: 100vh;
+  background-color: #272727;
+
+  .nav-link {
+    list-style-type: none;
+    cursor: pointer;
+    width: 75%;
+    color: #c4c4c4;
+    background-color: #3e3e3e;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    height: 60px;
+    font-family: "Quantico";
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .current-link {
+    background-color: #5a5a5a;
+  }
+}

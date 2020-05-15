@@ -4,6 +4,7 @@ import Create from './pages/Create';
 import Explore from './pages/Explore';
 import Self from './pages/Self';
 import Home from './pages/Home';
+import './App.css';
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
