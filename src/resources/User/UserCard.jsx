@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import CardTertiary from '../../components/Card/CardTertiary';
 
 class UserCard extends Component {
 	render() {
@@ -19,25 +20,17 @@ class UserCard extends Component {
 					</Link>
 					<div className="card-secondary-item user-card-secondary-item user-card-secondary-version">{item.version}</div>
 				</div>
-				<div className="card-tertiary user-card-tertiary">
-					{[
+				<CardTertiary
+					items={[
 						[ 'Total Quizzes', 'quizzesCount' ],
 						[ 'Total Folders', 'foldersCount' ],
 						[ 'Total Questions', 'questionsCount' ],
 						[ 'Total Environments', 'environmentsCount' ],
 						[ 'Joined At', 'createdAt' ]
-					].map(([ text, key ], index) => {
-						return (
-							<div
-								className={`card-tertiary-item user-card-tertiary-item user-card-tertiary-${key}`}
-								key={`${item[key]}${index}`}
-							>
-								<div className={`card-tertiary-item-key user-card-tertiary-item-key`}>{text}</div>
-								<div className={`card-tertiary-item-value user-card-tertiary-item-value`}>{item[key]}s</div>
-							</div>
-						);
-					})}
-				</div>
+					]}
+					type="user"
+					item={item}
+				/>
 			</div>
 		);
 	}
