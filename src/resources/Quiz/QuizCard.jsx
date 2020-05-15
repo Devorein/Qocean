@@ -30,26 +30,23 @@ class QuizCard extends Component {
 					</div>
 				</div>
 				<div className="card-tertiary quiz-card-tertiary">
-					<div className="quiz-card-tertiary-item quiz-card-tertiary-averageTimeAllocated">
-						<div className="quiz-card-tertiary-item-key">Average Quiz Time</div>
-						<div className="quiz-card-tertiary-item-value">{item.averageTimeAllocated}s</div>
-					</div>
-					<div className="quiz-card-tertiary-item quiz-card-tertiary-averageDifficulty">
-						<div className="quiz-card-tertiary-item-key">Average Quiz Difficulty</div>
-						<div className="quiz-card-tertiary-item-value">{item.averageDifficulty}</div>
-					</div>
-					<div className="quiz-card-tertiary-item quiz-card-tertiary-questionsCount">
-						<div className="quiz-card-tertiary-item-key">Total Questions </div>
-						<div className="quiz-card-tertiary-item-value">{item.questionsCount}</div>
-					</div>
-					<div className="quiz-card-tertiary-item quiz-card-tertiary-createdAt">
-						<div className="quiz-card-tertiary-item-key">Created At</div>
-						<div className="quiz-card-tertiary-item-value">{item.createdAt}</div>
-					</div>
-					<div className="quiz-card-tertiary-item quiz-card-tertiary-source">
-						<div className="quiz-card-tertiary-item-key">Source: </div>
-						<div className="quiz-card-tertiary-item-value">{item.source}</div>
-					</div>
+					{[
+						[ 'Average Quiz Time', 'averageTimeAllocated' ],
+						[ 'Average Quiz Difficulty', 'averageDifficulty' ],
+						[ 'Total Questions', 'questionsCount' ],
+						[ 'Created At', 'createdAt' ],
+						[ 'Source', 'source' ]
+					].map(([ text, key ], index) => {
+						return (
+							<div
+								className={`card-tertiary-item quiz-card-tertiary-item quiz-card-tertiary-${key}`}
+								key={`${item[key]}${index}`}
+							>
+								<div className={`card-tertiary-item-key quiz-card-tertiary-item-key`}>{text}</div>
+								<div className={`card-tertiary-item-value quiz-card-tertiary-item-value`}>{item[key]}s</div>
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		);

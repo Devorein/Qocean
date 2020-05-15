@@ -20,26 +20,23 @@ class UserCard extends Component {
 					<div className="card-secondary-item user-card-secondary-item user-card-secondary-version">{item.version}</div>
 				</div>
 				<div className="card-tertiary user-card-tertiary">
-					<div className="user-card-tertiary-item user-card-tertiary-foldersCount">
-						<div className="user-card-tertiary-item-key">Total Folders</div>
-						<div className="user-card-tertiary-item-value">{item.foldersCount}s</div>
-					</div>
-					<div className="user-card-tertiary-item user-card-tertiary-questionsCount">
-						<div className="user-card-tertiary-item-key">Total Questions</div>
-						<div className="user-card-tertiary-item-value">{item.questionsCount}</div>
-					</div>
-					<div className="user-card-tertiary-item user-card-tertiary-quizzesCount">
-						<div className="user-card-tertiary-item-key">Total Quizzes</div>
-						<div className="user-card-tertiary-item-value">{item.quizzesCount}</div>
-					</div>
-					<div className="user-card-tertiary-item user-card-tertiary-environmentsCount">
-						<div className="user-card-tertiary-item-key">Total Environments</div>
-						<div className="user-card-tertiary-item-value">{item.environmentsCount}</div>
-					</div>
-					<div className="user-card-tertiary-item user-card-tertiary-source">
-						<div className="user-card-tertiary-item-key">Source: </div>
-						<div className="user-card-tertiary-item-value">{item.source}</div>
-					</div>
+					{[
+						[ 'Total Quizzes', 'quizzesCount' ],
+						[ 'Total Folders', 'foldersCount' ],
+						[ 'Total Questions', 'questionsCount' ],
+						[ 'Total Environments', 'environmentsCount' ],
+						[ 'Joined At', 'createdAt' ]
+					].map(([ text, key ], index) => {
+						return (
+							<div
+								className={`card-tertiary-item user-card-tertiary-item user-card-tertiary-${key}`}
+								key={`${item[key]}${index}`}
+							>
+								<div className={`card-tertiary-item-key user-card-tertiary-item-key`}>{text}</div>
+								<div className={`card-tertiary-item-value user-card-tertiary-item-value`}>{item[key]}s</div>
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		);
