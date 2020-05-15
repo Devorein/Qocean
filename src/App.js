@@ -5,6 +5,7 @@ import Explore from './pages/Explore/Explore';
 import Self from './pages/Self';
 import Home from './pages/Home';
 import UserDetails from './resources/User/UserDetails';
+import QuizDetails from './resources/Quiz/QuizDetails';
 
 import './App.scss';
 import './pages/Pages.scss';
@@ -24,6 +25,7 @@ class App extends Component {
 						<Route path="/self" exact component={Self} />
 						<Route path="/explore" exact component={Explore} />
 						<Route path="/user/:userId" exact component={UserDetails} />
+						<Route path="/quiz/:quizId" exact component={QuizDetails} />
 					</Switch>
 				</div>
 			</Router>

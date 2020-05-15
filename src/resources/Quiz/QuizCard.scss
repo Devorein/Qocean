@@ -2,18 +2,21 @@
 
 .quiz-card {
   &-primary {
+    &-name {
+      font-size: 25px;
+      display: block;
+      color: $dark-text-l5;
+    }
   }
   &-secondary {
     &-user {
       font-size: 16px;
+      display: block;
       margin: 5px;
       cursor: pointer;
       text-align: center;
       font-weight: bolder;
-      a {
-        text-decoration: none;
-        color: $dark-text-d10;
-      }
+      color: $dark-text-d5;
     }
     &-subject {
       text-align: center;
