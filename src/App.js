@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import Nav from './components/Nav/Nav';
 import Create from './pages/Create';
-import Explore from './pages/Explore';
+import Explore from './pages/Explore/Explore';
 import Self from './pages/Self';
 import Home from './pages/Home';
-import './App.css';
+import './App.scss';
+import './pages/Pages.scss';
 
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 

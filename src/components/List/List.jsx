@@ -1,20 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Card from '../Card/Card';
 import plur from 'plur';
 
 class List extends Component {
 	render() {
-		const { data: { data: list = [], success, count } } = this.props;
-		const { type } = this.props;
+		const { type, data: { data: list = [], success, count }, page } = this.props;
 		return (
-			<div className={`list ${type}-list`}>
+			<div className={`list ${page}-list ${type}-list ${page}-${type}-list`}>
 				{list.length !== 0 ? (
 					list.map((item, index) => {
-						return (
-							<div className={`list-item ${type}-list-item`} key={item._id}>
-								<Card item={item} index={index} type={type} />
-							</div>
-						);
+						return <Card item={item} index={index} type={type} key={item._id} page={page} />;
 					})
 				) : (
 					<div>{`No ${plur(type)} found`}</div>

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import List from '../components/List/List';
+import List from '../../components/List/List';
 import axios from 'axios';
 import plur from 'plur';
-
+import './Explore.scss';
 class Explore extends Component {
 	state = {
 		currentType: 'quiz',
@@ -27,9 +27,9 @@ class Explore extends Component {
 		return (
 			<div className="Explore page">
 				<div className="explore-types">
-					{[ 'Quiz', 'Question', 'Folder', 'Environment', 'User' ].map((type) => {
+					{[ 'User', 'Quiz', 'Question', 'Folder', 'Environment' ].map((type) => {
 						return (
-							<div
+							<span
 								key={type}
 								className={`explore-type explore-type-${type.toLowerCase()}`}
 								onClick={(e) => {
@@ -37,13 +37,11 @@ class Explore extends Component {
 								}}
 							>
 								{type}
-							</div>
+							</span>
 						);
 					})}
 				</div>
-				<div className="explore-results">
-					<List type={currentType} data={data} />
-				</div>
+				<List type={currentType} data={data} page="explore" />
 			</div>
 		);
 	}

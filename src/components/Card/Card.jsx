@@ -15,8 +15,12 @@ class QuestionCard extends Component {
 		});
 	};
 	render() {
-		const { item, index, type } = this.props;
-		return <div className={`${type}-card`}>{this.flattenObject(item)}</div>;
+		const { item, index, type, page } = this.props;
+		return (
+			<div className={`card ${page}-card ${page}-${type}-card ${type}-card ${type}-card-${index}`}>
+				{this.flattenObject(item)}
+			</div>
+		);
 	}
 }
 
