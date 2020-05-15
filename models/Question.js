@@ -112,6 +112,12 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 QuestionSchema.post('save', async function() {
 	await this.model('User').add(this.user, 'questions', this._id);
 	await this.model('Quiz').add(this.quiz, 'questions', this._id);
+	const folders = await this.model('Folder').find({ quizzes: this.quiz });
+	for (let i = 0; i < folders.length; i++) {
+		const folder = folders[i];
+		folder.questionsCount++;
+		await folder.save();
+	}
 	this.constructor.getAverageTimeAllocated(this.quiz);
 	this.constructor.getAverageDifficulty(this.quiz);
 });
@@ -120,6 +126,12 @@ QuestionSchema.pre('remove', async function() {
 	const question = await this.model('Question').findById(this._id);
 	await this.model('User').remove(question.user, 'questions', question._id);
 	await this.model('Quiz').remove(question.quiz, 'questions', question._id);
+	const folders = await this.model('Folder').find({ quizzes: question.quiz });
+	for (let i = 0; i < folders.length; i++) {
+		const folder = folders[i];
+		folder.questionsCount--;
+		await folder.save();
+	}
 	this.constructor.getAverageTimeAllocated(question.quiz);
 	this.constructor.getAverageDifficulty(question.quiz);
 });

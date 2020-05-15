@@ -35,11 +35,13 @@ FolderSchema.methods.quiz = async function(op, quizId) {
 	if (op === 1) {
 		this.quizzes.push(quizId);
 		quiz.folders.push(this._id);
+		quiz.foldersCount++;
 		this.quizzesCount++;
 		this.questionsCount += quiz.questionsCount;
 	} else if (op === 0) {
 		this.quizzes = this.quizzes.filter((_quizId) => quizId.toString() !== _quizId.toString());
 		quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== this._id.toString());
+		quiz.foldersCount--;
 		this.quizzesCount--;
 		this.questionsCount -= quiz.questionsCount;
 	}
