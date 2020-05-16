@@ -1,6 +1,6 @@
 const express = require('express');
 const User = require('../models/User');
-const { updateUserDetails, updateUserPassword, deleteUser, getMe } = require('../controllers/user');
+const { updateUserDetails, updateUserPassword, deleteUser, getMe, getUserById } = require('../controllers/user');
 const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
@@ -11,6 +11,7 @@ router.route('/').delete(protect, deleteUser).get(
 		exclude: [ 'quizzes', 'questions', 'email' ]
 	})
 );
+router.route('/:id').get(getUserById);
 
 router.put('/updatedetails', protect, updateUserDetails);
 router.put('/updatepassword', protect, updateUserPassword);
