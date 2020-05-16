@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Card from '../../components/Card/Card';
+import Board from '../../components/Board/Board';
 
 import axios from 'axios';
 import plur from 'plur';
@@ -63,7 +63,7 @@ function decideSections(item, type) {
 
 class Explore extends Component {
 	state = {
-		currentType: 'quiz',
+		type: '',
 		data: []
 	};
 
@@ -73,7 +73,7 @@ class Explore extends Component {
 			.then(({ data }) => {
 				this.setState({
 					data,
-					currentType: type.toLowerCase()
+					type
 				});
 			})
 			.catch((err) => {
@@ -82,47 +82,18 @@ class Explore extends Component {
 	};
 
 	render() {
-		const { currentType, data } = this.state;
+		const { type, data } = this.state;
+		const headers = [ 'user', 'quiz', 'question', 'folder', 'environment' ];
 		return (
-			<div className="Explore page">
-				<div className="explore-types">
-					{[ 'user', 'quiz', 'question', 'folder', 'environment' ].map((type) => {
-						return (
-							<span
-								key={type}
-								className={`explore-type explore-type-${type.toLowerCase()} ${this.state.currentType === type
-									? 'selected-type'
-									: ''}`}
-								onClick={(e) => {
-									this.refetchData(type);
-								}}
-							>
-								{type.charAt(0).toUpperCase() + type.slice(1)}
-							</span>
-						);
-					})}
-				</div>
-				<div className="explore-results">
-					{data.data ? (
-						data.data.map((item, index) => {
-							const { primary, secondary, tertiary } = decideSections(item, currentType);
-							return (
-								<Card
-									primary={primary}
-									secondary={secondary}
-									tertiary={tertiary}
-									item={item}
-									type={currentType}
-									index={index}
-									page="explore"
-									key={item._id}
-								/>
-							);
-						})
-					) : (
-						<div className="no-data">{`No ${plur(currentType)} found`}</div>
-					)}
-				</div>
+			<div className="explore page">
+				<Board
+					headers={headers}
+					page="explore"
+					type={type}
+					data={data}
+					onHeaderClick={this.refetchData}
+					sectionDecider={decideSections}
+				/>
 			</div>
 		);
 	}

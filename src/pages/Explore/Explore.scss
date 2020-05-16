@@ -1,70 +1,7 @@
 @import "../../Utils/glovar.scss";
 
-.Explore {
+.explore {
   display: flex;
   flex-direction: column;
   position: relative;
-
-  .explore-types {
-    display: flex;
-    justify-content: space-between;
-
-    .explore-type {
-      background-color: $dark-bg-l5;
-      font-family: "Quantico";
-      color: $dark-text-1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px;
-      margin: 5px;
-      height: 50px;
-      flex-grow: 1;
-      cursor: pointer;
-      transition: background-color 250ms ease-in-out;
-
-      &:hover {
-        background-color: $dark-bg-l10;
-        transition: background-color 250ms ease-in-out;
-      }
-    }
-    .explore-type.selected-type {
-      background-color: $dark-bg-d5;
-    }
-  }
-  .explore-results {
-    margin-top: 20px;
-    height: 100%;
-    border-radius: 5px;
-    background-color: $dark-bg-d5;
-    display: grid;
-    grid-template: 250px/ 1fr 1fr 1fr;
-    grid-auto-rows: 250px;
-    padding: 10px;
-    overflow: scroll;
-
-    .explore-card {
-      background-color: $dark-bg-l5;
-      padding: 5px;
-      color: $dark-text-1;
-      font-family: "Quantico";
-      margin: 5px;
-      border-radius: 5px;
-      overflow: auto;
-    }
-  }
-  .no-data {
-    font-size: 30px;
-    color: $dark-text-1;
-    font-weight: bolder;
-    justify-content: center;
-    align-items: center;
-    font-family: "Quantico";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    user-select: none;
-  }
 }
