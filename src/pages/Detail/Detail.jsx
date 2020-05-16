@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import Board from '../../components/Board/Board';
-import plur from 'plur';
+import pluralize from 'pluralize';
 import Card from '../../components/Card/Card';
+import decideSections from '../../Utils/decideSections';
 
 import './Detail.scss';
 class Detail extends Component {
@@ -10,30 +11,6 @@ class Detail extends Component {
 		type: '',
 		data: [],
 		cardData: []
-	};
-
-	decideSections = (item, type) => {
-		let primary = [],
-			secondary = [],
-			tertiary = [],
-			cards = [];
-
-		if (type === 'users') {
-			primary = [ [ 'image' ], [ 'name' ] ];
-			secondary = [ [ 'version', { highlight: true } ], [ 'username' ], [ 'email' ] ];
-			tertiary = [ [ 'total_environments' ], [ 'total_folders' ], [ 'total_questions' ], [ 'total_quizzes' ] ];
-			cards = [ 'quiz', 'question', 'folder', 'environment' ];
-		} else if (type === 'quizzes') {
-		} else if (type === 'questions') {
-		} else if (type === 'folders') {
-		} else if (type === 'environments') {
-		}
-		return {
-			primary,
-			secondary,
-			tertiary,
-			cards
-		};
 	};
 
 	componentDidMount() {
@@ -47,10 +24,9 @@ class Detail extends Component {
 
 	getDetails = () => {
 		const { type } = this.props.match.params;
-
 		const { cardData } = this.state;
-		const { primary, secondary, tertiary } = this.decideSections(cardData, type);
 		if (cardData.data) {
+			const { primary, secondary, tertiary } = decideSections(cardData.data, pluralize.singular(type));
 			return (
 				<Fragment>
 					<Card
@@ -68,10 +44,9 @@ class Detail extends Component {
 	};
 
 	refetchData = (type) => {
-		const { id } = this.props.match.params;
-
+		const { type: rel, id } = this.props.match.params;
 		axios
-			.get(`http://localhost:5001/api/v1/${type}?_id=${id}`)
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}?${pluralize.singular(rel)}=${id}`)
 			.then(({ data }) => {
 				this.setState({
 					data,
@@ -83,27 +58,29 @@ class Detail extends Component {
 			});
 	};
 
-	decideHeaders = (type) => {
-		if (type === 'users') return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
-		else if (type === 'quizzes') return [ 'Question' ];
-		else if (type === 'questions') return [ 'User' ];
-		else if (type === 'folders') return [ 'Quiz', 'User' ];
-		else if (type === 'environments') return [ 'User' ];
+	decideHeaders = () => {
+		const { type } = this.props.match.params;
+		if (type === 'users') return [ 'quiz', 'question', 'folder', 'environment' ];
+		else if (type === 'quizzes') return [ 'question' ];
+		else if (type === 'questions') return [ 'user' ];
+		else if (type === 'folders') return [ 'quiz', 'user' ];
+		else if (type === 'environments') return [ 'user' ];
 	};
 
 	render() {
 		const { type } = this.props.match.params;
-		const headers = this.decideHeaders(type);
+		const headers = this.decideHeaders();
 		return (
 			<div className="detail page">
 				{this.getDetails()}
 				<Board
 					headers={headers}
 					page="detail"
-					type={type}
+					type={this.state.type}
 					data={this.state.data}
 					onHeaderClick={this.refetchData}
-					sectionDecider={this.decideSections}
+					sectionDecider={decideSections}
+					noData={`Click above tabs to view data about this ${pluralize.singular(type)}`}
 				/>
 			</div>
 		);

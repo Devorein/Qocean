@@ -4,7 +4,7 @@ import './Board.scss';
 
 class Board extends Component {
 	render() {
-		const { headers, page, onHeaderClick, data, sectionDecider, type } = this.props;
+		const { headers, page, onHeaderClick, data, sectionDecider, type, noData } = this.props;
 		return (
 			<div className={`board ${page}-board`}>
 				<div className={`board-header ${page}-board-header`}>
@@ -42,7 +42,7 @@ class Board extends Component {
 							);
 						})
 					) : (
-						<div className="no-data">No Data</div>
+						<div className="no-data">{noData ? noData : 'No Data'}</div>
 					)}
 				</div>
 			</div>
