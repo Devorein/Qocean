@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './CardSecondary.scss';
 
 function CardSecondary({ items, type, item }) {
 	return (
@@ -20,13 +19,13 @@ function CardSecondary({ items, type, item }) {
 					if (Array.isArray(item[key])) {
 						return (
 							<div
-								className={`card-secondary-item ${type}-card-secondary-item ${type}-card-secondary-${key}`}
+								className={`card-secondary-item card-secondary-item-row ${type}-card-secondary-item ${type}-card-secondary-${key}`}
 								key={`${item[key]}${index}`}
 							>
 								{item[key].map((value, index) => (
 									<span
 										key={`${type}-card-secondary-${key}-item-${index}`}
-										className={`${type}-card-secondary-${key}-item ${type}-card-secondary-${key}-item-${index}`}
+										className={`card-secondary-item-row-item card-secondary-item-row-item-${index} ${type}-card-secondary-${key}-item ${type}-card-secondary-${key}-item-${index}`}
 									>
 										{value}
 									</span>
@@ -36,7 +35,9 @@ function CardSecondary({ items, type, item }) {
 					} else
 						return (
 							<div
-								className={`card-secondary-item ${type}-card-secondary-item ${type}-card-secondary-${key}`}
+								className={`card-secondary-item ${option.highlight
+									? 'card-secondary-item-highlight'
+									: ''} ${type}-card-secondary-item ${type}-card-secondary-${key}`}
 								key={`${item[key]}${index}`}
 							>
 								{option.value ? option.value : item[key]}

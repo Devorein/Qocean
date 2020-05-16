@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import CardPrimary from './CardPrimary';
 import CardSecondary from './CardSecondary';
 import CardTertiary from './CardTertiary';

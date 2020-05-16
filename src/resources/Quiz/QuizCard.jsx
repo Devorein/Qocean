@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Card from '../../components/Card/Card';
 
-import './QuizCard.scss';
-
 class QuizCard extends Component {
 	render() {
 		let { item, page, index } = this.props;
@@ -12,7 +10,7 @@ class QuizCard extends Component {
 					primary={[ [ 'name', { link: `/quiz/${item._id}` } ] ]}
 					secondary={[
 						[ 'username', { link: `/user/${item.user._id}`, value: `by ${item.user.username}` } ],
-						[ 'subject' ],
+						[ 'subject', { highlight: true } ],
 						[ 'tags' ]
 					]}
 					tertiary={[

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './CardPrimary.scss';
 
 function CardPrimary({ items, type, item }) {
 	return (

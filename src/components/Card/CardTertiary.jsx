@@ -1,5 +1,4 @@
 import React from 'react';
-import './CardTertiary.scss';
 
 function CardTertiary({ items, type, item }) {
 	function capitalize(text) {
@@ -7,7 +6,7 @@ function CardTertiary({ items, type, item }) {
 	}
 	return (
 		<div className={`card-tertiary ${type}-card-tertiary`}>
-			{items.map(([ key ], index) => {
+			{items.map(([ key, option = {} ], index) => {
 				const text = capitalize(key);
 				return (
 					<div
@@ -15,7 +14,9 @@ function CardTertiary({ items, type, item }) {
 						key={`${text}${item[key]}${index}`}
 					>
 						<div className={`card-tertiary-item-key ${type}-card-tertiary-item-key`}>{text}</div>
-						<div className={`card-tertiary-item-value ${type}-card-tertiary-item-value`}>{item[key]}</div>
+						<div className={`card-tertiary-item-value ${type}-card-tertiary-item-value`}>
+							{option.value ? option.value : item[key]}
+						</div>
 					</div>
 				);
 			})}
