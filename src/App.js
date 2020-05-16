@@ -1,5 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
+import ReactDOM from 'react-dom';
+
 import Nav from './components/Nav/Nav';
+import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './components/Auth/SignIn.jsx';
 import SignUp from './components/Auth/SignUp.jsx';
 import Explore from './pages/Explore/Explore';
@@ -14,21 +17,61 @@ import './pages/Pages.scss';
 
 class App extends Component {
 	render() {
+		const { session, location } = this.props;
 		return (
-			<Router>
+			<Fragment>
 				<div className="App">
-					<Nav />
-					<Switch>
+					<Nav session={session} />
+					<Switch location={location}>
 						<Route path="/" exact component={Home} />
-						<Route path="/create" exact component={Create} />
-						<Route path="/self" exact component={Self} />
-						<Route path="/explore" exact component={Explore} />
-						<Route path={'/:type/:id'} exact component={Details} />
+						<Route
+							path="/explore"
+							exact
+							render={(e) => {
+								return <Explore user={session.getCurrentUser} />;
+							}}
+						/>
+						<Route
+							path="/details/:type/:id"
+							exact
+							render={(e) => {
+								return <Details user={session.getCurrentUser} />;
+							}}
+						/>
+						<Route
+							path="/create"
+							exact
+							render={() => {
+								return session.getCurrentUser ? <Create user={session} /> : <Redirect to="/" />;
+							}}
+						/>
+						<Route
+							path="/self"
+							exact
+							render={() => {
+								return session.getCurrentUser ? <Self user={session} /> : <Redirect to="/" />;
+							}}
+						/>
+						<Route path="/signin" exact component={SignIn} />
+						<Route path="/signup" exact component={SignUp} />
+						<Redirect to="/" />
 					</Switch>
 				</div>
-			</Router>
+			</Fragment>
 		);
 	}
 }
 
-export default App;
+const RoutedApp = withRouter(App);
+
+const Root = ({ session }) => {
+	return (
+		<Router>
+			<RoutedApp session={session} />
+		</Router>
+	);
+};
+
+const RootWithSession = WithSessions(Root);
+
+ReactDOM.render(<RootWithSession />, document.getElementById('root'));
