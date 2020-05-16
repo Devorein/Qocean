@@ -4,8 +4,7 @@ import Create from './pages/Create/Create';
 import Explore from './pages/Explore/Explore';
 import Self from './pages/Self/Self';
 import Home from './pages/Home/Home';
-import UserDetails from './resources/User/UserDetails';
-import QuizDetails from './resources/Quiz/QuizDetails';
+import Details from './components/Details/Detail';
 
 import './App.scss';
 import './pages/Pages.scss';
@@ -24,8 +23,7 @@ class App extends Component {
 						<Route path="/create" exact component={Create} />
 						<Route path="/self" exact component={Self} />
 						<Route path="/explore" exact component={Explore} />
-						<Route path="/user/:userId" exact component={UserDetails} />
-						<Route path="/quiz/:quizId" exact component={QuizDetails} />
+						<Route path={'/:type/:id'} exact component={Details} />
 					</Switch>
 				</div>
 			</Router>
