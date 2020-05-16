@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 import Card from '../../components/Card/Card';
 
 class UserCard extends Component {
@@ -15,7 +14,7 @@ class UserCard extends Component {
 						[ 'total_folders' ],
 						[ 'total_questions' ],
 						[ 'total_environments' ],
-						[ 'joined_at', { value: moment(item['joined_at']).format('dddd, MMMM Do YYYY, h:mm a') } ]
+						[ 'joined_at' ]
 					]}
 					type="quiz"
 					item={item}

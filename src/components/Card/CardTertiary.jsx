@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 
 function CardTertiary({ items, type, item }) {
 	function capitalize(text) {
@@ -8,6 +9,8 @@ function CardTertiary({ items, type, item }) {
 		<div className={`card-tertiary ${type}-card-tertiary`}>
 			{items.map(([ key, option = {} ], index) => {
 				const text = capitalize(key);
+				if (key === 'created_at' || key === 'joined_at')
+					option.value = moment(item[key]).format('dddd, MMMM Do YYYY, h:mm a');
 				return (
 					<div
 						className={`card-tertiary-item ${type}-card-tertiary-item ${type}-card-tertiary-${key}`}
