@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import Nav from './components/Nav/Nav';
-import Create from './pages/Create';
+import Create from './pages/Create/Create';
 import Explore from './pages/Explore/Explore';
-import Self from './pages/Self';
-import Home from './pages/Home';
+import Self from './pages/Self/Self';
+import Home from './pages/Home/Home';
 import UserDetails from './resources/User/UserDetails';
 import QuizDetails from './resources/Quiz/QuizDetails';
 

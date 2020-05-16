@@ -1,16 +1,56 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import CardPrimary from './CardPrimary';
 import CardSecondary from './CardSecondary';
 import CardTertiary from './CardTertiary';
 import './Card.scss';
 
-function Card({ primary, secondary, tertiary, item, type, index }) {
+function decideSections(item, type) {
+	let primary = [],
+		secondary = [],
+		tertiary = [];
+
+	if (type === 'quiz') {
+		primary = [ [ 'name', { link: `/quiz/${item._id}` } ] ];
+		secondary = [
+			[ 'username', { link: `/user/${item.user._id}`, value: `by ${item.user.username}` } ],
+			[ 'subject', { highlight: true } ],
+			[ 'tags' ]
+		];
+		tertiary = [
+			[ 'average_quiz_time', { value: item['average_quiz_time'] + 's' } ],
+			[ 'average_difficulty' ],
+			[ 'total_questions' ],
+			[ 'created_at' ],
+			[ 'source' ]
+		];
+	} else if (type === 'user') {
+		primary = [ [ 'name', { link: `/quiz/${item._id}` } ] ];
+		secondary = [ [ 'username', { link: `/user/${item._id}` } ], [ 'version', { highlight: true } ] ];
+		tertiary = [
+			[ 'total_quizzes' ],
+			[ 'total_folders' ],
+			[ 'total_questions' ],
+			[ 'total_environments' ],
+			[ 'joined_at' ]
+		];
+	}
+
+	return {
+		primary,
+		secondary,
+		tertiary
+	};
+}
+
+function Card({ item, type, index, page }) {
+	let { primary, secondary, tertiary } = decideSections(item, type);
+
 	return (
-		<Fragment>
+		<div className={`card quiz-card ${page}-card ${page}-quiz-card quiz-card-${index} ${page}-quiz-card-${index}`}>
 			<CardPrimary items={primary} type={type} item={item} index={index} />
 			<CardSecondary items={secondary} type={type} item={item} index={index} />
 			<CardTertiary items={tertiary} type={type} item={item} index={index} />
-		</Fragment>
+		</div>
 	);
 }
 

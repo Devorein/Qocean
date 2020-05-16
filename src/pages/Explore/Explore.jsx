@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-import QuizCard from '../../resources/Quiz/QuizCard';
-import UserCard from '../../resources/User/UserCard';
-import QuestionCard from '../../resources/Question/QuestionCard';
-import EnvironmentCard from '../../resources/Environment/EnvironmentCard';
-import FolderCard from '../../resources/Folder/FolderCard';
+import Card from '../../components/Card/Card';
 
 import axios from 'axios';
 import plur from 'plur';
@@ -27,25 +23,6 @@ class Explore extends Component {
 			.catch((err) => {
 				console.log(err);
 			});
-	};
-
-	decideCard = (item, index) => {
-		const { currentType } = this.state;
-		const page = 'explore';
-		switch (currentType) {
-			case 'quiz':
-				return <QuizCard key={item._id} item={item} index={index} page={page} />;
-			case 'user':
-				return <UserCard key={item._id} item={item} index={index} page={page} />;
-			case 'folder':
-				return <FolderCard key={item._id} item={item} index={index} page={page} />;
-			case 'question':
-				return <QuestionCard key={item._id} item={item} index={index} page={page} />;
-			case 'environment':
-				return <EnvironmentCard key={item._id} item={item} index={index} page={page} />;
-			default:
-				return <QuizCard item={item} index={index} page={page} />;
-		}
 	};
 
 	render() {
@@ -72,7 +49,9 @@ class Explore extends Component {
 				</div>
 				<div className="explore-results">
 					{data.data ? (
-						data.data.map((item, index) => this.decideCard(item, index))
+						data.data.map((item, index) => (
+							<Card item={item} type={currentType} index={index} page="explore" key={item._id} />
+						))
 					) : (
 						<div className="no-data">{`No ${plur(currentType)} found`}</div>
 					)}
