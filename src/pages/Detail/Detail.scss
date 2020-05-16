@@ -1,11 +1,13 @@
 @import "../../Utils/glovar.scss";
 
 .detail {
-  &-card {
+  &-card-top {
     height: 250px;
     display: grid;
     grid-template: 50px /250px 1fr 1fr;
-    &-image {
+  }
+  &-card {
+    .card-image {
       grid-area: 1/1/3/2;
     }
     .card-primary {
@@ -23,6 +25,9 @@
   &-board {
     height: calc(100% - 275px);
     &-data {
+      .card {
+        height: 250px;
+      }
     }
   }
 }

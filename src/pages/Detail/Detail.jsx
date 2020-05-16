@@ -37,6 +37,7 @@ class Detail extends Component {
 						item={cardData.data}
 						page="detail"
 						image={true}
+						extraClass={'detail-card-top'}
 					/>
 				</Fragment>
 			);

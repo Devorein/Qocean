@@ -36,7 +36,7 @@ class Board extends Component {
 									item={item}
 									type={type}
 									index={index}
-									page="explore"
+									page={page}
 									key={item._id}
 								/>
 							);

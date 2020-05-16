@@ -4,14 +4,14 @@ import CardSecondary from './CardSecondary';
 import CardTertiary from './CardTertiary';
 import './Card.scss';
 
-function Card({ primary, secondary, tertiary, item, type, index = 0, page, image = false }) {
+function Card({ primary, secondary, tertiary, item, type, index = 0, page, image = false, extraClass = '' }) {
 	return (
 		<div
-			className={`card ${type}-card ${page}-card ${page}-${type}-card ${type}-card-${index} ${page}-${type}-card-${index}`}
+			className={`card ${type}-card ${page}-card ${page}-${type}-card ${type}-card-${index} ${page}-${type}-card-${index} ${extraClass}`}
 		>
 			{image ? (
 				<img
-					className={`card-image ${type}-card-image ${page}-card-image ${page}-${type}-card-image`}
+					className={`card-image ${type}-card-image ${page}-card-image ${page}-${type}-card-image `}
 					src={
 						item.image ? (
 							item.image
