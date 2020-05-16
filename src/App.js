@@ -4,7 +4,7 @@ import Create from './pages/Create/Create';
 import Explore from './pages/Explore/Explore';
 import Self from './pages/Self/Self';
 import Home from './pages/Home/Home';
-import Details from './components/Details/Detail';
+import Details from './pages/Detail/Detail';
 
 import './App.scss';
 import './pages/Pages.scss';
