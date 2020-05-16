@@ -11,6 +11,7 @@ function CardPrimary({ items, type, item }) {
 							className={`card-primary-item ${type}-card-primary-item ${type}-card-primary-${key}`}
 							to={option.link}
 							key={option.link}
+							style={option.style}
 						>
 							{option.value ? option.value : item[key]}
 						</Link>
@@ -20,6 +21,7 @@ function CardPrimary({ items, type, item }) {
 						<div
 							className={`card-primary-item ${type}-card-primary-item ${type}-card-primary-${key}`}
 							key={`${item[key]}${index}`}
+							style={option.style}
 						>
 							{option.value ? option.value : item[key]}
 						</div>

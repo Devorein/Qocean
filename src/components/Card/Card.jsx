@@ -33,6 +33,18 @@ function decideSections(item, type) {
 			[ 'total_environments' ],
 			[ 'joined_at' ]
 		];
+	} else if (type === 'environment') {
+	} else if (type === 'folder') {
+	} else if (type === 'question') {
+		primary = [
+			[ 'question', { link: `/question/${item._id}`, style: { fontSize: '20px' }, value: `${item.question}?` } ]
+		];
+		secondary = [
+			[ 'user', { link: `/user/${item.user._id}`, value: `${item.user.username}` } ],
+			[ 'quiz', { link: `/quiz/${item.quiz._id}`, value: `${item.quiz.name}` } ],
+			[ 'type', { highlight: true } ]
+		];
+		tertiary = [ [ 'difficulty' ], [ 'time_allocated', { value: item['time_allocated'] + 's' } ], [ 'created_at' ] ];
 	}
 
 	return {
