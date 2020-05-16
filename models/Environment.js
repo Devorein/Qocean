@@ -19,7 +19,7 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: Boolean,
 		default: true
 	},
-	defaultTimeAllocated: {
+	default_quiz_time: {
 		type: Number,
 		default: 30
 	}

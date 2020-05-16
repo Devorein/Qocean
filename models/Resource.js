@@ -14,7 +14,7 @@ const ResourceSchema = new mongoose.Schema({
 		type: Boolean,
 		default: true
 	},
-	createdAt: {
+	created_at: {
 		type: Date,
 		default: Date.now
 	}

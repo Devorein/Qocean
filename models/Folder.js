@@ -14,11 +14,11 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		type: String,
 		default: 'default.svg'
 	},
-	quizzesCount: {
+	total_quizzes: {
 		type: Number,
 		default: 0
 	},
-	questionsCount: {
+	total_questions: {
 		type: Number,
 		default: 0
 	},
@@ -35,15 +35,15 @@ FolderSchema.methods.quiz = async function(op, quizId) {
 	if (op === 1) {
 		this.quizzes.push(quizId);
 		quiz.folders.push(this._id);
-		quiz.foldersCount++;
-		this.quizzesCount++;
-		this.questionsCount += quiz.questionsCount;
+		quiz.total_folders++;
+		this.total_quizzes++;
+		this.total_questions += quiz.total_questions;
 	} else if (op === 0) {
 		this.quizzes = this.quizzes.filter((_quizId) => quizId.toString() !== _quizId.toString());
 		quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== this._id.toString());
-		quiz.foldersCount--;
-		this.quizzesCount--;
-		this.questionsCount -= quiz.questionsCount;
+		quiz.total_folders--;
+		this.total_quizzes--;
+		this.total_questions -= quiz.total_questions;
 	}
 	await quiz.save();
 };

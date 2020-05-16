@@ -6,7 +6,7 @@ const asyncHandler = require('../middleware/async');
 // @route: GET /api/v1/environments/current
 // @access: Private
 exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
-	const environment = await Environment.findById(req.user.currentEnvironment);
+	const environment = await Environment.findById(req.user.current_environment);
 	res.status(201).json({ success: true, data: environment });
 });
 

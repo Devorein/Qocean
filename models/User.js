@@ -43,28 +43,27 @@ const UserSchema = new mongoose.Schema({
 	},
 	resetPasswordToken: String,
 	resetPasswordExpire: Date,
-	createdAt: {
+	joined_at: {
 		type: Date,
 		default: Date.now
 	},
-
-	foldersCount: {
+	total_folders: {
 		type: Number,
 		default: 0
 	},
-	questionsCount: {
+	total_questions: {
 		type: Number,
 		default: 0
 	},
-	quizzesCount: {
+	total_quizzes: {
 		type: Number,
 		default: 0
 	},
-	environmentsCount: {
+	total_environment: {
 		type: Number,
 		default: 0
 	},
-	currentEnvironment: {
+	current_environment: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Environment'
 	},
@@ -104,14 +103,14 @@ UserSchema.methods.getResetPasswordToken = function() {
 UserSchema.statics.add = async function(userId, field, id) {
 	const user = await this.findById(userId);
 	user[field].push(id);
-	user[`${field}Count`] = user[field].length;
+	user[`total_${field}`] = user[field].length;
 	await user.save();
 };
 
 UserSchema.statics.remove = async function(userId, field, id) {
 	const user = await this.findById(userId);
 	user[field] = user[field].filter((_id) => _id.toString() !== id.toString());
-	user[`${field}Count`] = user[field].length;
+	user[`total_${field}`] = user[field].length;
 	await user.save();
 };
 

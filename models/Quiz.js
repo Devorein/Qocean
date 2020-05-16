@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
 
@@ -29,11 +28,11 @@ const QuizSchema = extendSchema(
 			min: 1,
 			default: 1
 		},
-		averageTimeAllocated: {
+		average_quiz_time: {
 			type: Number,
 			default: 30
 		},
-		averageDifficulty: {
+		average_difficulty: {
 			type: String,
 			default: 'Beginner',
 			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
@@ -59,11 +58,11 @@ const QuizSchema = extendSchema(
 			type: String,
 			default: null
 		},
-		questionsCount: {
+		total_questions: {
 			type: Number,
 			default: 0
 		},
-		foldersCount: {
+		total_folders: {
 			type: Number,
 			default: 0
 		},
@@ -89,14 +88,14 @@ const QuizSchema = extendSchema(
 QuizSchema.statics.add = async function(quizId, field, id) {
 	const quiz = await this.findById(quizId);
 	quiz[field].push(id);
-	quiz[`${field}Count`] = quiz[field].length;
+	quiz[`total_${field}`] = quiz[field].length;
 	await quiz.save();
 };
 
 QuizSchema.statics.remove = async function(quizId, field, id) {
 	const quiz = await this.findById(quizId);
 	quiz[field] = quiz[field].filter((_id) => _id.toString() !== id.toString());
-	quiz[`${field}Count`] = quiz[field].length;
+	quiz[`total_${field}`] = quiz[field].length;
 	await quiz.save();
 };
 
@@ -113,7 +112,7 @@ QuizSchema.pre('remove', async function(next) {
 	for (let i = 0; i < folders.length; i++) {
 		const folder = folders[i];
 		folder.quizzes = folder.quizzes.filter((quizId) => quizId.toString() !== this._id.toString());
-		folder.quizzesCount--;
+		folder.total_quizzes--;
 		await folder.save();
 	}
 	next();

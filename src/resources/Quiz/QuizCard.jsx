@@ -34,7 +34,7 @@ class QuizCard extends Component {
 					items={[
 						[ 'Average Quiz Time', 'averageTimeAllocated' ],
 						[ 'Average Quiz Difficulty', 'averageDifficulty' ],
-						[ 'Total Questions', 'questionsCount' ],
+						[ 'Total Questions', 'total_questions' ],
 						[ 'Created At', 'createdAt' ],
 						[ 'Source', 'source' ]
 					]}

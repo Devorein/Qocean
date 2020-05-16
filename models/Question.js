@@ -24,11 +24,11 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		ref: 'Quiz',
 		required: [ true, 'Please provide the quiz id' ]
 	},
-	addToScore: {
+	add_to_score: {
 		type: Boolean,
 		default: true
 	},
-	timeAllocated: {
+	time_allocated: {
 		type: Number,
 		default: 30,
 		min: 15,
@@ -61,13 +61,13 @@ QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
 		{
 			$group: {
 				_id: '$quiz',
-				averageTimeAllocated: { $avg: '$timeAllocated' }
+				averageTimeAllocated: { $avg: '$time_allocated' }
 			}
 		}
 	]);
 	try {
 		await this.model('Quiz').findByIdAndUpdate(quizId, {
-			averageTimeAllocated: obj[0].averageTimeAllocated
+			average_quiz_time: obj[0].averageTimeAllocated
 		});
 	} catch (err) {
 		console.log(err);
@@ -100,9 +100,9 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 		}
 	]);
 	try {
-		const parsed = parseFloat(obj[0].averageDifficulty);
+		const parsed = parseFloat(obj[0].average_difficulty);
 		await this.model('Quiz').findByIdAndUpdate(quizId, {
-			averageDifficulty: parsed <= 3.34 ? 'Beginner' : parsed <= 6.67 ? 'Intermediate' : 'Advanced'
+			average_difficulty: parsed <= 3.34 ? 'Beginner' : parsed <= 6.67 ? 'Intermediate' : 'Advanced'
 		});
 	} catch (err) {
 		console.log(err);
@@ -115,7 +115,7 @@ QuestionSchema.post('save', async function() {
 	const folders = await this.model('Folder').find({ quizzes: this.quiz });
 	for (let i = 0; i < folders.length; i++) {
 		const folder = folders[i];
-		folder.questionsCount++;
+		folder.total_questions++;
 		await folder.save();
 	}
 	this.constructor.getAverageTimeAllocated(this.quiz);
@@ -129,7 +129,7 @@ QuestionSchema.pre('remove', async function() {
 	const folders = await this.model('Folder').find({ quizzes: question.quiz });
 	for (let i = 0; i < folders.length; i++) {
 		const folder = folders[i];
-		folder.questionsCount--;
+		folder.total_questions--;
 		await folder.save();
 	}
 	this.constructor.getAverageTimeAllocated(question.quiz);

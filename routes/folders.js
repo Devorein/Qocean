@@ -15,7 +15,7 @@ router
 			Folder,
 			{
 				path: 'quizzes',
-				select: 'name questionCount'
+				select: 'name total_questions'
 			},
 			{
 				exclude: [ 'favourite', 'public' ],

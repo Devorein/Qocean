@@ -25,7 +25,7 @@ router
 				}
 			],
 			{
-				exclude: [ 'favourite', 'public', '__v', 'folders', 'foldersCount' ],
+				exclude: [ 'favourite', 'public', '__v', 'folders', 'total_folders' ],
 				match: { public: true }
 			}
 		)

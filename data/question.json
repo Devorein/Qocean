@@ -12,7 +12,7 @@
       "Dennis Ritchie",
       "Bjarne Struostroup"
     ],
-    "addToScore": false,
+    "add_to_score": false,
     "user": "5ebb74772c952d08c0644887",
     "_id": "5ebb88c48d8ddf3f4c485505"
   },
@@ -30,7 +30,7 @@
       "Kyle Simpson",
       "Chris Ferdenandi"
     ],
-    "timeAllocated": 60,
+    "time_allocated": 60,
     "user": "5ebb74772c952d08c0644885",
     "_id": "5ebb88c48d8ddf3f4c485506"
   },
@@ -98,7 +98,7 @@
         "Git is a distributed version-control system for tracking changes in source code during software development."
       ]
     ],
-    "addToScore": false,
+    "add_to_score": false,
     "user": "5ebb74772c952d08c0644886",
     "_id": "5ebb88c48d8ddf3f4c485511"
   },
@@ -111,7 +111,7 @@
         "ESLint is a static code analysis tool for identifying problematic patterns found in JavaScript code"
       ]
     ],
-    "addToScore": true,
+    "add_to_score": true,
     "user": "5ebb74772c952d08c0644884",
     "_id": "5ebb88c48d8ddf3f4c485512"
   },
@@ -128,7 +128,7 @@
         "version control"
       ]
     ],
-    "timeAllocated": 75,
+    "time_allocated": 75,
     "user": "5ebb74772c952d08c0644885",
     "_id": "5ebb88c48d8ddf3f4c485513"
   },
@@ -148,7 +148,7 @@
         "javascript"
       ]
     ],
-    "timeAllocated": 75,
+    "time_allocated": 75,
     "user": "5ebb74772c952d08c0644887",
     "_id": "5ebb88c48d8ddf3f4c485514"
   },

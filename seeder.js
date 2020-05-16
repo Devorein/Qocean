@@ -55,9 +55,9 @@ const deleteData = async (exit = true) => {
 		await User.deleteMany();
 		await Environment.deleteMany();
 		await Folder.deleteMany();
-		console.log(`quizzes destroyed ...`.red.inverse);
-		console.log(`Questions destroyed ...`.red.inverse);
 		console.log(`User destroyed ...`.red.inverse);
+		console.log(`Quizzes destroyed ...`.red.inverse);
+		console.log(`Questions destroyed ...`.red.inverse);
 		console.log(`Environments destroyed ...`.red.inverse);
 		console.log(`Folders destroyed ...`.red.inverse);
 		if (exit) process.exit();

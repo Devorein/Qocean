@@ -18,25 +18,7 @@ class Card extends Component {
 				);
 		});
 	};
-	decideElements = (type, item) => {
-		const dom = {
-			image: '',
-			primary: '',
-			secondary: [],
-			tertiary: {
-				left: [],
-				right: []
-			}
-		};
-
-		if (type === 'quiz') {
-			dom.primary = 'name';
-			dom.secondary = [ 'user', 'subject', 'tags' ];
-			dom.tertiary = [ 'averageDifficulty', 'averageTimeAllocated', 'rating', 'source', 'questionCount' ];
-		}
-
-		return dom;
-	};
+	decideElements = (type, item) => {};
 
 	renderElement = (dom, item) => {
 		function renderSecondaries(secondaries) {
