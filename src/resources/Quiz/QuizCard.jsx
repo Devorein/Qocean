@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import CardPrimary from '../../components/Card/CardPrimary';
 import CardSecondary from '../../components/Card/CardSecondary';
 import CardTertiary from '../../components/Card/CardTertiary';
 import './QuizCard.scss';
@@ -9,12 +10,7 @@ class QuizCard extends Component {
 		let { item, page, index } = this.props;
 		return (
 			<div className={`card quiz-card ${page}-card ${page}-quiz-card quiz-card-${index} ${page}-quiz-card-${index}`}>
-				<div className="card-primary quiz-card-primary">
-					<Link className="card-primary-item quiz-card-primary-item quiz-card-primary-name" to={`/quiz/${item._id}`}>
-						{item.name}
-					</Link>
-				</div>
-
+				<CardPrimary items={[ [ 'name', { link: `/quiz/${item._id}` } ] ]} type="quiz" item={item} />
 				<CardSecondary
 					items={[
 						[ 'username', { link: `/user/${item.user._id}`, value: `by ${item.user.username}` } ],
