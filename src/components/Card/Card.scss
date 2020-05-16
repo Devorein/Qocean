@@ -7,6 +7,12 @@
 }
 
 .card {
+  background-color: $dark-bg-1;
+  margin: 5px;
+  padding: 5px;
+  overflow: auto;
+  font-family: "Quantico";
+  color: $dark-text-1;
   &-primary {
     &-item {
       font-weight: bolder;
