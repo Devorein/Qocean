@@ -5,6 +5,7 @@
   flex-direction: column;
   position: relative;
   .card {
-    height: 250px;
+    height: 50%;
+    min-height: 250px;
   }
 }

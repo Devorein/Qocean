@@ -13,6 +13,13 @@
   overflow: auto;
   font-family: "Quantico";
   color: $dark-text-1;
+  &-image {
+    background-color: $dark-bg-d5;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   &-primary {
     &-item {
       font-weight: bolder;
