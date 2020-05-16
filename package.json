@@ -5,8 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "react-scripts start",
+    "server": "nodemon server.js",
+    "client": "react-scripts start",
+    "dev": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -15,12 +16,15 @@
   "author": "Devon Reid <devorein00@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.9",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^10.0.4",
     "@testing-library/user-event": "^10.2.3",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
+    "concurrently": "^5.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -35,6 +39,7 @@
     "pluralize": "^8.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-modal": "^3.11.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "slugify": "^1.4.0"

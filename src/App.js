@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import Nav from './components/Nav/Nav';
-import Create from './pages/Create/Create';
+import SignIn from './components/Auth/SignIn.jsx';
+import SignUp from './components/Auth/SignUp.jsx';
 import Explore from './pages/Explore/Explore';
+import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
 import Home from './pages/Home/Home';
 import Details from './pages/Detail/Detail';
+import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import './App.scss';
 import './pages/Pages.scss';
-import './components/Card/Card';
-
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 class App extends Component {
 	render() {
