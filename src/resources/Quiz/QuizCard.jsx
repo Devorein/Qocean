@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import CardSecondary from '../../components/Card/CardSecondary';
 import CardTertiary from '../../components/Card/CardTertiary';
 import './QuizCard.scss';
 
@@ -14,22 +15,15 @@ class QuizCard extends Component {
 					</Link>
 				</div>
 
-				<div className="card-secondary quiz-card-secondary">
-					<Link
-						className="card-secondary quiz-card-secondary-item quiz-card-secondary-user"
-						to={`/user/${item.user._id}`}
-					>
-						by {item.user.username}
-					</Link>
-					<div className="card-secondary-item quiz-card-secondary-item quiz-card-secondary-subject">{item.subject}</div>
-					<div className="card-secondary-item quiz-card-secondary-item quiz-card-secondary-tags">
-						{item.tags.map((tag, index) => (
-							<span key={tag} className={`quiz-card-secondary-tags-item`}>
-								{tag}
-							</span>
-						))}
-					</div>
-				</div>
+				<CardSecondary
+					items={[
+						[ 'username', { link: `/user/${item.user._id}`, value: `by ${item.user.username}` } ],
+						[ 'subject' ],
+						[ 'tags' ]
+					]}
+					type="quiz"
+					item={item}
+				/>
 				<CardTertiary
 					items={[
 						[ 'average_quiz_time' ],
