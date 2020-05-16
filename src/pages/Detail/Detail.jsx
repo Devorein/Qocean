@@ -62,7 +62,7 @@ class Detail extends Component {
 	decideHeaders = () => {
 		const { type } = this.props.match.params;
 		if (type === 'users') return [ 'quiz', 'question', 'folder', 'environment' ];
-		else if (type === 'quizzes') return [ 'question' ];
+		else if (type === 'quizzes') return [ 'question', 'user' ];
 		else if (type === 'questions') return [ 'user' ];
 		else if (type === 'folders') return [ 'quiz', 'user' ];
 		else if (type === 'environments') return [ 'user' ];

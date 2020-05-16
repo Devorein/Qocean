@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-class QuestionCard extends Component {
+class Form extends Component {
 	render() {
 		return <div>{}</div>;
 	}
 }
 
-export default QuestionCard;
+export default Form;

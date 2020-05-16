@@ -1,29 +1,14 @@
 import React, { Component } from 'react';
 import Card from '../Card/Card';
 import './Board.scss';
+import MultiHeader from '../../components/MultiHeader/MultiHeader';
 
 class Board extends Component {
 	render() {
 		const { headers, page, onHeaderClick, data, sectionDecider, type, noData } = this.props;
 		return (
 			<div className={`board ${page}-board`}>
-				<div className={`board-header ${page}-board-header`}>
-					{headers.map((header, index) => {
-						return (
-							<span
-								className={`board-header-item ${page}-board-header-item ${page}-board-header-${header} ${type === header
-									? 'selected-item'
-									: ''}`}
-								key={`${header}${index}`}
-								onClick={(e) => {
-									onHeaderClick(header);
-								}}
-							>
-								{header.charAt(0).toUpperCase() + header.slice(1)}
-							</span>
-						);
-					})}
-				</div>
+				<MultiHeader headers={headers} page={page} onHeaderClick={onHeaderClick} comp="board" type={type} />
 				<div className={`board-data ${page}-board-data`}>
 					{data.data ? (
 						data.data.map((item, index) => {

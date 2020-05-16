@@ -1,0 +1,29 @@
+@import "../../Utils/glovar.scss";
+
+.header {
+  display: flex;
+  justify-content: space-between;
+
+  &-item {
+    background-color: $dark-bg-l5;
+    font-family: "Quantico";
+    color: $dark-text-1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin: 5px;
+    height: 50px;
+    flex-grow: 1;
+    cursor: pointer;
+    transition: background-color 250ms ease-in-out;
+
+    &:hover {
+      background-color: $dark-bg-l10;
+      transition: background-color 250ms ease-in-out;
+    }
+    &.selected-item {
+      background-color: $dark-bg-d5;
+    }
+  }
+}
