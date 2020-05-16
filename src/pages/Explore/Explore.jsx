@@ -32,7 +32,7 @@ function decideSections(item, type) {
 			[ 'average_difficulty' ],
 			[ 'total_questions' ],
 			[ 'created_at' ],
-			[ 'source' ]
+			[ 'source', { anchor: true } ]
 		];
 	} else if (type === 'question') {
 		primary = [

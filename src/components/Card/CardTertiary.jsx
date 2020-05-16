@@ -8,6 +8,12 @@ function CardTertiary({ items, type, item }) {
 	function decideValue(option, value) {
 		if (option.value) return option.value;
 		else if (typeof value === 'boolean') return value ? 'On' : 'Off';
+		else if (option.anchor)
+			return (
+				<a target="_blank" rel="noopener noreferrer" href={value}>
+					{value}
+				</a>
+			);
 		else return value;
 	}
 	return (
