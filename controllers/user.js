@@ -3,32 +3,6 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendTokenResponse = require('../utils/sendTokenResponse');
 
-// @desc     Get single user details
-// @route    GET /api/v1/users/:id
-// @access   Public
-exports.getUserById = asyncHandler(async function(req, res, next) {
-	const user = await User.findById(req.params.id).populate([
-		{
-			path: 'quizzes',
-			select: 'name total_questions'
-		},
-		{
-			path: 'questions',
-			select: 'question type'
-		},
-		{
-			path: 'folders',
-			select: 'name total_quizzes total_questions'
-		},
-		{
-			path: 'environments',
-			select: 'name total_quizzes total_questions'
-		}
-	]);
-	if (!user) return next(new ErrorResponse(`User not found with id ${req.params.id}`, 404));
-	else return res.status(200).json({ success: true, data: user });
-});
-
 // @desc     Update current user details
 // @route    PUT /api/v1/users/updateDetails
 // @access   Private

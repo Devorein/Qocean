@@ -3,10 +3,18 @@ const ErrorResponse = require('../utils/errorResponse');
 const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
 		if (req.query._id) {
-			let query = model.findOne({ _id: req.query._id, ...option.match });
-			// .select(option.exclude.map((field) => `-${field}`).join(' '));
-			if (Array.isArray(option.populate)) option.populate.forEach((pop) => (query = query.populate(pop)));
-			else query = query.populate(option.populate);
+			option._id = { ...option._id };
+			option._id.exclude = option._id.exclude || [];
+			option._id.populate = option._id.populate || null;
+			let query = model
+				.findOne({ _id: req.query._id, ...option.match })
+				.select(option._id.exclude.map((field) => `-${field}`).join(' '));
+
+			if (option._id.populate) {
+				if (Array.isArray(option._id.populate)) option._id.populate.forEach((pop) => (query = query.populate(pop)));
+				else query = query.populate(option._id.populate);
+			}
+
 			const result = await query;
 			if (!result) return next(new ErrorResponse(`Resource not found with id of ${req.query._id}`, 404));
 			res.status(200).json({ success: true, data: result });
