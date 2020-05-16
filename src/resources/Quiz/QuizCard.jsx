@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import CardPrimary from '../../components/Card/CardPrimary';
+import Card from '../../components/Card/Card';
 import CardSecondary from '../../components/Card/CardSecondary';
 import CardTertiary from '../../components/Card/CardTertiary';
 import './QuizCard.scss';
@@ -10,18 +10,14 @@ class QuizCard extends Component {
 		let { item, page, index } = this.props;
 		return (
 			<div className={`card quiz-card ${page}-card ${page}-quiz-card quiz-card-${index} ${page}-quiz-card-${index}`}>
-				<CardPrimary items={[ [ 'name', { link: `/quiz/${item._id}` } ] ]} type="quiz" item={item} />
-				<CardSecondary
-					items={[
+				<Card
+					primary={[ [ 'name', { link: `/quiz/${item._id}` } ] ]}
+					secondary={[
 						[ 'username', { link: `/user/${item.user._id}`, value: `by ${item.user.username}` } ],
 						[ 'subject' ],
 						[ 'tags' ]
 					]}
-					type="quiz"
-					item={item}
-				/>
-				<CardTertiary
-					items={[
+					tertiary={[
 						[ 'average_quiz_time' ],
 						[ 'average_difficulty' ],
 						[ 'total_questions' ],
