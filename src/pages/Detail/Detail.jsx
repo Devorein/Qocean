@@ -85,10 +85,10 @@ class Detail extends Component {
 
 	decideHeaders = (type) => {
 		if (type === 'users') return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
-		else if (type === 'quizzes') return [ 'Quiz' ];
-		else if (type === 'questions') return [];
-		else if (type === 'folders') return [];
-		else if (type === 'environments') return [];
+		else if (type === 'quizzes') return [ 'Question' ];
+		else if (type === 'questions') return [ 'User' ];
+		else if (type === 'folders') return [ 'Quiz', 'User' ];
+		else if (type === 'environments') return [ 'User' ];
 	};
 
 	render() {
@@ -97,13 +97,14 @@ class Detail extends Component {
 		return (
 			<div className="detail page">
 				{this.getDetails()}
-				{/* <Board
-					header={headers}
+				<Board
+					headers={headers}
 					page="detail"
 					type={type}
+					data={this.state.data}
 					onHeaderClick={this.refetchData}
 					sectionDecider={this.decideSections}
-				/> */}
+				/>
 			</div>
 		);
 	}

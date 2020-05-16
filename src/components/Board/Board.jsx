@@ -5,7 +5,6 @@ import './Board.scss';
 class Board extends Component {
 	render() {
 		const { headers, page, onHeaderClick, data, sectionDecider, type } = this.props;
-
 		return (
 			<div className={`board ${page}-board`}>
 				<div className={`board-header ${page}-board-header`}>

@@ -40,6 +40,7 @@
     padding: 10px;
     overflow: scroll;
     flex-grow: 1;
+    position: relative;
 
     &-item {
       background-color: $dark-bg-l5;
