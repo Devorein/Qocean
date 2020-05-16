@@ -3,3 +3,4 @@ config/config.env
 Qocean.code-workspace
 feature.md
 public
+debug.log

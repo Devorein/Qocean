@@ -22,11 +22,11 @@ class UserCard extends Component {
 				</div>
 				<CardTertiary
 					items={[
-						[ 'Total Quizzes', 'total_quizzes' ],
-						[ 'Total Folders', 'total_folders' ],
-						[ 'Total Questions', 'total_questions' ],
-						[ 'Total Environments', 'total_environments' ],
-						[ 'Joined At', 'createdAt' ]
+						[ 'total_quizzes' ],
+						[ 'total_folders' ],
+						[ 'total_questions' ],
+						[ 'total_environments' ],
+						[ 'joined_at' ]
 					]}
 					type="user"
 					item={item}

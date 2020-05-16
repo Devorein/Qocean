@@ -37,7 +37,7 @@ const QuizSchema = extendSchema(
 			default: 'Beginner',
 			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
 		},
-		createdAt: {
+		created_at: {
 			type: Date,
 			default: Date.now
 		},

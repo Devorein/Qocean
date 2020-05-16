@@ -32,11 +32,11 @@ class QuizCard extends Component {
 				</div>
 				<CardTertiary
 					items={[
-						[ 'Average Quiz Time', 'averageTimeAllocated' ],
-						[ 'Average Quiz Difficulty', 'averageDifficulty' ],
-						[ 'Total Questions', 'total_questions' ],
-						[ 'Created At', 'createdAt' ],
-						[ 'Source', 'source' ]
+						[ 'average_quiz_time' ],
+						[ 'average_difficulty' ],
+						[ 'total_questions' ],
+						[ 'created_at' ],
+						[ 'source' ]
 					]}
 					type="quiz"
 					item={item}

@@ -59,7 +59,7 @@ const UserSchema = new mongoose.Schema({
 		type: Number,
 		default: 0
 	},
-	total_environment: {
+	total_environments: {
 		type: Number,
 		default: 0
 	},

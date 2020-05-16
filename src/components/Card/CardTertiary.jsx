@@ -2,9 +2,13 @@ import React from 'react';
 import './CardTertiary.scss';
 
 function CardTertiary({ items, type, item }) {
+	function capitalize(text) {
+		return text.split('_').map((word) => word.charAt(0).toUpperCase() + word.slice(1) + ' ');
+	}
 	return (
 		<div className={`card-tertiary ${type}-card-tertiary`}>
-			{items.map(([ text, key ], index) => {
+			{items.map(([ key ], index) => {
+				const text = capitalize(key);
 				return (
 					<div
 						className={`card-tertiary-item ${type}-card-tertiary-item ${type}-card-tertiary-${key}`}

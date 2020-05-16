@@ -38,7 +38,7 @@ const advancedResults = (model, populate, option = {}) =>
 			if (req.query.sort) {
 				const sortBy = req.query.sort.split(',').join(' ');
 				query = query.sort(sortBy);
-			} else query = query.sort('-createdAt');
+			} else query = query.sort('-created_at');
 
 			// Pagination
 			const page = parseInt(req.query.page) || 1;
