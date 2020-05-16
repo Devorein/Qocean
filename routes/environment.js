@@ -16,10 +16,14 @@ router.route('/current').get(protect, getCurrentEnvironment);
 router
 	.route('/')
 	.get(
-		advancedResults(Environment, null, {
-			exclude: [ 'favourite', 'public' ],
-			match: { public: true }
-		})
+		advancedResults(
+			Environment,
+			{ path: 'user', select: 'username' },
+			{
+				exclude: [ 'favourite', 'public' ],
+				match: { public: true }
+			}
+		)
 	)
 	.post(protect, createEnvironment);
 

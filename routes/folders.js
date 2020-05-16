@@ -6,17 +6,23 @@ const { protect } = require('../middleware/auth');
 
 const { createFolder, updateFolder, deleteFolder, quizToFolder } = require('../controllers/folder');
 
-router.route('/me').get(protect, advancedResults(Folder, 'quizzes'));
+router.route('/me').get(protect, advancedResults(Folder, [ { path: 'user', select: 'username' } ]));
 
 router
 	.route('/')
 	.get(
 		advancedResults(
 			Folder,
-			{
-				path: 'quizzes',
-				select: 'name total_questions'
-			},
+			[
+				{
+					path: 'quizzes',
+					select: 'name total_questions'
+				},
+				{
+					path: 'user',
+					select: 'username'
+				}
+			],
 			{
 				exclude: [ 'favourite', 'public' ],
 				match: { public: true }

@@ -9,7 +9,17 @@ function decideSections(item, type) {
 		secondary = [],
 		tertiary = [];
 
-	if (type === 'quiz') {
+	if (type === 'user') {
+		primary = [ [ 'name', { link: `/quiz/${item._id}` } ] ];
+		secondary = [ [ 'username', { link: `/user/${item._id}` } ], [ 'version', { highlight: true } ] ];
+		tertiary = [
+			[ 'total_quizzes' ],
+			[ 'total_folders' ],
+			[ 'total_questions' ],
+			[ 'total_environments' ],
+			[ 'joined_at' ]
+		];
+	} else if (type === 'quiz') {
 		primary = [ [ 'name', { link: `/quiz/${item._id}` } ] ];
 		secondary = [
 			[ 'username', { link: `/user/${item.user._id}`, value: `by ${item.user.username}` } ],
@@ -23,18 +33,6 @@ function decideSections(item, type) {
 			[ 'created_at' ],
 			[ 'source' ]
 		];
-	} else if (type === 'user') {
-		primary = [ [ 'name', { link: `/quiz/${item._id}` } ] ];
-		secondary = [ [ 'username', { link: `/user/${item._id}` } ], [ 'version', { highlight: true } ] ];
-		tertiary = [
-			[ 'total_quizzes' ],
-			[ 'total_folders' ],
-			[ 'total_questions' ],
-			[ 'total_environments' ],
-			[ 'joined_at' ]
-		];
-	} else if (type === 'environment') {
-	} else if (type === 'folder') {
 	} else if (type === 'question') {
 		primary = [
 			[ 'question', { link: `/question/${item._id}`, style: { fontSize: '20px' }, value: `${item.question}?` } ]
@@ -45,6 +43,14 @@ function decideSections(item, type) {
 			[ 'type', { highlight: true } ]
 		];
 		tertiary = [ [ 'difficulty' ], [ 'time_allocated', { value: item['time_allocated'] + 's' } ], [ 'created_at' ] ];
+	} else if (type === 'folder') {
+		primary = [ [ 'name', { link: `/folder/${item._id}`, style: { fontSize: '20px' } } ] ];
+		secondary = [ [ 'user', { link: `/user/${item.user._id}`, value: `${item.user.username}` } ] ];
+		tertiary = [ [ 'total_quizzes' ], [ 'total_questions' ], [ 'created_at' ] ];
+	} else if (type === 'environment') {
+		primary = [ [ 'name', { link: `/environment/${item._id}`, style: { fontSize: '20px' } } ] ];
+		secondary = [ [ 'user', { link: `/user/${item.user._id}`, value: `${item.user.username}` } ] ];
+		tertiary = [ [ 'theme' ], [ 'animation' ], [ 'sound' ], [ 'default_quiz_time' ], [ 'created_at' ] ];
 	}
 
 	return {

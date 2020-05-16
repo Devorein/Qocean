@@ -5,6 +5,11 @@ function CardTertiary({ items, type, item }) {
 	function capitalize(text) {
 		return text.split('_').map((word) => word.charAt(0).toUpperCase() + word.slice(1) + ' ');
 	}
+	function decideValue(option, value) {
+		if (option.value) return option.value;
+		else if (typeof value === 'boolean') return value ? 'On' : 'Off';
+		else return value;
+	}
 	return (
 		<div className={`card-tertiary ${type}-card-tertiary`}>
 			{items.map(([ key, option = {} ], index) => {
@@ -18,7 +23,7 @@ function CardTertiary({ items, type, item }) {
 					>
 						<div className={`card-tertiary-item-key ${type}-card-tertiary-item-key`}>{text}</div>
 						<div className={`card-tertiary-item-value ${type}-card-tertiary-item-value`}>
-							{option.value ? option.value : item[key]}
+							{decideValue(option, item[key])}
 						</div>
 					</div>
 				);
