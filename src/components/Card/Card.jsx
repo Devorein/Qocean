@@ -4,12 +4,12 @@ import CardSecondary from './CardSecondary';
 import CardTertiary from './CardTertiary';
 import './Card.scss';
 
-function Card({ primary, secondary, tertiary, item, type }) {
+function Card({ primary, secondary, tertiary, item, type, index }) {
 	return (
 		<Fragment>
-			<CardPrimary items={primary} type={type} item={item} />
-			<CardSecondary items={secondary} type={type} item={item} />
-			<CardTertiary items={tertiary} type={type} item={item} />
+			<CardPrimary items={primary} type={type} item={item} index={index} />
+			<CardSecondary items={secondary} type={type} item={item} index={index} />
+			<CardTertiary items={tertiary} type={type} item={item} index={index} />
 		</Fragment>
 	);
 }

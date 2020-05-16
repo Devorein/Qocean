@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import Card from '../../components/Card/Card';
-import CardSecondary from '../../components/Card/CardSecondary';
-import CardTertiary from '../../components/Card/CardTertiary';
+
 import './QuizCard.scss';
 
 class QuizCard extends Component {
@@ -26,6 +24,7 @@ class QuizCard extends Component {
 					]}
 					type="quiz"
 					item={item}
+					index={index}
 				/>
 			</div>
 		);

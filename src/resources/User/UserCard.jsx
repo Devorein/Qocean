@@ -1,35 +1,25 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import CardTertiary from '../../components/Card/CardTertiary';
+import Card from '../../components/Card/Card';
 
 class UserCard extends Component {
 	render() {
 		let { item, page, index } = this.props;
 
 		return (
-			<div className={`card user-card ${page}-card ${page}-user-card user-card-${index} ${page}-user-card-${index}`}>
-				<div className="card-primary user-card-primary">
-					<div className="card-primary-item user-card-primary-item user-card-primary-name">{item.name}</div>
-				</div>
-				<div className="card-secondary user-card-secondary">
-					<Link
-						className="card-secondary-item user-card-secondary-item user-card-secondary-username"
-						to={`/user/${item._id}`}
-					>
-						{item.username}
-					</Link>
-					<div className="card-secondary-item user-card-secondary-item user-card-secondary-version">{item.version}</div>
-				</div>
-				<CardTertiary
-					items={[
+			<div className={`card quiz-card ${page}-card ${page}-quiz-card quiz-card-${index} ${page}-quiz-card-${index}`}>
+				<Card
+					primary={[ [ 'name', { link: `/quiz/${item._id}` } ] ]}
+					secondary={[ [ 'username', { link: `/user/${item._id}` } ], [ 'version' ] ]}
+					tertiary={[
 						[ 'total_quizzes' ],
 						[ 'total_folders' ],
 						[ 'total_questions' ],
 						[ 'total_environments' ],
 						[ 'joined_at' ]
 					]}
-					type="user"
+					type="quiz"
 					item={item}
+					index={index}
 				/>
 			</div>
 		);
