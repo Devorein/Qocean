@@ -4,7 +4,7 @@
   display: flex;
   margin-top: 25px;
 }
-.error-message {
+.response-box {
   flex-grow: 1;
   background-color: $dark-bg-d5;
   margin-left: 10px;
@@ -13,4 +13,7 @@
   align-items: center;
   color: $dark-text-l5;
   font-weight: bolder;
+  &--error {
+    color: #f44336d6;
+  }
 }

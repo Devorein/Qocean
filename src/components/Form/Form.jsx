@@ -91,7 +91,7 @@ const Form = (props) => {
 				>
 					{submitMsg ? submitMsg : 'Submit'}
 				</Button>
-				<div className="error-message">{errMsg ? errMsg : 'None'}</div>
+				<div className={`response-box ${errMsg ? 'response-box--error' : ''}`}>{errMsg ? errMsg : 'None'}</div>
 			</div>
 		</form>
 	);
