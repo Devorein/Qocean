@@ -30,7 +30,9 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.7-alpha.3",
+    "express-mongo-sanitize": "^2.0.0",
     "formik": "^2.1.4",
+    "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.25.3",
     "mongoose": "^5.9.13",
@@ -44,6 +46,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "slugify": "^1.4.0",
+    "xss-clean": "^0.1.1",
     "yup": "^0.28.5"
   },
   "devDependencies": {
