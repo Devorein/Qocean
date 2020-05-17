@@ -1,6 +1,6 @@
 @import "../../Utils/glovar.scss";
 
-.nav-links {
+.navbar-links {
   width: 100vw;
   height: fit-content;
   background-color: $dark-bg-1;
@@ -14,7 +14,7 @@
     margin: 5px;
   }
 
-  .nav-link {
+  .navbar-link {
     list-style-type: none;
     cursor: pointer;
     color: $dark-text-1;
@@ -33,7 +33,7 @@
       transition: background-color 250ms ease-in-out;
     }
   }
-  .current-link {
+  .active {
     background-color: #5a5a5a;
   }
 }
