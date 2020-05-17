@@ -13,6 +13,7 @@ import Details from './pages/Detail/Detail';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import './App.scss';
+import './index.css';
 import './pages/Pages.scss';
 
 class App extends Component {

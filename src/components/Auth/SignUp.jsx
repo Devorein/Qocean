@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import { Formik } from 'formik';
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
+
 import { isStrongPassword } from '../../Utils/validation';
 class SignIn extends Component {
-	submitForm = (values) => {
+	submitForm = ({ name, email, username, password }) => {
 		axios
-			.post(`http://localhost:5001/api/v1/auth/login`, {
-				email: values.email,
-				password: values.password
+			.post(`http://localhost:5001/api/v1/auth/register`, {
+				name,
+				email,
+				username,
+				password
 			})
 			.then((res) => {
 				localStorage.setItem('token', res.data.token);
 				this.props.history.push('/');
+				this.props.refetch();
 			})
 			.catch((err) => {
 				console.log(err.response.data.error);
@@ -27,7 +32,11 @@ class SignIn extends Component {
 					if (!values.email) errors.email = 'Required';
 					else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email))
 						errors.email = 'Invalid email address';
-					else if (!isStrongPassword(values.password)) errors.password = 'Need a stronger password';
+					if (!values.name) errors.name = 'Required';
+					if (!values.username) errors.username = 'Required';
+					if (!values.password) errors.password = 'Required';
+
+					if (!isStrongPassword(values.password)) errors.password = 'Need a stronger password';
 					return errors;
 				}}
 			>
@@ -103,7 +112,7 @@ class SignIn extends Component {
 							<button type="button" className="outline" onClick={handleReset} disabled={!dirty || isSubmitting}>
 								Reset
 							</button>
-							<button type="submit" disabled={isSubmitting}>
+							<button type="submit" disabled={isSubmitting || Object.keys(errors).length >= 1}>
 								Submit
 							</button>
 						</form>
@@ -114,4 +123,4 @@ class SignIn extends Component {
 	}
 }
 
-export default SignIn;
+export default withRouter(SignIn);
