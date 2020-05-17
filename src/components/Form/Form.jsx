@@ -15,6 +15,11 @@ const useStyles = makeStyles({
 		'& .MuiInputBase-input': {
 			fontFamily: 'Quantico',
 			color: '#eee'
+		},
+		'& .MuiFormHelperText-root': {
+			color: '#f44336d6',
+			fontWeight: 'bold',
+			fontFamily: 'Quantico'
 		}
 	},
 	button: {
