@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './components/Auth/SignIn.jsx';
-import SignUp from './components/Auth/SignUp.jsx';
+import SignUp from './pages/Signup/SignUp.jsx';
 import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
