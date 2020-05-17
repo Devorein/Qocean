@@ -5,7 +5,11 @@ import { withRouter } from 'react-router-dom';
 
 import { isStrongPassword } from '../../Utils/validation';
 class SignIn extends Component {
-	submitForm = ({ name, email, username, password }) => {
+	state = {
+		message: ''
+	};
+
+	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
 		axios
 			.post(`http://localhost:5001/api/v1/auth/register`, {
 				name,
@@ -19,7 +23,10 @@ class SignIn extends Component {
 				this.props.refetch();
 			})
 			.catch((err) => {
-				console.log(err.response.data.error);
+				setSubmitting(false);
+				this.setState({
+					message: err.response.data.error
+				});
 			});
 	};
 	render() {
@@ -115,6 +122,7 @@ class SignIn extends Component {
 							<button type="submit" disabled={isSubmitting || Object.keys(errors).length >= 1}>
 								Submit
 							</button>
+							<div>{this.state.message}</div>
 						</form>
 					);
 				}}
