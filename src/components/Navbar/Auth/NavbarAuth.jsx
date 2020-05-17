@@ -29,6 +29,9 @@ class NavbarAuth extends Component {
 				<NavLink className="navbar-link" to="/app">
 					Play
 				</NavLink>
+        <NavLink className="navbar-link" to="/profile">
+        Profile
+				</NavLink>
         <Button variant="contained" size="medium" startIcon={<ExitToAppIcon />} onClick={this.logout}>Logout</Button>
 			</>
 		);

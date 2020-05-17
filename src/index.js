@@ -9,7 +9,8 @@ import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
 import Home from './pages/Home/Home';
-import Details from './pages/Detail/Detail';
+import Detail from './pages/Detail/Detail';
+import Profile from './pages/Profile/Profile';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import './App.scss';
@@ -29,28 +30,35 @@ class App extends Component {
 							path="/explore"
 							exact
 							render={(e) => {
-								return <Explore user={session.getCurrentUser} />;
+								return <Explore user={session.data} />;
 							}}
 						/>
 						<Route
-							path="/details/:type/:id"
+							path="/detail/:type/:id"
 							exact
 							render={(e) => {
-								return <Details user={session.getCurrentUser} />;
+								return <Detail user={session.data} />;
 							}}
 						/>
 						<Route
 							path="/create"
 							exact
 							render={() => {
-								return session.getCurrentUser ? <Create user={session} /> : <Redirect to="/" />;
+								return session.data ? <Create user={session} /> : <Redirect to="/" />;
+							}}
+						/>
+						<Route
+							path="/profile"
+							exact
+							render={() => {
+								return session.data ? <Profile user={session} /> : <Redirect to="/" />;
 							}}
 						/>
 						<Route
 							path="/self"
 							exact
 							render={() => {
-								return session.getCurrentUser ? <Self user={session} /> : <Redirect to="/" />;
+								return session.data ? <Self user={session} /> : <Redirect to="/" />;
 							}}
 						/>
 						<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
