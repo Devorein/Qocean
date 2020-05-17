@@ -24,11 +24,10 @@ const validationSchema = Yup.object({
 
 class SignIn extends Component {
 	state = {
-		message: ''
+		errMsg: ''
 	};
 
 	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
-		console.log(name);
 		axios
 			.post(`http://localhost:5001/api/v1/auth/register`, {
 				name,
@@ -44,7 +43,7 @@ class SignIn extends Component {
 			.catch((err) => {
 				setSubmitting(false);
 				this.setState({
-					message: err.response.data.error
+					errMsg: err.response.data.error
 				});
 			});
 	};
@@ -56,6 +55,7 @@ class SignIn extends Component {
 					onSubmit={this.submitForm}
 					validationSchema={validationSchema}
 					values={{ name: '', username: '', email: '', password: '', confirmPassword: '' }}
+					errMsg={this.state.errMsg}
 				/>;
 			</div>
 		);

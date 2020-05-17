@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
 
 class SignIn extends Component {
 	state = {
-		message: ''
+		errMsg: ''
 	};
 
 	submitForm = (values, { setSubmitting }) => {
@@ -29,7 +29,7 @@ class SignIn extends Component {
 			.catch((err) => {
 				setSubmitting(false);
 				this.setState({
-					message: err.response.data.error
+					errMsg: err.response.data.error
 				});
 			});
 	};
@@ -41,6 +41,7 @@ class SignIn extends Component {
 					onSubmit={this.submitForm}
 					validationSchema={validationSchema}
 					values={{ email: '', password: '' }}
+					errMsg={this.state.errMsg}
 				/>;
 			</div>
 		);

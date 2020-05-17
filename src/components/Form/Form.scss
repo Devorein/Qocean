@@ -1,0 +1,16 @@
+@import "../../Utils/glovar.scss";
+
+.messages {
+  display: flex;
+  margin-top: 25px;
+}
+.error-message {
+  flex-grow: 1;
+  background-color: $dark-bg-d5;
+  margin-left: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $dark-text-l5;
+  font-weight: bolder;
+}

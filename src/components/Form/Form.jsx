@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
+import './Form.scss';
 
 const useStyles = makeStyles({
 	textField: {
@@ -23,7 +24,6 @@ const useStyles = makeStyles({
 		}
 	},
 	button: {
-		marginTop: '25px',
 		'& .MuiButton-label': {
 			color: '#ddd',
 			fontWeight: 'bold'
@@ -44,7 +44,9 @@ const Form = (props) => {
 		handleBlur,
 		isValid,
 		setFieldTouched,
-		isSubmitting
+		isSubmitting,
+		errMsg,
+		submitMsg
 	} = props;
 	const { textField, button } = useStyles();
 
@@ -79,15 +81,18 @@ const Form = (props) => {
 					/>
 				);
 			})}
-			<Button
-				classes={{ root: button }}
-				type="submit"
-				variant="contained"
-				color="primary"
-				disabled={isSubmitting || !isValid}
-			>
-				Submit
-			</Button>
+			<div className="messages">
+				<Button
+					classes={{ root: button }}
+					type="submit"
+					variant="contained"
+					color="primary"
+					disabled={isSubmitting || !isValid}
+				>
+					{submitMsg ? submitMsg : 'Submit'}
+				</Button>
+				<div className="error-message">{errMsg ? errMsg : 'None'}</div>
+			</div>
 		</form>
 	);
 };

@@ -5,14 +5,14 @@ import Form from './Form';
 class InputForm extends Component {
 	state = {};
 	render() {
-		const { validationSchema, values, onSubmit } = this.props;
+		const { validationSchema, values, onSubmit, errMsg } = this.props;
 		return (
 			<div>
 				<Formik
 					initialValues={values}
 					onSubmit={onSubmit}
 					validationSchema={validationSchema}
-					render={(props) => <Form {...props} />}
+					render={(props) => <Form {...props} errMsg={errMsg} />}
 				/>
 			</div>
 		);
