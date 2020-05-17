@@ -7,7 +7,11 @@ class WithSessions extends React.Component {
 	};
 	componentDidMount() {
 		axios
-			.get('http://localhost:5001/api/v1/users/me')
+			.get('http://localhost:5001/api/v1/users/me', {
+				headers: {
+					Authorization: `Bearer ${window.localStorage.getItem('token')}`
+				}
+			})
 			.then((session) => {
 				this.setState({
 					session

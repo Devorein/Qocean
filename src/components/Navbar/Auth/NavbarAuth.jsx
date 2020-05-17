@@ -5,23 +5,23 @@ class NavbarAuth extends Component {
 	render() {
 		const { session } = this.props;
 		return (
-			<div className="NavbarAuth Navbar__item">
-				<NavLink className="Navbar-links NavbarAuth__item" to="/" exact>
+			<>
+				<NavLink className="navbar-link" to="/" exact>
 					Home
 				</NavLink>
-				<NavLink className="Navbar-links NavbarAuth__item" to="/create">
+				<NavLink className="navbar-link" to="/create">
 					Create
 				</NavLink>
-				<NavLink className="Navbar-links NavbarAuth__item" to="/explore">
+				<NavLink className="navbar-link" to="/explore">
 					Explore
 				</NavLink>
-				<NavLink className="Navbar-links NavbarAuth__item" to="/self">
+				<NavLink className="navbar-link" to="/self">
 					Self
 				</NavLink>
-				<NavLink className="Navbar-links NavbarAuth__item" to="/app">
-					App
+				<NavLink className="navbar-link" to="/app">
+					Play
 				</NavLink>
-			</div>
+			</>
 		);
 	}
 }

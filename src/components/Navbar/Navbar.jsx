@@ -8,7 +8,7 @@ import './Navbar.scss';
 const Navbar = ({ session }) => {
 	return (
 		<nav className="navbar navbar-links">
-			{session && session.getCurrentUser ? <NavbarAuth session={session} /> : <NavbarUnauth />}
+			{session && session.data ? <NavbarAuth session={session} /> : <NavbarUnauth />}
 		</nav>
 	);
 };

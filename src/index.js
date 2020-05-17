@@ -66,7 +66,7 @@ const RoutedApp = withRouter(App);
 
 ReactDOM.render(
 	<WithSessions>
-		{({ session }) => {
+		{(session) => {
 			return (
 				<Router>
 					<RoutedApp session={session} />
