@@ -6,6 +6,8 @@ const colors = require('colors');
 const helmet = require('helmet');
 const xssClean = require('xss-clean');
 const cors = require('cors');
+const hpp = require('hpp');
+const rateLimiter = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -26,7 +28,20 @@ connectDB();
 
 const app = express();
 
-if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+let limiter = null;
+
+if (process.env.NODE_ENV === 'development') {
+	app.use(morgan('dev'));
+	limiter = rateLimiter({
+		windowMs: 10 * 60 * 1000,
+		max: 1000
+	});
+} else {
+	limiter = rateLimiter({
+		windowMs: 10 * 60 * 1000,
+		max: 50
+	});
+}
 
 app.use(cors());
 app.use(express.json());
@@ -34,6 +49,8 @@ app.use(fileupload());
 app.use(mongoSanitize());
 app.use(helmet());
 app.use(xssClean());
+app.use(hpp());
+app.use(limiter);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/quizzes', quizzes);
 app.use('/api/v1/questions', questions);
