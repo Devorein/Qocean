@@ -68,6 +68,7 @@ const Form = (props) => {
 							root: textField
 						}}
 						key={value}
+						type={value.includes('password') ? 'password' : 'text'}
 						{...formikProps(value)}
 						fullWidth
 					/>
