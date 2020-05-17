@@ -26,6 +26,9 @@ const useStyles = makeStyles({
 			color: '#f44336d6',
 			fontWeight: 'bold',
 			fontFamily: 'Quantico'
+		},
+		'& .MuiSvgIcon-root': {
+			fill: '#aaa'
 		}
 	},
 	button: {
@@ -82,7 +85,8 @@ const Form = (props) => {
 	return (
 		<form className="form" onSubmit={handleSubmit}>
 			{Object.keys(values).map((value) => {
-				return value.includes('password') ? (
+				console.log(value);
+				return value.toLowerCase().includes('password') ? (
 					<TextField
 						classes={{
 							root: textField
@@ -95,7 +99,7 @@ const Form = (props) => {
 							endAdornment: (
 								<InputAdornment position="end">
 									<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-										{values.showPassword ? <Visibility /> : <VisibilityOff />}
+										{state.showPassword ? <Visibility /> : <VisibilityOff />}
 									</IconButton>
 								</InputAdornment>
 							)
