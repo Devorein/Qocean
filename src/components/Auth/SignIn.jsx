@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Formik } from 'formik';
 import axios from 'axios';
-
+import { isStrongPassword } from '../../Utils/validation';
 class SignIn extends Component {
 	submitForm = (values) => {
 		axios
@@ -11,6 +11,9 @@ class SignIn extends Component {
 			})
 			.then((res) => {
 				console.log(res);
+			})
+			.catch((err) => {
+				console.log(err.response.data.error);
 			});
 	};
 	render() {
@@ -23,6 +26,7 @@ class SignIn extends Component {
 					if (!values.email) errors.email = 'Required';
 					else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email))
 						errors.email = 'Invalid email address';
+					else if (!isStrongPassword(values.password)) errors.password = 'Need a stronger password';
 					return errors;
 				}}
 			>
