@@ -6,6 +6,9 @@ class WithSessions extends React.Component {
 		session: {}
 	};
 	componentDidMount() {
+		this.refetch();
+	}
+	refetch = () => {
 		axios
 			.get('http://localhost:5001/api/v1/users/me', {
 				headers: {
@@ -18,14 +21,14 @@ class WithSessions extends React.Component {
 				});
 			})
 			.catch((err) => {
-				console.log(err.response.data);
+				console.log(err.response.data.error);
 				this.setState({
 					session: {}
 				});
 			});
-	}
+	};
 	render() {
-		return this.props.children(this.state.session);
+		return this.props.children({ session: this.state.session, refetch: this.refetch });
 	}
 }
 

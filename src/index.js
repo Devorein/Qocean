@@ -17,7 +17,7 @@ import './pages/Pages.scss';
 
 class App extends Component {
 	render() {
-		const { session, location } = this.props;
+		const { session, location, refetch } = this.props;
 		return (
 			<Fragment>
 				<div className="App">
@@ -52,8 +52,8 @@ class App extends Component {
 								return session.getCurrentUser ? <Self user={session} /> : <Redirect to="/" />;
 							}}
 						/>
-						<Route path="/signin" exact component={SignIn} />
-						<Route path="/signup" exact component={SignUp} />
+						<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
+						<Route path="/signup" exact render={() => <SignUp refetch={refetch} />} />
 						<Redirect to="/" />
 					</Switch>
 				</div>
@@ -66,10 +66,10 @@ const RoutedApp = withRouter(App);
 
 ReactDOM.render(
 	<WithSessions>
-		{(session) => {
+		{({ session, refetch }) => {
 			return (
 				<Router>
-					<RoutedApp session={session} />
+					<RoutedApp session={session} refetch={refetch} />
 				</Router>
 			);
 		}}

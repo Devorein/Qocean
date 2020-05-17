@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Formik } from 'formik';
 import axios from 'axios';
 import { isStrongPassword } from '../../Utils/validation';
+import { withRouter } from 'react-router-dom';
+
 class SignIn extends Component {
 	submitForm = (values) => {
 		axios
@@ -12,9 +14,10 @@ class SignIn extends Component {
 			.then((res) => {
 				localStorage.setItem('token', res.data.token);
 				this.props.history.push('/');
+				this.props.refetch();
 			})
 			.catch((err) => {
-				console.log(err.response.data.error);
+				console.log(err);
 			});
 	};
 	render() {
@@ -86,4 +89,4 @@ class SignIn extends Component {
 	}
 }
 
-export default SignIn;
+export default withRouter(SignIn);
