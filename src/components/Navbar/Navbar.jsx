@@ -5,10 +5,10 @@ import NavbarUnauth from './Unauth/NavbarUnauth';
 
 import './Navbar.scss';
 
-const Navbar = ({ session }) => {
+const Navbar = ({ session, refetch }) => {
 	return (
 		<nav className="navbar navbar-links">
-			{session && session.data ? <NavbarAuth session={session} /> : <NavbarUnauth />}
+			{session && session.data ? <NavbarAuth session={session} refetch={refetch} /> : <NavbarUnauth />}
 		</nav>
 	);
 };

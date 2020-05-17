@@ -22,7 +22,7 @@ class App extends Component {
 		return (
 			<Fragment>
 				<div className="App">
-					<Navbar session={session} />
+					<Navbar session={session} refetch={refetch} />
 					<Switch location={location}>
 						<Route path="/" exact component={Home} />
 						<Route
