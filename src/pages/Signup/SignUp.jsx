@@ -51,7 +51,7 @@ class SignIn extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className="signup">
 				<InputForm
 					onSubmit={this.submitForm}
 					validationSchema={validationSchema}
