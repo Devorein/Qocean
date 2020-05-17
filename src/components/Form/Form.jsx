@@ -2,6 +2,11 @@ import React, { Component, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import IconButton from '@material-ui/core/IconButton';
+
 import './Form.scss';
 
 const useStyles = makeStyles({
@@ -35,6 +40,14 @@ const useStyles = makeStyles({
 });
 
 const Form = (props) => {
+	const [ state, setState ] = React.useState({
+		showPassword: false
+	});
+
+	const handleClickShowPassword = () => {
+		setState({ ...state, showPassword: !state.showPassword });
+	};
+
 	const {
 		values,
 		errors,
@@ -69,13 +82,32 @@ const Form = (props) => {
 	return (
 		<form className="form" onSubmit={handleSubmit}>
 			{Object.keys(values).map((value) => {
-				return (
+				return value.includes('password') ? (
 					<TextField
 						classes={{
 							root: textField
 						}}
 						key={value}
-						type={value.includes('password') ? 'password' : 'text'}
+						type={state.showPassword ? 'text' : 'password'}
+						{...formikProps(value)}
+						fullWidth
+						InputProps={{
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+										{values.showPassword ? <Visibility /> : <VisibilityOff />}
+									</IconButton>
+								</InputAdornment>
+							)
+						}}
+					/>
+				) : (
+					<TextField
+						classes={{
+							root: textField
+						}}
+						key={value}
+						type={'text'}
 						{...formikProps(value)}
 						fullWidth
 					/>
