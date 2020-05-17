@@ -32,3 +32,14 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+form {
+  color: white;
+  font-family: "Quantico";
+  left: 50%;
+  top: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: #202020;
+  padding: 10px;
+}
