@@ -59,6 +59,22 @@ class Create extends Component {
 					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
 				]
 			};
+		} else if (type === 'Question') {
+			const validationSchema = Yup.object({
+				question: Yup.string('Enter the question').required('Question is required'),
+				favourite: Yup.bool().default(false),
+				public: Yup.bool().default(true),
+				add_to_score: Yup.bool().default(true)
+			});
+			return {
+				validationSchema,
+				inputs: [
+					{ name: 'name', label: `${type} name` },
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
+					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
+					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', value: true }
+				]
+			};
 		} else if (type === 'Folder') {
 			const validationSchema = Yup.object({
 				name: Yup.string('Enter folder name').required('Folder name is required'),
