@@ -45,6 +45,10 @@ const useStyles = makeStyles({
 		'&.Mui-disabled': {
 			backgroundColor: '#c10000'
 		}
+	},
+	formlabel: {
+		fontFamily: 'Quantico',
+		color: '#ddd'
 	}
 });
 
@@ -70,7 +74,7 @@ const Form = (props) => {
 		submitMsg,
 		inputs
 	} = props;
-	const { textField, button } = useStyles();
+	const { textField, button, formlabel } = useStyles();
 
 	const change = (name, e) => {
 		e.persist();
@@ -119,6 +123,7 @@ const Form = (props) => {
 					return (
 						<FormControlLabel
 							key={name}
+							classes={{ label: formlabel }}
 							control={
 								<Checkbox
 									color={'primary'}
