@@ -40,7 +40,6 @@ class SignIn extends Component {
 			})
 			.catch((err) => {
 				setSubmitting(false);
-				console.log(err);
 				this.setState({
 					responseMsg: {
 						state: 'error',

@@ -27,6 +27,7 @@
     font-weight: bold;
     font-size: 20px;
     transition: background-color 250ms ease-in-out;
+    height: calc(100% - 15px);
 
     &:hover {
       background-color: $dark-bg-l10;
