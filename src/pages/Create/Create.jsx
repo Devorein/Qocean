@@ -4,14 +4,14 @@ import MultiHeader from '../../components/MultiHeader/MultiHeader';
 import * as Yup from 'yup';
 import axios from 'axios';
 import pluralize from 'pluralize';
+import { AppContext } from '../../index';
 
 class Create extends Component {
 	state = {
-		type: '',
-		responseMsg: {}
+		type: ''
 	};
 
-	submitForm = (values, { setSubmitting }) => {
+	submitForm = (changeResponse, values, { setSubmitting }) => {
 		const type = this.state.type.toLowerCase();
 		axios
 			.post(
@@ -27,21 +27,11 @@ class Create extends Component {
 			)
 			.then(() => {
 				setSubmitting(false);
-				this.setState({
-					responseMsg: {
-						state: 'success',
-						msg: `Successfully created ${type}`
-					}
-				});
+				changeResponse(`Successfully created ${type}`, 'success');
 			})
 			.catch((err) => {
 				setSubmitting(false);
-				this.setState({
-					responseMsg: {
-						state: 'error',
-						msg: err.response.data.error
-					}
-				});
+				changeResponse(err.response.data.error, 'error');
 			});
 	};
 
@@ -54,7 +44,9 @@ class Create extends Component {
 					.required('Quiz name is required'),
 				subject: Yup.string('Enter quiz subject').required('Please provide a subject'),
 				source: Yup.string('Enter quiz source'),
-				image: Yup.string('Enter quiz image')
+				image: Yup.string('Enter quiz image'),
+				favourite: Yup.bool().default(false),
+				public: Yup.bool().default(true)
 			});
 			return {
 				validationSchema,
@@ -62,7 +54,9 @@ class Create extends Component {
 					{ name: 'name', label: `${type} name` },
 					{ name: 'subject', label: `${type} subject` },
 					{ name: 'source', label: `${type} source` },
-					{ name: 'image', label: `${type} image` }
+					{ name: 'image', label: `${type} image` },
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
+					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
 				]
 			};
 		} else if (type === 'Folder') {
@@ -87,12 +81,22 @@ class Create extends Component {
 		const { type } = this.state;
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ];
 		return (
-			<div className="Create page">
-				<MultiHeader headers={headers} type={type} onHeaderClick={this.changeForm} page="explore" />
-				{type ? (
-					<InputForm {...this.decideForm(type)} responseMsg={this.state.responseMsg} onSubmit={this.submitForm} />
-				) : null}
-			</div>
+			<AppContext.Consumer>
+				{({ changeResponse }) => {
+					return (
+						<div className="Create page">
+							<MultiHeader headers={headers} type={type} onHeaderClick={this.changeForm} page="explore" />
+							{type ? (
+								<InputForm
+									{...this.decideForm(type)}
+									responseMsg={this.state.responseMsg}
+									onSubmit={this.submitForm.bind(null, changeResponse)}
+								/>
+							) : null}
+						</div>
+					);
+				}}
+			</AppContext.Consumer>
 		);
 	}
 }
