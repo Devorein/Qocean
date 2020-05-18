@@ -7,19 +7,10 @@ const QuizSchema = extendSchema(
 	{
 		name: {
 			type: String,
-			required: [ true, 'Please add a name' ],
+			required: [ true, 'Quiz name is required' ],
 			trim: true,
 			minlength: [ 3, 'Name can not be less than 3 characters' ],
 			maxlength: [ 50, 'Name can not be more than 50 characters' ]
-		},
-		user: {
-			type: mongoose.Schema.ObjectId,
-			ref: 'User',
-			required: [ true, 'A question must be created by an user' ]
-		},
-		public: {
-			type: Boolean,
-			default: true
 		},
 		rating: {
 			type: Number,
@@ -36,15 +27,7 @@ const QuizSchema = extendSchema(
 			default: 'Beginner',
 			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
 		},
-		created_at: {
-			type: Date,
-			default: Date.now
-		},
 		tags: [ String ],
-		favourite: {
-			type: Boolean,
-			default: false
-		},
 		subject: {
 			type: String,
 			required: [ true, 'Please provide a subject' ]

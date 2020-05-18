@@ -46,7 +46,26 @@ class Create extends Component {
 	};
 
 	decideForm = (type) => {
-		if (type === 'Folder') {
+		if (type === 'Quiz') {
+			const validationSchema = Yup.object({
+				name: Yup.string('Enter quiz name')
+					.min(3, 'Name can not be less than 3 characters')
+					.max(50, 'Name can not be more than 50 characters')
+					.required('Quiz name is required'),
+				subject: Yup.string('Enter quiz subject').required('Please provide a subject'),
+				source: Yup.string('Enter quiz source'),
+				image: Yup.string('Enter quiz image')
+			});
+			return {
+				validationSchema,
+				inputs: [
+					{ name: 'name', label: `${type} name` },
+					{ name: 'subject', label: `${type} subject` },
+					{ name: 'source', label: `${type} source` },
+					{ name: 'image', label: `${type} image` }
+				]
+			};
+		} else if (type === 'Folder') {
 			const validationSchema = Yup.object({
 				name: Yup.string('Enter folder name').required('Folder name is required'),
 				icon: Yup.string('Enter folder icon')
