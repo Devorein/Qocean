@@ -121,6 +121,7 @@ const Form = (props) => {
 							key={name}
 							control={
 								<Checkbox
+									color={'primary'}
 									checked={Boolean(values[name])}
 									name={name}
 									onChange={change.bind(null, name)}

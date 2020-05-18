@@ -62,11 +62,38 @@ class Create extends Component {
 		} else if (type === 'Folder') {
 			const validationSchema = Yup.object({
 				name: Yup.string('Enter folder name').required('Folder name is required'),
-				icon: Yup.string('Enter folder icon')
+				icon: Yup.string('Enter folder icon'),
+				favourite: Yup.bool().default(false),
+				public: Yup.bool().default(true)
 			});
 			return {
 				validationSchema,
-				inputs: [ { name: 'name', label: `${type} name` }, { name: 'icon', label: `${type} icon` } ]
+				inputs: [
+					{ name: 'name', label: `${type} name` },
+					{ name: 'icon', label: `${type} icon` },
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
+					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
+				]
+			};
+		} else if (type === 'Environment') {
+			const validationSchema = Yup.object({
+				name: Yup.string(`Enter ${type.toLowerCase()} name`).required(`${type} name is required`),
+				icon: Yup.string(`Enter ${type.toLowerCase()} icon`),
+				animation: Yup.bool().default(true),
+				sound: Yup.bool().default(true),
+				favourite: Yup.bool().default(false),
+				public: Yup.bool().default(true)
+			});
+			return {
+				validationSchema,
+				inputs: [
+					{ name: 'name' },
+					{ name: 'icon' },
+					{ name: 'animation', label: 'Favourite', type: 'checkbox', value: true },
+					{ name: 'sound', label: 'Favourite', type: 'checkbox', value: true },
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
+					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
+				]
 			};
 		}
 	};
