@@ -40,7 +40,13 @@ class SignIn extends Component {
 				<InputForm
 					onSubmit={this.submitForm}
 					validationSchema={validationSchema}
-					inputs={[ { name: 'email' }, { name: 'password' } ]}
+					inputs={[
+						{
+							name: 'email',
+							startAdornment: 'email'
+						},
+						{ name: 'password' }
+					]}
 					errMsg={this.state.errMsg}
 				/>;
 			</div>

@@ -55,9 +55,9 @@ class SignIn extends Component {
 					onSubmit={this.submitForm}
 					validationSchema={validationSchema}
 					inputs={[
-						{ name: 'name' },
-						{ name: 'username' },
-						{ name: 'email' },
+						{ name: 'name', startAdornment: 'person' },
+						{ name: 'username', startAdornment: 'person' },
+						{ name: 'email', startAdornment: 'email' },
 						{ name: 'password' },
 						{ name: 'confirm_password' }
 					]}

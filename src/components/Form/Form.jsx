@@ -6,6 +6,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
+import EmailIcon from '@material-ui/icons/Email';
+import PersonIcon from '@material-ui/icons/Person';
 
 import './Form.scss';
 
@@ -13,6 +15,7 @@ const useStyles = makeStyles({
 	textField: {
 		borderRadius: 3,
 		border: 0,
+		margin: '5px',
 		'& .MuiInputLabel-root': {
 			fontFamily: 'Quantico',
 			color: '#ccc',
@@ -77,6 +80,7 @@ const Form = (props) => {
 		if (label) return label;
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
+
 	const formikProps = (name, label, placeholder, initialValue = '') => ({
 		name,
 		value: typeof values[name] !== 'undefined' ? values[name] : initialValue,
@@ -88,9 +92,26 @@ const Form = (props) => {
 		placeholder
 	});
 
+	const decideIcon = (icon) => {
+		if (icon === 'email') return <EmailIcon />;
+		else if (icon === 'person') return <PersonIcon />;
+	};
+
+	const decideAdornment = (InputProps, startAdornment, endAdornment) => {
+		if (InputProps) return InputProps;
+		else if (startAdornment) {
+			return {
+				startAdornment: <InputAdornment position="start">{decideIcon(startAdornment)}</InputAdornment>
+			};
+		} else if (endAdornment) {
+			return {
+				endAdornment: <InputAdornment position="end">{decideIcon(endAdornment)}</InputAdornment>
+			};
+		}
+	};
 	return (
 		<form className="form" onSubmit={handleSubmit}>
-			{inputs.map(({ name, label, placeholder, value }) => {
+			{inputs.map(({ name, label, placeholder, value, InputProps, startAdornment, endAdornment }) => {
 				return name.toLowerCase().includes('password') ? (
 					<TextField
 						classes={{
@@ -119,6 +140,7 @@ const Form = (props) => {
 						type={'text'}
 						{...formikProps(name, label, placeholder, value)}
 						fullWidth
+						InputProps={decideAdornment(InputProps, startAdornment, endAdornment)}
 					/>
 				);
 			})}
@@ -132,7 +154,7 @@ const Form = (props) => {
 				>
 					{submitMsg ? submitMsg : 'Submit'}
 				</Button>
-				<div className={`response-box ${errMsg ? 'response-box--error' : ''}`}>{errMsg ? errMsg : 'None'}</div>
+				<div className={`response-box ${errMsg ? 'response-box--error' : ''}`}>{errMsg ? errMsg : 'No response'}</div>
 			</div>
 		</form>
 	);
