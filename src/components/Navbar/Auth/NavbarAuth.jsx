@@ -73,7 +73,7 @@ function NavbarAuth({ session, refetch, history }) {
 			<NavLink className="navbar-link" to="/self">
 				Self
 			</NavLink>
-			<NavLink className="navbar-link" to="/app">
+			<NavLink className="navbar-link" to="/play">
 				Play
 			</NavLink>
 			<div className="navbar-link">

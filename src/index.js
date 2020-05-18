@@ -12,6 +12,7 @@ import Home from './pages/Home/Home';
 import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
+import Play from './pages/Play/Play';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import './App.scss';
@@ -46,6 +47,13 @@ class App extends Component {
 							exact
 							render={() => {
 								return session.data ? <Create user={session} /> : <Redirect to="/" />;
+							}}
+						/>
+						<Route
+							path="/play"
+							exact
+							render={() => {
+								return session.data ? <Play user={session.data.data} /> : <Redirect to="/" />;
 							}}
 						/>
 						<Route
