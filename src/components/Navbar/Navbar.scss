@@ -15,6 +15,7 @@
   }
 
   .navbar-link {
+    margin: 3px 5px 0px 5px;
     list-style-type: none;
     cursor: pointer;
     color: $dark-text-1;
@@ -29,6 +30,15 @@
     transition: background-color 250ms ease-in-out;
     height: calc(100% - 15px);
 
+    &-item {
+      padding: 5px;
+      &--image {
+        height: 25px;
+      }
+      &--username {
+        font-weight: 500;
+      }
+    }
     &:hover {
       background-color: $dark-bg-l10;
       transition: background-color 250ms ease-in-out;
