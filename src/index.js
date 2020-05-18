@@ -11,6 +11,7 @@ import Self from './pages/Self/Self';
 import Home from './pages/Home/Home';
 import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
+import Stats from './pages/Stats/Stats';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import './App.scss';
@@ -52,6 +53,13 @@ class App extends Component {
 							exact
 							render={() => {
 								return session.data ? <Profile user={session} /> : <Redirect to="/" />;
+							}}
+						/>
+						<Route
+							path="/stats"
+							exact
+							render={() => {
+								return session.data ? <Stats user={session} /> : <Redirect to="/" />;
 							}}
 						/>
 						<Route

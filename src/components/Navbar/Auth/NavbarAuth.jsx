@@ -10,6 +10,10 @@ function NavbarAuth({ session, refetch, history }) {
 		refetch();
 	};
 
+	const switchPage = (page) => {
+		history.push(`/${page}`);
+	};
+
 	const [ anchorEl, setAnchorEl ] = React.useState(null);
 
 	const handleClick = (event) => {
@@ -44,7 +48,7 @@ function NavbarAuth({ session, refetch, history }) {
 						session.data.data.image ? (
 							session.data.data.image
 						) : (
-							'https://www.teknozeka.com/wp-content/uploads/2020/03/wp-header-logo-24.png'
+							'https://lh3.googleusercontent.com/proxy/mdVWZ0Fj0Te7HknqmLlP-GuXvPDpFRagnNO7rNTy9FZbWLudq42SmIetnNQNG38XUfUqxyKdCNrUBNpc69mDB4BYa5XrWdV6KZvfeCKlzN5oEXw'
 						)
 					}
 					alt={'User'}
@@ -54,17 +58,14 @@ function NavbarAuth({ session, refetch, history }) {
 				</span>
 			</div>
 			<Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-				<MenuItem onClick={handleClose}>Profile</MenuItem>
-				<MenuItem onClick={handleClose}>Stats</MenuItem>
-				<MenuItem onClick={handleClose}>Logout</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, 'Profile')}>Profile</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, 'Stats')}>Stats</MenuItem>
+				<MenuItem onClick={logout}>
+					<Button variant="contained" size="medium" startIcon={<ExitToAppIcon />} onClick={logout}>
+						Logout
+					</Button>
+				</MenuItem>
 			</Menu>
-
-			{/* <NavLink className="navbar-link" to="/profile">
-				Profile
-			</NavLink>
-			<Button variant="contained" size="medium" startIcon={<ExitToAppIcon />} onClick={logout}>
-				Logout
-			</Button> */}
 		</Fragment>
 	);
 }
