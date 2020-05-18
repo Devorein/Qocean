@@ -6,6 +6,7 @@ import EqualizerIcon from '@material-ui/icons/Equalizer';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { orange } from '@material-ui/core/colors';
+import BlockIcon from '@material-ui/icons/Block';
 
 const useStyles = makeStyles({
 	paper: {
@@ -79,11 +80,7 @@ function NavbarAuth({ session, refetch, history }) {
 				<img
 					className="navbar-link-item navbar-link-item--image"
 					src={
-						session.data.data.image ? (
-							session.data.data.image
-						) : (
-							'https://lh3.googleusercontent.com/proxy/mdVWZ0Fj0Te7HknqmLlP-GuXvPDpFRagnNO7rNTy9FZbWLudq42SmIetnNQNG38XUfUqxyKdCNrUBNpc69mDB4BYa5XrWdV6KZvfeCKlzN5oEXw'
-						)
+						session.data.data.image === 'none.png' ? `http://localhost:3000/uploads/none.png` : session.data.data.image
 					}
 					alt={'User'}
 				/>
