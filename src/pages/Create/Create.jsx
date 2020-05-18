@@ -9,7 +9,7 @@ import { AppContext } from '../../index';
 class Create extends Component {
 	state = {
 		type: '',
-		data: []
+		data: null
 	};
 
 	submitForm = (changeResponse, values, { setSubmitting }) => {
@@ -45,11 +45,13 @@ class Create extends Component {
 					}
 				})
 				.then(({ data: { data } }) => {
-					this.setState({
-						data: data.map((item) => {
-							return { text: item.name, value: item._id };
-						})
-					});
+					if (!this.state.data) {
+						this.setState({
+							data: data.map((item) => {
+								return { text: item.name, value: item._id };
+							})
+						});
+					}
 				});
 			const validationSchema = Yup.object({
 				name: Yup.string('Enter quiz name')
@@ -76,16 +78,36 @@ class Create extends Component {
 						name: 'folder',
 						label: 'Folder',
 						type: 'select',
-						selectItems: this.state.data
+						selectItems: this.state.data ? this.state.data : []
 					}
 				]
 			};
 		} else if (type === 'Question') {
+			axios
+				.get('http://localhost:5001/api/v1/quizzes/me', {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then(({ data: { data } }) => {
+					if (!this.state.data) {
+						this.setState({
+							data: data.map((item) => {
+								return { text: item.name, value: item._id };
+							})
+						});
+					}
+				});
 			const validationSchema = Yup.object({
 				question: Yup.string('Enter the question').required('Question is required'),
 				favourite: Yup.bool().default(false),
 				public: Yup.bool().default(true),
-				add_to_score: Yup.bool().default(true)
+				add_to_score: Yup.bool().default(true),
+				quiz: Yup.string('Enter the quiz').required('Quiz is required'),
+				type: Yup.string('Enter the type').required('Question type is required'),
+				difficulty: Yup.string('Enter the difficulty')
+					.oneOf([ 'Beginner', 'Intermediate', 'Advanced' ], 'Should be one of the required value')
+					.default('Beginner')
 			});
 			return {
 				validationSchema,
@@ -93,7 +115,36 @@ class Create extends Component {
 					{ name: 'name', label: `${type} name` },
 					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
 					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
-					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', value: true }
+					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', value: true },
+					{
+						name: 'quiz',
+						label: 'Quiz',
+						type: 'select',
+						selectItems: this.state.data ? this.state.data : []
+					},
+					{
+						name: 'type',
+						label: 'Type',
+						type: 'select',
+						selectItems: [
+							{ text: 'Fill In the Blanks', value: 'FIB' },
+							{ text: 'Multiple Choice', value: 'MCQ' },
+							{ text: 'Multiple Select', value: 'MS' },
+							{ text: 'Snippet', value: 'Snippet' },
+							{ text: 'Flashcard', value: 'FC' },
+							{ text: 'True/False', value: 'TF' }
+						]
+					},
+					{
+						name: 'difficulty',
+						label: 'Difficulty',
+						type: 'select',
+						selectItems: [
+							{ text: 'Beginner', value: 'Beginner' },
+							{ text: 'Intermediate', value: 'Intermediate' },
+							{ text: 'Advanced', value: 'Advanced' }
+						]
+					}
 				]
 			};
 		} else if (type === 'Folder') {
