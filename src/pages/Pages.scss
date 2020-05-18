@@ -1,4 +1,25 @@
 .page {
   height: calc(100% - 50px);
   width: 100vw;
+
+  &-title,
+  &-text {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Quantico";
+    color: #d0d0d0;
+    width: 100%;
+    text-align: center;
+  }
+  &-title {
+    font-weight: bolder;
+    font-size: 75px;
+    top: 35%;
+  }
+  &-text {
+    font-weight: 500;
+    font-size: 25px;
+    top: 50%;
+  }
 }
