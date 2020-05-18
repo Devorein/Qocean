@@ -65,7 +65,6 @@ const Form = (props) => {
 		isValid,
 		setFieldTouched,
 		isSubmitting,
-		responseMsg,
 		submitMsg,
 		inputs
 	} = props;
@@ -156,9 +155,6 @@ const Form = (props) => {
 				>
 					{submitMsg ? submitMsg : 'Submit'}
 				</Button>
-				<div className={`response-box response-box--${responseMsg.state}`}>
-					{responseMsg.msg ? responseMsg.msg : 'No response'}
-				</div>
 			</div>
 		</form>
 	);

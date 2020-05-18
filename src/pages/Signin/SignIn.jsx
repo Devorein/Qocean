@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import InputForm from '../../components/Form/InputForm';
+import { AppContext } from '../../index';
 
 import * as Yup from 'yup';
 
@@ -11,60 +12,45 @@ const validationSchema = Yup.object({
 });
 
 class SignIn extends Component {
-	state = {
-		responseMsg: {}
-	};
-
-	submitForm = ({ email, password }, { setSubmitting }) => {
+	submitForm = (changeResponse, { email, password }, { setSubmitting }) => {
 		axios
 			.post(`http://localhost:5001/api/v1/auth/login`, {
 				email,
 				password
 			})
 			.then((res) => {
-				this.setState(
-					{
-						responseMsg: {
-							state: 'success',
-							msg: 'Successfully signed in'
-						}
-					},
-					() => {
-						setTimeout(() => {
-							localStorage.setItem('token', res.data.token);
-							this.props.history.push('/');
-							this.props.refetch();
-						}, 2500);
-					}
-				);
+				localStorage.setItem('token', res.data.token);
+				this.props.history.push('/');
+				this.props.refetch();
+				changeResponse('Successfully signed in', 'success');
 			})
 			.catch((err) => {
 				setSubmitting(false);
-				this.setState({
-					responseMsg: {
-						state: 'error',
-						msg: err.response.data.error
-					}
-				});
+				changeResponse(err.response.data.error, 'error');
 			});
 	};
 
 	render() {
 		return (
-			<div className="signin">
-				<InputForm
-					onSubmit={this.submitForm}
-					validationSchema={validationSchema}
-					inputs={[
-						{
-							name: 'email',
-							startAdornment: 'email'
-						},
-						{ name: 'password' }
-					]}
-					responseMsg={this.state.responseMsg}
-				/>;
-			</div>
+			<AppContext.Consumer>
+				{({ changeResponse }) => {
+					return (
+						<div className="signin">
+							<InputForm
+								onSubmit={this.submitForm.bind(null, changeResponse)}
+								validationSchema={validationSchema}
+								inputs={[
+									{
+										name: 'email',
+										startAdornment: 'email'
+									},
+									{ name: 'password' }
+								]}
+							/>
+						</div>
+					);
+				}}
+			</AppContext.Consumer>
 		);
 	}
 }

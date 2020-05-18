@@ -16,75 +16,104 @@ import Play from './pages/Play/Play';
 import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
 
+const AppContext = React.createContext(null);
+export { AppContext };
 class App extends Component {
+	state = {
+		response: {
+			severity: null,
+			message: null,
+			isOpen: false
+		}
+	};
+
+	changeResponse = (message, severity, isOpen = true) => {
+		this.setState({
+			response: {
+				message,
+				severity,
+				isOpen
+			}
+		});
+	};
 	render() {
 		const { session, location, refetch } = this.props;
+		const { response: { isOpen, message, severity } } = this.state;
 		return (
 			<Fragment>
 				<div className="App">
-					<Navbar session={session} refetch={refetch} />
-					<Switch location={location}>
-						<Route path="/" exact component={Home} />
-						<Route
-							path="/explore"
-							exact
-							render={(e) => {
-								return <Explore user={session.data} />;
-							}}
+					<AppContext.Provider value={{ changeResponse: this.changeResponse }}>
+						<Navbar session={session} refetch={refetch} />
+						<Switch location={location}>
+							<Route path="/" exact component={Home} />
+							<Route
+								path="/explore"
+								exact
+								render={(e) => {
+									return <Explore user={session.data} />;
+								}}
+							/>
+							<Route
+								path="/detail/:type/:id"
+								exact
+								render={(e) => {
+									return <Detail user={session.data} />;
+								}}
+							/>
+							<Route
+								path="/create"
+								exact
+								render={() => {
+									return session.data ? <Create user={session} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/play"
+								exact
+								render={() => {
+									return session.data ? <Play user={session.data.data} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/profile"
+								exact
+								render={() => {
+									return session.data ? <Profile user={session.data.data} refetch={refetch} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/stats"
+								exact
+								render={() => {
+									return session.data ? <Stats user={session} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/self"
+								exact
+								render={() => {
+									return session.data ? <Self user={session} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
+							<Route path="/signup" exact render={() => <SignUp refetch={refetch} />} />
+							<Route path="/401" exact component={Unauthorized} />
+							<Route path="/404" exact component={NotFound} />
+							<Redirect to="/404" />
+						</Switch>
+						<CustomSnackbars
+							message={message}
+							severity={severity}
+							isOpen={isOpen}
+							changeResponse={this.changeResponse}
 						/>
-						<Route
-							path="/detail/:type/:id"
-							exact
-							render={(e) => {
-								return <Detail user={session.data} />;
-							}}
-						/>
-						<Route
-							path="/create"
-							exact
-							render={() => {
-								return session.data ? <Create user={session} /> : <Redirect to="/401" />;
-							}}
-						/>
-						<Route
-							path="/play"
-							exact
-							render={() => {
-								return session.data ? <Play user={session.data.data} /> : <Redirect to="/401" />;
-							}}
-						/>
-						<Route
-							path="/profile"
-							exact
-							render={() => {
-								return session.data ? <Profile user={session.data.data} refetch={refetch} /> : <Redirect to="/401" />;
-							}}
-						/>
-						<Route
-							path="/stats"
-							exact
-							render={() => {
-								return session.data ? <Stats user={session} /> : <Redirect to="/401" />;
-							}}
-						/>
-						<Route
-							path="/self"
-							exact
-							render={() => {
-								return session.data ? <Self user={session} /> : <Redirect to="/401" />;
-							}}
-						/>
-						<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
-						<Route path="/signup" exact render={() => <SignUp refetch={refetch} />} />
-						<Route path="/401" exact component={Unauthorized} />
-						<Route path="/404" exact component={NotFound} />
-						<Redirect to="/404" />
-					</Switch>
+					</AppContext.Provider>
 				</div>
 			</Fragment>
 		);
