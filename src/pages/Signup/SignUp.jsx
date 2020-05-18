@@ -17,14 +17,14 @@ const validationSchema = Yup.object({
 		.min(8, 'Password must contain at least 8 characters')
 		.test('strong-password-text', 'You need a stronger password', isStrongPassword)
 		.required('Enter your password'),
-	confirmPassword: Yup.string('Enter your password')
+	confirm_password: Yup.string('Enter your password')
 		.required('Confirm your password')
 		.oneOf([ Yup.ref('password') ], 'Password does not match')
 });
 
 class SignIn extends Component {
 	state = {
-		errMsg: ''
+		responseMsg: {}
 	};
 
 	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
@@ -36,14 +36,29 @@ class SignIn extends Component {
 				password
 			})
 			.then((res) => {
-				localStorage.setItem('token', res.data.token);
-				this.props.history.push('/');
-				this.props.refetch();
+				this.setState(
+					{
+						responseMsg: {
+							state: 'success',
+							msg: 'Successfully signed up'
+						}
+					},
+					() => {
+						setTimeout(() => {
+							localStorage.setItem('token', res.data.token);
+							this.props.history.push('/');
+							this.props.refetch();
+						}, 5000);
+					}
+				);
 			})
 			.catch((err) => {
 				setSubmitting(false);
 				this.setState({
-					errMsg: err.response.data.error
+					responseMsg: {
+						state: 'error',
+						msg: err.response.data.error
+					}
 				});
 			});
 	};
@@ -61,7 +76,7 @@ class SignIn extends Component {
 						{ name: 'password' },
 						{ name: 'confirm_password' }
 					]}
-					errMsg={this.state.errMsg}
+					responseMsg={this.state.responseMsg}
 				/>;
 			</div>
 		);

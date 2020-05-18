@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
@@ -64,7 +64,7 @@ const Form = (props) => {
 		isValid,
 		setFieldTouched,
 		isSubmitting,
-		errMsg,
+		responseMsg,
 		submitMsg,
 		inputs
 	} = props;
@@ -154,7 +154,9 @@ const Form = (props) => {
 				>
 					{submitMsg ? submitMsg : 'Submit'}
 				</Button>
-				<div className={`response-box ${errMsg ? 'response-box--error' : ''}`}>{errMsg ? errMsg : 'No response'}</div>
+				<div className={`response-box response-box--${responseMsg.state}`}>
+					{responseMsg.msg ? responseMsg.msg : 'No response'}
+				</div>
 			</div>
 		</form>
 	);

@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
 
 class SignIn extends Component {
 	state = {
-		errMsg: ''
+		responseMsg: {}
 	};
 
 	submitForm = ({ email, password }, { setSubmitting }) => {
@@ -22,14 +22,30 @@ class SignIn extends Component {
 				password
 			})
 			.then((res) => {
-				localStorage.setItem('token', res.data.token);
-				this.props.history.push('/');
-				this.props.refetch();
+				this.setState(
+					{
+						responseMsg: {
+							state: 'success',
+							msg: 'Successfully signed in'
+						}
+					},
+					() => {
+						setTimeout(() => {
+							localStorage.setItem('token', res.data.token);
+							this.props.history.push('/');
+							this.props.refetch();
+						}, 2500);
+					}
+				);
 			})
 			.catch((err) => {
 				setSubmitting(false);
+				console.log(err);
 				this.setState({
-					errMsg: err.response.data.error
+					responseMsg: {
+						state: 'error',
+						msg: err.response.data.error
+					}
 				});
 			});
 	};
@@ -47,7 +63,7 @@ class SignIn extends Component {
 						},
 						{ name: 'password' }
 					]}
-					errMsg={this.state.errMsg}
+					responseMsg={this.state.responseMsg}
 				/>;
 			</div>
 		);

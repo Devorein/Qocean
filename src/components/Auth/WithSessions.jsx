@@ -21,7 +21,7 @@ class WithSessions extends React.Component {
 				});
 			})
 			.catch((err) => {
-				console.log(err.response.data.error);
+				console.log(err.response);
 				this.setState({
 					session: {}
 				});

@@ -14,7 +14,13 @@
   color: $dark-text-l5;
   font-weight: bolder;
   user-select: none;
+  overflow: auto;
+  padding: 10px;
+  height: 30px;
   &--error {
     color: #f44336d6;
+  }
+  &--success {
+    color: #1af35bcb;
   }
 }

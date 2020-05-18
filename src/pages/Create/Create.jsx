@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 class Create extends Component {
 	render() {
-		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ];
+		// const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ];
 		return <div className="Create page">{/* <Form headers={headers} /> */}</div>;
 	}
 }
