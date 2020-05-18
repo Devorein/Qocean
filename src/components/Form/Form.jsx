@@ -92,9 +92,9 @@ const Form = (props) => {
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
 
-	const formikProps = (name, label, placeholder, initialValue = '') => ({
+	const formikProps = (type = '', name, label, placeholder, initialValue = '', defaultValue = '') => ({
 		name,
-		value: typeof values[name] !== 'undefined' ? values[name] : initialValue,
+		value: type === 'select' ? defaultValue : typeof values[name] !== 'undefined' ? values[name] : initialValue,
 		onChange: change.bind(null, name),
 		onBlur: handleBlur,
 		error: touched[name] && Boolean(errors[name]),
@@ -124,21 +124,37 @@ const Form = (props) => {
 	return (
 		<form className="form" onSubmit={handleSubmit}>
 			{inputs.map(
-				({ name, label, placeholder, value, InputProps, startAdornment, endAdornment, type, selectItems }) => {
+				({
+					name,
+					label,
+					placeholder,
+					defaultValue,
+					value,
+					InputProps,
+					startAdornment,
+					endAdornment,
+					type,
+					selectItems
+				}) => {
 					if (type === 'select') {
 						return (
-							<FormControl key={name}>
-								<InputLabel id={name}>{label}</InputLabel>
-								<Select labelId={name} name={name} value={values[name]} onChange={change.bind(null, name)}>
-									{selectItems.map(({ value, text }) => {
-										return (
-											<MenuItem key={value} value={value}>
-												{text}
-											</MenuItem>
-										);
-									})}
-								</Select>
-							</FormControl>
+							<TextField
+								classes={{
+									root: textField
+								}}
+								key={name}
+								select
+								{...formikProps(type, name, label, placeholder, value, defaultValue)}
+								fullWidth
+							>
+								{selectItems.map(({ value, text }) => {
+									return (
+										<MenuItem key={value} value={value}>
+											{text}
+										</MenuItem>
+									);
+								})}
+							</TextField>
 						);
 					} else if (type === 'checkbox')
 						return (
@@ -166,7 +182,7 @@ const Form = (props) => {
 								}}
 								key={name}
 								type={state.showPassword ? 'text' : 'password'}
-								{...formikProps(name, label, placeholder, value)}
+								{...formikProps('text', name, label, placeholder, value)}
 								fullWidth
 								InputProps={{
 									endAdornment: (
@@ -185,7 +201,7 @@ const Form = (props) => {
 								}}
 								key={name}
 								type={'text'}
-								{...formikProps(name, label, placeholder, value)}
+								{...formikProps('text', name, label, placeholder, value)}
 								fullWidth
 								InputProps={decideAdornment(InputProps, startAdornment, endAdornment)}
 							/>

@@ -56,21 +56,21 @@ class App extends Component {
 								path="/explore"
 								exact
 								render={(e) => {
-									return <Explore user={session.data} />;
+									return <Explore user={session.data.data} />;
 								}}
 							/>
 							<Route
 								path="/detail/:type/:id"
 								exact
 								render={(e) => {
-									return <Detail user={session.data} />;
+									return <Detail user={session.data.data} />;
 								}}
 							/>
 							<Route
 								path="/create"
 								exact
 								render={() => {
-									return session.data ? <Create user={session} /> : <Redirect to="/401" />;
+									return session.data ? <Create user={session.data.data} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
@@ -91,14 +91,14 @@ class App extends Component {
 								path="/stats"
 								exact
 								render={() => {
-									return session.data ? <Stats user={session} /> : <Redirect to="/401" />;
+									return session.data ? <Stats user={session.data.data} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/self"
 								exact
 								render={() => {
-									return session.data ? <Self user={session} /> : <Redirect to="/401" />;
+									return session.data ? <Self user={session.data.data} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />

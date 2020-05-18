@@ -104,7 +104,10 @@ class Create extends Component {
 				public: Yup.bool().default(true),
 				add_to_score: Yup.bool().default(true),
 				quiz: Yup.string('Enter the quiz').required('Quiz is required'),
-				type: Yup.string('Enter the type').required('Question type is required'),
+				type: Yup.string('Enter the type')
+					.oneOf([ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ], 'Invalid question type')
+					.required('Question type is required')
+					.default('MCQ'),
 				difficulty: Yup.string('Enter the difficulty')
 					.oneOf([ 'Beginner', 'Intermediate', 'Advanced' ], 'Should be one of the required value')
 					.default('Beginner')
@@ -133,7 +136,8 @@ class Create extends Component {
 							{ text: 'Snippet', value: 'Snippet' },
 							{ text: 'Flashcard', value: 'FC' },
 							{ text: 'True/False', value: 'TF' }
-						]
+						],
+						defaultValue: 'MCQ'
 					},
 					{
 						name: 'difficulty',
@@ -143,7 +147,8 @@ class Create extends Component {
 							{ text: 'Beginner', value: 'Beginner' },
 							{ text: 'Intermediate', value: 'Intermediate' },
 							{ text: 'Advanced', value: 'Advanced' }
-						]
+						],
+						defaultValue: 'Beginner'
 					}
 				]
 			};
@@ -202,11 +207,7 @@ class Create extends Component {
 						<div className="Create page">
 							<MultiHeader headers={headers} type={type} onHeaderClick={this.changeForm} page="explore" />
 							{type ? (
-								<InputForm
-									{...this.decideForm(type)}
-									responseMsg={this.state.responseMsg}
-									onSubmit={this.submitForm.bind(null, changeResponse)}
-								/>
+								<InputForm {...this.decideForm(type)} onSubmit={this.submitForm.bind(null, changeResponse)} />
 							) : null}
 						</div>
 					);
