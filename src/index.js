@@ -13,6 +13,8 @@ import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
 import Play from './pages/Play/Play';
+import Unauthorized from './pages/401/Unauthorized';
+import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import './App.scss';
@@ -46,40 +48,42 @@ class App extends Component {
 							path="/create"
 							exact
 							render={() => {
-								return session.data ? <Create user={session} /> : <Redirect to="/" />;
+								return session.data ? <Create user={session} /> : <Redirect to="/401" />;
 							}}
 						/>
 						<Route
 							path="/play"
 							exact
 							render={() => {
-								return session.data ? <Play user={session.data.data} /> : <Redirect to="/" />;
+								return session.data ? <Play user={session.data.data} /> : <Redirect to="/401" />;
 							}}
 						/>
 						<Route
 							path="/profile"
 							exact
 							render={() => {
-								return session.data ? <Profile user={session.data.data} refetch={refetch} /> : <Redirect to="/" />;
+								return session.data ? <Profile user={session.data.data} refetch={refetch} /> : <Redirect to="/401" />;
 							}}
 						/>
 						<Route
 							path="/stats"
 							exact
 							render={() => {
-								return session.data ? <Stats user={session} /> : <Redirect to="/" />;
+								return session.data ? <Stats user={session} /> : <Redirect to="/401" />;
 							}}
 						/>
 						<Route
 							path="/self"
 							exact
 							render={() => {
-								return session.data ? <Self user={session} /> : <Redirect to="/" />;
+								return session.data ? <Self user={session} /> : <Redirect to="/401" />;
 							}}
 						/>
 						<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
 						<Route path="/signup" exact render={() => <SignUp refetch={refetch} />} />
-						<Redirect to="/" />
+						<Route path="/401" exact component={Unauthorized} />
+						<Route path="/404" exact component={NotFound} />
+						<Redirect to="/404" />
 					</Switch>
 				</div>
 			</Fragment>
