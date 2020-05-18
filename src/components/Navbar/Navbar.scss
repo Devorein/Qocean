@@ -32,6 +32,7 @@
 
     &-item {
       padding: 5px;
+      user-select: none;
       &--image {
         height: 25px;
       }

@@ -103,11 +103,11 @@ function NavbarAuth({ session, refetch, history }) {
 				getContentAnchorEl={null}
 				classes={{ paper }}
 			>
-				<MenuItem onClick={switchPage.bind(null, 'Profile')}>
+				<MenuItem onClick={switchPage.bind(null, 'profile')}>
 					<AccountBoxIcon />
 					Profile
 				</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, 'Stats')}>
+				<MenuItem onClick={switchPage.bind(null, 'stats')}>
 					<EqualizerIcon />
 					Stats
 				</MenuItem>

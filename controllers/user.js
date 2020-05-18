@@ -10,7 +10,8 @@ exports.updateUserDetails = asyncHandler(async function(req, res, next) {
 	const updateFields = {
 		name: req.body.name,
 		email: req.body.email,
-		username: req.body.username
+		username: req.body.username,
+		image: req.body.image
 	};
 
 	const user = await User.findByIdAndUpdate(req.user.id, updateFields, {

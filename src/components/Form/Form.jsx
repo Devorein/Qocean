@@ -8,6 +8,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
 import EmailIcon from '@material-ui/icons/Email';
 import PersonIcon from '@material-ui/icons/Person';
+import ImageIcon from '@material-ui/icons/Image';
 
 import './Form.scss';
 
@@ -95,6 +96,7 @@ const Form = (props) => {
 	const decideIcon = (icon) => {
 		if (icon === 'email') return <EmailIcon />;
 		else if (icon === 'person') return <PersonIcon />;
+		else if (icon === 'image') return <ImageIcon />;
 	};
 
 	const decideAdornment = (InputProps, startAdornment, endAdornment) => {

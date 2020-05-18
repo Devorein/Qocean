@@ -52,7 +52,7 @@ class App extends Component {
 							path="/profile"
 							exact
 							render={() => {
-								return session.data ? <Profile user={session} /> : <Redirect to="/" />;
+								return session.data ? <Profile user={session.data.data} refetch={refetch} /> : <Redirect to="/" />;
 							}}
 						/>
 						<Route
