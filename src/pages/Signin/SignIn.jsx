@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 
 const validationSchema = Yup.object({
 	email: Yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
-	password: Yup.string('').required('Enter your password')
+	password: Yup.string('Enter your password').required('Password is required')
 });
 
 class SignIn extends Component {
@@ -15,11 +15,11 @@ class SignIn extends Component {
 		errMsg: ''
 	};
 
-	submitForm = (values, { setSubmitting }) => {
+	submitForm = ({ email, password }, { setSubmitting }) => {
 		axios
 			.post(`http://localhost:5001/api/v1/auth/login`, {
-				email: values.email,
-				password: values.password
+				email,
+				password
 			})
 			.then((res) => {
 				localStorage.setItem('token', res.data.token);
@@ -40,7 +40,7 @@ class SignIn extends Component {
 				<InputForm
 					onSubmit={this.submitForm}
 					validationSchema={validationSchema}
-					values={{ email: '', password: '' }}
+					inputs={[ { name: 'email' }, { name: 'password' } ]}
 					errMsg={this.state.errMsg}
 				/>;
 			</div>

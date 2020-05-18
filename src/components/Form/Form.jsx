@@ -62,7 +62,8 @@ const Form = (props) => {
 		setFieldTouched,
 		isSubmitting,
 		errMsg,
-		submitMsg
+		submitMsg,
+		inputs
 	} = props;
 	const { textField, button } = useStyles();
 
@@ -72,28 +73,32 @@ const Form = (props) => {
 		setFieldTouched(name, true, false);
 	};
 
-	const formikProps = (name, initialValue = '') => ({
-		name: name,
+	const decideLabel = (label, name) => {
+		if (label) return label;
+		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
+	};
+	const formikProps = (name, label, placeholder, initialValue = '') => ({
+		name,
 		value: typeof values[name] !== 'undefined' ? values[name] : initialValue,
 		onChange: change.bind(null, name),
 		onBlur: handleBlur,
 		error: touched[name] && Boolean(errors[name]),
 		helperText: touched[name] ? errors[name] : '',
-		label: name
+		label: decideLabel(label, name),
+		placeholder
 	});
 
 	return (
 		<form className="form" onSubmit={handleSubmit}>
-			{Object.keys(values).map((value) => {
-				console.log(value);
-				return value.toLowerCase().includes('password') ? (
+			{inputs.map(({ name, label, placeholder, value }) => {
+				return name.toLowerCase().includes('password') ? (
 					<TextField
 						classes={{
 							root: textField
 						}}
-						key={value}
+						key={name}
 						type={state.showPassword ? 'text' : 'password'}
-						{...formikProps(value)}
+						{...formikProps(name, label, placeholder, value)}
 						fullWidth
 						InputProps={{
 							endAdornment: (
@@ -110,9 +115,9 @@ const Form = (props) => {
 						classes={{
 							root: textField
 						}}
-						key={value}
+						key={name}
 						type={'text'}
-						{...formikProps(value)}
+						{...formikProps(name, label, placeholder, value)}
 						fullWidth
 					/>
 				);

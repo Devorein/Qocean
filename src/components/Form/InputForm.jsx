@@ -5,14 +5,19 @@ import Form from './Form';
 class InputForm extends Component {
 	state = {};
 	render() {
-		const { validationSchema, values, onSubmit, errMsg } = this.props;
+		const { validationSchema, inputs, onSubmit, errMsg } = this.props;
+		const initialValues = {};
+		inputs.forEach(({ name, value }) => {
+			initialValues[name] = value ? value : '';
+		});
+
 		return (
 			<div>
 				<Formik
-					initialValues={values}
+					initialValues={initialValues}
 					onSubmit={onSubmit}
 					validationSchema={validationSchema}
-					render={(props) => <Form {...props} errMsg={errMsg} />}
+					render={(props) => <Form {...props} errMsg={errMsg} inputs={inputs} />}
 				/>
 			</div>
 		);
