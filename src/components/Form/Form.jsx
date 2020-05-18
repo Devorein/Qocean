@@ -1,8 +1,13 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import { makeStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
@@ -118,58 +123,75 @@ const Form = (props) => {
 	};
 	return (
 		<form className="form" onSubmit={handleSubmit}>
-			{inputs.map(({ name, label, placeholder, value, InputProps, startAdornment, endAdornment, type }) => {
-				if (type === 'checkbox')
-					return (
-						<FormControlLabel
-							key={name}
-							classes={{ label: formlabel }}
-							control={
-								<Checkbox
-									color={'primary'}
-									checked={Boolean(values[name])}
-									name={name}
-									onChange={change.bind(null, name)}
-									onBlur={handleBlur}
-									error={touched[name] && errors[name]}
-								/>
-							}
-							label={label}
-						/>
-					);
-				else
-					return name.toLowerCase().includes('password') ? (
-						<TextField
-							classes={{
-								root: textField
-							}}
-							key={name}
-							type={state.showPassword ? 'text' : 'password'}
-							{...formikProps(name, label, placeholder, value)}
-							fullWidth
-							InputProps={{
-								endAdornment: (
-									<InputAdornment position="end">
-										<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-											{state.showPassword ? <Visibility /> : <VisibilityOff />}
-										</IconButton>
-									</InputAdornment>
-								)
-							}}
-						/>
-					) : (
-						<TextField
-							classes={{
-								root: textField
-							}}
-							key={name}
-							type={'text'}
-							{...formikProps(name, label, placeholder, value)}
-							fullWidth
-							InputProps={decideAdornment(InputProps, startAdornment, endAdornment)}
-						/>
-					);
-			})}
+			{inputs.map(
+				({ name, label, placeholder, value, InputProps, startAdornment, endAdornment, type, selectItems }) => {
+					if (type === 'select') {
+						return (
+							<FormControl key={name}>
+								<InputLabel id={name}>{label}</InputLabel>
+								<Select labelId={name} name={name} value={values[name]} onChange={change.bind(null, name)}>
+									{selectItems.map(({ value, text }) => {
+										return (
+											<MenuItem key={value} value={value}>
+												{text}
+											</MenuItem>
+										);
+									})}
+								</Select>
+							</FormControl>
+						);
+					} else if (type === 'checkbox')
+						return (
+							<FormControlLabel
+								key={name}
+								classes={{ label: formlabel }}
+								control={
+									<Checkbox
+										color={'primary'}
+										checked={Boolean(values[name])}
+										name={name}
+										onChange={change.bind(null, name)}
+										onBlur={handleBlur}
+										error={touched[name] && errors[name]}
+									/>
+								}
+								label={label}
+							/>
+						);
+					else
+						return name.toLowerCase().includes('password') ? (
+							<TextField
+								classes={{
+									root: textField
+								}}
+								key={name}
+								type={state.showPassword ? 'text' : 'password'}
+								{...formikProps(name, label, placeholder, value)}
+								fullWidth
+								InputProps={{
+									endAdornment: (
+										<InputAdornment position="end">
+											<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+												{state.showPassword ? <Visibility /> : <VisibilityOff />}
+											</IconButton>
+										</InputAdornment>
+									)
+								}}
+							/>
+						) : (
+							<TextField
+								classes={{
+									root: textField
+								}}
+								key={name}
+								type={'text'}
+								{...formikProps(name, label, placeholder, value)}
+								fullWidth
+								InputProps={decideAdornment(InputProps, startAdornment, endAdornment)}
+							/>
+						);
+				}
+			)}
 			<div className="messages">
 				<Button
 					classes={{ root: button }}

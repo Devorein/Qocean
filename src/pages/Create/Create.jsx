@@ -8,7 +8,8 @@ import { AppContext } from '../../index';
 
 class Create extends Component {
 	state = {
-		type: ''
+		type: '',
+		data: []
 	};
 
 	submitForm = (changeResponse, values, { setSubmitting }) => {
@@ -37,6 +38,19 @@ class Create extends Component {
 
 	decideForm = (type) => {
 		if (type === 'Quiz') {
+			axios
+				.get('http://localhost:5001/api/v1/folders/me', {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then(({ data: { data } }) => {
+					this.setState({
+						data: data.map((item) => {
+							return { text: item.name, value: item._id };
+						})
+					});
+				});
 			const validationSchema = Yup.object({
 				name: Yup.string('Enter quiz name')
 					.min(3, 'Name can not be less than 3 characters')
@@ -46,7 +60,8 @@ class Create extends Component {
 				source: Yup.string('Enter quiz source'),
 				image: Yup.string('Enter quiz image'),
 				favourite: Yup.bool().default(false),
-				public: Yup.bool().default(true)
+				public: Yup.bool().default(true),
+				folder: Yup.string('Enter folder')
 			});
 			return {
 				validationSchema,
@@ -56,7 +71,13 @@ class Create extends Component {
 					{ name: 'source', label: `${type} source` },
 					{ name: 'image', label: `${type} image` },
 					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
-					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
+					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
+					{
+						name: 'folder',
+						label: 'Folder',
+						type: 'select',
+						selectItems: this.state.data
+					}
 				]
 			};
 		} else if (type === 'Question') {
