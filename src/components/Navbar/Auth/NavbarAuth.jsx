@@ -2,8 +2,41 @@ import React, { Fragment } from 'react';
 import { NavLink, withRouter } from 'react-router-dom';
 import { Button, Menu, MenuItem } from '@material-ui/core';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import EqualizerIcon from '@material-ui/icons/Equalizer';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { orange } from '@material-ui/core/colors';
+
+const useStyles = makeStyles({
+	paper: {
+		backgroundColor: '#1a1a1a',
+		color: 'rgba(255, 255, 255, 0.87)',
+		'& .MuiMenuItem-root': {
+			display: 'flex',
+			justifyContent: 'center',
+			fontFamily: 'Quantico',
+			'&:hover': {
+				backgroundColor: '#333'
+			}
+		}
+	}
+});
+
+const CustomButtom = withStyles((theme) => ({
+	root: {
+		fontFamily: 'Quantico',
+		fontWeight: 'bold',
+		color: '#ddd',
+		backgroundColor: '#1a1a1a',
+		'&:hover': {
+			backgroundColor: orange[500]
+		}
+	}
+}))(Button);
 
 function NavbarAuth({ session, refetch, history }) {
+	const { paper } = useStyles();
+
 	const logout = () => {
 		localStorage.removeItem('token');
 		history.push('/');
@@ -12,6 +45,7 @@ function NavbarAuth({ session, refetch, history }) {
 
 	const switchPage = (page) => {
 		history.push(`/${page}`);
+		setAnchorEl(null);
 	};
 
 	const [ anchorEl, setAnchorEl ] = React.useState(null);
@@ -57,13 +91,30 @@ function NavbarAuth({ session, refetch, history }) {
 					{session.data.data.username}
 				</span>
 			</div>
-			<Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
-				<MenuItem onClick={switchPage.bind(null, 'Profile')}>Profile</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, 'Stats')}>Stats</MenuItem>
+			<Menu
+				id="simple-menu"
+				anchorEl={anchorEl}
+				open={Boolean(anchorEl)}
+				onClose={handleClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'center'
+				}}
+				getContentAnchorEl={null}
+				classes={{ paper }}
+			>
+				<MenuItem onClick={switchPage.bind(null, 'Profile')}>
+					<AccountBoxIcon />
+					Profile
+				</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, 'Stats')}>
+					<EqualizerIcon />
+					Stats
+				</MenuItem>
 				<MenuItem onClick={logout}>
-					<Button variant="contained" size="medium" startIcon={<ExitToAppIcon />} onClick={logout}>
+					<CustomButtom variant="contained" size="large" startIcon={<ExitToAppIcon />}>
 						Logout
-					</Button>
+					</CustomButtom>
 				</MenuItem>
 			</Menu>
 		</Fragment>
