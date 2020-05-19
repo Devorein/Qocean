@@ -70,7 +70,7 @@ function NavbarAuth({ session, refetch, history, match, location }) {
 	const headers = [
 		{ name: 'home', link: '', icon: <HomeIcon /> },
 		{ name: 'create', link: 'create/Quiz', icon: <NoteAddIcon /> },
-		{ name: 'explore', link: 'explore', icon: <ExploreIcon /> },
+		{ name: 'explore', link: 'explore/User', icon: <ExploreIcon /> },
 		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> }
 	];
 	const index = headers.findIndex(({ name }) => name === location.pathname.replace(/\//g, '\\').split('\\')[1]);

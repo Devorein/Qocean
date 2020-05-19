@@ -152,7 +152,7 @@ class App extends Component {
 						<Switch location={location}>
 							<Route path="/" exact component={Home} />
 							<Route
-								path="/explore"
+								path="/explore/:type"
 								exact
 								render={(e) => {
 									return <Explore user={session.data ? session.data.data : null} />;
