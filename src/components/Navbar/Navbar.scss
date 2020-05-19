@@ -2,50 +2,44 @@
 
 .navbar-links {
   width: 100vw;
-  height: fit-content;
+  height: 50px;
   background-color: $dark-bg-1;
   display: flex;
   justify-content: space-around;
-
-  a {
+  align-items: center;
+  .MuiTabs-root {
     height: 100%;
-    display: block;
-    flex-grow: 1;
-    margin: 5px;
+    .MuiTabs-flexContainer {
+      height: 100%;
+      .MuiButtonBase-root {
+        height: calc(100% - 20px);
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        margin: 0px;
+        .MuiTab-wrapper {
+          font-size: 12px;
+          .MuiSvgIcon-root {
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+    }
   }
-
-  .navbar-link {
-    margin: 3px 5px 0px 5px;
-    list-style-type: none;
-    cursor: pointer;
-    color: $dark-text-1;
-    background-color: $dark-bg-l5;
-    padding: 5px;
+  & .user-links {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: "Quantico";
-    font-weight: bold;
-    font-size: 20px;
-    transition: background-color 250ms ease-in-out;
-    height: calc(100% - 15px);
-
-    &-item {
-      padding: 5px;
+    padding: 5px;
+    .navbar-link-item--username {
+      font-weight: bolder;
+      color: #ddd;
+      font-family: "Quantico";
+      margin-left: 10px;
+      font-size: 18px;
       user-select: none;
-      &--image {
-        height: 25px;
-      }
-      &--username {
-        font-weight: 500;
-      }
+      cursor: pointer;
     }
-    &:hover {
-      background-color: $dark-bg-l10;
-      transition: background-color 250ms ease-in-out;
-    }
-  }
-  .active {
-    background-color: #5a5a5a;
   }
 }

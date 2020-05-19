@@ -1,12 +1,20 @@
 import React, { Fragment } from 'react';
-import { NavLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Button, Menu, MenuItem } from '@material-ui/core';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { orange } from '@material-ui/core/colors';
-import BlockIcon from '@material-ui/icons/Block';
+import Avatar from '@material-ui/core/Avatar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import HomeIcon from '@material-ui/icons/Home';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import ExploreIcon from '@material-ui/icons/Explore';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import ImageIcon from '@material-ui/icons/Image';
+import FaceIcon from '@material-ui/icons/Face';
 
 const useStyles = makeStyles({
 	paper: {
@@ -35,7 +43,7 @@ const CustomButtom = withStyles((theme) => ({
 	}
 }))(Button);
 
-function NavbarAuth({ session, refetch, history }) {
+function NavbarAuth({ session, refetch, history, match, location }) {
 	const { paper } = useStyles();
 
 	const logout = () => {
@@ -59,37 +67,40 @@ function NavbarAuth({ session, refetch, history }) {
 		setAnchorEl(null);
 	};
 
+	const headers = [
+		{ name: 'home', link: '', icon: <HomeIcon /> },
+		{ name: 'create', link: 'create/Quiz', icon: <NoteAddIcon /> },
+		{ name: 'explore', link: 'explore', icon: <ExploreIcon /> },
+		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> }
+	];
+	const index = headers.findIndex(({ name }) => name === location.pathname.replace(/\//g, '\\').split('\\')[1]);
 	return (
 		<Fragment>
-			<NavLink className="navbar-link" to="/" exact>
-				Home
-			</NavLink>
-			<NavLink className="navbar-link" to="/create/Quiz">
-				Create
-			</NavLink>
-			<NavLink className="navbar-link" to="/explore">
-				Explore
-			</NavLink>
-			<NavLink className="navbar-link" to="/self">
-				Self
-			</NavLink>
-			<NavLink className="navbar-link" to="/play">
-				Play
-			</NavLink>
-			<div className="navbar-link">
-				<img
-					className="navbar-link-item navbar-link-item--image"
-					src={
-						session.data.data.image === 'none.png' ? `http://localhost:3000/uploads/none.png` : session.data.data.image
-					}
-					alt={'User'}
-				/>
+			<Tabs
+				value={index === -1 ? 0 : index}
+				onChange={(e, value) => {
+					switchPage(headers[value].link);
+				}}
+				indicatorColor="primary"
+				textColor="primary"
+				centered
+			>
+				{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
+			</Tabs>
+			<div className="user-links">
+				{session.data.data.image !== 'none.png' ? (
+					<Avatar variant="square" alt="Username" src={session.data.data.image} />
+				) : (
+					<Avatar variant="square" alt="Username">
+						<ImageIcon />
+					</Avatar>
+				)}
+
 				<span className="navbar-link-item navbar-link-item--username" onClick={handleClick}>
 					{session.data.data.username}
 				</span>
 			</div>
 			<Menu
-				id="simple-menu"
 				anchorEl={anchorEl}
 				open={Boolean(anchorEl)}
 				onClose={handleClose}
@@ -107,6 +118,10 @@ function NavbarAuth({ session, refetch, history }) {
 				<MenuItem onClick={switchPage.bind(null, 'stats')}>
 					<EqualizerIcon />
 					Stats
+				</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, 'self')}>
+					<FaceIcon />
+					Self
 				</MenuItem>
 				<MenuItem onClick={logout}>
 					<CustomButtom variant="contained" size="large" startIcon={<ExitToAppIcon />}>
