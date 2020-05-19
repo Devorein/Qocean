@@ -11,6 +11,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
 import { makeStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
@@ -62,7 +63,9 @@ const Form = (props) => {
 		isSubmitting,
 		submitMsg,
 		inputs,
-		children
+		children,
+		resetMsg,
+		resetForm
 	} = props;
 	const { textField, formcontrollabel } = useStyles();
 
@@ -232,9 +235,20 @@ const Form = (props) => {
 				}
 			)}
 			{children}
-			<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
-				{submitMsg ? submitMsg : 'Submit'}
-			</Button>
+			<FormGroup row={true}>
+				<Button
+					variant="contained"
+					color="default"
+					onClick={(e) => {
+						resetForm();
+					}}
+				>
+					{resetMsg ? resetMsg : 'Reset'}
+				</Button>
+				<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+					{submitMsg ? submitMsg : 'Submit'}
+				</Button>
+			</FormGroup>
 		</form>
 	);
 };

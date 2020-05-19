@@ -116,6 +116,16 @@ const GlobalCss = withStyles({
 		},
 		'.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {
 			backgroundColor: '#00000059'
+		},
+		'.MuiButton-contained': {
+			backgroundColor: '#2d2d2d',
+			'&:hover': {
+				backgroundColor: '#535353'
+			}
+		},
+		'.MuiButton-contained.MuiButton-containedPrimary': {
+			color: '#fff',
+			backgroundColor: '#3f51b5'
 		}
 	}
 })(() => null);

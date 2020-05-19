@@ -14,7 +14,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 
 class Create extends Component {
-	submitForm = (changeResponse, values, { setSubmitting }) => {
+	submitForm = (changeResponse, values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();
 		axios
 			.post(
@@ -35,6 +35,7 @@ class Create extends Component {
 				changeResponse(`Successfully created ${type}`, 'success');
 			})
 			.catch((err) => {
+				resetForm();
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);

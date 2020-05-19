@@ -65,7 +65,8 @@ class CreateEnvironment extends Component {
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true },
-			{ name: 'reset_after_submit', type: 'checkbox', defaultValue: false },
+			{ name: 'reset_on_success', type: 'checkbox', defaultValue: true },
+			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
 			{
 				name: 'default_quiz_difficulty',
 				type: 'select',
@@ -99,7 +100,7 @@ class CreateEnvironment extends Component {
 				defaultValue: 'Light'
 			},
 			{
-				name: 'question_weight',
+				name: 'default_question_weight',
 				type: 'number',
 				inputProps: {
 					min: 1,
