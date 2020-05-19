@@ -3,12 +3,15 @@ import CreateQuiz from './CreateQuiz';
 import CreateQuestion from './CreateQuestion';
 import CreateFolder from './CreateFolder';
 import CreateEnvironment from './CreateEnvironment';
-import MultiHeader from '../../components/MultiHeader/MultiHeader';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import { AppContext } from '../../index';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import SettingsIcon from '@material-ui/icons/Settings';
+import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 
 class Create extends Component {
 	submitForm = (changeResponse, values, { setSubmitting }) => {
@@ -52,22 +55,27 @@ class Create extends Component {
 	};
 	render() {
 		const { match: { params: { type } }, history } = this.props;
-		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ];
+		const headers = [
+			{ name: 'Quiz', icon: <HorizontalSplitIcon /> },
+			{ name: 'Question', icon: <QuestionAnswerIcon /> },
+			{ name: 'Folder', icon: <FolderOpenIcon /> },
+			{ name: 'Environment', icon: <SettingsIcon /> }
+		];
 		return (
 			<AppContext.Consumer>
 				{({ changeResponse }) => {
 					return (
 						<div className="Create page">
 							<Tabs
-								value={headers.indexOf(type)}
+								value={headers.findIndex(({ name }) => name === type)}
 								onChange={(e, value) => {
-									this.changeForm(history, headers[value]);
+									this.changeForm(history, headers[value].name);
 								}}
 								indicatorColor="primary"
 								textColor="primary"
 								centered
 							>
-								{headers.map((label) => <Tab key={label} label={label} />)}
+								{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
 							</Tabs>
 							{this.decideForm(type, changeResponse)}
 						</div>

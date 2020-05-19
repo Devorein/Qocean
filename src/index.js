@@ -82,6 +82,13 @@ const GlobalCss = withStyles({
 		},
 		'.MuiTabs-flexContainer': {
 			background: '#272727'
+		},
+		'.MuiTab-wrapper': {
+			flexDirection: 'row'
+		},
+		'.MuiTab-labelIcon .MuiTab-wrapper > *:first-child': {
+			marginRight: '5px',
+			marginBottom: '0px'
 		}
 	}
 })(() => null);
