@@ -19,6 +19,8 @@ import IconButton from '@material-ui/core/IconButton';
 import EmailIcon from '@material-ui/icons/Email';
 import PersonIcon from '@material-ui/icons/Person';
 import ImageIcon from '@material-ui/icons/Image';
+import ListItem from '@material-ui/core/ListItem';
+import Icon from '@material-ui/core/Icon';
 
 import './Form.scss';
 
@@ -130,9 +132,10 @@ const Form = (props) => {
 									<Fragment>
 										<InputLabel id={name}>{decideLabel(name, label)}</InputLabel>
 										<Select name={name} value={values[name]} onChange={change.bind(null, name)}>
-											{selectItems.map(({ value, text }) => {
+											{selectItems.map(({ value, text, icon }) => {
 												return (
 													<MenuItem key={value} value={value}>
+														{icon ? <Icon>{icon}</Icon> : null}
 														{text}
 													</MenuItem>
 												);

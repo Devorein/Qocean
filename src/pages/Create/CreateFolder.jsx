@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
+import FolderIcon from '@material-ui/icons/Folder';
+import { red, blue, indigo, green, orange, yellow, purple } from '@material-ui/core/colors';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter folder name').required('Folder name is required'),
@@ -20,31 +22,38 @@ class CreateFolder extends Component {
 				selectItems: [
 					{
 						text: 'Red',
-						value: 'Red_folder.svg'
+						value: 'Red_folder.svg',
+						icon: <FolderIcon style={{ fill: red[500] }} />
 					},
 					{
 						text: 'Orange',
-						value: 'Orange_folder.svg'
+						value: 'Orange_folder.svg',
+						icon: <FolderIcon style={{ fill: orange[500] }} />
 					},
 					{
 						text: 'Yellow',
-						value: 'Yellow_folder.svg'
+						value: 'Yellow_folder.svg',
+						icon: <FolderIcon style={{ fill: yellow[500] }} />
 					},
 					{
 						text: 'Green',
-						value: 'Green_folder.svg'
+						value: 'Green_folder.svg',
+						icon: <FolderIcon style={{ fill: green[500] }} />
 					},
 					{
 						text: 'Blue',
-						value: 'Blue_folder.svg'
+						value: 'Blue_folder.svg',
+						icon: <FolderIcon style={{ fill: blue[500] }} />
 					},
 					{
 						text: 'Indigo',
-						value: 'Indigo_folder.svg'
+						value: 'Indigo_folder.svg',
+						icon: <FolderIcon style={{ fill: indigo[500] }} />
 					},
 					{
 						text: 'Violet',
-						value: 'Violet_folder.svg'
+						value: 'Violet_folder.svg',
+						icon: <FolderIcon style={{ fill: purple[500] }} />
 					}
 				],
 				defaultValue: 'Red_folder.svg'

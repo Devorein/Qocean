@@ -89,6 +89,18 @@ const GlobalCss = withStyles({
 		'.MuiTab-labelIcon .MuiTab-wrapper > *:first-child': {
 			marginRight: '5px',
 			marginBottom: '0px'
+		},
+		'.MuiIcon-root': {
+			marginRight: '5px',
+			display: 'flex'
+		},
+		'.MuiSelect-select': {
+			display: 'flex',
+			alignItems: 'center'
+		},
+		'.MuiMenuItem-root.MuiListItem-root': {
+			display: 'flex',
+			flexDirection: 'row'
 		}
 	}
 })(() => null);

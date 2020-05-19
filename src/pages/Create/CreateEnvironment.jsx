@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
+import { red, blue, indigo, green, orange, yellow, purple } from '@material-ui/core/colors';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -23,31 +25,38 @@ class CreateEnvironment extends Component {
 				selectItems: [
 					{
 						text: 'Red',
-						value: 'Red_env.svg'
+						value: 'Red_env.svg',
+						icon: <SettingsIcon style={{ fill: red[500] }} />
 					},
 					{
 						text: 'Orange',
-						value: 'Orange_env.svg'
+						value: 'Orange_env.svg',
+						icon: <SettingsIcon style={{ fill: orange[500] }} />
 					},
 					{
 						text: 'Yellow',
-						value: 'Yellow_env.svg'
+						value: 'Yellow_env.svg',
+						icon: <SettingsIcon style={{ fill: yellow[500] }} />
 					},
 					{
 						text: 'Green',
-						value: 'Green_env.svg'
+						value: 'Green_env.svg',
+						icon: <SettingsIcon style={{ fill: green[500] }} />
 					},
 					{
 						text: 'Blue',
-						value: 'Blue_env.svg'
+						value: 'Blue_env.svg',
+						icon: <SettingsIcon style={{ fill: blue[500] }} />
 					},
 					{
 						text: 'Indigo',
-						value: 'Indigo_env.svg'
+						value: 'Indigo_env.svg',
+						icon: <SettingsIcon style={{ fill: indigo[500] }} />
 					},
 					{
 						text: 'Violet',
-						value: 'Violet_env.svg'
+						value: 'Violet_env.svg',
+						icon: <SettingsIcon style={{ fill: purple[500] }} />
 					}
 				],
 				defaultValue: 'Red_env.svg'
