@@ -54,6 +54,12 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 	reset_on_error: {
 		type: Boolean,
 		default: false
+	},
+	notification_timing: {
+		type: Number,
+		default: 2500,
+		min: 1000,
+		max: 5000
 	}
 });
 

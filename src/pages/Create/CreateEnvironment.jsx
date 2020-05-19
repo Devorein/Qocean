@@ -109,6 +109,16 @@ class CreateEnvironment extends Component {
 					step: 1
 				},
 				defaultValue: 1
+			},
+			{
+				name: 'notification_timing',
+				type: 'number',
+				inputProps: {
+					min: 1000,
+					max: 5000,
+					step: 250
+				},
+				defaultValue: 2500
 			}
 		];
 		return (
