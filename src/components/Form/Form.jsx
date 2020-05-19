@@ -136,7 +136,7 @@ const Form = (props) => {
 										<Select name={name} value={values[name]} onChange={change.bind(null, name)}>
 											{selectItems.map(({ value, text, icon }) => {
 												return (
-													<MenuItem key={value} value={value}>
+													<MenuItem key={value ? value : text} value={value ? value : text}>
 														{icon ? <Icon>{icon}</Icon> : null}
 														{text}
 													</MenuItem>

@@ -35,6 +35,11 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 	default_quiz_time: {
 		type: Number,
 		default: 30
+	},
+	default_quiz_difficulty: {
+		type: String,
+		default: 'Beginner',
+		enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
 	}
 });
 

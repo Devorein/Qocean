@@ -65,7 +65,39 @@ class CreateEnvironment extends Component {
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true },
-			{ name: 'reset_after_submit', type: 'checkbox', defaultValue: false }
+			{ name: 'reset_after_submit', type: 'checkbox', defaultValue: false },
+			{
+				name: 'default_quiz_difficulty',
+				type: 'select',
+				selectItems: [
+					{
+						text: 'Beginner'
+					},
+					{
+						text: 'Intermediate'
+					},
+					{
+						text: 'Advanced'
+					}
+				],
+				defaultValue: 'Beginner'
+			},
+			{
+				name: 'theme',
+				type: 'select',
+				selectItems: [
+					{
+						text: 'Light'
+					},
+					{
+						text: 'Dark'
+					},
+					{
+						text: 'Navy'
+					}
+				],
+				defaultValue: 'Light'
+			}
 		];
 		return (
 			<div>

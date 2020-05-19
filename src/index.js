@@ -103,7 +103,7 @@ const GlobalCss = withStyles({
 			flexDirection: 'row'
 		},
 		'.MuiListItem-root': {
-			padding: 0,
+			padding: 10,
 			height: 40
 		},
 		'.MuiTypography-root': {
@@ -155,7 +155,7 @@ class App extends Component {
 								path="/explore"
 								exact
 								render={(e) => {
-									return <Explore user={session.data.data} />;
+									return <Explore user={session.data ? session.data.data : null} />;
 								}}
 							/>
 							<Route
