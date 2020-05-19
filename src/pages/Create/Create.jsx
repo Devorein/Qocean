@@ -142,18 +142,16 @@ class Create extends Component {
 					},
 					{
 						name: 'difficulty',
-						label: 'Difficulty',
-						type: 'select',
-						selectItems: [
-							{ text: 'Beginner', value: 'Beginner' },
-							{ text: 'Intermediate', value: 'Intermediate' },
-							{ text: 'Advanced', value: 'Advanced' }
+						type: 'radio',
+						radioItems: [
+							{ label: 'Beginner', value: 'Beginner' },
+							{ label: 'Intermediate', value: 'Intermediate' },
+							{ label: 'Advanced', value: 'Advanced' }
 						],
 						defaultValue: 'Beginner'
 					},
 					{
 						name: 'time_allocated',
-						label: 'Time Allocated',
 						type: 'number',
 						inputProps: {
 							min: 15,

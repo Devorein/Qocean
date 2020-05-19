@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import FormLabel from '@material-ui/core/FormLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
@@ -50,7 +52,7 @@ const useStyles = makeStyles({
 			backgroundColor: '#c10000'
 		}
 	},
-	formlabel: {
+	formcontrollabel: {
 		fontFamily: 'Quantico',
 		color: '#ddd'
 	}
@@ -78,7 +80,7 @@ const Form = (props) => {
 		submitMsg,
 		inputs
 	} = props;
-	const { textField, button, formlabel } = useStyles();
+	const { textField, button, formcontrollabel } = useStyles();
 
 	const change = (name, e) => {
 		e.persist();
@@ -139,6 +141,7 @@ const Form = (props) => {
 					endAdornment,
 					type,
 					selectItems,
+					radioItems,
 					inputProps
 				}) => {
 					if (type === 'select')
@@ -165,7 +168,7 @@ const Form = (props) => {
 						return (
 							<FormControlLabel
 								key={name}
-								classes={{ label: formlabel }}
+								classes={{ label: formcontrollabel }}
 								control={
 									<Checkbox
 										color={'primary'}
@@ -178,6 +181,24 @@ const Form = (props) => {
 								}
 								label={label}
 							/>
+						);
+					else if (type === 'radio')
+						return (
+							<Fragment key={name}>
+								<FormLabel component="legend">{decideLabel(label, name)}</FormLabel>
+								<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
+									{radioItems.map(({ label, value }) => (
+										<FormControlLabel
+											value={value}
+											key={value}
+											classes={{ label: formcontrollabel }}
+											control={<Radio color="primary" />}
+											label={label}
+											labelPlacement="end"
+										/>
+									))}
+								</RadioGroup>
+							</Fragment>
 						);
 					else if (type === 'number')
 						return (
