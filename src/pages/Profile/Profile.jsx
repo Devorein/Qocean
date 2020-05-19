@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { isAlphaNumericOnly } from '../../Utils/validation';
 import { withRouter } from 'react-router-dom';
+import { AppContext } from '../../index';
 
 const inputs = [
 	{ name: 'name', startAdornment: 'person' },
@@ -16,7 +17,7 @@ const inputs = [
 ];
 
 class Profile extends Component {
-	submitForm = ({ name, email, username, image }, { setSubmitting }) => {
+	submitForm = (changeResponse, { name, email, username, image }, { setSubmitting }) => {
 		const { user } = this.props;
 		const payload = {};
 		payload.name = name ? name : user.name;
@@ -35,13 +36,10 @@ class Profile extends Component {
 				this.props.refetch();
 			})
 			.catch((err) => {
-				setSubmitting(false);
-				this.setState({
-					responseMsg: {
-						state: 'error',
-						msg: err.response.data.error
-					}
-				});
+				setTimeout(() => {
+					setSubmitting(false);
+				}, 2500);
+				changeResponse(err.response.data.error, 'error');
 			});
 	};
 
@@ -60,9 +58,20 @@ class Profile extends Component {
 		});
 
 		return (
-			<div className="profile pages">
-				<InputForm validationSchema={validationSchema} inputs={inputs} onSubmit={this.submitForm} responseMsg={{}} />
-			</div>
+			<AppContext.Consumer>
+				{({ changeResponse }) => {
+					return (
+						<div className="profile pages">
+							<InputForm
+								validationSchema={validationSchema}
+								inputs={inputs}
+								onSubmit={this.submitForm.bind(null, changeResponse)}
+								responseMsg={{}}
+							/>
+						</div>
+					);
+				}}
+			</AppContext.Consumer>
 		);
 	}
 }
