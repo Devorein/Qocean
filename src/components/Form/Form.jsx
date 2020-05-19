@@ -68,26 +68,27 @@ const Form = (props) => {
 		setFieldTouched(name, true, false);
 	};
 
-	const decideLabel = (label, name) => {
+	const decideLabel = (name, label) => {
 		if (label) return label;
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
 
-	const decideValue = (type, defaultValue = '', name, initialValue) => {
-		return (type === 'select' || type === 'number') && values[name] === ''
-			? defaultValue
-			: typeof values[name] !== 'undefined' ? values[name] : initialValue;
+	const decideValue = (type, name, defaultValue, initialValue) => {
+		if (values[name] === '') {
+			if (type === 'select' || type === 'number') return defaultValue;
+			else if (type === 'text' || type === 'password') return initialValue;
+		} else return values[name];
 	};
 
-	const formikProps = (type = '', name, label, placeholder, initialValue = '', defaultValue = '') => {
+	const formikProps = (type, name, label, placeholder, initialValue, defaultValue) => {
 		return {
 			name,
-			value: decideValue(type, defaultValue, name, initialValue),
+			value: decideValue(type, name, defaultValue, initialValue),
 			onChange: change.bind(null, name),
 			onBlur: handleBlur,
 			error: touched[name] && Boolean(errors[name]),
 			helperText: touched[name] ? errors[name] : '',
-			label: decideLabel(label, name),
+			label: decideLabel(name, label),
 			placeholder
 		};
 	};
@@ -132,18 +133,24 @@ const Form = (props) => {
 					if (type === 'select')
 						return (
 							<FormControl disabled={disabled ? disabled : false} fullWidth key={name}>
-								<InputLabel id={name}>{decideLabel(label, name)}</InputLabel>
-								<Select name={name} value={decideValue(type, defaultValue, name)} onChange={change.bind(null, name)}>
-									{!disabled ? (
-										selectItems.map(({ value, text }) => {
-											return (
-												<MenuItem key={value} value={value}>
-													{text}
-												</MenuItem>
-											);
-										})
-									) : null}
-								</Select>
+								{!disabled ? (
+									<Fragment>
+										<InputLabel id={name}>{decideLabel(name, label)}</InputLabel>
+										<Select
+											name={name}
+											value={decideValue(type, name, defaultValue ? defaultValue : '')}
+											onChange={change.bind(null, name)}
+										>
+											{selectItems.map(({ value, text }) => {
+												return (
+													<MenuItem key={value} value={value}>
+														{text}
+													</MenuItem>
+												);
+											})}
+										</Select>
+									</Fragment>
+								) : null}
 								{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
 							</FormControl>
 						);
@@ -162,13 +169,13 @@ const Form = (props) => {
 										error={touched[name] && errors[name]}
 									/>
 								}
-								label={decideLabel(label, name)}
+								label={decideLabel(name, label)}
 							/>
 						);
 					else if (type === 'radio')
 						return (
 							<FormControl key={name}>
-								<FormLabel component="legend">{decideLabel(label, name)}</FormLabel>
+								<FormLabel component="legend">{decideLabel(name, label)}</FormLabel>
 								<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
 									{radioItems.map(({ label, value }) => (
 										<FormControlLabel

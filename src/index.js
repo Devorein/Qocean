@@ -72,6 +72,9 @@ const GlobalCss = withStyles({
 			'&.Mui-disabled': {
 				backgroundColor: '#c10000'
 			}
+		},
+		'.MuiInput-underline': {
+			paddingBottom: '5px'
 		}
 	}
 })(() => null);
