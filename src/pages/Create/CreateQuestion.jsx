@@ -24,7 +24,8 @@ const validationSchema = Yup.object({
 
 class CreateQuestion extends Component {
 	state = {
-		quizzes: []
+		quizzes: [],
+		loading: true
 	};
 
 	componentDidMount() {
@@ -36,7 +37,8 @@ class CreateQuestion extends Component {
 			})
 			.then(({ data: { data: quizzes } }) => {
 				this.setState({
-					quizzes
+					quizzes,
+					loading: false
 				});
 			})
 			.catch((err) => {
@@ -46,7 +48,7 @@ class CreateQuestion extends Component {
 
 	render() {
 		const { onSubmit } = this.props;
-		const { quizzes } = this.state;
+		const { quizzes, loading } = this.state;
 
 		const inputs = [
 			{ name: 'name' },
@@ -60,7 +62,9 @@ class CreateQuestion extends Component {
 					};
 				}),
 				disabled: quizzes.length < 1,
-				helperText: quizzes.length < 1 ? 'You have not created any quizzes yet' : null
+				helperText: loading
+					? 'Loading your quizzes'
+					: quizzes.length < 1 ? 'You have not created any quizzes yet' : null
 			},
 			{
 				name: 'type',

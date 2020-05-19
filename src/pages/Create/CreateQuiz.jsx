@@ -18,7 +18,8 @@ const validationSchema = Yup.object({
 
 class CreateQuiz extends Component {
 	state = {
-		folders: []
+		folders: [],
+		loading: true
 	};
 	componentDidMount() {
 		axios
@@ -29,7 +30,8 @@ class CreateQuiz extends Component {
 			})
 			.then(({ data: { data: folders } }) => {
 				this.setState({
-					folders
+					folders,
+					loading: false
 				});
 			})
 			.catch((err) => {
@@ -38,7 +40,7 @@ class CreateQuiz extends Component {
 	}
 	render() {
 		const { onSubmit } = this.props;
-		const { folders } = this.state;
+		const { folders, loading } = this.state;
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
@@ -56,7 +58,9 @@ class CreateQuiz extends Component {
 					};
 				}),
 				disabled: folders.length < 1,
-				helperText: folders.length < 1 ? 'You have not created any folders yet' : null
+				helperText: loading
+					? 'Loading your folders'
+					: folders.length < 1 ? 'You have not created any folders yet' : null
 			}
 		];
 
