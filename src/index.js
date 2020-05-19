@@ -101,6 +101,21 @@ const GlobalCss = withStyles({
 		'.MuiMenuItem-root.MuiListItem-root': {
 			display: 'flex',
 			flexDirection: 'row'
+		},
+		'.MuiListItem-root': {
+			padding: 0,
+			height: 40
+		},
+		'.MuiTypography-root': {
+			fontFamily: 'Quantico'
+		},
+		'.MuiListItem-button': {
+			'&:hover': {
+				backgroundColor: 'rgba(0, 0, 0, 0.2)'
+			}
+		},
+		'.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {
+			backgroundColor: '#00000059'
 		}
 	}
 })(() => null);

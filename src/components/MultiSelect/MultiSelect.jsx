@@ -12,7 +12,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 const useStyles = makeStyles(() => ({
 	chips: {
 		display: 'flex',
-		flexWrap: 'wrap'
+		flexWrap: 'wrap',
+		'& .MuiChip-root': {
+			borderRadius: 5,
+			fontFamily: 'Quantico',
+			color: '#ddd',
+			background: '#2d2d2d'
+		}
 	},
 	chip: {
 		margin: 2
