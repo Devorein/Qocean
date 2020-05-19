@@ -51,7 +51,6 @@ class CreateQuiz extends Component {
 	render() {
 		const { onSubmit } = this.props;
 		const { folders, loading, selected_folders } = this.state;
-		console.log(selected_folders);
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },

@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
+import axios from 'axios';
 import InputForm from '../../components/Form/InputForm';
 import FolderIcon from '@material-ui/icons/Folder';
 import { red, blue, indigo, green, orange, yellow, purple } from '@material-ui/core/colors';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import MultiSelect from '../../components/MultiSelect/MultiSelect';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter folder name').required('Folder name is required'),
@@ -14,10 +17,37 @@ const validationSchema = Yup.object({
 class CreateFolder extends Component {
 	state = {
 		folders: [],
-		loading: true
+		loading: true,
+		selected_quizzes: []
 	};
+	componentDidMount() {
+		axios
+			.get('http://localhost:5001/api/v1/quizzes/me?select=name&populate=false', {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data: quizzes } }) => {
+				this.setState({
+					quizzes,
+					loading: false
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+
+	handleChange = (e) => {
+		this.setState({
+			selected_quizzes: e.target.value
+		});
+	};
+
 	render() {
 		const { onSubmit } = this.props;
+		const { quizzes, loading, selected_quizzes } = this.state;
+
 		const inputs = [
 			{ name: 'name' },
 			{
@@ -67,7 +97,20 @@ class CreateFolder extends Component {
 		];
 		return (
 			<div>
-				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit} />
+				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit}>
+					{loading ? (
+						<FormHelperText>Loading your quizzes</FormHelperText>
+					) : quizzes.length < 1 ? (
+						<FormHelperText>Loading your quizzes</FormHelperText>
+					) : (
+						<MultiSelect
+							label={'Quizzes'}
+							selected={selected_quizzes}
+							handleChange={this.handleChange}
+							items={quizzes}
+						/>
+					)}
+				</InputForm>
 			</div>
 		);
 	}
