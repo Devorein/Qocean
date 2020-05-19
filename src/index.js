@@ -44,7 +44,8 @@ const GlobalCss = withStyles({
 			fontSize: '14px',
 			margin: '5px 0px',
 			'&.Mui-focused': {
-				opacity: 1
+				opacity: 1,
+				fontWeight: 'bolder'
 			},
 			'&.Mui-disabled': {
 				color: '#bbb'

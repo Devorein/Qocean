@@ -12,7 +12,16 @@ const FolderSchema = extendSchema(ResourceSchema, {
 
 	icon: {
 		type: String,
-		default: 'default.svg'
+		enum: [
+			'Red_folder.svg',
+			'Orange_folder.svg',
+			'Yellow_folder.svg',
+			'Green_folder.svg',
+			'Blue_folder.svg',
+			'Indigo_folder.svg',
+			'Violet_folder.svg'
+		],
+		default: 'Red_folder.svg'
 	},
 	total_quizzes: {
 		type: Number,

@@ -6,8 +6,8 @@ class InputForm extends Component {
 	render() {
 		const { validationSchema, inputs, onSubmit } = this.props;
 		const initialValues = {};
-		inputs.forEach(({ name, value }) => {
-			initialValues[name] = value ? value : '';
+		inputs.forEach(({ name, defaultValue }) => {
+			initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 		});
 		return (
 			<div>

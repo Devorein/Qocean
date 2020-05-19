@@ -62,28 +62,21 @@ const Form = (props) => {
 	} = props;
 	const { textField, formcontrollabel } = useStyles();
 
+	const decideLabel = (name, label) => {
+		if (label) return label;
+		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
+	};
+
 	const change = (name, e) => {
 		e.persist();
 		handleChange(e);
 		setFieldTouched(name, true, false);
 	};
 
-	const decideLabel = (name, label) => {
-		if (label) return label;
-		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
-	};
-
-	const decideValue = (type, name, defaultValue, initialValue) => {
-		if (values[name] === '') {
-			if (type === 'select' || type === 'number') return defaultValue;
-			else if (type === 'text' || type === 'password') return initialValue;
-		} else return values[name];
-	};
-
 	const formikProps = (type, name, label, placeholder, initialValue, defaultValue) => {
 		return {
 			name,
-			value: decideValue(type, name, defaultValue, initialValue),
+			value: values[name],
 			onChange: change.bind(null, name),
 			onBlur: handleBlur,
 			error: touched[name] && Boolean(errors[name]),
@@ -136,11 +129,7 @@ const Form = (props) => {
 								{!disabled ? (
 									<Fragment>
 										<InputLabel id={name}>{decideLabel(name, label)}</InputLabel>
-										<Select
-											name={name}
-											value={decideValue(type, name, defaultValue ? defaultValue : '')}
-											onChange={change.bind(null, name)}
-										>
+										<Select name={name} value={values[name]} onChange={change.bind(null, name)}>
 											{selectItems.map(({ value, text }) => {
 												return (
 													<MenuItem key={value} value={value}>
@@ -162,7 +151,7 @@ const Form = (props) => {
 								control={
 									<Checkbox
 										color={'primary'}
-										checked={Boolean(values[name])}
+										checked={values[name] === true ? true : false}
 										name={name}
 										onChange={change.bind(null, name)}
 										onBlur={handleBlur}

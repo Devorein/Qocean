@@ -58,8 +58,8 @@ class Create extends Component {
 					{ name: 'subject' },
 					{ name: 'source' },
 					{ name: 'image' },
-					{ name: 'favourite', type: 'checkbox' },
-					{ name: 'public', type: 'checkbox', value: true },
+					{ name: 'favourite', type: 'checkbox', defaultValue: false },
+					{ name: 'public', type: 'checkbox', defaultValue: true },
 					{
 						name: 'folder',
 						type: 'select',
@@ -140,9 +140,9 @@ class Create extends Component {
 						},
 						defaultValue: 30
 					},
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
-					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
-					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', value: true }
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
+					{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },
+					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', defaultValue: true }
 				]
 			};
 		} else if (type === 'Folder') {
@@ -155,10 +155,44 @@ class Create extends Component {
 			return {
 				validationSchema,
 				inputs: [
-					{ name: 'name', label: `${type} name` },
-					{ name: 'icon', label: `${type} icon` },
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
-					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
+					{ name: 'name' },
+					{
+						name: 'icon',
+						type: 'select',
+						selectItems: [
+							{
+								text: 'Red',
+								value: 'Red_folder.svg'
+							},
+							{
+								text: 'Orange',
+								value: 'Orange_folder.svg'
+							},
+							{
+								text: 'Yellow',
+								value: 'Yellow_folder.svg'
+							},
+							{
+								text: 'Green',
+								value: 'Green_folder.svg'
+							},
+							{
+								text: 'Blue',
+								value: 'Blue_folder.svg'
+							},
+							{
+								text: 'Indigo',
+								value: 'Indigo_folder.svg'
+							},
+							{
+								text: 'Violet',
+								value: 'Violet_folder.svg'
+							}
+						],
+						defaultValue: 'Red_folder.svg'
+					},
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
+					{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true }
 				]
 			};
 		} else if (type === 'Environment') {
