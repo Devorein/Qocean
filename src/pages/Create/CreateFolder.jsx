@@ -12,6 +12,10 @@ const validationSchema = Yup.object({
 });
 
 class CreateFolder extends Component {
+	state = {
+		folders: [],
+		loading: true
+	};
 	render() {
 		const { onSubmit } = this.props;
 		const inputs = [

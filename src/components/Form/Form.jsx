@@ -20,6 +20,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import PersonIcon from '@material-ui/icons/Person';
 import ImageIcon from '@material-ui/icons/Image';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
 
 import './Form.scss';
@@ -60,7 +61,8 @@ const Form = (props) => {
 		setFieldTouched,
 		isSubmitting,
 		submitMsg,
-		inputs
+		inputs,
+		children
 	} = props;
 	const { textField, formcontrollabel } = useStyles();
 
@@ -229,6 +231,7 @@ const Form = (props) => {
 						);
 				}
 			)}
+			{children}
 			<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
 				{submitMsg ? submitMsg : 'Submit'}
 			</Button>

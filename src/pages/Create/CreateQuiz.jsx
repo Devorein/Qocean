@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
+import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -19,7 +21,8 @@ const validationSchema = Yup.object({
 class CreateQuiz extends Component {
 	state = {
 		folders: [],
-		loading: true
+		loading: true,
+		selected_folders: []
 	};
 	componentDidMount() {
 		axios
@@ -38,35 +41,42 @@ class CreateQuiz extends Component {
 				console.log(err);
 			});
 	}
+
+	handleChange = (e) => {
+		this.setState({
+			selected_folders: e.target.value
+		});
+	};
+
 	render() {
 		const { onSubmit } = this.props;
-		const { folders, loading } = this.state;
+		const { folders, loading, selected_folders } = this.state;
+		console.log(selected_folders);
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
 			{ name: 'source' },
 			{ name: 'image' },
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
-			{ name: 'public', type: 'checkbox', defaultValue: true },
-			{
-				name: 'folder',
-				type: 'select',
-				selectItems: folders.map(({ _id, name }) => {
-					return {
-						value: _id,
-						text: name
-					};
-				}),
-				disabled: folders.length < 1,
-				helperText: loading
-					? 'Loading your folders'
-					: folders.length < 1 ? 'You have not created any folders yet' : null
-			}
+			{ name: 'public', type: 'checkbox', defaultValue: true }
 		];
 
 		return (
 			<div>
-				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit} />
+				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit}>
+					{loading ? (
+						<FormHelperText>Loading your folders</FormHelperText>
+					) : folders.length < 1 ? (
+						<FormHelperText>Loading your folders</FormHelperText>
+					) : (
+						<MultiSelect
+							label={'Folders'}
+							selected={selected_folders}
+							handleChange={this.handleChange}
+							items={folders}
+						/>
+					)}
+				</InputForm>
 			</div>
 		);
 	}

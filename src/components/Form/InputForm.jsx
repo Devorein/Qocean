@@ -12,7 +12,11 @@ class InputForm extends Component {
 		return (
 			<div>
 				<Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
-					{(props) => <Form {...props} inputs={inputs} />}
+					{(props) => (
+						<Form {...props} inputs={inputs}>
+							{this.props.children}
+						</Form>
+					)}
 				</Formik>
 			</div>
 		);
