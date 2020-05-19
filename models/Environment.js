@@ -40,6 +40,20 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: String,
 		default: 'Beginner',
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
+	},
+	default_quiz_weight: {
+		type: Number,
+		default: 1,
+		min: [ 1, 'Weight cant be less than 1' ],
+		max: [ 10, 'Weight cant be less than 10' ]
+	},
+	reset_on_success: {
+		type: Boolean,
+		default: true
+	},
+	reset_on_error: {
+		type: Boolean,
+		default: false
 	}
 });
 

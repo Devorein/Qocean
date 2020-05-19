@@ -1,4 +1,5 @@
 const Environment = require('../models/Environment');
+const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
@@ -15,9 +16,13 @@ exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
 // @access: Private
 exports.createEnvironment = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
-	const prevEnv = await Environment.countDocuments({ user: req.user._id });
+	let user;
+	const prevEnv = await Environment.countDocuments({ name: req.body.name, user: req.user._id });
 	if (prevEnv >= 1) return next(new ErrorResponse(`You already have an environment named ${req.body.name}`, 400));
 	const environment = await Environment.create(req.body);
+	if (req.body.set_as_current) user = await User.findById(req.user._id);
+	user.current_environment = environment._id;
+	await user.save();
 	res.status(201).json({ success: true, data: environment });
 });
 

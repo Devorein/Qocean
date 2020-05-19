@@ -67,6 +67,7 @@ class CreateEnvironment extends Component {
 			{ name: 'public', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_success', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
+			{ name: 'set_as_current', type: 'checkbox', defaultValue: true },
 			{
 				name: 'default_quiz_difficulty',
 				type: 'select',

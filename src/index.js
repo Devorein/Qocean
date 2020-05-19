@@ -73,7 +73,7 @@ const GlobalCss = withStyles({
 				color: '#ddd',
 				fontWeight: 'bold'
 			},
-			'&.Mui-disabled': {
+			'&.MuiButton-contained.MuiButton-containedPrimary.Mui-disabled': {
 				backgroundColor: '#c10000'
 			}
 		},

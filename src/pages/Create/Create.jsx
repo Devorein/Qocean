@@ -29,13 +29,14 @@ class Create extends Component {
 				}
 			)
 			.then(() => {
+				setSubmitting(true);
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
 				changeResponse(`Successfully created ${type}`, 'success');
 			})
 			.catch((err) => {
-				resetForm();
+				setSubmitting(true);
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
