@@ -6,7 +6,7 @@ const { protect } = require('../middleware/auth');
 
 const { createFolder, updateFolder, deleteFolder, quizToFolder } = require('../controllers/folder');
 
-router.route('/me').get(protect, advancedResults(Folder, [ { path: 'user', select: 'username' } ]));
+router.route('/me').get(protect, advancedResults(Folder, null));
 
 router
 	.route('/')

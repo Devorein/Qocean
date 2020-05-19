@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
+import axios from 'axios';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -16,8 +17,28 @@ const validationSchema = Yup.object({
 });
 
 class CreateQuiz extends Component {
+	state = {
+		folders: []
+	};
+	componentDidMount() {
+		axios
+			.get('http://localhost:5001/api/v1/folders/me?select=name', {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data: folders } }) => {
+				this.setState({
+					folders
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
 	render() {
-		const { user, onSubmit } = this.props;
+		const { onSubmit } = this.props;
+		const { folders } = this.state;
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
@@ -28,14 +49,14 @@ class CreateQuiz extends Component {
 			{
 				name: 'folder',
 				type: 'select',
-				selectItems: user.folders.map(({ _id, name }) => {
+				selectItems: folders.map(({ _id, name }) => {
 					return {
 						value: _id,
 						text: name
 					};
 				}),
-				disabled: user.folders.length < 1,
-				helperText: user.folders.length < 1 ? 'You have not created any folders yet' : null
+				disabled: folders.length < 1,
+				helperText: folders.length < 1 ? 'You have not created any folders yet' : null
 			}
 		];
 

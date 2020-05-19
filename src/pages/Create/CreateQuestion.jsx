@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
+import axios from 'axios';
 
 const validationSchema = Yup.object({
 	question: Yup.string('Enter the question').required('Question is required'),
@@ -22,20 +23,44 @@ const validationSchema = Yup.object({
 });
 
 class CreateQuestion extends Component {
+	state = {
+		quizzes: []
+	};
+
+	componentDidMount() {
+		axios
+			.get('http://localhost:5001/api/v1/quizzes/me?select=name', {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data: quizzes } }) => {
+				this.setState({
+					quizzes
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+
 	render() {
-		const { user, onSubmit } = this.props;
+		const { onSubmit } = this.props;
+		const { quizzes } = this.state;
 
 		const inputs = [
 			{ name: 'name' },
 			{
 				name: 'quiz',
 				type: 'select',
-				selectItems: user.quizzes.map(({ _id, name }) => {
+				selectItems: quizzes.map(({ _id, name }) => {
 					return {
 						value: _id,
 						text: name
 					};
-				})
+				}),
+				disabled: quizzes.length < 1,
+				helperText: quizzes.length < 1 ? 'You have not created any quizzes yet' : null
 			},
 			{
 				name: 'type',
