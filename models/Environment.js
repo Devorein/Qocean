@@ -7,6 +7,19 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: String,
 		required: [ true, 'Please provide the name of the environment' ]
 	},
+	icon: {
+		type: String,
+		enum: [
+			'Red_env.svg',
+			'Orange_env.svg',
+			'Yellow_env.svg',
+			'Green_env.svg',
+			'Blue_env.svg',
+			'Indigo_env.svg',
+			'Violet_env.svg'
+		],
+		default: 'Red_env.svg'
+	},
 	theme: {
 		type: String,
 		default: 'Light'

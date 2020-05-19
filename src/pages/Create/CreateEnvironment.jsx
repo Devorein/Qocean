@@ -17,11 +17,46 @@ class CreateEnvironment extends Component {
 
 		const inputs = [
 			{ name: 'name' },
-			{ name: 'icon' },
+			{
+				name: 'icon',
+				type: 'select',
+				selectItems: [
+					{
+						text: 'Red',
+						value: 'Red_env.svg'
+					},
+					{
+						text: 'Orange',
+						value: 'Orange_env.svg'
+					},
+					{
+						text: 'Yellow',
+						value: 'Yellow_env.svg'
+					},
+					{
+						text: 'Green',
+						value: 'Green_env.svg'
+					},
+					{
+						text: 'Blue',
+						value: 'Blue_env.svg'
+					},
+					{
+						text: 'Indigo',
+						value: 'Indigo_env.svg'
+					},
+					{
+						text: 'Violet',
+						value: 'Violet_env.svg'
+					}
+				],
+				defaultValue: 'Red_env.svg'
+			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
-			{ name: 'public', type: 'checkbox', defaultValue: true }
+			{ name: 'public', type: 'checkbox', defaultValue: true },
+			{ name: 'reset_after_submit', type: 'checkbox', defaultValue: false }
 		];
 		return (
 			<div>
