@@ -66,6 +66,9 @@ const GlobalCss = withStyles({
 		'.MuiButtonBase-root': {
 			display: 'block',
 			margin: '5px auto',
+			fontFamily: 'Quantico',
+			color: '#ddd',
+			fontWeight: 'bolder',
 			'& .MuiButton-label': {
 				color: '#ddd',
 				fontWeight: 'bold'
@@ -76,6 +79,9 @@ const GlobalCss = withStyles({
 		},
 		'.MuiInput-underline': {
 			paddingBottom: '5px'
+		},
+		'.MuiTabs-flexContainer': {
+			background: '#272727'
 		}
 	}
 })(() => null);

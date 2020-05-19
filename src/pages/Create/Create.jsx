@@ -7,6 +7,8 @@ import MultiHeader from '../../components/MultiHeader/MultiHeader';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import { AppContext } from '../../index';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 class Create extends Component {
 	submitForm = (changeResponse, values, { setSubmitting }) => {
@@ -34,7 +36,7 @@ class Create extends Component {
 	};
 
 	changeForm = (history, type) => {
-		history.push(`/create/${type.toLowerCase()}`);
+		history.push(`/create/${type}`);
 	};
 
 	decideForm = (type, changeResponse) => {
@@ -56,12 +58,17 @@ class Create extends Component {
 				{({ changeResponse }) => {
 					return (
 						<div className="Create page">
-							<MultiHeader
-								headers={headers}
-								type={type}
-								onHeaderClick={this.changeForm.bind(null, history)}
-								page="explore"
-							/>
+							<Tabs
+								value={headers.indexOf(type)}
+								onChange={(e, value) => {
+									this.changeForm(history, headers[value]);
+								}}
+								indicatorColor="primary"
+								textColor="primary"
+								centered
+							>
+								{headers.map((label) => <Tab key={label} label={label} />)}
+							</Tabs>
 							{this.decideForm(type, changeResponse)}
 						</div>
 					);
