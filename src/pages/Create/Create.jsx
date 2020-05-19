@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
-import InputForm from '../../components/Form/InputForm';
+import CreateQuiz from './CreateQuiz';
+import CreateQuestion from './CreateQuestion';
+import CreateFolder from './CreateFolder';
+import CreateEnvironment from './CreateEnvironment';
 import MultiHeader from '../../components/MultiHeader/MultiHeader';
-import * as Yup from 'yup';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import { AppContext } from '../../index';
 
 class Create extends Component {
-	state = {
-		type: '',
-		data: null
-	};
-
 	submitForm = (changeResponse, values, { setSubmitting }) => {
-		const type = this.state.type.toLowerCase();
+		const type = this.props.match.params.type.toLowerCase();
 		axios
 			.post(
 				`http://localhost:5001/api/v1/${pluralize(type)}`,
@@ -36,206 +33,36 @@ class Create extends Component {
 			});
 	};
 
-	decideForm = (type) => {
-		const { user } = this.props;
-		if (type === 'Quiz') {
-			const validationSchema = Yup.object({
-				name: Yup.string('Enter quiz name')
-					.min(3, 'Name can not be less than 3 characters')
-					.max(50, 'Name can not be more than 50 characters')
-					.required('Quiz name is required'),
-				subject: Yup.string('Enter quiz subject').required('Please provide a subject'),
-				source: Yup.string('Enter quiz source'),
-				image: Yup.string('Enter quiz image'),
-				favourite: Yup.bool().default(false),
-				public: Yup.bool().default(true),
-				folder: Yup.string('Enter folder')
-			});
-			return {
-				validationSchema,
-				inputs: [
-					{ name: 'name' },
-					{ name: 'subject' },
-					{ name: 'source' },
-					{ name: 'image' },
-					{ name: 'favourite', type: 'checkbox', defaultValue: false },
-					{ name: 'public', type: 'checkbox', defaultValue: true },
-					{
-						name: 'folder',
-						type: 'select',
-						selectItems: user.folders.map(({ _id, name }) => {
-							return {
-								value: _id,
-								text: name
-							};
-						}),
-						disabled: user.folders.length < 1,
-						helperText: user.folders.length < 1 ? 'You have not created any folders yet' : null
-					}
-				]
-			};
-		} else if (type === 'Question') {
-			const validationSchema = Yup.object({
-				question: Yup.string('Enter the question').required('Question is required'),
-				favourite: Yup.bool().default(false),
-				public: Yup.bool().default(true),
-				add_to_score: Yup.bool().default(true),
-				quiz: Yup.string('Enter the quiz').required('Quiz is required'),
-				type: Yup.string('Enter the type')
-					.oneOf([ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ], 'Invalid question type')
-					.required('Question type is required')
-					.default('MCQ'),
-				difficulty: Yup.string('Enter the difficulty')
-					.oneOf([ 'Beginner', 'Intermediate', 'Advanced' ], 'Should be one of the required value')
-					.default('Beginner'),
-				time_allocated: Yup.number('Enter the time allocated')
-					.min(15, 'Time allocated cant be less than 15 seconds')
-					.max(120, 'Time allocated cant be more than 120 seconds')
-					.default(30)
-			});
-			return {
-				validationSchema,
-				inputs: [
-					{ name: 'name' },
-					{
-						name: 'quiz',
-						type: 'select',
-						selectItems: user.quizzes.map(({ _id, name }) => {
-							return {
-								value: _id,
-								text: name
-							};
-						})
-					},
-					{
-						name: 'type',
-						type: 'select',
-						selectItems: [
-							{ text: 'Fill In the Blanks', value: 'FIB' },
-							{ text: 'Multiple Choice', value: 'MCQ' },
-							{ text: 'Multiple Select', value: 'MS' },
-							{ text: 'Snippet', value: 'Snippet' },
-							{ text: 'Flashcard', value: 'FC' },
-							{ text: 'True/False', value: 'TF' }
-						],
-						defaultValue: 'MCQ'
-					},
-					{
-						name: 'difficulty',
-						type: 'radio',
-						radioItems: [
-							{ label: 'Beginner', value: 'Beginner' },
-							{ label: 'Intermediate', value: 'Intermediate' },
-							{ label: 'Advanced', value: 'Advanced' }
-						],
-						defaultValue: 'Beginner'
-					},
-					{
-						name: 'time_allocated',
-						type: 'number',
-						inputProps: {
-							min: 15,
-							max: 120,
-							step: 5
-						},
-						defaultValue: 30
-					},
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
-					{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },
-					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', defaultValue: true }
-				]
-			};
-		} else if (type === 'Folder') {
-			const validationSchema = Yup.object({
-				name: Yup.string('Enter folder name').required('Folder name is required'),
-				icon: Yup.string('Enter folder icon'),
-				favourite: Yup.bool().default(false),
-				public: Yup.bool().default(true)
-			});
-			return {
-				validationSchema,
-				inputs: [
-					{ name: 'name' },
-					{
-						name: 'icon',
-						type: 'select',
-						selectItems: [
-							{
-								text: 'Red',
-								value: 'Red_folder.svg'
-							},
-							{
-								text: 'Orange',
-								value: 'Orange_folder.svg'
-							},
-							{
-								text: 'Yellow',
-								value: 'Yellow_folder.svg'
-							},
-							{
-								text: 'Green',
-								value: 'Green_folder.svg'
-							},
-							{
-								text: 'Blue',
-								value: 'Blue_folder.svg'
-							},
-							{
-								text: 'Indigo',
-								value: 'Indigo_folder.svg'
-							},
-							{
-								text: 'Violet',
-								value: 'Violet_folder.svg'
-							}
-						],
-						defaultValue: 'Red_folder.svg'
-					},
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
-					{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true }
-				]
-			};
-		} else if (type === 'Environment') {
-			const validationSchema = Yup.object({
-				name: Yup.string(`Enter ${type.toLowerCase()} name`).required(`${type} name is required`),
-				icon: Yup.string(`Enter ${type.toLowerCase()} icon`),
-				animation: Yup.bool().default(true),
-				sound: Yup.bool().default(true),
-				favourite: Yup.bool().default(false),
-				public: Yup.bool().default(true)
-			});
-			return {
-				validationSchema,
-				inputs: [
-					{ name: 'name' },
-					{ name: 'icon' },
-					{ name: 'animation', label: 'Favourite', type: 'checkbox', value: true },
-					{ name: 'sound', label: 'Favourite', type: 'checkbox', value: true },
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
-					{ name: 'public', label: 'Public', type: 'checkbox', value: true }
-				]
-			};
-		}
+	changeForm = (history, type) => {
+		history.push(`/create/${type.toLowerCase()}`);
 	};
 
-	changeForm = (type) => {
-		this.setState({
-			type
-		});
+	decideForm = (type, changeResponse) => {
+		type = type.toLowerCase();
+		const props = {
+			user: this.props.user,
+			onSubmit: this.submitForm.bind(null, changeResponse)
+		};
+		if (type === 'quiz') return <CreateQuiz {...props} />;
+		else if (type === 'question') return <CreateQuestion {...props} />;
+		else if (type === 'folder') return <CreateFolder {...props} />;
+		else if (type === 'environment') return <CreateEnvironment {...props} />;
 	};
-
 	render() {
-		const { type } = this.state;
+		const { match: { params: { type } }, history } = this.props;
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ];
 		return (
 			<AppContext.Consumer>
 				{({ changeResponse }) => {
 					return (
 						<div className="Create page">
-							<MultiHeader headers={headers} type={type} onHeaderClick={this.changeForm} page="explore" />
-							{type ? (
-								<InputForm {...this.decideForm(type)} onSubmit={this.submitForm.bind(null, changeResponse)} />
-							) : null}
+							<MultiHeader
+								headers={headers}
+								type={type}
+								onHeaderClick={this.changeForm.bind(null, history)}
+								page="explore"
+							/>
+							{this.decideForm(type, changeResponse)}
 						</div>
 					);
 				}}

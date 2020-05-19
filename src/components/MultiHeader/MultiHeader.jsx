@@ -7,8 +7,8 @@ function MultiHeader({ headers, page, onHeaderClick, comp, type }) {
 			{headers.map((header, index) => {
 				return (
 					<span
-						className={`header-item ${comp}-header-item ${page}-${comp}-header-item ${page}-${comp}-header-${header} ${type ===
-						header
+						className={`header-item ${comp}-header-item ${page}-${comp}-header-item ${page}-${comp}-header-${header} ${type.toLowerCase() ===
+						header.toLowerCase()
 							? 'selected-item'
 							: ''}`}
 						key={`${header}${index}`}

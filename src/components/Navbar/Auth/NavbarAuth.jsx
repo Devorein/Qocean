@@ -64,7 +64,7 @@ function NavbarAuth({ session, refetch, history }) {
 			<NavLink className="navbar-link" to="/" exact>
 				Home
 			</NavLink>
-			<NavLink className="navbar-link" to="/create">
+			<NavLink className="navbar-link" to="/create/quiz">
 				Create
 			</NavLink>
 			<NavLink className="navbar-link" to="/explore">

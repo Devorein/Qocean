@@ -101,7 +101,7 @@ class App extends Component {
 		});
 	};
 	render() {
-		const { session, location, refetch } = this.props;
+		const { session, location, refetch, value } = this.props;
 		const { response: { isOpen, message, severity } } = this.state;
 		return (
 			<Fragment>
@@ -126,10 +126,14 @@ class App extends Component {
 								}}
 							/>
 							<Route
-								path="/create"
+								path="/create/:type"
 								exact
-								render={() => {
-									return session.data ? <Create user={session.data.data} /> : <Redirect to="/401" />;
+								render={({ history, match }) => {
+									return session.data ? (
+										<Create user={session.data.data} match={match} history={history} />
+									) : (
+										<Redirect to="/401" />
+									);
 								}}
 							/>
 							<Route
