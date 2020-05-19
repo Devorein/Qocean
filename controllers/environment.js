@@ -15,6 +15,8 @@ exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
 // @access: Private
 exports.createEnvironment = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
+	const prevEnv = await Environment.countDocuments({ user: req.user._id });
+	if (prevEnv >= 1) return next(new ErrorResponse(`You already have an environment named ${req.body.name}`, 400));
 	const environment = await Environment.create(req.body);
 	res.status(201).json({ success: true, data: environment });
 });

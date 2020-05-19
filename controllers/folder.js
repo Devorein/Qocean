@@ -8,6 +8,8 @@ const asyncHandler = require('../middleware/async');
 // @access: Private
 exports.createFolder = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
+	const prevFolder = await Folder.countDocuments({ user: req.user._id });
+	if (prevFolder >= 1) return next(new ErrorResponse(`You alread have a folder named ${req.body.name}`, 400));
 	const folder = await Folder.create(req.body);
 	res.status(201).json({ success: true, data: folder });
 });

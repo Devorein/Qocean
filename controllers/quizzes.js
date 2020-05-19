@@ -8,7 +8,7 @@ const asyncHandler = require('../middleware/async');
 exports.createQuiz = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
 	const prevQuiz = await Quiz.countDocuments({ name: req.body.name, user: req.user._id });
-	if (prevQuiz >= 1) return next(new ErrorResponse(`Quiz with the name ${req.body.name} already exists`, 400));
+	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${req.body.name}`, 400));
 	const quiz = await Quiz.create(req.body);
 	res.status(201).json({ success: true, data: quiz });
 });
