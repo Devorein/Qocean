@@ -37,22 +37,8 @@ class Create extends Component {
 	};
 
 	decideForm = (type) => {
+		const { user } = this.props;
 		if (type === 'Quiz') {
-			axios
-				.get('http://localhost:5001/api/v1/folders/me', {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				})
-				.then(({ data: { data } }) => {
-					if (!this.state.data) {
-						this.setState({
-							data: data.map((item) => {
-								return { text: item.name, value: item._id };
-							})
-						});
-					}
-				});
 			const validationSchema = Yup.object({
 				name: Yup.string('Enter quiz name')
 					.min(3, 'Name can not be less than 3 characters')
@@ -68,36 +54,27 @@ class Create extends Component {
 			return {
 				validationSchema,
 				inputs: [
-					{ name: 'name', label: `${type} name` },
-					{ name: 'subject', label: `${type} subject` },
-					{ name: 'source', label: `${type} source` },
-					{ name: 'image', label: `${type} image` },
+					{ name: 'name' },
+					{ name: 'subject' },
+					{ name: 'source' },
+					{ name: 'image' },
 					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
 					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
 					{
 						name: 'folder',
-						label: 'Folder',
 						type: 'select',
-						selectItems: this.state.data ? this.state.data : []
+						selectItems: user.folders.map(({ _id, name }) => {
+							return {
+								value: _id,
+								text: name
+							};
+						}),
+						disabled: user.folders.length < 1,
+						helperText: user.folders.length < 1 ? 'You have not created any folders yet' : null
 					}
 				]
 			};
 		} else if (type === 'Question') {
-			axios
-				.get('http://localhost:5001/api/v1/quizzes/me', {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				})
-				.then(({ data: { data } }) => {
-					if (!this.state.data) {
-						this.setState({
-							data: data.map((item) => {
-								return { text: item.name, value: item._id };
-							})
-						});
-					}
-				});
 			const validationSchema = Yup.object({
 				question: Yup.string('Enter the question').required('Question is required'),
 				favourite: Yup.bool().default(false),
@@ -119,16 +96,19 @@ class Create extends Component {
 			return {
 				validationSchema,
 				inputs: [
-					{ name: 'name', label: `${type} name` },
+					{ name: 'name' },
 					{
 						name: 'quiz',
-						label: 'Quiz',
 						type: 'select',
-						selectItems: this.state.data ? this.state.data : []
+						selectItems: user.quizzes.map(({ _id, name }) => {
+							return {
+								value: _id,
+								text: name
+							};
+						})
 					},
 					{
 						name: 'type',
-						label: 'Type',
 						type: 'select',
 						selectItems: [
 							{ text: 'Fill In the Blanks', value: 'FIB' },
@@ -156,7 +136,7 @@ class Create extends Component {
 						inputProps: {
 							min: 15,
 							max: 120,
-							step: 10
+							step: 5
 						},
 						defaultValue: 30
 					},

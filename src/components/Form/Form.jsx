@@ -2,10 +2,12 @@ import React, { Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -25,43 +27,14 @@ const useStyles = makeStyles({
 		borderRadius: 3,
 		border: 0,
 		margin: '5px',
-		'& .MuiInputLabel-root': {
-			fontFamily: 'Quantico',
-			color: '#ccc',
-			opacity: '0.5'
-		},
-		'& .MuiInputBase-input': {
-			fontFamily: 'Quantico',
-			color: '#eee'
-		},
-		'& .MuiFormHelperText-root': {
-			color: '#f44336d6',
-			fontWeight: 'bold',
-			fontFamily: 'Quantico'
-		},
+
 		'& .MuiSvgIcon-root': {
 			fill: '#aaa'
-		}
-	},
-	button: {
-		'& .MuiButton-label': {
-			color: '#ddd',
-			fontWeight: 'bold'
-		},
-		'&.Mui-disabled': {
-			backgroundColor: '#c10000'
 		}
 	},
 	formcontrollabel: {
 		fontFamily: 'Quantico',
 		color: '#ddd'
-	},
-	formlabel: {
-		fontFamily: 'Quantico',
-		color: '#ccc',
-		opacity: '0.5',
-		fontSize: '12px',
-		margin: '5px'
 	}
 });
 
@@ -87,7 +60,7 @@ const Form = (props) => {
 		submitMsg,
 		inputs
 	} = props;
-	const { textField, button, formcontrollabel, formlabel } = useStyles();
+	const { textField, formcontrollabel } = useStyles();
 
 	const change = (name, e) => {
 		e.persist();
@@ -100,13 +73,16 @@ const Form = (props) => {
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
 
+	const decideValue = (type, defaultValue = '', name, initialValue) => {
+		return (type === 'select' || type === 'number') && values[name] === ''
+			? defaultValue
+			: typeof values[name] !== 'undefined' ? values[name] : initialValue;
+	};
+
 	const formikProps = (type = '', name, label, placeholder, initialValue = '', defaultValue = '') => {
 		return {
 			name,
-			value:
-				(type === 'select' || type === 'number') && values[name] === ''
-					? defaultValue
-					: typeof values[name] !== 'undefined' ? values[name] : initialValue,
+			value: decideValue(type, defaultValue, name, initialValue),
 			onChange: change.bind(null, name),
 			onBlur: handleBlur,
 			error: touched[name] && Boolean(errors[name]),
@@ -149,27 +125,27 @@ const Form = (props) => {
 					type,
 					selectItems,
 					radioItems,
-					inputProps
+					inputProps,
+					helperText,
+					disabled
 				}) => {
 					if (type === 'select')
 						return (
-							<TextField
-								classes={{
-									root: textField
-								}}
-								key={name}
-								select
-								{...formikProps(type, name, label, placeholder, value, defaultValue)}
-								fullWidth
-							>
-								{selectItems.map(({ value, text }) => {
-									return (
-										<MenuItem key={value} value={value}>
-											{text}
-										</MenuItem>
-									);
-								})}
-							</TextField>
+							<FormControl disabled={disabled ? disabled : false} fullWidth key={name}>
+								<InputLabel id={name}>{decideLabel(label, name)}</InputLabel>
+								<Select name={name} value={decideValue(type, defaultValue, name)} onChange={change.bind(null, name)}>
+									{!disabled ? (
+										selectItems.map(({ value, text }) => {
+											return (
+												<MenuItem key={value} value={value}>
+													{text}
+												</MenuItem>
+											);
+										})
+									) : null}
+								</Select>
+								{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
+							</FormControl>
 						);
 					else if (type === 'checkbox')
 						return (
@@ -191,10 +167,8 @@ const Form = (props) => {
 						);
 					else if (type === 'radio')
 						return (
-							<Fragment key={name}>
-								<FormLabel component="legend" classes={{ root: formlabel }}>
-									{decideLabel(label, name)}
-								</FormLabel>
+							<FormControl key={name}>
+								<FormLabel component="legend">{decideLabel(label, name)}</FormLabel>
 								<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
 									{radioItems.map(({ label, value }) => (
 										<FormControlLabel
@@ -207,7 +181,7 @@ const Form = (props) => {
 										/>
 									))}
 								</RadioGroup>
-							</Fragment>
+							</FormControl>
 						);
 					else if (type === 'number')
 						return (
@@ -256,17 +230,9 @@ const Form = (props) => {
 						);
 				}
 			)}
-			<div className="messages">
-				<Button
-					classes={{ root: button }}
-					type="submit"
-					variant="contained"
-					color="primary"
-					disabled={isSubmitting || !isValid}
-				>
-					{submitMsg ? submitMsg : 'Submit'}
-				</Button>
-			</div>
+			<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+				{submitMsg ? submitMsg : 'Submit'}
+			</Button>
 		</form>
 	);
 };

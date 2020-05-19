@@ -24,9 +24,7 @@ import './index.css';
 import './pages/Pages.scss';
 
 const GlobalCss = withStyles({
-	// @global is handled by jss-plugin-global.
 	'@global': {
-		// You should target [class*="MuiButton-root"] instead if you nest themes.
 		'.MuiMenu-list': {
 			background: '#343434',
 			color: '#c4c4c4'
@@ -34,6 +32,46 @@ const GlobalCss = withStyles({
 		'.MuiMenuItem-root': {
 			fontFamily: 'Quantico',
 			fontSize: '16px'
+		},
+		'.MuiInputBase-input': {
+			fontFamily: 'Quantico',
+			color: '#ddd'
+		},
+		'.MuiFormLabel-root': {
+			fontFamily: 'Quantico',
+			color: '#ccc',
+			opacity: '0.75',
+			fontSize: '14px',
+			margin: '5px 0px',
+			'&.Mui-focused': {
+				opacity: 1
+			},
+			'&.Mui-disabled': {
+				color: '#bbb'
+			}
+		},
+		'.MuiFormControl-root': {
+			margin: '5px'
+		},
+		'.MuiFormHelperText-root': {
+			color: '#f44336d6',
+			fontWeight: 'bold',
+			fontFamily: 'Quantico',
+			'&.Mui-disabled': {
+				color: '#ddd',
+				fontWeight: 'bolder'
+			}
+		},
+		'.MuiButtonBase-root': {
+			display: 'block',
+			margin: '5px auto',
+			'& .MuiButton-label': {
+				color: '#ddd',
+				fontWeight: 'bold'
+			},
+			'&.Mui-disabled': {
+				backgroundColor: '#c10000'
+			}
 		}
 	}
 })(() => null);
