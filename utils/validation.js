@@ -1,6 +1,6 @@
 module.exports = {
 	isAlphaNumericOnly: function(input) {
-		const letterNumberRegex = /^([0-9a-z]|_)+$/;
+		const letterNumberRegex = /^([0-9a-z]|_|\.)+$/;
 		if (input.match(letterNumberRegex)) return true;
 		return false;
 	},

@@ -12,7 +12,6 @@
   {
     "name": "Collection 2",
     "user": "5ebb74772c952d08c0644885",
-    "icon": "git.svg",
     "quizzes": [
       "5eb78efbffe758058c7303d0",
       "5eb78ec6ffe758058c7303ce"
@@ -21,7 +20,6 @@
   {
     "name": "Collection 3",
     "user": "5ebb74772c952d08c0644886",
-    "icon": "eslint.svg",
     "quizzes": [
       "5eb78eacffe758058c7303cd",
       "5eb78efbffe758058c7303d0"
