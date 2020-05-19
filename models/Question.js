@@ -31,8 +31,8 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	time_allocated: {
 		type: Number,
 		default: 30,
-		min: 15,
-		max: 120
+		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
 	},
 	difficulty: {
 		type: String,

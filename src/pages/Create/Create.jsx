@@ -110,15 +110,16 @@ class Create extends Component {
 					.default('MCQ'),
 				difficulty: Yup.string('Enter the difficulty')
 					.oneOf([ 'Beginner', 'Intermediate', 'Advanced' ], 'Should be one of the required value')
-					.default('Beginner')
+					.default('Beginner'),
+				time_allocated: Yup.number('Enter the time allocated')
+					.min(15, 'Time allocated cant be less than 15 seconds')
+					.max(120, 'Time allocated cant be more than 120 seconds')
+					.default(30)
 			});
 			return {
 				validationSchema,
 				inputs: [
 					{ name: 'name', label: `${type} name` },
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
-					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
-					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', value: true },
 					{
 						name: 'quiz',
 						label: 'Quiz',
@@ -149,7 +150,21 @@ class Create extends Component {
 							{ text: 'Advanced', value: 'Advanced' }
 						],
 						defaultValue: 'Beginner'
-					}
+					},
+					{
+						name: 'time_allocated',
+						label: 'Time Allocated',
+						type: 'number',
+						inputProps: {
+							min: 15,
+							max: 120,
+							step: 10
+						},
+						defaultValue: 30
+					},
+					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
+					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
+					{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', value: true }
 				]
 			};
 		} else if (type === 'Folder') {

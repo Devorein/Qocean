@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -92,16 +91,21 @@ const Form = (props) => {
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
 
-	const formikProps = (type = '', name, label, placeholder, initialValue = '', defaultValue = '') => ({
-		name,
-		value: type === 'select' ? defaultValue : typeof values[name] !== 'undefined' ? values[name] : initialValue,
-		onChange: change.bind(null, name),
-		onBlur: handleBlur,
-		error: touched[name] && Boolean(errors[name]),
-		helperText: touched[name] ? errors[name] : '',
-		label: decideLabel(label, name),
-		placeholder
-	});
+	const formikProps = (type = '', name, label, placeholder, initialValue = '', defaultValue = '') => {
+		return {
+			name,
+			value:
+				(type === 'select' || type === 'number') && values[name] === ''
+					? defaultValue
+					: typeof values[name] !== 'undefined' ? values[name] : initialValue,
+			onChange: change.bind(null, name),
+			onBlur: handleBlur,
+			error: touched[name] && Boolean(errors[name]),
+			helperText: touched[name] ? errors[name] : '',
+			label: decideLabel(label, name),
+			placeholder
+		};
+	};
 
 	const decideIcon = (icon) => {
 		if (icon === 'email') return <EmailIcon />;
@@ -134,9 +138,10 @@ const Form = (props) => {
 					startAdornment,
 					endAdornment,
 					type,
-					selectItems
+					selectItems,
+					inputProps
 				}) => {
-					if (type === 'select') {
+					if (type === 'select')
 						return (
 							<TextField
 								classes={{
@@ -156,7 +161,7 @@ const Form = (props) => {
 								})}
 							</TextField>
 						);
-					} else if (type === 'checkbox')
+					else if (type === 'checkbox')
 						return (
 							<FormControlLabel
 								key={name}
@@ -172,6 +177,19 @@ const Form = (props) => {
 									/>
 								}
 								label={label}
+							/>
+						);
+					else if (type === 'number')
+						return (
+							<TextField
+								classes={{
+									root: textField
+								}}
+								key={name}
+								type={'number'}
+								{...formikProps('number', name, label, placeholder, value, defaultValue)}
+								fullWidth
+								inputProps={{ ...inputProps }}
 							/>
 						);
 					else
