@@ -23,7 +23,7 @@ class CreateQuiz extends Component {
 	};
 	componentDidMount() {
 		axios
-			.get('http://localhost:5001/api/v1/folders/me?select=name', {
+			.get('http://localhost:5001/api/v1/folders/me?select=name&populate=false', {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}

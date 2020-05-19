@@ -22,7 +22,7 @@ const advancedResults = (model, populate, option = {}) =>
 			let query;
 			const reqQuery = { ...req.query };
 			// Fields to exclude
-			const excludeFields = [ 'select', 'sort', 'page', 'limit' ];
+			const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populate' ];
 			excludeFields.forEach((param) => delete reqQuery[param]);
 
 			let queryStr = JSON.stringify(reqQuery);
@@ -50,13 +50,13 @@ const advancedResults = (model, populate, option = {}) =>
 			// Pagination
 			const page = parseInt(req.query.page) || 1;
 			const limit = parseInt(req.query.limit) || 10;
+			const shouldPopulate = req.query.populate ? (req.query.populate === 'true' ? true : false) : true;
 			const startIndex = (page - 1) * limit;
 			const endIndex = page * limit;
 			const total = await model.countDocuments();
 
 			query = query.skip(startIndex).limit(limit);
-
-			if (populate) {
+			if (shouldPopulate && populate) {
 				if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
 				else query = query.populate(populate);
 			}

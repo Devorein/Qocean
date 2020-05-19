@@ -30,7 +30,7 @@ class CreateQuestion extends Component {
 
 	componentDidMount() {
 		axios
-			.get('http://localhost:5001/api/v1/quizzes/me?select=name', {
+			.get('http://localhost:5001/api/v1/quizzes/me?select=name&populate=false', {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}
