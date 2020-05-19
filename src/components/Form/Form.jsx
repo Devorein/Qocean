@@ -55,6 +55,13 @@ const useStyles = makeStyles({
 	formcontrollabel: {
 		fontFamily: 'Quantico',
 		color: '#ddd'
+	},
+	formlabel: {
+		fontFamily: 'Quantico',
+		color: '#ccc',
+		opacity: '0.5',
+		fontSize: '12px',
+		margin: '5px'
 	}
 });
 
@@ -80,7 +87,7 @@ const Form = (props) => {
 		submitMsg,
 		inputs
 	} = props;
-	const { textField, button, formcontrollabel } = useStyles();
+	const { textField, button, formcontrollabel, formlabel } = useStyles();
 
 	const change = (name, e) => {
 		e.persist();
@@ -185,7 +192,9 @@ const Form = (props) => {
 					else if (type === 'radio')
 						return (
 							<Fragment key={name}>
-								<FormLabel component="legend">{decideLabel(label, name)}</FormLabel>
+								<FormLabel component="legend" classes={{ root: formlabel }}>
+									{decideLabel(label, name)}
+								</FormLabel>
 								<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
 									{radioItems.map(({ label, value }) => (
 										<FormControlLabel

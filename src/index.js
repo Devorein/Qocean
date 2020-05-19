@@ -17,10 +17,26 @@ import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import CustomSnackbars from './components/Snackbars/CustomSnackbars';
+import { withStyles } from '@material-ui/core/styles';
 
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
+
+const GlobalCss = withStyles({
+	// @global is handled by jss-plugin-global.
+	'@global': {
+		// You should target [class*="MuiButton-root"] instead if you nest themes.
+		'.MuiMenu-list': {
+			background: '#343434',
+			color: '#c4c4c4'
+		},
+		'.MuiMenuItem-root': {
+			fontFamily: 'Quantico',
+			fontSize: '16px'
+		}
+	}
+})(() => null);
 
 const AppContext = React.createContext(null);
 export { AppContext };
@@ -47,6 +63,7 @@ class App extends Component {
 		const { response: { isOpen, message, severity } } = this.state;
 		return (
 			<Fragment>
+				<GlobalCss />
 				<div className="App">
 					<AppContext.Provider value={{ changeResponse: this.changeResponse }}>
 						<Navbar session={session} refetch={refetch} />
