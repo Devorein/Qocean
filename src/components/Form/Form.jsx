@@ -162,7 +162,7 @@ const Form = (props) => {
 										error={touched[name] && errors[name]}
 									/>
 								}
-								label={label}
+								label={decideLabel(label, name)}
 							/>
 						);
 					else if (type === 'radio')

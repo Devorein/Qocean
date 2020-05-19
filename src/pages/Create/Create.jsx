@@ -58,8 +58,8 @@ class Create extends Component {
 					{ name: 'subject' },
 					{ name: 'source' },
 					{ name: 'image' },
-					{ name: 'favourite', label: 'Favourite', type: 'checkbox' },
-					{ name: 'public', label: 'Public', type: 'checkbox', value: true },
+					{ name: 'favourite', type: 'checkbox' },
+					{ name: 'public', type: 'checkbox', value: true },
 					{
 						name: 'folder',
 						type: 'select',

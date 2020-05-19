@@ -21,7 +21,7 @@ export default function CustomizedSnackbars({ message, severity, isOpen, changeR
 
 	const handleClose = (event, reason) => {
 		if (reason === 'clickaway') return;
-		changeResponse('None', 'error', false);
+		changeResponse(message, severity, false);
 	};
 
 	return (
