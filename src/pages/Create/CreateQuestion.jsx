@@ -90,6 +90,16 @@ class CreateQuestion extends Component {
 				defaultValue: 'Beginner'
 			},
 			{
+				name: 'question_weight',
+				type: 'number',
+				inputProps: {
+					min: 1,
+					max: 10,
+					step: 1
+				},
+				defaultValue: 1
+			},
+			{
 				name: 'time_allocated',
 				type: 'number',
 				inputProps: {
