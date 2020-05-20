@@ -14,8 +14,9 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import './Create.scss';
 class Create extends Component {
-	submitForm = (changeResponse, values, { setSubmitting, resetForm }) => {
+	submitForm = ([ changeResponse, transformation ], values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();
+		values = transformation(values);
 		axios
 			.post(
 				`http://localhost:5001/api/v1/${pluralize(type)}`,
@@ -52,7 +53,8 @@ class Create extends Component {
 		type = type.toLowerCase();
 		const props = {
 			user: this.props.user,
-			onSubmit: this.submitForm.bind(null, changeResponse)
+			onSubmit: this.submitForm,
+			changeResponse
 		};
 		if (type === 'quiz') return <CreateQuiz {...props} />;
 		else if (type === 'question') return <CreateQuestion {...props} />;

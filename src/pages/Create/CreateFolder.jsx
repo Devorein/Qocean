@@ -45,7 +45,7 @@ class CreateFolder extends Component {
 	};
 
 	render() {
-		const { onSubmit } = this.props;
+		const { onSubmit, changeResponse } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 
 		const inputs = [
@@ -97,7 +97,11 @@ class CreateFolder extends Component {
 		];
 		return (
 			<div>
-				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit}>
+				<InputForm
+					inputs={inputs}
+					validationSchema={validationSchema}
+					onSubmit={onSubmit.bind(null, [ changeResponse ])}
+				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>
 					) : quizzes.length < 1 ? (

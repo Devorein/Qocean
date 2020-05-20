@@ -48,8 +48,14 @@ class CreateQuiz extends Component {
 		});
 	};
 
+	preSubmit = (values) => {
+		values.folders = this.state.selected_folders;
+		return values;
+	};
+
 	render() {
-		const { onSubmit } = this.props;
+		const { preSubmit, handleChange } = this;
+		const { onSubmit, changeResponse } = this.props;
 		const { folders, loading, selected_folders } = this.state;
 		const inputs = [
 			{ name: 'name' },
@@ -62,18 +68,17 @@ class CreateQuiz extends Component {
 
 		return (
 			<div>
-				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit}>
+				<InputForm
+					inputs={inputs}
+					validationSchema={validationSchema}
+					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit ])}
+				>
 					{loading ? (
 						<FormHelperText>Loading your folders</FormHelperText>
 					) : folders.length < 1 ? (
 						<FormHelperText>Loading your folders</FormHelperText>
 					) : (
-						<MultiSelect
-							label={'Folders'}
-							selected={selected_folders}
-							handleChange={this.handleChange}
-							items={folders}
-						/>
+						<MultiSelect label={'Folders'} selected={selected_folders} handleChange={handleChange} items={folders} />
 					)}
 				</InputForm>
 			</div>

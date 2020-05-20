@@ -248,7 +248,7 @@ class CreateQuestion extends Component {
 
 	render() {
 		const { typeChangeHandler } = this;
-		const { onSubmit } = this.props;
+		const { onSubmit, changeResponse } = this.props;
 		const { type, quizzes, loading, options, answers, showButton } = this.state;
 		const optionsValidation = this.decideValidation(type);
 		inputs[1] = {
@@ -269,7 +269,7 @@ class CreateQuestion extends Component {
 					inputs={inputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit}
+					onSubmit={onSubmit.bind(null, [ changeResponse ])}
 				/>
 
 				<InputForm inputs={[ ...options, ...answers ]} formButtons={false} validationSchema={optionsValidation}>
