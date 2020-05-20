@@ -16,6 +16,7 @@ import Play from './pages/Play/Play';
 import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import { green, red } from '@material-ui/core/colors';
 import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -126,6 +127,17 @@ const GlobalCss = withStyles({
 		'.MuiButton-contained.MuiButton-containedPrimary': {
 			color: '#fff',
 			backgroundColor: '#3f51b5'
+		},
+		'.MuiAlert': {
+			'&-filledSuccess': {
+				backgroundColor: green[600]
+			},
+			'&-filledError': {
+				backgroundColor: red[600]
+			},
+			'&-filledSuccess,&-filledError': {
+				fontFamily: 'Quantico'
+			}
 		}
 	}
 })(() => null);

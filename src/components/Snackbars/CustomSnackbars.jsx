@@ -26,7 +26,7 @@ export default function CustomizedSnackbars({ message, severity, isOpen, changeR
 
 	return (
 		<div className={classes.root}>
-			<Snackbar open={isOpen} autoHideDuration={2500} onClose={handleClose}>
+			<Snackbar open={isOpen} autoHideDuration={1250} onClose={handleClose}>
 				<Alert severity={severity} onClose={handleClose}>
 					{message}
 				</Alert>
