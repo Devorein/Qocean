@@ -4,6 +4,7 @@ const faker = require('faker');
 const mongoose = require('mongoose');
 const colors = require('colors');
 const dotenv = require('dotenv');
+const fs = require('fs');
 
 dotenv.config({ path: './config/config.env' });
 
@@ -133,17 +134,14 @@ const users = [],
 	folders = [],
 	envs = [];
 
-// const total_users = casual.integer(5, 10),
-// 	total_quizzes = casual.integer(15, 25),
-// 	total_questions = casual.integer(40, 50),
-// 	total_folders = casual.integer(15, 30),
-// 	total_envs = casual.integer(10, 15);
+const total_users = casual.integer(5, 10),
+	total_quizzes = casual.integer(15, 25),
+	total_questions = casual.integer(40, 50),
+	total_folders = casual.integer(15, 30),
+	total_envs = casual.integer(10, 15);
 
-const total_users = 5,
-	total_quizzes = 10,
-	total_questions = 20,
-	total_folders = 5,
-	total_envs = 10;
+const loginData = [];
+
 const createUser = async () => {
 	const user = casual.user;
 	try {
@@ -157,6 +155,11 @@ const createUser = async () => {
 			envs: []
 		});
 		console.log(`Created User ${users.length}`);
+		loginData.push({
+			password: user.password,
+			email: user.email,
+			username: user.username
+		});
 	} catch (err) {
 		console.log(err.message);
 	}
@@ -247,7 +250,7 @@ const createEnvironment = async () => {
 				}
 			}
 		);
-		user.environment.push(_id);
+		user.envs.push(_id);
 		envs.push(_id);
 		console.log(`Created Environment ${envs.length}`);
 	} catch (err) {
@@ -271,6 +274,8 @@ const createEnvironment = async () => {
 		if (users.length < total_users) await createUser();
 		else {
 			clearInterval(userInterval);
+			const data = loginData.map(({ password, username, email }) => `${username} ${email} ${password}\n`);
+			fs.writeFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
 			const quizInterval = setInterval(async () => {
 				if (quizzes.length < total_quizzes) await createQuiz();
 				else {
@@ -279,14 +284,14 @@ const createEnvironment = async () => {
 						if (envs.length < total_envs) await createEnvironment();
 						else {
 							clearInterval(environmentInterval);
-							const questionInterval = setInterval(async () => {
-								if (questions.length < total_questions) await createQuestion();
+							const folderInterval = setInterval(async () => {
+								if (folders.length < total_folders) await createFolder();
 								else {
-									clearInterval(questionInterval);
-									const folderInterval = setInterval(async () => {
-										if (folders.length < total_folders) await createFolder();
+									clearInterval(folderInterval);
+									const questionInterval = setInterval(async () => {
+										if (questions.length < total_questions) await createQuestion();
 										else {
-											clearInterval(folderInterval);
+											clearInterval(questionInterval);
 											process.exit();
 										}
 									}, 500);

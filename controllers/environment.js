@@ -20,9 +20,11 @@ exports.createEnvironment = asyncHandler(async (req, res, next) => {
 	const prevEnv = await Environment.countDocuments({ name: req.body.name, user: req.user._id });
 	if (prevEnv >= 1) return next(new ErrorResponse(`You already have an environment named ${req.body.name}`, 400));
 	const environment = await Environment.create(req.body);
-	if (req.body.set_as_current) user = await User.findById(req.body.user._id);
-	user.current_environment = environment._id;
-	await user.save();
+	if (req.body.set_as_current) {
+		user = await User.findById(req.body.user._id);
+		user.current_environment = environment._id;
+		await user.save();
+	}
 	res.status(201).json({ success: true, data: environment });
 });
 
