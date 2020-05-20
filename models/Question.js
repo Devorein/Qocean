@@ -19,7 +19,7 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 1,
 		min: [ 1, 'Weight cannot be less than 1' ],
-		max: [ 1, 'Weight cannot be more than 10' ]
+		max: [ 10, 'Weight cannot be more than 10' ]
 	},
 	quiz: {
 		type: mongoose.Schema.ObjectId,

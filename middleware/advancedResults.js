@@ -31,8 +31,7 @@ const advancedResults = (model, populate, option = {}) =>
 			queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
 			queryStr = JSON.parse(queryStr);
 			option.match = { ...option.match };
-			const originalUrls = req.originalUrl.split('/');
-			if (originalUrls[originalUrls.length - 1] === 'me') option.match.user = req.user._id;
+			if (req.route.path === '/me') option.match.user = req.user._id;
 			queryStr = { ...queryStr, ...option.match };
 			query = model.find(queryStr);
 			let fields = '';

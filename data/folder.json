@@ -3,26 +3,14 @@
     "name": "Collection 1",
     "user": "5ebb74772c952d08c0644884",
     "public": false,
-    "quizzes": [
-      "5eb78eacffe758058c7303cd",
-      "5eb78ec6ffe758058c7303ce"
-    ],
     "favourite": true
   },
   {
     "name": "Collection 2",
-    "user": "5ebb74772c952d08c0644885",
-    "quizzes": [
-      "5eb78efbffe758058c7303d0",
-      "5eb78ec6ffe758058c7303ce"
-    ]
+    "user": "5ebb74772c952d08c0644885"
   },
   {
     "name": "Collection 3",
-    "user": "5ebb74772c952d08c0644886",
-    "quizzes": [
-      "5eb78eacffe758058c7303cd",
-      "5eb78efbffe758058c7303d0"
-    ]
+    "user": "5ebb74772c952d08c0644886"
   }
 ]
