@@ -12,7 +12,7 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
-
+import './Create.scss';
 class Create extends Component {
 	submitForm = (changeResponse, values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();

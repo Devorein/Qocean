@@ -1,0 +1,11 @@
+.create {
+  &_question,
+  &_quiz,
+  &_env,
+  &_folder {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+}

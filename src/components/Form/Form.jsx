@@ -23,6 +23,7 @@ import ImageIcon from '@material-ui/icons/Image';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 import './Form.scss';
 
@@ -65,7 +66,10 @@ const Form = (props) => {
 		inputs,
 		children,
 		resetMsg,
-		resetForm
+		resetForm,
+		customHandler,
+		formButtons = true,
+		classNames
 	} = props;
 	const { textField, formcontrollabel } = useStyles();
 
@@ -76,11 +80,12 @@ const Form = (props) => {
 
 	const change = (name, e) => {
 		e.persist();
+		if (customHandler) customHandler(e);
 		handleChange(e);
 		setFieldTouched(name, true, false);
 	};
 
-	const formikProps = (type, name, label, placeholder, initialValue, defaultValue) => {
+	const formikProps = (type, name, label, placeholder) => {
 		return {
 			name,
 			value: values[name],
@@ -93,13 +98,14 @@ const Form = (props) => {
 		};
 	};
 
-	const decideIcon = (icon) => {
-		if (icon === 'email') return <EmailIcon />;
-		else if (icon === 'person') return <PersonIcon />;
-		else if (icon === 'image') return <ImageIcon />;
+	const decideIcon = (icon, onClick) => {
+		if (icon === 'email') return <EmailIcon onClick={onClick} />;
+		else if (icon === 'person') return <PersonIcon onClick={onClick} />;
+		else if (icon === 'image') return <ImageIcon onClick={onClick} />;
+		else if (icon === 'close' || icon === 'cancel') return <CancelIcon onClick={onClick} />;
 	};
 
-	const decideAdornment = (InputProps, startAdornment, endAdornment) => {
+	const decideAdornment = (name, InputProps, startAdornment, endAdornment) => {
 		if (InputProps) return InputProps;
 		else if (startAdornment) {
 			return {
@@ -107,12 +113,16 @@ const Form = (props) => {
 			};
 		} else if (endAdornment) {
 			return {
-				endAdornment: <InputAdornment position="end">{decideIcon(endAdornment)}</InputAdornment>
+				endAdornment: (
+					<InputAdornment position="end">
+						{decideIcon(endAdornment[0], endAdornment[1].bind(null, name))}
+					</InputAdornment>
+				)
 			};
 		}
 	};
 	return (
-		<form className="form" onSubmit={handleSubmit}>
+		<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
 			{inputs.map(
 				({
 					name,
@@ -200,6 +210,18 @@ const Form = (props) => {
 								inputProps={{ ...inputProps }}
 							/>
 						);
+					else if (type === 'textarea')
+						return (
+							<TextField
+								key={name}
+								type={'text'}
+								multiline
+								rows={10}
+								defaultValue={defaultValue}
+								{...formikProps('textarea', name, label, placeholder, value)}
+								fullWidth
+							/>
+						);
 					else
 						return name.toLowerCase().includes('password') ? (
 							<TextField
@@ -229,26 +251,28 @@ const Form = (props) => {
 								type={'text'}
 								{...formikProps('text', name, label, placeholder, value)}
 								fullWidth
-								InputProps={decideAdornment(InputProps, startAdornment, endAdornment)}
+								InputProps={decideAdornment(name, InputProps, startAdornment, endAdornment)}
 							/>
 						);
 				}
 			)}
 			{children}
-			<FormGroup row={true}>
-				<Button
-					variant="contained"
-					color="default"
-					onClick={(e) => {
-						resetForm();
-					}}
-				>
-					{resetMsg ? resetMsg : 'Reset'}
-				</Button>
-				<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
-					{submitMsg ? submitMsg : 'Submit'}
-				</Button>
-			</FormGroup>
+			{formButtons ? (
+				<FormGroup row={true}>
+					<Button
+						variant="contained"
+						color="default"
+						onClick={(e) => {
+							resetForm();
+						}}
+					>
+						{resetMsg ? resetMsg : 'Reset'}
+					</Button>
+					<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+						{submitMsg ? submitMsg : 'Submit'}
+					</Button>
+				</FormGroup>
+			) : null}
 		</form>
 	);
 };
