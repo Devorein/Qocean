@@ -44,7 +44,13 @@ class CreateFolder extends Component {
 		});
 	};
 
+	preSubmit = (values) => {
+		values.quizzes = this.state.selected_quizzes;
+		return values;
+	};
+
 	render() {
+		const { preSubmit, handleChange } = this;
 		const { onSubmit, changeResponse } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 
@@ -100,19 +106,14 @@ class CreateFolder extends Component {
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ changeResponse ])}
+					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>
 					) : quizzes.length < 1 ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>
 					) : (
-						<MultiSelect
-							label={'Quizzes'}
-							selected={selected_quizzes}
-							handleChange={this.handleChange}
-							items={quizzes}
-						/>
+						<MultiSelect label={'Quizzes'} selected={selected_quizzes} handleChange={handleChange} items={quizzes} />
 					)}
 				</InputForm>
 			</div>

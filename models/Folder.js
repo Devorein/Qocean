@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
+const Quiz = require('./Quiz');
 
 const FolderSchema = extendSchema(ResourceSchema, {
 	name: {
@@ -40,21 +41,32 @@ const FolderSchema = extendSchema(ResourceSchema, {
 });
 
 FolderSchema.methods.quiz = async function(op, quizId) {
-	const quiz = await this.model('Quiz').findById(quizId);
-	if (op === 1) {
-		this.quizzes.push(quizId);
-		quiz.folders.push(this._id);
-		quiz.total_folders++;
-		this.total_quizzes++;
-		this.total_questions += quiz.total_questions;
-	} else if (op === 0) {
-		this.quizzes = this.quizzes.filter((_quizId) => quizId.toString() !== _quizId.toString());
-		quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== this._id.toString());
-		quiz.total_folders--;
-		this.total_quizzes--;
-		this.total_questions -= quiz.total_questions;
+	function quizRelation(self, quiz, quizId) {
+		if (op === 1) {
+			self.quizzes.push(quizId);
+			quiz.folders.push(self._id);
+			quiz.total_folders++;
+			self.total_quizzes++;
+			self.total_questions += quiz.total_questions;
+		} else if (op === 0) {
+			self.quizzes = self.quizzes.filter((_quizId) => quizId.toString() !== _quizId.toString());
+			quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== self._id.toString());
+			quiz.total_folders--;
+			self.total_quizzes--;
+			self.total_questions -= quiz.total_questions;
+		}
 	}
-	await quiz.save();
+	if (Array.isArray(quizId)) {
+		for (let i = 0; i < quizId.length; i++) {
+			const quiz = await this.model('Quiz').findById(quizId[i]);
+			quizRelation(this, quiz, quizId[i]);
+			await quiz.save();
+		}
+	} else {
+		const quiz = await this.model('Quiz').findById(quizId);
+		quizRelation(this, quiz, quizId);
+		await quiz.save();
+	}
 };
 
 FolderSchema.pre('save', async function(next) {

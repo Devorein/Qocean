@@ -10,7 +10,11 @@ exports.createFolder = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
 	const prevFolder = await Folder.countDocuments({ name: req.body.name, user: req.user._id });
 	if (prevFolder >= 1) return next(new ErrorResponse(`You alread have a folder named ${req.body.name}`, 400));
+	const targetQuizzes = req.body.quizzes;
+	delete req.body.quizzes;
 	const folder = await Folder.create(req.body);
+	if (targetQuizzes) await folder.quiz(1, targetQuizzes);
+	await folder.save();
 	res.status(201).json({ success: true, data: folder });
 });
 
