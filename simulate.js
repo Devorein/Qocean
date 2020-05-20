@@ -21,6 +21,8 @@ mongoose.connect(process.env.MONGO_URI, {
 	useUnifiedTopology: true
 });
 
+const icons = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
+
 casual.define('user', function() {
 	return {
 		email: faker.internet.email(),
@@ -36,17 +38,32 @@ casual.define('quiz', function() {
 		name: casual.title,
 		subject: casual.word,
 		tags: casual.array_of_words(casual.integer(0, 3)),
-		source: faker.internet.url()
+		source: faker.internet.url(),
+		favourite: casual.boolean,
+		public: casual.boolean
 	};
 });
 
-const users = [];
-const quizzes = [];
-const total_users = casual.integer(5, 10);
-const total_quizzes = casual.integer(15, 25);
-const total_folders = casual.integer(15, 30);
-const total_envs = casual.integer(10, 15);
-const total_questions = casual.integer(40, 50);
+casual.define('folder', function() {
+	return {
+		name: casual.array_of_words(2).join(''),
+		icon: `${icons[casual.integer(0, icons.length - 1)]}_folder.svg`,
+		favourite: casual.boolean,
+		public: casual.boolean
+	};
+});
+
+const users = [],
+	quizzes = [],
+	questions = [],
+	folders = [],
+	envs = [];
+
+const total_users = casual.integer(5, 10),
+	total_quizzes = casual.integer(15, 25),
+	total_questions = casual.integer(40, 50),
+	total_folders = casual.integer(15, 30),
+	total_envs = casual.integer(10, 15);
 
 const createUser = async () => {
 	const user = casual.user;
@@ -67,18 +84,40 @@ const createUser = async () => {
 const createQuiz = async () => {
 	const quiz = casual.quiz;
 	try {
-		const user = casual.integer(0, total_users - 1);
+		const user = users[casual.integer(0, total_users - 1)];
 		const { data: { data: { _id } } } = await axios.post(
 			`http://localhost:5001/api/v1/quizzes`,
 			{ ...quiz },
 			{
 				headers: {
-					Authorization: `Bearer ${users[user].token}`
+					Authorization: `Bearer ${user.token}`
 				}
 			}
 		);
-		users[user].quizzes.push(_id);
+		user.quizzes.push(_id);
 		quizzes.push(_id);
+	} catch (err) {
+		console.log(err.message);
+	}
+};
+
+const createFolder = async () => {
+	const folder = casual.folder;
+	try {
+		const user = users[casual.integer(0, total_users - 1)];
+		const quiz = user.quizzes[casual.integer(0, user.quizzes.length - 1)];
+		folder.quizzes = quiz;
+		const { data: { data: { _id } } } = await axios.post(
+			`http://localhost:5001/api/v1/folders`,
+			{ ...folder },
+			{
+				headers: {
+					Authorization: `Bearer ${user.token}`
+				}
+			}
+		);
+		user.folders.push(_id);
+		folders.push(_id);
 	} catch (err) {
 		console.log(err.message);
 	}
@@ -101,12 +140,17 @@ const createQuiz = async () => {
 		else {
 			clearInterval(userInterval);
 			const quizInterval = setInterval(async () => {
-				console.log(quizzes.length);
 				if (quizzes.length < total_quizzes) await createQuiz();
 				else {
 					clearInterval(quizInterval);
+					const folerInterval = setInterval(async () => {
+						if (folders.length < total_folders) await createFolder();
+						else {
+							clearInterval(folerInterval);
+						}
+					}, 500);
 				}
-			}, 1000);
+			}, 500);
 		}
-	}, 1000);
+	}, 500);
 })();
