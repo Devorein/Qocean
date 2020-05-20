@@ -45,11 +45,61 @@ casual.define('quiz', function() {
 });
 
 casual.define('folder', function() {
+	let name = casual.array_of_words(2).join('');
+	while (name.length > 20) name = casual.array_of_words(2).join('');
 	return {
-		name: casual.array_of_words(2).join(''),
+		name,
 		icon: `${icons[casual.integer(0, icons.length - 1)]}_folder.svg`,
 		favourite: casual.boolean,
 		public: casual.boolean
+	};
+});
+
+casual.define('question', function() {
+	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC' ];
+	const type = types[casual.integer(0, types.length - 1)];
+	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
+	const time = times[casual.integer(0, times.length - 1)];
+	let options,
+		answers = [];
+
+	if (type === 'MCQ') {
+		const total_options = casual.integer(3, 6);
+		options = [ ...'1'.repeat(total_options) ].map((_) => casual.sentence);
+		const total_answers = casual.integer(1, total_options - 1);
+		for (let i = 1; i <= total_answers; i++) {
+			let random_choice = casual.integer(1, total_options - 1);
+			while (answers.indexOf(random_choice) === -1) random_choice = casual.integer(1, total_options - 1);
+			answers.push(random_choice);
+		}
+	} else if (type === 'MS') {
+		const total_options = casual.integer(3, 6);
+		options = [ ...'1'.repeat(total_options) ].map((_) => casual.sentence);
+		answers.push(casual.integer(1, total_options - 1));
+	} else if (type === 'TF') {
+		options = [ 'True', 'False' ];
+		answers.push(options[casual.integer(0, 1)]);
+	} else if (type === 'FC') {
+		options = [];
+		answers = [ casual.sentence ];
+	} else if (type === 'FIB') {
+		options = [];
+		answers = [ casual.sentence ];
+	} else if (type === 'Snippet') {
+		options = [];
+		answers = [ casual.array_of_words(casual.integer(1, 3)) ];
+	}
+
+	return {
+		question: casual.sentence,
+		type,
+		weight: casual.integer(1, 10),
+		add_to_score: casual.boolean,
+		time_allocated: time,
+		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][casual.integer(0, 2)],
+		image: faker.internet.url(),
+		options,
+		answers
 	};
 });
 
@@ -95,7 +145,7 @@ const createQuiz = async () => {
 			}
 		);
 		user.quizzes.push(_id);
-		quizzes.push(_id);
+		quizzes.push({ _id, questions: [] });
 	} catch (err) {
 		console.log(err.message);
 	}
@@ -123,6 +173,31 @@ const createFolder = async () => {
 	}
 };
 
+const createQuestion = async () => {
+	const question = casual.question;
+	const user = users[casual.integer(0, total_users - 1)];
+	const quiz = quizzes.find(({ _id }) => user.quizzes[casual.integer(0, user.quizzes.length - 1)] === _id);
+	if (quiz) {
+		try {
+			question.quiz = quiz;
+			const { data: { data: { _id } } } = await axios.post(
+				`http://localhost:5001/api/v1/questions`,
+				{ ...question },
+				{
+					headers: {
+						Authorization: `Bearer ${user.token}`
+					}
+				}
+			);
+			user.questions.push(_id);
+			quiz.questions.push(_id);
+			questions.push(_id);
+		} catch (err) {
+			console.log(err.message);
+		}
+	}
+};
+
 (async function() {
 	await Quiz.deleteMany();
 	await Question.deleteMany();
@@ -143,10 +218,16 @@ const createFolder = async () => {
 				if (quizzes.length < total_quizzes) await createQuiz();
 				else {
 					clearInterval(quizInterval);
-					const folerInterval = setInterval(async () => {
+					const folderInterval = setInterval(async () => {
 						if (folders.length < total_folders) await createFolder();
 						else {
-							clearInterval(folerInterval);
+							const questionInterval = setInterval(async () => {
+								if (questions.length < total_questions) await createQuestion();
+								else {
+									clearInterval(questionInterval);
+								}
+								clearInterval(folderInterval);
+							}, 500);
 						}
 					}, 500);
 				}

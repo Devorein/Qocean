@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'development') {
 } else {
 	limiter = rateLimiter({
 		windowMs: 10 * 60 * 1000,
-		max: 50
+		max: 500
 	});
 }
 
