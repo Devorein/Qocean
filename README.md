@@ -27,17 +27,24 @@ Since its self hosted you'll host the app on your own server aka localhost and y
 Make sure your configuration file have the following key and value pairs separated by =
 
 `PORT` =any valid port
+
 `NODE_ENV` =development|production|testing
+
 `MONGO_URI` =mongodb atlas cluster url
+
 `FILE_UPLOAD_SIZE` =max file upload size in bytes
-`FILE_UPLOAD_PATH` =./public/uploads
+
+`FILE_UPLOAD_PATH` = ./public/uploads
+
 `JWT_SECRET` =any strong password
+
 `JWT_EXPIRE` =see jwt documentation for more info, tldr; use `day_number` d to specify how many days the token will last
+
 `JWT_COOKIE_EXPIRE` =same as `JWT_EXPIRE` without the d
 
 ## Features
 
-Take a look at this <a href="./docs/features.md">file</a> to see all the available features of the app.
+Take a look at this <a href="./docs/features.md">file</a> to see all the available features of the app and the api.
 
 ## API Documentation
 
