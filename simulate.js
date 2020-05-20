@@ -99,7 +99,31 @@ casual.define('question', function() {
 		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][casual.integer(0, 2)],
 		image: faker.internet.url(),
 		options,
-		answers
+		answers,
+		favourite: casual.boolean,
+		public: casual.boolean
+	};
+});
+
+casual.define('environment', function() {
+	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
+	const time = times[casual.integer(0, times.length - 1)];
+	const notification_timings = [ 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 ];
+	const notification_timing = notification_timings[casual.integer(0, notification_timings.length - 1)];
+	return {
+		name: casual.array_of_words(2).join(''),
+		icon: `${icons[casual.integer(0, icons.length - 1)]}_env.svg`,
+		favourite: casual.boolean,
+		public: casual.boolean,
+		theme: [ 'Light', 'Dark', 'Navy' ][casual.integer(0, 2)],
+		animation: casual.boolean,
+		sound: casual.boolean,
+		default_question_time: time,
+		default_question_difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][casual.integer(0, 2)],
+		default_question_weight: casual.integer(1, 10),
+		reset_on_success: casual.boolean,
+		reset_on_error: casual.boolean,
+		notification_timing
 	};
 });
 
@@ -109,23 +133,30 @@ const users = [],
 	folders = [],
 	envs = [];
 
-const total_users = casual.integer(5, 10),
-	total_quizzes = casual.integer(15, 25),
-	total_questions = casual.integer(40, 50),
-	total_folders = casual.integer(15, 30),
-	total_envs = casual.integer(10, 15);
+// const total_users = casual.integer(5, 10),
+// 	total_quizzes = casual.integer(15, 25),
+// 	total_questions = casual.integer(40, 50),
+// 	total_folders = casual.integer(15, 30),
+// 	total_envs = casual.integer(10, 15);
 
+const total_users = 5,
+	total_quizzes = 10,
+	total_questions = 20,
+	total_folders = 5,
+	total_envs = 10;
 const createUser = async () => {
 	const user = casual.user;
 	try {
-		const { data: { token } } = await axios.post(`http://localhost:5001/api/v1/auth/register`, { ...user });
+		const { data: { token, _id } } = await axios.post(`http://localhost:5001/api/v1/auth/register`, { ...user });
 		users.push({
+			_id,
 			token,
 			quizzes: [],
 			questions: [],
 			folders: [],
 			envs: []
 		});
+		console.log(`Created User ${users.length}`);
 	} catch (err) {
 		console.log(err.message);
 	}
@@ -146,6 +177,7 @@ const createQuiz = async () => {
 		);
 		user.quizzes.push(_id);
 		quizzes.push({ _id, questions: [] });
+		console.log(`Created Quiz ${quizzes.length}`);
 	} catch (err) {
 		console.log(err.message);
 	}
@@ -168,6 +200,7 @@ const createFolder = async () => {
 		);
 		user.folders.push(_id);
 		folders.push(_id);
+		console.log(`Created Folder ${folders.length}`);
 	} catch (err) {
 		console.log(err.message);
 	}
@@ -175,26 +208,50 @@ const createFolder = async () => {
 
 const createQuestion = async () => {
 	const question = casual.question;
-	const user = users[casual.integer(0, total_users - 1)];
-	const quiz = quizzes.find(({ _id }) => user.quizzes[casual.integer(0, user.quizzes.length - 1)] === _id);
-	if (quiz) {
-		try {
-			question.quiz = quiz;
-			const { data: { data: { _id } } } = await axios.post(
-				`http://localhost:5001/api/v1/questions`,
-				{ ...question },
-				{
-					headers: {
-						Authorization: `Bearer ${user.token}`
-					}
+	let user = users[casual.integer(0, total_users - 1)];
+	while (user.quizzes.length === 0) user = users[casual.integer(0, total_users - 1)];
+	const quizId = user.quizzes[casual.integer(0, user.quizzes.length - 1)];
+	// const quiz = quizzes.find(({ _id }) => quizId === _id);
+	// console.log(quiz);
+	try {
+		question.quiz = quizId;
+		const { data: { data: { _id } } } = await axios.post(
+			`http://localhost:5001/api/v1/questions`,
+			{ ...question },
+			{
+				headers: {
+					Authorization: `Bearer ${user.token}`
 				}
-			);
-			user.questions.push(_id);
-			quiz.questions.push(_id);
-			questions.push(_id);
-		} catch (err) {
-			console.log(err.message);
-		}
+			}
+		);
+		user.questions.push(_id);
+		// quiz.questions.push(_id);
+		questions.push(_id);
+		console.log(`Created Question ${questions.length}`);
+	} catch (err) {
+		console.log(err.message);
+	}
+};
+
+const createEnvironment = async () => {
+	const environment = casual.environment;
+	try {
+		const user = users[casual.integer(0, total_users - 1)];
+		environment.user = user._id;
+		const { data: { data: { _id } } } = await axios.post(
+			`http://localhost:5001/api/v1/environments`,
+			{ ...environment },
+			{
+				headers: {
+					Authorization: `Bearer ${user.token}`
+				}
+			}
+		);
+		user.environment.push(_id);
+		envs.push(_id);
+		console.log(`Created Environment ${envs.length}`);
+	} catch (err) {
+		console.log(err.message);
 	}
 };
 
@@ -218,15 +275,22 @@ const createQuestion = async () => {
 				if (quizzes.length < total_quizzes) await createQuiz();
 				else {
 					clearInterval(quizInterval);
-					const folderInterval = setInterval(async () => {
-						if (folders.length < total_folders) await createFolder();
+					const environmentInterval = setInterval(async () => {
+						if (envs.length < total_envs) await createEnvironment();
 						else {
+							clearInterval(environmentInterval);
 							const questionInterval = setInterval(async () => {
 								if (questions.length < total_questions) await createQuestion();
 								else {
 									clearInterval(questionInterval);
+									const folderInterval = setInterval(async () => {
+										if (folders.length < total_folders) await createFolder();
+										else {
+											clearInterval(folderInterval);
+											process.exit();
+										}
+									}, 500);
 								}
-								clearInterval(folderInterval);
 							}, 500);
 						}
 					}, 500);
