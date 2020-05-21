@@ -18,7 +18,8 @@ class CreateFolder extends Component {
 	state = {
 		folders: [],
 		loading: true,
-		selected_quizzes: []
+		selected_quizzes: [],
+		quizzes: []
 	};
 	componentDidMount() {
 		axios
@@ -49,8 +50,16 @@ class CreateFolder extends Component {
 		return values;
 	};
 
+	postSubmit = (cond) => {
+		if (cond) {
+			this.setState({
+				selected_quizzes: []
+			});
+		}
+	};
+
 	render() {
-		const { preSubmit, handleChange } = this;
+		const { preSubmit, handleChange, postSubmit } = this;
 		const { onSubmit, changeResponse } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 
@@ -106,7 +115,7 @@ class CreateFolder extends Component {
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit ])}
+					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>

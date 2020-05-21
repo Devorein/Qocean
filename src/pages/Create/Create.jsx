@@ -14,9 +14,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import './Create.scss';
 class Create extends Component {
-	submitForm = ([ changeResponse, transformation ], values, { setSubmitting, resetForm }) => {
+	submitForm = ([ changeResponse, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();
-		if (transformation) values = transformation(values);
+		const { reset_on_success, reset_on_error } = this.props.user.current_environment;
+		if (preSubmit) values = preSubmit(values);
 		axios
 			.post(
 				`http://localhost:5001/api/v1/${pluralize(type)}`,
@@ -30,18 +31,22 @@ class Create extends Component {
 				}
 			)
 			.then(() => {
+				if (reset_on_success) resetForm();
 				setSubmitting(true);
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
 				changeResponse(`Successfully created ${type}`, 'success');
+				postSubmit(reset_on_success);
 			})
 			.catch((err) => {
+				if (reset_on_error) resetForm();
 				setSubmitting(true);
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
 				changeResponse(err.response.data.error, 'error');
+				postSubmit(reset_on_error);
 			});
 	};
 

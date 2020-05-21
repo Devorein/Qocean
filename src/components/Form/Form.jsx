@@ -148,9 +148,11 @@ const Form = (props) => {
 					sibling,
 					controlled = true,
 					onChange,
-					onkeyPress
+					onkeyPress,
+					component
 				}) => {
-					if (type === 'select')
+					if (type === 'component') return component;
+					else if (type === 'select')
 						return (
 							<Fragment key={name}>
 								<FormControl disabled={disabled ? disabled : false} fullWidth>

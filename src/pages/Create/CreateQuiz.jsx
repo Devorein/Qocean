@@ -57,6 +57,14 @@ class CreateQuiz extends Component {
 		return values;
 	};
 
+	postSubmit = (cond) => {
+		if (cond) {
+			this.setState({
+				selected_folders: []
+			});
+		}
+	};
+
 	deleteTags = (_tag) => {
 		let { tags } = this.state;
 		tags = tags.filter((tag) => tag.split(':')[0].toLowerCase() !== _tag.toLowerCase());
@@ -104,7 +112,7 @@ class CreateQuiz extends Component {
 	};
 
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags } = this;
+		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
 		const { onSubmit, changeResponse } = this.props;
 		const { folders, loading, selected_folders, tags } = this.state;
 		const inputs = [
@@ -127,7 +135,7 @@ class CreateQuiz extends Component {
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit ])}
+					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your folders</FormHelperText>
