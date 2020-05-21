@@ -99,7 +99,7 @@ class CreateQuestion extends Component {
 			});
 	}
 
-	typeChangeHandler = (e) => {
+	typeChangeHandler = (values, setValues, e) => {
 		const { name, value } = e.target;
 		if (name === 'type') {
 			if (value === 'MCQ')
@@ -168,9 +168,11 @@ class CreateQuestion extends Component {
 					showButton: false
 				});
 			} else if (value === 'Snippet') {
+				values.answers = '';
+				setValues({ ...values });
 				this.setState({
-					options: [],
-					answers: [ { name: 'answer' } ],
+					options: null,
+					answers: { name: 'answers' },
 					showButton: false
 				});
 			}
@@ -275,7 +277,7 @@ class CreateQuestion extends Component {
 		else if (type === 'Snippet')
 			return Yup.object({
 				...validationSchema,
-				answer: Yup.string('Enter answer').required('Answer is required')
+				answers: Yup.string('Enter answer').required('Answer is required')
 			});
 		else if (type === 'FC') {
 			return Yup.object({
@@ -294,7 +296,6 @@ class CreateQuestion extends Component {
 
 	preSubmit = (values) => {
 		const { type } = this.state;
-		console.log(values);
 		if (type === 'MCQ') {
 			const options = [];
 			Object.entries(values).forEach(([ key, value ]) => {
@@ -320,6 +321,12 @@ class CreateQuestion extends Component {
 			});
 			values.options = options;
 			values.answers = answers.map((answer) => [ parseInt(answer) ]);
+			return values;
+		} else if (type === 'Snippet') {
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option_')) delete values[key];
+			});
+			values.answers = [ [ values.answers ] ];
 			return values;
 		}
 	};

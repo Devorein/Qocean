@@ -65,6 +65,7 @@ const Form = (props) => {
 		isSubmitting,
 		submitMsg,
 		inputs,
+		setValues,
 		children,
 		resetMsg,
 		resetForm,
@@ -81,7 +82,7 @@ const Form = (props) => {
 
 	const change = (name, e) => {
 		e.persist();
-		if (customHandler) customHandler(e);
+		if (customHandler) customHandler(values, setValues, e);
 		handleChange(e);
 		setFieldTouched(name, true, false);
 	};
