@@ -81,7 +81,7 @@ class CreateFolder extends Component {
 			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true }
 		];
 		return (
-			<div>
+			<div className="create_folder create_form">
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}

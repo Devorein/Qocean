@@ -266,7 +266,7 @@ class CreateQuestion extends Component {
 		];
 
 		return (
-			<div className="create_question page">
+			<div className="create_question create_form">
 				<InputForm
 					inputs={inputs}
 					customHandler={typeChangeHandler}

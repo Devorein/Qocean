@@ -131,7 +131,7 @@ class CreateQuiz extends Component {
 		];
 
 		return (
-			<div>
+			<div className="create_quiz create_form">
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}

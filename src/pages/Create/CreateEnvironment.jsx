@@ -116,7 +116,7 @@ class CreateEnvironment extends Component {
 			}
 		];
 		return (
-			<div>
+			<div className="create_env create_form">
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
