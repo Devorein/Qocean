@@ -16,7 +16,7 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 			'Green_env.svg',
 			'Blue_env.svg',
 			'Indigo_env.svg',
-			'Violet_env.svg'
+			'Purple_env.svg'
 		],
 		default: 'Red_env.svg'
 	},

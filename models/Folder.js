@@ -20,7 +20,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 			'Green_folder.svg',
 			'Blue_folder.svg',
 			'Indigo_folder.svg',
-			'Violet_folder.svg'
+			'Purple_folder.svg'
 		],
 		default: 'Red_folder.svg'
 	},

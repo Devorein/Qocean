@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import axios from 'axios';
 import InputForm from '../../components/Form/InputForm';
-import FolderIcon from '@material-ui/icons/Folder';
-import { red, blue, indigo, green, orange, yellow, purple } from '@material-ui/core/colors';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import getColoredIcons from '../../Utils/getColoredIcons';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter folder name').required('Folder name is required'),
@@ -68,43 +67,14 @@ class CreateFolder extends Component {
 			{
 				name: 'icon',
 				type: 'select',
-				selectItems: [
-					{
-						text: 'Red',
-						value: 'Red_folder.svg',
-						icon: <FolderIcon style={{ fill: red[500] }} />
-					},
-					{
-						text: 'Orange',
-						value: 'Orange_folder.svg',
-						icon: <FolderIcon style={{ fill: orange[500] }} />
-					},
-					{
-						text: 'Yellow',
-						value: 'Yellow_folder.svg',
-						icon: <FolderIcon style={{ fill: yellow[500] }} />
-					},
-					{
-						text: 'Green',
-						value: 'Green_folder.svg',
-						icon: <FolderIcon style={{ fill: green[500] }} />
-					},
-					{
-						text: 'Blue',
-						value: 'Blue_folder.svg',
-						icon: <FolderIcon style={{ fill: blue[500] }} />
-					},
-					{
-						text: 'Indigo',
-						value: 'Indigo_folder.svg',
-						icon: <FolderIcon style={{ fill: indigo[500] }} />
-					},
-					{
-						text: 'Violet',
-						value: 'Violet_folder.svg',
-						icon: <FolderIcon style={{ fill: purple[500] }} />
-					}
-				],
+				selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+					return {
+						text: capitalized,
+						value: `${capitalized}_folder.svg`,
+						icon: getColoredIcons('Folder', color)
+					};
+				}),
 				defaultValue: 'Red_folder.svg'
 			},
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
