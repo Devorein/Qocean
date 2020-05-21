@@ -120,6 +120,7 @@ class App extends Component {
 							severity={severity}
 							isOpen={isOpen}
 							changeResponse={this.changeResponse}
+							timing={session.data ? session.data.data.current_environment.notification_timing : 2500}
 						/>
 					</AppContext.Provider>
 				</div>

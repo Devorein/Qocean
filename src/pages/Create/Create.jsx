@@ -16,7 +16,7 @@ import './Create.scss';
 class Create extends Component {
 	submitForm = ([ changeResponse, transformation ], values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();
-		values = transformation(values);
+		if (transformation) values = transformation(values);
 		axios
 			.post(
 				`http://localhost:5001/api/v1/${pluralize(type)}`,

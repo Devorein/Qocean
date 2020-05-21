@@ -23,57 +23,6 @@ const validationSchema = Yup.object({
 		.default(30)
 });
 
-const inputs = [
-	{ name: 'name' },
-	{},
-	{
-		name: 'type',
-		type: 'select',
-		selectItems: [
-			{ text: 'Fill In the Blanks', value: 'FIB' },
-			{ text: 'Multiple Choice', value: 'MCQ' },
-			{ text: 'Multiple Select', value: 'MS' },
-			{ text: 'Snippet', value: 'Snippet' },
-			{ text: 'Flashcard', value: 'FC' },
-			{ text: 'True/False', value: 'TF' }
-		],
-		defaultValue: 'MCQ'
-	},
-	{
-		name: 'difficulty',
-		type: 'radio',
-		radioItems: [
-			{ label: 'Beginner', value: 'Beginner' },
-			{ label: 'Intermediate', value: 'Intermediate' },
-			{ label: 'Advanced', value: 'Advanced' }
-		],
-		defaultValue: 'Beginner'
-	},
-	{
-		name: 'question_weight',
-		type: 'number',
-		inputProps: {
-			min: 1,
-			max: 10,
-			step: 1
-		},
-		defaultValue: 1
-	},
-	{
-		name: 'time_allocated',
-		type: 'number',
-		inputProps: {
-			min: 15,
-			max: 120,
-			step: 5
-		},
-		defaultValue: 30
-	},
-	{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
-	{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },
-	{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', defaultValue: true }
-];
-
 class CreateQuestion extends Component {
 	state = {
 		quizzes: [],
@@ -248,21 +197,74 @@ class CreateQuestion extends Component {
 
 	render() {
 		const { typeChangeHandler } = this;
-		const { onSubmit, changeResponse } = this.props;
+		const { onSubmit, changeResponse, user } = this.props;
 		const { type, quizzes, loading, options, answers, showButton } = this.state;
 		const optionsValidation = this.decideValidation(type);
-		inputs[1] = {
-			name: 'quiz',
-			type: 'select',
-			selectItems: quizzes.map(({ _id, name }) => {
-				return {
-					value: _id,
-					text: name
-				};
-			}),
-			disabled: quizzes.length < 1,
-			helperText: loading ? 'Loading your quizzes' : quizzes.length < 1 ? 'You have not created any quizzes yet' : null
-		};
+
+		const inputs = [
+			{ name: 'name' },
+			{
+				name: 'quiz',
+				type: 'select',
+				selectItems: quizzes.map(({ _id, name }) => {
+					return {
+						value: _id,
+						text: name
+					};
+				}),
+				disabled: quizzes.length < 1,
+				helperText: loading
+					? 'Loading your quizzes'
+					: quizzes.length < 1 ? 'You have not created any quizzes yet' : null
+			},
+			{
+				name: 'type',
+				type: 'select',
+				selectItems: [
+					{ text: 'Fill In the Blanks', value: 'FIB' },
+					{ text: 'Multiple Choice', value: 'MCQ' },
+					{ text: 'Multiple Select', value: 'MS' },
+					{ text: 'Snippet', value: 'Snippet' },
+					{ text: 'Flashcard', value: 'FC' },
+					{ text: 'True/False', value: 'TF' }
+				],
+				defaultValue: 'MCQ'
+			},
+			{
+				name: 'difficulty',
+				type: 'radio',
+				radioItems: [
+					{ label: 'Beginner', value: 'Beginner' },
+					{ label: 'Intermediate', value: 'Intermediate' },
+					{ label: 'Advanced', value: 'Advanced' }
+				],
+				defaultValue: user.current_environment.default_question_difficulty
+			},
+			{
+				name: 'question_weight',
+				type: 'number',
+				inputProps: {
+					min: 1,
+					max: 10,
+					step: 1
+				},
+				defaultValue: user.current_environment.default_question_weight
+			},
+			{
+				name: 'time_allocated',
+				type: 'number',
+				inputProps: {
+					min: 15,
+					max: 120,
+					step: 5
+				},
+				defaultValue: user.current_environment.default_question_time
+			},
+			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
+			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },
+			{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', defaultValue: true }
+		];
+
 		return (
 			<div className="create_question page">
 				<InputForm
@@ -283,7 +285,7 @@ class CreateQuestion extends Component {
 }
 
 // Client side Schema validation
-// Alternate
+// Alternate answers
 // Form Submission
 // Backend question Validation
 
