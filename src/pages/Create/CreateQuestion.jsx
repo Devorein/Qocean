@@ -142,13 +142,15 @@ class CreateQuestion extends Component {
 					},
 					showButton: true
 				});
-			else if (value === 'FC')
+			else if (value === 'FC') {
+				values.answers = '';
+				setValues({ ...values });
 				this.setState({
-					answers: [ { name: 'answer', type: 'textarea' } ],
-					options: [],
+					answers: { name: 'answers', type: 'textarea' },
+					options: null,
 					showButton: false
 				});
-			else if (value === 'TF')
+			} else if (value === 'TF')
 				this.setState({
 					options: [],
 					answers: [
@@ -282,7 +284,7 @@ class CreateQuestion extends Component {
 		else if (type === 'FC') {
 			return Yup.object({
 				...validationSchema,
-				answer: Yup.string('Enter answer').required('An answer must be given')
+				answers: Yup.string('Enter answer').required('An answer must be given')
 			});
 		} else if (type === 'TF') {
 			return Yup.object({
@@ -323,6 +325,12 @@ class CreateQuestion extends Component {
 			values.answers = answers.map((answer) => [ parseInt(answer) ]);
 			return values;
 		} else if (type === 'Snippet') {
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option_')) delete values[key];
+			});
+			values.answers = [ [ values.answers ] ];
+			return values;
+		} else if (type === 'FC') {
 			Object.entries(values).forEach(([ key, value ]) => {
 				if (key.startsWith('option_')) delete values[key];
 			});
