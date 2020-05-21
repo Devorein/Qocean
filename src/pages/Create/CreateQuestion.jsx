@@ -172,8 +172,8 @@ class CreateQuestion extends Component {
 				});
 			} else if (value === 'FIB') {
 				this.setState({
-					options: [],
-					answers: [],
+					options: null,
+					answers: {},
 					showButton: false,
 					type: value
 				});
@@ -293,6 +293,13 @@ class CreateQuestion extends Component {
 				answers: Yup.string('Enter answer').required('An answer must be given')
 			});
 		} else if (type === 'TF') {
+			return Yup.object({
+				...validationSchema,
+				answers: Yup.string('Enter answer')
+					.oneOf([ 'true', 'false' ], 'Should be either true or false')
+					.required('An answer must be given')
+			});
+		} else if (type === 'FIB') {
 			return Yup.object({
 				...validationSchema,
 				answers: Yup.string('Enter answer')
