@@ -4,7 +4,7 @@ import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import DeletableChip from '../../components/Chip/DeletableChip';
+import ChipContainer from '../../components/Chip/ChipContainer';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -57,29 +57,23 @@ class CreateQuiz extends Component {
 
 	deleteTags = (tagName) => {};
 
-	createTags = (tag) => {
-		const { tags } = this.state;
-		tags.push(tag);
-		this.setState({
-			tags
-		});
-	};
-	renderTags = () => {
-		const { tags } = this.state;
-
-		return (
-			<div>
-				{tags.map((tag) => {
-					return <DeletableChip tag={tag} key={tag} onDelete={this.deleteTags} />;
-				})}
-			</div>
-		);
+	createTags = (e) => {
+		e.persist();
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			const { tags } = this.state;
+			tags.push(e.target.value);
+			e.target.value = '';
+			this.setState({
+				tags
+			});
+		}
 	};
 
 	render() {
-		const { preSubmit, handleChange, renderTags, createTags } = this;
+		const { preSubmit, handleChange, createTags, deleteTags } = this;
 		const { onSubmit, changeResponse } = this.props;
-		const { folders, loading, selected_folders } = this.state;
+		const { folders, loading, selected_folders, tags } = this.state;
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
@@ -88,15 +82,8 @@ class CreateQuiz extends Component {
 			{
 				name: 'tags',
 				controlled: false,
-				onkeyPress: (e) => {
-					e.persist();
-					if (e.key === 'Enter') {
-						e.preventDefault();
-						createTags(e.target.value);
-						e.target.value = '';
-					}
-				},
-				sibling: renderTags()
+				onkeyPress: createTags,
+				sibling: <ChipContainer chips={tags} type="delete" onIconClick={deleteTags} />
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true }
