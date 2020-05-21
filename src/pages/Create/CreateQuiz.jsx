@@ -63,16 +63,38 @@ class CreateQuiz extends Component {
 		});
 	};
 
-	createTags = (e) => {
+	validateTags = (changeResponse, _tag) => {
+		const { tags } = this.state;
+		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
+		const tagsSeparator = _tag.split(':');
+		if (tagsSeparator.length === 1) {
+			changeResponse(`You've entered a partial tag, using default color`, 'warning');
+			return true;
+		} else if (tagsSeparator[1] === '') {
+			changeResponse(`You've not supplied a color, using default color`, 'warning');
+			return true;
+		} else if (tagsSeparator.length >= 2) {
+			changeResponse(`Your tag is malformed, check it again`, 'error');
+			return false;
+		}
+		if (isPresent) {
+			changeResponse(`Tag with name ${_tag.split(':')[0]} has already been added`, 'error');
+			return false;
+		} else return true;
+	};
+
+	createTags = (changeResponse, e) => {
 		e.persist();
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			const { tags } = this.state;
-			tags.push(e.target.value);
-			e.target.value = '';
-			this.setState({
-				tags
-			});
+			if (this.validateTags(changeResponse, e.target.value)) {
+				tags.push(e.target.value);
+				e.target.value = '';
+				this.setState({
+					tags
+				});
+			}
 		}
 	};
 
@@ -88,7 +110,7 @@ class CreateQuiz extends Component {
 			{
 				name: 'tags',
 				controlled: false,
-				onkeyPress: createTags,
+				onkeyPress: createTags.bind(null, changeResponse),
 				sibling: <ChipContainer chips={tags} type="delete" onIconClick={deleteTags} />
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },

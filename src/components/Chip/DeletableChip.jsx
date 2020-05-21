@@ -7,7 +7,8 @@ import changeColor from '../../Utils/changeColor';
 class DeletableChip extends Component {
 	render() {
 		const { tag, onDelete } = this.props;
-		const [ label, bg ] = tag.split(':');
+		let [ label, bg ] = tag.split(':');
+		if (!bg || bg === '') bg = 'black';
 		return (
 			<Chip
 				label={label}
