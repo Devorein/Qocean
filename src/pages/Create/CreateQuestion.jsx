@@ -120,7 +120,8 @@ class CreateQuestion extends Component {
 						],
 						defaultValue: 'answer_1'
 					},
-					showButton: true
+					showButton: true,
+					type: value
 				});
 			else if (value === 'MS')
 				this.setState({
@@ -140,7 +141,8 @@ class CreateQuestion extends Component {
 							{ name: 'answer_3', type: 'checkbox' }
 						]
 					},
-					showButton: true
+					showButton: true,
+					type: value
 				});
 			else if (value === 'FC') {
 				values.answers = '';
@@ -148,26 +150,32 @@ class CreateQuestion extends Component {
 				this.setState({
 					answers: { name: 'answers', type: 'textarea' },
 					options: null,
-					showButton: false
+					showButton: false,
+					type: value
 				});
-			} else if (value === 'TF')
+			} else if (value === 'TF') {
+				Object.entries(values).forEach(([ key, value ]) => {
+					if (key.startsWith('option_')) delete values[key];
+				});
+				values.answers = 'true';
+				setValues({ ...values });
 				this.setState({
-					options: [],
-					answers: [
-						{
-							name: 'answer',
-							type: 'radio',
-							radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
-							defaultValue: 'true'
-						}
-					],
-					showButton: false
+					options: null,
+					answers: {
+						name: 'answers',
+						type: 'radio',
+						radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
+						defaultValue: 'true'
+					},
+					showButton: false,
+					type: value
 				});
-			else if (value === 'FIB') {
+			} else if (value === 'FIB') {
 				this.setState({
 					options: [],
 					answers: [],
-					showButton: false
+					showButton: false,
+					type: value
 				});
 			} else if (value === 'Snippet') {
 				values.answers = '';
@@ -175,16 +183,14 @@ class CreateQuestion extends Component {
 				this.setState({
 					options: null,
 					answers: { name: 'answers' },
-					showButton: false
+					showButton: false,
+					type: value
 				});
 			}
-			this.setState({
-				type: value
-			});
 		}
 	};
 
-	addOption = () => {
+	/* addOption = () => {
 		let { options, type, answers } = this.state;
 		options = [ ...options, { name: `option_${options.length + 1}`, endAdornment: [ 'close', this.removeOption ] } ];
 
@@ -237,7 +243,7 @@ class CreateQuestion extends Component {
 			options,
 			answers
 		});
-	};
+	}; */
 
 	decideValidation = (type) => {
 		const validationSchema = {
@@ -290,7 +296,7 @@ class CreateQuestion extends Component {
 			return Yup.object({
 				...validationSchema,
 				answers: Yup.string('Enter answer')
-					.oneOf([ 'true', 'false' ], 'Answer must either be true or false')
+					.oneOf([ 'true', 'false' ], 'Should be either true or false')
 					.required('An answer must be given')
 			});
 		}
@@ -326,15 +332,22 @@ class CreateQuestion extends Component {
 			return values;
 		} else if (type === 'Snippet') {
 			Object.entries(values).forEach(([ key, value ]) => {
-				if (key.startsWith('option_')) delete values[key];
+				if (key.startsWith('option')) delete values[key];
 			});
 			values.answers = [ [ values.answers ] ];
 			return values;
 		} else if (type === 'FC') {
 			Object.entries(values).forEach(([ key, value ]) => {
-				if (key.startsWith('option_')) delete values[key];
+				if (key.startsWith('option')) delete values[key];
 			});
 			values.answers = [ [ values.answers ] ];
+			return values;
+		} else if (type === 'TF') {
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option')) delete values[key];
+			});
+			values.answers = [ [ values.answers ] ];
+			values.options = [ 'True', 'False' ];
 			return values;
 		}
 	};
