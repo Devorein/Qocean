@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import getColoredIcons from '../../Utils/getColoredIcons';
-
+import moment from 'moment';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import './Explore.scss';
@@ -13,6 +13,7 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 class Explore extends Component {
 	state = {
@@ -21,6 +22,35 @@ class Explore extends Component {
 		type: null
 	};
 
+	getMuiTheme = () =>
+		createMuiTheme({
+			overrides: {
+				MUIDataTableHeadCell: {
+					fixedHeaderCommon: {
+						backgroundColor: '#000000de',
+						color: '#ddd',
+						fontFamily: 'Quantico'
+					},
+					fixedHeaderYAxis: {
+						border: 'none'
+					}
+				},
+				MUIDataTableBodyCell: {
+					root: {
+						backgroundColor: '#272727',
+						color: '#ddd',
+						fontFamily: 'Quantico',
+						borderBottom: 'none'
+					}
+				},
+				MUIDataTableSelectCell: {
+					fixedHeaderCommon: {
+						backgroundColor: '#000000de',
+						borderBottom: 'none'
+					}
+				}
+			}
+		});
 	refetchData = (type) => {
 		axios
 			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}`)
@@ -43,11 +73,13 @@ class Explore extends Component {
 				return {
 					...item,
 					username: item.user.username,
-					icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase())
+					icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
+					created_at: moment(item.created_at).fromNow()
 				};
 			});
 		}
 	};
+
 	decideLabel = (name) => {
 		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
 	};
@@ -83,7 +115,7 @@ class Explore extends Component {
 		];
 		const index = headers.findIndex(({ name }) => name === match.params.type);
 		const options = {
-			filterType: 'dropdown',
+			filterType: 'checkbox',
 			total: data.length,
 			page: 2,
 			customToolbar() {
@@ -92,7 +124,10 @@ class Explore extends Component {
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 50 ],
 			print: false,
-			download: false
+			download: false,
+			onCellClick(colData, { colIndex }) {
+				if (colIndex === 5) console.log(colData);
+			}
 		};
 		return (
 			<div className="explore page">
@@ -107,7 +142,9 @@ class Explore extends Component {
 				>
 					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
 				</Tabs>
-				<MUIDataTable title={`${type} List`} data={data} columns={columns} options={options} />
+				<MuiThemeProvider theme={this.getMuiTheme()}>
+					<MUIDataTable title={`${type} List`} data={data} columns={columns} options={options} />
+				</MuiThemeProvider>
 			</div>
 		);
 	}
