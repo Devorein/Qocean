@@ -62,19 +62,22 @@ class CreateQuestion extends Component {
 		quizzes: [],
 		loading: true,
 		type: 'MCQ',
-		options: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-		answers: [
-			{
-				name: 'answers',
-				type: 'radio',
-				radioItems: [
-					{ label: 'Answer 1', value: 'answer_1' },
-					{ label: 'Answer 2', value: 'answer_2' },
-					{ label: 'Answer 3', value: 'answer_3' }
-				],
-				defaultValue: 'answer_1'
-			}
-		],
+		options: {
+			type: 'group',
+			name: 'options',
+			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+			treeView: true
+		},
+		answers: {
+			name: 'answers',
+			type: 'radio',
+			radioItems: [
+				{ value: 'answer_1', label: 'Answer 1' },
+				{ value: 'answer_2', label: 'Answer 2' },
+				{ value: 'answer_3', label: 'Answer 3' }
+			],
+			defaultValue: 'answer_1'
+		},
 		showButton: true
 	};
 
@@ -101,29 +104,42 @@ class CreateQuestion extends Component {
 		if (name === 'type') {
 			if (value === 'MCQ')
 				this.setState({
-					options: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-					answers: [
-						{
-							name: 'answers',
-							type: 'radio',
-							radioItems: [
-								{ value: 'answer_1', label: 'Answer 1' },
-								{ value: 'answer_2', label: 'Answer 2' },
-								{ value: 'answer_3', label: 'Answer 3' }
-							],
-							defaultValue: 'answer_1'
-						}
-					],
+					options: {
+						type: 'group',
+						name: 'options',
+						children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+						treeView: true
+					},
+					answers: {
+						name: 'answers',
+						type: 'radio',
+						radioItems: [
+							{ value: 'answer_1', label: 'Answer 1' },
+							{ value: 'answer_2', label: 'Answer 2' },
+							{ value: 'answer_3', label: 'Answer 3' }
+						],
+						defaultValue: 'answer_1'
+					},
 					showButton: true
 				});
 			else if (value === 'MS')
 				this.setState({
-					options: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-					answers: [
-						{ name: 'answer_1', type: 'checkbox' },
-						{ name: 'answer_2', type: 'checkbox' },
-						{ name: 'answer_3', type: 'checkbox' }
-					],
+					options: {
+						type: 'group',
+						name: 'options',
+						children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+						treeView: true
+					},
+					answers: {
+						type: 'group',
+						name: 'answers',
+						treeView: false,
+						children: [
+							{ name: 'answer_1', type: 'checkbox' },
+							{ name: 'answer_2', type: 'checkbox' },
+							{ name: 'answer_3', type: 'checkbox' }
+						]
+					},
 					showButton: true
 				});
 			else if (value === 'FC')
@@ -277,16 +293,35 @@ class CreateQuestion extends Component {
 	};
 
 	preSubmit = (values) => {
-		const options = [];
-		Object.entries(values).forEach(([ key, value ]) => {
-			if (key.startsWith('option_')) {
-				options.push(value);
-				delete values[key];
-			}
-		});
-		values.options = options;
-		values.answers = parseInt([ values.answers ].splice.split('_')[1]);
-		return values;
+		const { type } = this.state;
+		console.log(values);
+		if (type === 'MCQ') {
+			const options = [];
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option_')) {
+					options.push(value);
+					delete values[key];
+				}
+			});
+			values.options = options;
+			values.answers = parseInt([ values.answers ].splice.split('_')[1]);
+			return values;
+		} else if (type === 'MS') {
+			const options = [];
+			const answers = [];
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option_')) {
+					options.push(value);
+					delete values[key];
+				} else if (key.startsWith('answer_')) {
+					answers.push(answers.length + 1);
+					delete values[key];
+				}
+			});
+			values.options = options;
+			values.answers = answers.map((answer) => [ parseInt(answer) ]);
+			return values;
+		}
 	};
 
 	render() {
@@ -306,8 +341,8 @@ class CreateQuestion extends Component {
 			disabled: quizzes.length < 1,
 			helperText: loading ? 'Loading your quizzes' : quizzes.length < 1 ? 'You have not created any quizzes yet' : null
 		};
-		inputs[3] = { type: 'group', name: 'options', children: options, treeView: true };
-		inputs[4] = { type: 'group', name: 'answers', children: answers };
+		inputs[3] = options;
+		inputs[4] = answers;
 		return (
 			<div className="create_question create_form page">
 				<InputForm
