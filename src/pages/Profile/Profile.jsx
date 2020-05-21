@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { isAlphaNumericOnly } from '../../Utils/validation';
 import { withRouter } from 'react-router-dom';
-import { AppContext } from '../../index';
+import { AppContext } from '../../context/AppContext';
 
 const inputs = [
 	{ name: 'name', startAdornment: 'person' },

@@ -5,7 +5,7 @@ import CreateFolder from './CreateFolder';
 import CreateEnvironment from './CreateEnvironment';
 import axios from 'axios';
 import pluralize from 'pluralize';
-import { AppContext } from '../../index';
+import { AppContext } from '../../context/AppContext';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
@@ -13,8 +13,11 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import './Create.scss';
+
 class Create extends Component {
-	submitForm = ([ changeResponse, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+	static contextType = AppContext;
+
+	submitForm = ([ preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();
 		const { reset_on_success, reset_on_error } = this.props.user.current_environment;
 		if (preSubmit) values = preSubmit(values);
@@ -36,8 +39,12 @@ class Create extends Component {
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
-				changeResponse(`Successfully created ${type}`, 'success');
-				postSubmit(reset_on_success);
+				this.context.changeResponse(
+					`Success`,
+					`Successsfully created ${values.name || values.question} ${type}`,
+					'success'
+				);
+				if (postSubmit) postSubmit(reset_on_success);
 			})
 			.catch((err) => {
 				if (reset_on_error) resetForm();
@@ -45,8 +52,8 @@ class Create extends Component {
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
-				changeResponse(err.response.data.error, 'error');
-				postSubmit(reset_on_error);
+				this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+				if (postSubmit) postSubmit(reset_on_error);
 			});
 	};
 
@@ -75,26 +82,20 @@ class Create extends Component {
 			{ name: 'Environment', icon: <SettingsIcon /> }
 		];
 		return (
-			<AppContext.Consumer>
-				{({ changeResponse }) => {
-					return (
-						<div className="Create page">
-							<Tabs
-								value={headers.findIndex(({ name }) => name === type)}
-								onChange={(e, value) => {
-									this.changeForm(history, headers[value].name);
-								}}
-								indicatorColor="primary"
-								textColor="primary"
-								centered
-							>
-								{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
-							</Tabs>
-							{this.decideForm(type, changeResponse)}
-						</div>
-					);
-				}}
-			</AppContext.Consumer>
+			<div className="Create page">
+				<Tabs
+					value={headers.findIndex(({ name }) => name === type)}
+					onChange={(e, value) => {
+						this.changeForm(history, headers[value].name);
+					}}
+					indicatorColor="primary"
+					textColor="primary"
+					centered
+				>
+					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
+				</Tabs>
+				{this.decideForm(type, AppContext.changeResponse)}
+			</div>
 		);
 	}
 }

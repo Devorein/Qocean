@@ -197,7 +197,7 @@ class CreateQuestion extends Component {
 
 	render() {
 		const { typeChangeHandler } = this;
-		const { onSubmit, changeResponse, user } = this.props;
+		const { onSubmit, user } = this.props;
 		const { type, quizzes, loading, options, answers, showButton } = this.state;
 		const optionsValidation = this.decideValidation(type);
 
@@ -271,7 +271,7 @@ class CreateQuestion extends Component {
 					inputs={inputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ changeResponse ])}
+					onSubmit={onSubmit.bind(null, [])}
 				/>
 
 				<InputForm inputs={[ ...options, ...answers ]} formButtons={false} validationSchema={optionsValidation}>

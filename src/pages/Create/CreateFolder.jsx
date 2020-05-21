@@ -59,7 +59,7 @@ class CreateFolder extends Component {
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit, changeResponse } = this.props;
+		const { onSubmit } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 
 		const inputs = [
@@ -85,7 +85,7 @@ class CreateFolder extends Component {
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>

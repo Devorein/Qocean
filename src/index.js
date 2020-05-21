@@ -18,25 +18,25 @@ import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
-
+import { AppContext } from './context/AppContext';
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
 
-const AppContext = React.createContext(null);
-export { AppContext };
 class App extends Component {
 	state = {
 		response: {
 			severity: null,
 			message: null,
+			title: null,
 			isOpen: false
 		}
 	};
 
-	changeResponse = (message, severity, isOpen = true) => {
+	changeResponse = (title, message, severity, isOpen = true) => {
 		this.setState({
 			response: {
+				title,
 				message,
 				severity,
 				isOpen
@@ -47,7 +47,7 @@ class App extends Component {
 	render() {
 		const { changeResponse } = this;
 		const { session, location, refetch, value } = this.props;
-		const { response: { isOpen, message, severity } } = this.state;
+		const { response: { isOpen, message, severity, title } } = this.state;
 		return (
 			<Fragment>
 				<GlobalCss />
@@ -116,6 +116,7 @@ class App extends Component {
 							<Redirect to="/404" />
 						</Switch>
 						<CustomSnackbars
+							title={title}
 							message={message}
 							severity={severity}
 							isOpen={isOpen}
