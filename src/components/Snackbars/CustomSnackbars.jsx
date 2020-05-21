@@ -1,6 +1,7 @@
 import React from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import { makeStyles } from '@material-ui/core/styles';
 
 function Alert(props) {
@@ -16,18 +17,19 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-export default function CustomizedSnackbars({ message, severity, isOpen, changeResponse, timing }) {
+export default function CustomizedSnackbars({ title, message, severity, isOpen, changeResponse, timing }) {
 	const classes = useStyles();
 
 	const handleClose = (event, reason) => {
 		if (reason === 'clickaway') return;
-		changeResponse(message, severity, false);
+		changeResponse(title, message, severity, false);
 	};
 
 	return (
 		<div className={classes.root}>
 			<Snackbar open={isOpen} autoHideDuration={timing} onClose={handleClose}>
 				<Alert severity={severity} onClose={handleClose}>
+					<AlertTitle>{title}</AlertTitle>
 					{message}
 				</Alert>
 			</Snackbar>

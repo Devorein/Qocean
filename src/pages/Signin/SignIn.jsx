@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import InputForm from '../../components/Form/InputForm';
-import { AppContext } from '../../index';
+import { AppContext } from '../../context/AppContext';
+import './Signin.scss';
 
 import * as Yup from 'yup';
 

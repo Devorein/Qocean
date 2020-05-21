@@ -73,35 +73,36 @@ class CreateQuiz extends Component {
 		});
 	};
 
-	validateTags = (changeResponse, _tag) => {
+	validateTags = (_tag) => {
+		const { changeResponse } = this.props;
 		const { tags } = this.state;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
 		if (tagsSeparator.length === 1) {
-			changeResponse(`You've entered a partial tag, using default color`, 'warning');
+			changeResponse(`An error occurred`, `You've entered a partial tag, using default color`, 'warning');
 			return true;
 		} else if (tagsSeparator[1] === '') {
-			changeResponse(`You've not supplied a color, using default color`, 'warning');
+			changeResponse(`An error occurred`, `You've not supplied a color, using default color`, 'warning');
 			return true;
 		} else if (!validateColor(tagsSeparator[1])) {
-			changeResponse(`You've supplied an invalid color`, 'error');
+			changeResponse(`An error occurred`, `You've supplied an invalid color`, 'error');
 			return false;
 		} else if (tagsSeparator.length > 2) {
-			changeResponse(`Your tag is malformed, check it again`, 'error');
+			changeResponse(`An error occurred`, `Your tag is malformed, check it again`, 'error');
 			return false;
 		}
 		if (isPresent) {
-			changeResponse(`Tag with name ${_tag.split(':')[0]} has already been added`, 'error');
+			changeResponse(`An error occurred`, `Tag with name ${_tag.split(':')[0]} has already been added`, 'error');
 			return false;
 		} else return true;
 	};
 
-	createTags = (changeResponse, e) => {
+	createTags = (e) => {
 		e.persist();
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			const { tags } = this.state;
-			if (this.validateTags(changeResponse, e.target.value)) {
+			if (this.validateTags(e.target.value)) {
 				tags.push(e.target.value);
 				e.target.value = '';
 				this.setState({
@@ -113,7 +114,7 @@ class CreateQuiz extends Component {
 
 	render() {
 		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
-		const { onSubmit, changeResponse } = this.props;
+		const { onSubmit } = this.props;
 		const { folders, loading, selected_folders, tags } = this.state;
 		const inputs = [
 			{ name: 'name' },
@@ -123,7 +124,7 @@ class CreateQuiz extends Component {
 			{
 				name: 'tags',
 				controlled: false,
-				onkeyPress: createTags.bind(null, changeResponse),
+				onkeyPress: createTags,
 				sibling: <ChipContainer chips={tags} type="delete" onIconClick={deleteTags} />
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
@@ -135,7 +136,7 @@ class CreateQuiz extends Component {
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ changeResponse, preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your folders</FormHelperText>

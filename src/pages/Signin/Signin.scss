@@ -1,0 +1,15 @@
+.signin {
+  height: calc(100% - 75px);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+
+  .form {
+    height: 250px;
+    min-height: 150px;
+    &-content {
+      overflow: hidden;
+    }
+  }
+}

@@ -15,6 +15,12 @@ export default withStyles({
 			fontFamily: 'Quantico',
 			color: '#ddd'
 		},
+		'.MuiButtonBase-root.MuiCheckbox-root': {
+			margin: 0
+		},
+		'.MuiTreeView-root': {
+			margin: '10px 0px'
+		},
 		'.MuiFormLabel-root': {
 			fontFamily: 'Quantico',
 			color: '#ccc',

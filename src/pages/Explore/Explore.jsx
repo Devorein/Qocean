@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import Board from '../../components/Board/Board';
 import { withRouter } from 'react-router-dom';
-import decideSections from '../../Utils/decideSections';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-
+import getColoredIcons from '../../Utils/getColoredIcons';
+import moment from 'moment';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import './Explore.scss';
@@ -13,18 +12,54 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
+import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 class Explore extends Component {
 	state = {
-		data: []
+		data: [],
+		columns: [],
+		type: null
 	};
 
+	getMuiTheme = () =>
+		createMuiTheme({
+			overrides: {
+				MUIDataTableHeadCell: {
+					fixedHeaderCommon: {
+						backgroundColor: '#000000de',
+						color: '#ddd',
+						fontFamily: 'Quantico'
+					},
+					fixedHeaderYAxis: {
+						border: 'none'
+					}
+				},
+				MUIDataTableBodyCell: {
+					root: {
+						backgroundColor: '#272727',
+						color: '#ddd',
+						fontFamily: 'Quantico',
+						borderBottom: 'none'
+					}
+				},
+				MUIDataTableSelectCell: {
+					fixedHeaderCommon: {
+						backgroundColor: '#000000de',
+						borderBottom: 'none'
+					}
+				}
+			}
+		});
 	refetchData = (type) => {
 		axios
 			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}`)
-			.then(({ data }) => {
+			.then(({ data: { data } }) => {
+				const columns = this.decideColums(type);
 				this.setState({
-					data
+					data: this.transformData(data, type),
+					type,
+					columns
 				});
 			})
 			.catch((err) => {
@@ -32,10 +67,42 @@ class Explore extends Component {
 			});
 	};
 
+	transformData = (data, type) => {
+		if (type === 'folder') {
+			return data.map((item, index) => {
+				return {
+					...item,
+					username: item.user.username,
+					icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
+					created_at: moment(item.created_at).fromNow()
+				};
+			});
+		}
+	};
+
+	decideLabel = (name) => {
+		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
+	};
+
+	decideColums = (type) => {
+		if (type === 'folder')
+			return [ 'icon', 'created_at', 'name', 'total_quizzes', 'total_questions', 'username' ].map((name) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					filter: true,
+					sort: true
+				};
+			});
+		else return [];
+	};
+
 	render() {
 		const switchPage = (page) => {
-			history.push(`/${page}`);
+			history.push(`/${page.link}`);
+			this.refetchData(page.name);
 		};
+		const { columns, data, type } = this.state;
 
 		const { history, match } = this.props;
 
@@ -47,13 +114,27 @@ class Explore extends Component {
 			{ name: 'environment', link: 'explore/environment', icon: <SettingsIcon /> }
 		];
 		const index = headers.findIndex(({ name }) => name === match.params.type);
-
+		const options = {
+			filterType: 'checkbox',
+			total: data.length,
+			page: 2,
+			customToolbar() {
+				return <div>Custom Toolbar</div>;
+			},
+			responsive: 'scrollMaxHeight',
+			rowsPerPageOptions: [ 10, 15, 20, 30, 50 ],
+			print: false,
+			download: false,
+			onCellClick(colData, { colIndex }) {
+				if (colIndex === 5) console.log(colData);
+			}
+		};
 		return (
 			<div className="explore page">
 				<Tabs
 					value={index === -1 ? 0 : index}
 					onChange={(e, value) => {
-						switchPage(headers[value].link);
+						switchPage(headers[value]);
 					}}
 					indicatorColor="primary"
 					textColor="primary"
@@ -61,14 +142,9 @@ class Explore extends Component {
 				>
 					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
 				</Tabs>
-				{/* <Board
-					headers={headers}
-					page="explore"
-					type={type}
-					data={data}
-					onHeaderClick={this.refetchData}
-					sectionDecider={decideSections}
-				/> */}
+				<MuiThemeProvider theme={this.getMuiTheme()}>
+					<MUIDataTable title={`${type} List`} data={data} columns={columns} options={options} />
+				</MuiThemeProvider>
 			</div>
 		);
 	}
