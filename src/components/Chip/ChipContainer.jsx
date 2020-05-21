@@ -9,6 +9,10 @@ const useStyles = makeStyles((theme) => ({
 		flexWrap: 'wrap',
 		'& > *': {
 			margin: theme.spacing(0.5)
+		},
+		'& .MuiChip-root': {
+			borderRadius: 3,
+			fontFamily: 'Quantico'
 		}
 	}
 }));
