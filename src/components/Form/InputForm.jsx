@@ -6,8 +6,12 @@ class InputForm extends Component {
 	render() {
 		const { validationSchema, inputs, onSubmit, customHandler, formButtons, classNames, validateOnMount } = this.props;
 		const initialValues = {};
-		inputs.forEach(({ name, defaultValue }) => {
-			initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+		inputs.forEach(({ name, defaultValue, type, children }) => {
+			if (type === 'group')
+				children.forEach(
+					({ name, defaultValue }) => (initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '')
+				);
+			else initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 		});
 
 		return (

@@ -33,59 +33,73 @@ class CreateEnvironment extends Component {
 			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
-			{ name: 'favourite', type: 'checkbox', defaultValue: false },
-			{ name: 'public', type: 'checkbox', defaultValue: true },
+			{
+				type: 'group',
+				name: 'environment',
+				treeView: true,
+				children: [
+					{ name: 'favourite', type: 'checkbox', defaultValue: false },
+					{ name: 'public', type: 'checkbox', defaultValue: true },
+					{ name: 'set_as_current', type: 'checkbox', defaultValue: true }
+				]
+			},
 			{ name: 'reset_on_success', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
-			{ name: 'set_as_current', type: 'checkbox', defaultValue: true },
 			{
-				name: 'default_question_type',
-				type: 'select',
-				selectItems: [
-					{ text: 'Fill In the Blanks', value: 'FIB' },
-					{ text: 'Multiple Choice', value: 'MCQ' },
-					{ text: 'Multiple Select', value: 'MS' },
-					{ text: 'Snippet', value: 'Snippet' },
-					{ text: 'Flashcard', value: 'FC' },
-					{ text: 'True/False', value: 'TF' }
-				],
-				defaultValue: 'MCQ'
-			},
-			{
-				name: 'default_question_difficulty',
-				type: 'select',
-				selectItems: [
+				type: 'group',
+				name: 'questions_group',
+				treeView: true,
+				children: [
 					{
-						text: 'Beginner'
+						name: 'default_question_type',
+						type: 'select',
+						selectItems: [
+							{ text: 'Fill In the Blanks', value: 'FIB' },
+							{ text: 'Multiple Choice', value: 'MCQ' },
+							{ text: 'Multiple Select', value: 'MS' },
+							{ text: 'Snippet', value: 'Snippet' },
+							{ text: 'Flashcard', value: 'FC' },
+							{ text: 'True/False', value: 'TF' }
+						],
+						defaultValue: 'MCQ'
 					},
 					{
-						text: 'Intermediate'
+						name: 'default_question_difficulty',
+						type: 'select',
+						selectItems: [
+							{
+								text: 'Beginner'
+							},
+							{
+								text: 'Intermediate'
+							},
+							{
+								text: 'Advanced'
+							}
+						],
+						defaultValue: 'Beginner'
 					},
 					{
-						text: 'Advanced'
+						name: 'default_question_timing',
+						type: 'number',
+						inputProps: {
+							min: 15,
+							max: 120,
+							step: 5
+						},
+						defaultValue: 30
+					},
+					{
+						name: 'default_question_weight',
+						type: 'number',
+						inputProps: {
+							min: 1,
+							max: 10,
+							step: 1
+						},
+						defaultValue: 1
 					}
-				],
-				defaultValue: 'Beginner'
-			},
-			{
-				name: 'default_question_timing',
-				type: 'number',
-				inputProps: {
-					min: 15,
-					max: 120,
-					step: 5
-				},
-				defaultValue: 30
-			},
-			{
-				name: 'default_question_weight',
-				type: 'number',
-				inputProps: {
-					min: 1,
-					max: 10,
-					step: 1
-				},
-				defaultValue: 1
+				]
 			},
 			{
 				name: 'theme',
@@ -103,7 +117,6 @@ class CreateEnvironment extends Component {
 				],
 				defaultValue: 'Light'
 			},
-
 			{
 				name: 'notification_timing',
 				type: 'number',

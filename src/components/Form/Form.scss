@@ -14,7 +14,7 @@
   &-content {
     padding: 10px;
     height: calc(100% - 75px);
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     width: calc(100% - 20px);
   }

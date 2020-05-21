@@ -17,13 +17,15 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
+import TreeView from '@material-ui/lab/TreeView';
+import TreeItem from '@material-ui/lab/TreeItem';
 import EmailIcon from '@material-ui/icons/Email';
 import PersonIcon from '@material-ui/icons/Person';
 import ImageIcon from '@material-ui/icons/Image';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Icon from '@material-ui/core/Icon';
 import CancelIcon from '@material-ui/icons/Cancel';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import './Form.scss';
 
@@ -128,163 +130,183 @@ const Form = (props) => {
 			};
 		}
 	};
+
+	const renderFormComponent = (input) => {
+		const {
+			name,
+			label,
+			placeholder,
+			defaultValue,
+			InputProps,
+			startAdornment,
+			endAdornment,
+			type,
+			selectItems,
+			radioItems,
+			inputProps,
+			helperText,
+			disabled,
+			sibling,
+			controlled = true,
+			onChange,
+			onkeyPress,
+			component
+		} = input;
+
+		if (type === 'component') return component;
+		else if (type === 'select')
+			return (
+				<Fragment key={name}>
+					<FormControl disabled={disabled ? disabled : false} fullWidth>
+						{!disabled ? (
+							<Fragment>
+								<InputLabel id={name}>{decideLabel(name, label)}</InputLabel>
+								<Select name={name} value={values[name]} onChange={change.bind(null, name)}>
+									{selectItems.map(({ value, text, icon }) => {
+										return (
+											<MenuItem key={value ? value : text} value={value ? value : text}>
+												{icon ? <Icon>{icon}</Icon> : null}
+												{text}
+											</MenuItem>
+										);
+									})}
+								</Select>
+							</Fragment>
+						) : null}
+						{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
+					</FormControl>
+					{sibling ? sibling : null}
+				</Fragment>
+			);
+		else if (type === 'checkbox')
+			return (
+				<Fragment key={name}>
+					<FormControlLabel
+						classes={{ label: formcontrollabel }}
+						control={
+							<Checkbox
+								color={'primary'}
+								checked={values[name] === true ? true : false}
+								name={name}
+								onChange={change.bind(null, name)}
+								onBlur={handleBlur}
+								error={touched[name] && errors[name]}
+							/>
+						}
+						label={decideLabel(name, label)}
+					/>
+					{sibling ? sibling : null}
+				</Fragment>
+			);
+		else if (type === 'radio')
+			return (
+				<Fragment key={name}>
+					<FormControl>
+						<FormLabel component="legend">{decideLabel(name, label)}</FormLabel>
+						<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
+							{radioItems.map(({ label, value }) => (
+								<FormControlLabel
+									value={value}
+									key={value}
+									classes={{ label: formcontrollabel }}
+									control={<Radio color="primary" />}
+									label={label}
+									labelPlacement="end"
+								/>
+							))}
+						</RadioGroup>
+					</FormControl>
+					{sibling ? sibling : null}
+				</Fragment>
+			);
+		else if (type === 'number')
+			return (
+				<Fragment key={name}>
+					<TextField
+						classes={{
+							root: textField
+						}}
+						type={'number'}
+						{...formikProps(name, label, placeholder, controlled, onChange)}
+						fullWidth
+						inputProps={{ ...inputProps }}
+					/>
+					{sibling ? sibling : null}
+				</Fragment>
+			);
+		else if (type === 'textarea')
+			return (
+				<Fragment key={name}>
+					<TextField
+						type={'text'}
+						multiline
+						rows={10}
+						defaultValue={defaultValue}
+						{...formikProps(name, label, placeholder, controlled, onChange)}
+						fullWidth
+					/>
+					{sibling ? sibling : null}
+				</Fragment>
+			);
+		else
+			return name.toLowerCase().includes('password') ? (
+				<Fragment key={name}>
+					<TextField
+						classes={{
+							root: textField
+						}}
+						type={state.showPassword ? 'text' : 'password'}
+						{...formikProps(name, label, placeholder, controlled, onChange)}
+						fullWidth
+						InputProps={{
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
+										{state.showPassword ? <Visibility /> : <VisibilityOff />}
+									</IconButton>
+								</InputAdornment>
+							)
+						}}
+					/>
+					{sibling ? sibling : null}
+				</Fragment>
+			) : (
+				<Fragment key={name}>
+					<TextField
+						classes={{
+							root: textField
+						}}
+						type={'text'}
+						{...formikProps(name, label, placeholder, controlled, onChange, onkeyPress)}
+						fullWidth
+						InputProps={decideAdornment(name, InputProps, startAdornment, endAdornment)}
+					/>
+					{sibling ? sibling : null}
+				</Fragment>
+			);
+	};
+
 	return (
 		<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
 			<div className={`form-content`}>
-				{inputs.map(
-					({
-						name,
-						label,
-						placeholder,
-						defaultValue,
-						InputProps,
-						startAdornment,
-						endAdornment,
-						type,
-						selectItems,
-						radioItems,
-						inputProps,
-						helperText,
-						disabled,
-						sibling,
-						controlled = true,
-						onChange,
-						onkeyPress,
-						component
-					}) => {
-						if (type === 'component') return component;
-						else if (type === 'select')
+				{inputs.map((input) => {
+					if (input.type === 'group')
+						if (input.treeView)
 							return (
-								<Fragment key={name}>
-									<FormControl disabled={disabled ? disabled : false} fullWidth>
-										{!disabled ? (
-											<Fragment>
-												<InputLabel id={name}>{decideLabel(name, label)}</InputLabel>
-												<Select name={name} value={values[name]} onChange={change.bind(null, name)}>
-													{selectItems.map(({ value, text, icon }) => {
-														return (
-															<MenuItem key={value ? value : text} value={value ? value : text}>
-																{icon ? <Icon>{icon}</Icon> : null}
-																{text}
-															</MenuItem>
-														);
-													})}
-												</Select>
-											</Fragment>
-										) : null}
-										{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
-									</FormControl>
-									{sibling ? sibling : null}
-								</Fragment>
+								<TreeView
+									key={input.name}
+									defaultCollapseIcon={<ExpandMoreIcon />}
+									defaultExpandIcon={<ChevronRightIcon />}
+									defaultExpanded={[ '1' ]}
+								>
+									<TreeItem nodeId="1" label={decideLabel(input.name)}>
+										<FormGroup row={false}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>
+									</TreeItem>
+								</TreeView>
 							);
-						else if (type === 'checkbox')
-							return (
-								<Fragment key={name}>
-									<FormControlLabel
-										classes={{ label: formcontrollabel }}
-										control={
-											<Checkbox
-												color={'primary'}
-												checked={values[name] === true ? true : false}
-												name={name}
-												onChange={change.bind(null, name)}
-												onBlur={handleBlur}
-												error={touched[name] && errors[name]}
-											/>
-										}
-										label={decideLabel(name, label)}
-									/>
-									{sibling ? sibling : null}
-								</Fragment>
-							);
-						else if (type === 'radio')
-							return (
-								<Fragment key={name}>
-									<FormControl>
-										<FormLabel component="legend">{decideLabel(name, label)}</FormLabel>
-										<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
-											{radioItems.map(({ label, value }) => (
-												<FormControlLabel
-													value={value}
-													key={value}
-													classes={{ label: formcontrollabel }}
-													control={<Radio color="primary" />}
-													label={label}
-													labelPlacement="end"
-												/>
-											))}
-										</RadioGroup>
-									</FormControl>
-									{sibling ? sibling : null}
-								</Fragment>
-							);
-						else if (type === 'number')
-							return (
-								<Fragment key={name}>
-									<TextField
-										classes={{
-											root: textField
-										}}
-										type={'number'}
-										{...formikProps(name, label, placeholder, controlled, onChange)}
-										fullWidth
-										inputProps={{ ...inputProps }}
-									/>
-									{sibling ? sibling : null}
-								</Fragment>
-							);
-						else if (type === 'textarea')
-							return (
-								<Fragment key={name}>
-									<TextField
-										type={'text'}
-										multiline
-										rows={10}
-										defaultValue={defaultValue}
-										{...formikProps(name, label, placeholder, controlled, onChange)}
-										fullWidth
-									/>
-									{sibling ? sibling : null}
-								</Fragment>
-							);
-						else
-							return name.toLowerCase().includes('password') ? (
-								<Fragment key={name}>
-									<TextField
-										classes={{
-											root: textField
-										}}
-										type={state.showPassword ? 'text' : 'password'}
-										{...formikProps(name, label, placeholder, controlled, onChange)}
-										fullWidth
-										InputProps={{
-											endAdornment: (
-												<InputAdornment position="end">
-													<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-														{state.showPassword ? <Visibility /> : <VisibilityOff />}
-													</IconButton>
-												</InputAdornment>
-											)
-										}}
-									/>
-									{sibling ? sibling : null}
-								</Fragment>
-							) : (
-								<Fragment key={name}>
-									<TextField
-										classes={{
-											root: textField
-										}}
-										type={'text'}
-										{...formikProps(name, label, placeholder, controlled, onChange, onkeyPress)}
-										fullWidth
-										InputProps={decideAdornment(name, InputProps, startAdornment, endAdornment)}
-									/>
-									{sibling ? sibling : null}
-								</Fragment>
-							);
-					}
-				)}
+						else return <FormGroup row={true}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>;
+					else return renderFormComponent(input);
+				})}
 				{children}
 			</div>
 			{formButtons ? (

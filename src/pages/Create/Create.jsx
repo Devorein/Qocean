@@ -41,7 +41,7 @@ class Create extends Component {
 				}, 2500);
 				this.context.changeResponse(
 					`Success`,
-					`Successsfully created ${values.name || values.question} ${type}`,
+					`Successsfully created ${type} ${values.name || values.question}`,
 					'success'
 				);
 				if (postSubmit) postSubmit(reset_on_success);
