@@ -91,7 +91,7 @@ const Form = (props) => {
 				value: values[name],
 				onChange: change.bind(null, name),
 				onBlur: handleBlur,
-				error: Boolean(errors[name]),
+				error: touched[name] && Boolean(errors[name]),
 				helperText: touched[name] ? errors[name] : '',
 				label: decideLabel(name, label),
 				placeholder

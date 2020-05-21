@@ -5,6 +5,7 @@ import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import ChipContainer from '../../components/Chip/ChipContainer';
+import validateColor from 'validate-color';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -52,6 +53,7 @@ class CreateQuiz extends Component {
 
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
+		values.tags = this.state.tags;
 		return values;
 	};
 
@@ -73,7 +75,10 @@ class CreateQuiz extends Component {
 		} else if (tagsSeparator[1] === '') {
 			changeResponse(`You've not supplied a color, using default color`, 'warning');
 			return true;
-		} else if (tagsSeparator.length >= 2) {
+		} else if (!validateColor(tagsSeparator[1])) {
+			changeResponse(`You've supplied an invalid color`, 'error');
+			return false;
+		} else if (tagsSeparator.length > 2) {
 			changeResponse(`Your tag is malformed, check it again`, 'error');
 			return false;
 		}

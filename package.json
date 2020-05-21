@@ -55,6 +55,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "slugify": "^1.4.0",
+    "validate-color": "^1.0.8",
     "xss-clean": "^0.1.1",
     "yup": "^0.28.5"
   },
