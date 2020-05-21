@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-export default function CustomizedSnackbars({ message, severity, isOpen, changeResponse }) {
+export default function CustomizedSnackbars({ message, severity, isOpen, changeResponse, timing }) {
 	const classes = useStyles();
 
 	const handleClose = (event, reason) => {
@@ -26,7 +26,7 @@ export default function CustomizedSnackbars({ message, severity, isOpen, changeR
 
 	return (
 		<div className={classes.root}>
-			<Snackbar open={isOpen} autoHideDuration={1250} onClose={handleClose}>
+			<Snackbar open={isOpen} autoHideDuration={timing} onClose={handleClose}>
 				<Alert severity={severity} onClose={handleClose}>
 					{message}
 				</Alert>

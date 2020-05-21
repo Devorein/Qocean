@@ -1,35 +1,21 @@
 @import "../../Utils/glovar.scss";
 
-.messages {
-  display: flex;
-  margin-top: 25px;
-}
-.response-box {
-  flex-grow: 1;
-  background-color: $dark-bg-d5;
-  margin-left: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: $dark-text-l5;
-  font-weight: bolder;
-  user-select: none;
-  overflow: auto;
-  padding: 10px;
-  height: 30px;
-  &--error {
-    color: #f44336d6;
-  }
-  &--success {
-    color: #1af35bcb;
-  }
-}
 .form {
   color: white;
   font-family: "Quantico";
   background: #202020;
   padding: 10px;
-  max-height: 75%;
+  max-height: 750px;
+  height: 75%;
+  min-height: 300px;
   width: 450px;
   margin: 0 auto;
+
+  &-content {
+    padding: 10px;
+    height: calc(100% - 75px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: calc(100% - 20px);
+  }
 }

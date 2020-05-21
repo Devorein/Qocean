@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
-import { red, blue, indigo, green, orange, yellow, purple } from '@material-ui/core/colors';
-import SettingsIcon from '@material-ui/icons/Settings';
+import getColoredIcons from '../../Utils/getColoredIcons';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -22,43 +21,14 @@ class CreateEnvironment extends Component {
 			{
 				name: 'icon',
 				type: 'select',
-				selectItems: [
-					{
-						text: 'Red',
-						value: 'Red_env.svg',
-						icon: <SettingsIcon style={{ fill: red[500] }} />
-					},
-					{
-						text: 'Orange',
-						value: 'Orange_env.svg',
-						icon: <SettingsIcon style={{ fill: orange[500] }} />
-					},
-					{
-						text: 'Yellow',
-						value: 'Yellow_env.svg',
-						icon: <SettingsIcon style={{ fill: yellow[500] }} />
-					},
-					{
-						text: 'Green',
-						value: 'Green_env.svg',
-						icon: <SettingsIcon style={{ fill: green[500] }} />
-					},
-					{
-						text: 'Blue',
-						value: 'Blue_env.svg',
-						icon: <SettingsIcon style={{ fill: blue[500] }} />
-					},
-					{
-						text: 'Indigo',
-						value: 'Indigo_env.svg',
-						icon: <SettingsIcon style={{ fill: indigo[500] }} />
-					},
-					{
-						text: 'Violet',
-						value: 'Violet_env.svg',
-						icon: <SettingsIcon style={{ fill: purple[500] }} />
-					}
-				],
+				selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+					return {
+						text: capitalized,
+						value: `${capitalized}_env.svg`,
+						icon: getColoredIcons('Settings', color)
+					};
+				}),
 				defaultValue: 'Red_env.svg'
 			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
@@ -69,7 +39,20 @@ class CreateEnvironment extends Component {
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
 			{ name: 'set_as_current', type: 'checkbox', defaultValue: true },
 			{
-				name: 'default_quiz_difficulty',
+				name: 'default_question_type',
+				type: 'select',
+				selectItems: [
+					{ text: 'Fill In the Blanks', value: 'FIB' },
+					{ text: 'Multiple Choice', value: 'MCQ' },
+					{ text: 'Multiple Select', value: 'MS' },
+					{ text: 'Snippet', value: 'Snippet' },
+					{ text: 'Flashcard', value: 'FC' },
+					{ text: 'True/False', value: 'TF' }
+				],
+				defaultValue: 'MCQ'
+			},
+			{
+				name: 'default_question_difficulty',
 				type: 'select',
 				selectItems: [
 					{
@@ -83,6 +66,26 @@ class CreateEnvironment extends Component {
 					}
 				],
 				defaultValue: 'Beginner'
+			},
+			{
+				name: 'default_question_timing',
+				type: 'number',
+				inputProps: {
+					min: 15,
+					max: 120,
+					step: 5
+				},
+				defaultValue: 30
+			},
+			{
+				name: 'default_question_weight',
+				type: 'number',
+				inputProps: {
+					min: 1,
+					max: 10,
+					step: 1
+				},
+				defaultValue: 1
 			},
 			{
 				name: 'theme',
@@ -100,16 +103,7 @@ class CreateEnvironment extends Component {
 				],
 				defaultValue: 'Light'
 			},
-			{
-				name: 'default_question_weight',
-				type: 'number',
-				inputProps: {
-					min: 1,
-					max: 10,
-					step: 1
-				},
-				defaultValue: 1
-			},
+
 			{
 				name: 'notification_timing',
 				type: 'number',
@@ -122,7 +116,7 @@ class CreateEnvironment extends Component {
 			}
 		];
 		return (
-			<div>
+			<div className="create_env create_form">
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}

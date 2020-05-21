@@ -56,10 +56,16 @@ exports.deleteUser = asyncHandler(async function(req, res, next) {
 // @route    GET /api/v1/users/me
 // @access   Private
 exports.getMe = asyncHandler(async (req, res, next) => {
-	const user = await User.findById(req.user._id).populate({
-		path: 'quizzes',
-		select: 'name'
-	});
+	const user = await User.findById(req.user._id).populate([
+		{
+			path: 'quizzes',
+			select: 'name'
+		},
+		{
+			path: 'current_environment',
+			select: '-created_at -favourite -public -user -__v'
+		}
+	]);
 	res.status(200).json({
 		success: true,
 		data: user

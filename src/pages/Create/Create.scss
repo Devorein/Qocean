@@ -1,11 +1,14 @@
 .create {
-  &_question,
-  &_quiz,
-  &_env,
-  &_folder {
+  &_form {
+    height: calc(100% - 75px);
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+    .form {
+      height: 80%;
+      padding: 0px;
+      overflow: auto;
+    }
   }
 }
