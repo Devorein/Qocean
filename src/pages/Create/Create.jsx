@@ -73,6 +73,7 @@ class Create extends Component {
 		else if (type === 'folder') return <CreateFolder {...props} />;
 		else if (type === 'environment') return <CreateEnvironment {...props} />;
 	};
+
 	render() {
 		const { match: { params: { type } }, history } = this.props;
 		const headers = [

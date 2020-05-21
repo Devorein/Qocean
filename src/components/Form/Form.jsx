@@ -198,18 +198,17 @@ const Form = (props) => {
 					{sibling ? sibling : null}
 				</Fragment>
 			);
-		else if (type === 'radio')
+		else if (type === 'radio') {
 			return (
 				<Fragment key={name}>
 					<FormControl>
 						<FormLabel component="legend">{decideLabel(name, label)}</FormLabel>
-						<RadioGroup row aria-label={name} name={name} defaultValue={defaultValue}>
+						<RadioGroup row name={name} defaultValue={defaultValue}>
 							{radioItems.map(({ label, value }) => (
 								<FormControlLabel
-									value={value}
 									key={value}
-									classes={{ label: formcontrollabel }}
 									control={<Radio color="primary" />}
+									value={value}
 									label={label}
 									labelPlacement="end"
 								/>
@@ -219,7 +218,7 @@ const Form = (props) => {
 					{sibling ? sibling : null}
 				</Fragment>
 			);
-		else if (type === 'number')
+		} else if (type === 'number')
 			return (
 				<Fragment key={name}>
 					<TextField
@@ -290,22 +289,29 @@ const Form = (props) => {
 		<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
 			<div className={`form-content`}>
 				{inputs.map((input) => {
-					if (input.type === 'group')
-						if (input.treeView)
-							return (
-								<TreeView
-									key={input.name}
-									defaultCollapseIcon={<ExpandMoreIcon />}
-									defaultExpandIcon={<ChevronRightIcon />}
-									defaultExpanded={[ '1' ]}
-								>
-									<TreeItem nodeId="1" label={decideLabel(input.name)}>
-										<FormGroup row={false}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>
-									</TreeItem>
-								</TreeView>
-							);
-						else return <FormGroup row={true}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>;
-					else return renderFormComponent(input);
+					if (input) {
+						if (input.type === 'group') {
+							if (input.treeView)
+								return (
+									<TreeView
+										key={input.name}
+										defaultCollapseIcon={<ExpandMoreIcon />}
+										defaultExpandIcon={<ChevronRightIcon />}
+										defaultExpanded={[ '1' ]}
+									>
+										<TreeItem nodeId="1" label={decideLabel(input.name)}>
+											<FormGroup row={false}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>
+										</TreeItem>
+									</TreeView>
+								);
+							else
+								return (
+									<FormGroup row={true} key={input.name}>
+										{input.children.map((child) => renderFormComponent(child))}
+									</FormGroup>
+								);
+						} else return renderFormComponent(input);
+					}
 				})}
 				{children}
 			</div>

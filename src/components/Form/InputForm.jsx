@@ -6,12 +6,15 @@ class InputForm extends Component {
 	render() {
 		const { validationSchema, inputs, onSubmit, customHandler, formButtons, classNames, validateOnMount } = this.props;
 		const initialValues = {};
-		inputs.forEach(({ name, defaultValue, type, children }) => {
-			if (type === 'group')
-				children.forEach(
-					({ name, defaultValue }) => (initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '')
-				);
-			else initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+		inputs.forEach((input) => {
+			if (input) {
+				const { name, defaultValue, type, children } = input;
+				if (type === 'group')
+					children.forEach(
+						({ name, defaultValue }) => (initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '')
+					);
+				else initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+			}
 		});
 
 		return (
@@ -22,7 +25,6 @@ class InputForm extends Component {
 				validateOnMount={validateOnMount ? validateOnMount : false}
 			>
 				{(props) => {
-					if (JSON.stringify(props.initialValues) !== JSON.stringify(initialValues)) this.forceUpdate();
 					return (
 						<Form
 							{...props}
