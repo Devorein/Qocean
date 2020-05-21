@@ -55,7 +55,13 @@ class CreateQuiz extends Component {
 		return values;
 	};
 
-	deleteTags = (tagName) => {};
+	deleteTags = (_tag) => {
+		let { tags } = this.state;
+		tags = tags.filter((tag) => tag.split(':')[0].toLowerCase() !== _tag.toLowerCase());
+		this.setState({
+			tags
+		});
+	};
 
 	createTags = (e) => {
 		e.persist();

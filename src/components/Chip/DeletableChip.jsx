@@ -13,7 +13,7 @@ class DeletableChip extends Component {
 				label={label}
 				deleteIcon={<CancelIcon style={{ fill: changeColor(bg) }} />}
 				style={{ backgroundColor: bg, color: changeColor(bg) }}
-				onDelete={onDelete}
+				onDelete={onDelete.bind(null, label)}
 			/>
 		);
 	}
