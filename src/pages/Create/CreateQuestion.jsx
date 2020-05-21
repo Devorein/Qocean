@@ -228,7 +228,7 @@ class CreateQuestion extends Component {
 					{ text: 'Flashcard', value: 'FC' },
 					{ text: 'True/False', value: 'TF' }
 				],
-				defaultValue: 'MCQ'
+				defaultValue: user.current_environment.default_question_type
 			},
 			{
 				name: 'difficulty',
@@ -258,7 +258,7 @@ class CreateQuestion extends Component {
 					max: 120,
 					step: 5
 				},
-				defaultValue: user.current_environment.default_question_time
+				defaultValue: user.current_environment.default_question_timing
 			},
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },

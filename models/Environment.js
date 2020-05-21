@@ -32,14 +32,21 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: Boolean,
 		default: true
 	},
-	default_question_time: {
-		type: Number,
-		default: 30
+	default_question_type: {
+		type: String,
+		default: 'MCQ',
+		enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ]
 	},
 	default_question_difficulty: {
 		type: String,
 		default: 'Beginner',
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
+	},
+	default_question_timing: {
+		type: Number,
+		default: 30,
+		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
 	},
 	default_question_weight: {
 		type: Number,

@@ -69,7 +69,20 @@ class CreateEnvironment extends Component {
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
 			{ name: 'set_as_current', type: 'checkbox', defaultValue: true },
 			{
-				name: 'default_quiz_difficulty',
+				name: 'default_question_type',
+				type: 'select',
+				selectItems: [
+					{ text: 'Fill In the Blanks', value: 'FIB' },
+					{ text: 'Multiple Choice', value: 'MCQ' },
+					{ text: 'Multiple Select', value: 'MS' },
+					{ text: 'Snippet', value: 'Snippet' },
+					{ text: 'Flashcard', value: 'FC' },
+					{ text: 'True/False', value: 'TF' }
+				],
+				defaultValue: 'MCQ'
+			},
+			{
+				name: 'default_question_difficulty',
 				type: 'select',
 				selectItems: [
 					{
@@ -83,6 +96,26 @@ class CreateEnvironment extends Component {
 					}
 				],
 				defaultValue: 'Beginner'
+			},
+			{
+				name: 'default_question_timing',
+				type: 'number',
+				inputProps: {
+					min: 15,
+					max: 120,
+					step: 5
+				},
+				defaultValue: 30
+			},
+			{
+				name: 'default_question_weight',
+				type: 'number',
+				inputProps: {
+					min: 1,
+					max: 10,
+					step: 1
+				},
+				defaultValue: 1
 			},
 			{
 				name: 'theme',
@@ -100,16 +133,7 @@ class CreateEnvironment extends Component {
 				],
 				defaultValue: 'Light'
 			},
-			{
-				name: 'default_question_weight',
-				type: 'number',
-				inputProps: {
-					min: 1,
-					max: 10,
-					step: 1
-				},
-				defaultValue: 1
-			},
+
 			{
 				name: 'notification_timing',
 				type: 'number',
