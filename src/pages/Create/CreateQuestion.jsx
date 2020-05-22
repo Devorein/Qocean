@@ -3,6 +3,10 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import LinkIcon from '@material-ui/icons/Link';
+import PublishIcon from '@material-ui/icons/Publish';
+import UploadButton from '../../components/Buttons/UploadButton';
+import CustomTabs from '../../components/Tab/Tabs';
 
 const inputs = [
 	{ name: 'question' },
@@ -62,6 +66,9 @@ class CreateQuestion extends Component {
 		quizzes: [],
 		loading: true,
 		type: 'MCQ',
+		image: 'link',
+		file: null,
+		input: null,
 		options: {
 			type: 'group',
 			name: 'options',
@@ -320,7 +327,7 @@ class CreateQuestion extends Component {
 				}
 			});
 			values.options = options;
-			values.answers = parseInt([ values.answers ].splice.split('_')[1]);
+			values.answers = parseInt(values.answers.split('_')[1]);
 			return values;
 		} else if (type === 'MS') {
 			const options = [];
@@ -357,13 +364,58 @@ class CreateQuestion extends Component {
 			values.options = [ 'True', 'False' ];
 			return values;
 		}
+		if (this.state.file) values.link = '';
+	};
+
+	postSubmit = ({ data }) => {
+		const fd = new FormData();
+
+		if (this.state.file) {
+			fd.append('file', this.state.file, this.state.file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/questions/${data.data._id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					setTimeout(() => {
+						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
+					}, this.props.user.current_environment.notification_timing);
+				})
+				.catch((err) => {
+					setTimeout(() => {
+						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+					}, this.props.user.current_environment.notification_timing);
+				});
+		} else this.resetForm(null);
+	};
+
+	switchImageHandler = (value) => {
+		this.setState({
+			image: value.name
+		});
+	};
+
+	setFile = (e) => {
+		e.persist();
+		const { files: [ file ] } = e.target;
+		this.setState({
+			file
+		});
 	};
 
 	render() {
-		const { typeChangeHandler, decideValidation, preSubmit } = this;
+		const { typeChangeHandler, decideValidation, preSubmit, postSubmit, switchImageHandler, setFile } = this;
 		const { onSubmit } = this.props;
-		const { type, quizzes, loading, options, answers, showButton } = this.state;
+		const { type, quizzes, loading, options, answers, showButton, image } = this.state;
 		const validationSchema = decideValidation(type);
+
+		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
+
+		const index = headers.findIndex(({ name }) => name === this.state.image);
+
 		inputs[1] = {
 			name: 'quiz',
 			type: 'select',
@@ -378,13 +430,44 @@ class CreateQuestion extends Component {
 		};
 		inputs[3] = options;
 		inputs[4] = answers;
+		inputs[5].siblings = [
+			{
+				name: 'Image',
+				type: 'group',
+				treeView: true,
+				children: [
+					{
+						type: 'component',
+						component: (
+							<CustomTabs
+								value={index === -1 ? 0 : index}
+								onChange={(e, value) => {
+									switchImageHandler(headers[value]);
+								}}
+								key={'image_tabs'}
+								indicatorColor="primary"
+								textColor="primary"
+								centered
+								headers={headers}
+							/>
+						)
+					},
+					image === 'link'
+						? { name: 'link' }
+						: {
+								type: 'component',
+								component: <UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
+							}
+				]
+			}
+		];
 		return (
 			<div className="create_question create_form page">
 				<InputForm
 					inputs={inputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit ])}
+					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
 				/>
 				<div style={{ display: 'flex', justifyContent: 'center' }}>
 					{showButton && options.length < 6 ? <AddCircleIcon color={'primary'} onClick={this.addOption} /> : null}
