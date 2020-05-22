@@ -21,10 +21,17 @@ const useStyles = makeStyles({
 });
 
 function CustomTabs(props) {
-	const { headers, height = 50 } = props;
+	const { headers, onChange, height = 50, value } = props;
 	const { tabs, tab } = useStyles({ height });
 	return (
-		<Tabs {...props} textColor="primary" indicatorColor="primary" centered classes={{ root: tabs }}>
+		<Tabs
+			value={value}
+			onChange={onChange}
+			textColor="primary"
+			indicatorColor="primary"
+			centered
+			classes={{ root: tabs }}
+		>
 			{headers.map(({ name, icon }) => <Tab classes={{ root: tab }} key={name} label={name} icon={icon} />)}
 		</Tabs>
 	);

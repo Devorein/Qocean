@@ -82,8 +82,8 @@ const Form = (props) => {
 
 	const change = (name, e) => {
 		e.persist();
-		if (customHandler) customHandler(values, setValues, e);
 		handleChange(e);
+		if (customHandler) customHandler(values, setValues, e);
 		setFieldTouched(name, true, false);
 	};
 

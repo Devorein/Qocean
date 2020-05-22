@@ -7,10 +7,10 @@ const useStyles = makeStyles((theme) => ({
 		width: '25%',
 		minWidth: '100px',
 		textAlign: 'center',
-		margin: '0 auto',
+		margin: '10px auto',
 		height: '50px',
 		'& > *': {
-			margin: theme.spacing(1)
+			margin: 0
 		}
 	},
 	input: {

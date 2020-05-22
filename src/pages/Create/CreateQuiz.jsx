@@ -3,13 +3,10 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
-import UploadButton from '../../components/Buttons/UploadButton';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import CustomTabs from '../../components/Tab/Tabs';
 import ChipContainer from '../../components/Chip/ChipContainer';
 import validateColor from 'validate-color';
-import LinkIcon from '@material-ui/icons/Link';
-import PublishIcon from '@material-ui/icons/Publish';
+import FileInput from '../../components/Input/FileInput';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -29,10 +26,7 @@ class CreateQuiz extends Component {
 		folders: [],
 		loading: true,
 		selected_folders: [],
-		tags: [],
-		image: 'link',
-		file: null,
-		input: null
+		tags: []
 	};
 
 	componentDidMount() {
@@ -62,7 +56,9 @@ class CreateQuiz extends Component {
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = this.state.tags;
-		if (this.state.file) values.link = '';
+		const [ file, src ] = this.refs.FileInput.returnData();
+		if (file) values.link = '';
+		else values.link = src;
 		return values;
 	};
 
@@ -71,11 +67,10 @@ class CreateQuiz extends Component {
 		if (this.props.user.current_environment.reset_on_success) {
 			selected_folders = [];
 			tags = [];
-			if (this.input) this.input.value = '';
+			this.refs.FileInput.resetData();
 		}
 		this.setState(
 			{
-				file: null,
 				selected_folders,
 				tags
 			},
@@ -85,9 +80,9 @@ class CreateQuiz extends Component {
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-
-		if (this.state.file) {
-			fd.append('file', this.state.file, this.state.file.name);
+		const [ file ] = this.refs.FileInput.returnData();
+		if (file) {
+			fd.append('file', file, file.name);
 			axios
 				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
 					headers: {
@@ -109,9 +104,7 @@ class CreateQuiz extends Component {
 						}, this.props.user.current_environment.notification_timing);
 					});
 				});
-		} else {
-			this.resetForm(null);
-		}
+		} else this.resetForm(null);
 	};
 
 	deleteTags = (_tag) => {
@@ -171,67 +164,16 @@ class CreateQuiz extends Component {
 		}
 	};
 
-	switchImageHandler = (value) => {
-		this.setState({
-			image: value.name
-		});
-	};
-
-	setFile = (e) => {
-		e.persist();
-		const { files: [ file ] } = e.target;
-		this.setState({
-			file
-		});
-	};
-
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags, postSubmit, switchImageHandler, setFile } = this;
+		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
 		const { onSubmit } = this.props;
 		const { folders, loading, selected_folders, tags, image } = this.state;
-
-		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
-
-		const index = headers.findIndex(({ name }) => name === this.state.image);
 
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
 			{
-				name: 'source',
-				siblings: [
-					{
-						name: 'Image',
-						type: 'group',
-						treeView: true,
-						children: [
-							{
-								type: 'component',
-								component: (
-									<CustomTabs
-										value={index === -1 ? 0 : index}
-										onChange={(e, value) => {
-											switchImageHandler(headers[value]);
-										}}
-										key={'image_tabs'}
-										indicatorColor="primary"
-										textColor="primary"
-										centered
-										headers={headers}
-									/>
-								)
-							},
-							image === 'link'
-								? { name: 'link' }
-								: {
-										type: 'component',
-										component: (
-											<UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
-										)
-									}
-						]
-					}
-				]
+				name: 'source'
 			},
 			{
 				name: 'tags',
@@ -263,6 +205,7 @@ class CreateQuiz extends Component {
 						<MultiSelect label={'Folders'} selected={selected_folders} handleChange={handleChange} items={folders} />
 					)}
 				</InputForm>
+				<FileInput ref="FileInput" />
 			</div>
 		);
 	}
