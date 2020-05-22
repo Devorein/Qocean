@@ -18,12 +18,20 @@ import ExploreEnvironments from './ExploreEnvironments';
 class Explore extends Component {
 	state = {
 		data: [],
-		type: null
+		type: null,
+		rowsPerPage: 15,
+		page: 0
 	};
 
-	refetchData = (type) => {
+	refetchData = (type, queryParams) => {
+		const queryString = queryParams
+			? '?' +
+				Object.keys(queryParams)
+					.map((key) => key + '=' + (key === 'page' ? parseInt(queryParams[key]) + 1 : queryParams[key]))
+					.join('&')
+			: '';
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}`)
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${queryString}`)
 			.then(({ data: { data } }) => {
 				this.setState({
 					data,
@@ -37,31 +45,72 @@ class Explore extends Component {
 
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
-		this.refetchData(page.name);
+		this.refetchData(page.name, {
+			limit: 15
+		});
 	};
 
 	decideTable = () => {
+		const { page, rowsPerPage } = this.state;
 		const options = {
 			filterType: 'checkbox',
-			total: this.state.data.length,
-			page: 1,
+			count: 50,
+			page,
 			customToolbar() {
 				return <div>Custom Toolbar</div>;
 			},
+			rowsPerPage,
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 50 ],
 			print: false,
 			download: false,
 			onCellClick(colData, { colIndex }) {
 				if (colIndex === 5) console.log(colData);
+			},
+			onRowsDelete() {
+				return false;
+			},
+			serverSide: true,
+			onChangePage: (page) => {
+				this.setState(
+					{
+						page
+					},
+					() => {
+						this.refetchData(this.state.type, {
+							limit: rowsPerPage,
+							page
+						});
+					}
+				);
+			},
+			onChangeRowsPerPage: (rowsPerPage) => {
+				this.setState(
+					{
+						rowsPerPage
+					},
+					() => {
+						this.refetchData(this.state.type, {
+							limit: rowsPerPage,
+							page
+						});
+					}
+				);
 			}
 		};
+
+		const props = {
+			data: this.state.data,
+			options,
+			page
+		};
+
 		const { type } = this.state;
-		if (type === 'user') return <ExploreUsers data={this.state.data} options={options} />;
-		else if (type === 'quiz') return <ExploreQuizzes data={this.state.data} options={options} />;
-		else if (type === 'question') return <ExploreQuestions data={this.state.data} options={options} />;
-		else if (type === 'folder') return <ExploreFolders data={this.state.data} options={options} />;
-		else if (type === 'environment') return <ExploreEnvironments data={this.state.data} options={options} />;
+		if (type === 'user') return <ExploreUsers {...props} />;
+		else if (type === 'quiz') return <ExploreQuizzes {...props} />;
+		else if (type === 'question') return <ExploreQuestions {...props} />;
+		else if (type === 'folder') return <ExploreFolders {...props} />;
+		else if (type === 'environment') return <ExploreEnvironments {...props} />;
 	};
 
 	render() {

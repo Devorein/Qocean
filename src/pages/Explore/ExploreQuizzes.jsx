@@ -48,7 +48,7 @@ class ExploreQuizzes extends Component {
 
 	render() {
 		const { decideColums, transformData, transformOption } = this;
-		const { options, data } = this.props;
+		let { options, data } = this.props;
 		return (
 			<div>
 				<DataTable

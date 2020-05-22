@@ -13,6 +13,9 @@ const getMuiTheme = () =>
 				}
 			},
 			MuiTablePagination: {
+				actions: {
+					display: 'flex'
+				},
 				caption: {
 					color: '#ddd',
 					fontFamily: 'Quantico'
