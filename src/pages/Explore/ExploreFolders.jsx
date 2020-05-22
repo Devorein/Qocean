@@ -9,12 +9,22 @@ class ExploreFolders extends Component {
 	};
 
 	decideColums = () => {
-		return [ 'icon', 'created_at', 'name', 'total_quizzes', 'total_questions', 'username' ].map((name) => {
+		return [
+			{ name: 'icon', sort: false, filter: false },
+			{ name: 'name', sort: true, filter: false },
+			{ name: 'image', sort: false, filter: false },
+			{ name: 'total_quizzes', sort: true, filter: true },
+			{ name: 'total_questions', sort: true, filter: true },
+			{ name: 'username', sort: true, filter: false },
+			{ name: 'created_at', sort: false, filter: false }
+		].map(({ name, sort, filter }) => {
 			return {
 				name,
 				label: this.decideLabel(name),
-				filter: true,
-				sort: true
+				options: {
+					filter,
+					sort
+				}
 			};
 		});
 	};

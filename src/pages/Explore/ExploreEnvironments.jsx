@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
+import getColoredIcons from '../../Utils/getColoredIcons';
 
 class ExploreEnvironments extends Component {
 	decideLabel = (name) => {
@@ -8,12 +9,19 @@ class ExploreEnvironments extends Component {
 	};
 
 	decideColums = () => {
-		return [ 'icon', 'created_at', 'name', 'total_quizzes', 'total_questions', 'username' ].map((name) => {
+		return [
+			{ name: 'icon', sort: false, filter: false },
+			{ name: 'name', sort: true, filter: false },
+			{ name: 'username', sort: true, filter: false },
+			{ name: 'created_at', sort: false, filter: false }
+		].map(({ name, sort, filter }) => {
 			return {
 				name,
 				label: this.decideLabel(name),
-				filter: true,
-				sort: true
+				options: {
+					filter,
+					sort
+				}
 			};
 		});
 	};
@@ -27,6 +35,7 @@ class ExploreEnvironments extends Component {
 			return {
 				...item,
 				username: item.user.username,
+				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow()
 			};
 		});
