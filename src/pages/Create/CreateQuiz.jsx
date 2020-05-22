@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import UploadButton from '../../components/Buttons/UploadButton';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import CustomTabs from '../../components/Tab/Tabs';
 import ChipContainer from '../../components/Chip/ChipContainer';
@@ -149,9 +150,7 @@ class CreateQuiz extends Component {
 					/>
 				)
 			},
-			{
-				name: 'image'
-			},
+			image === 'link' ? { name: 'link' } : { type: 'component', component: <UploadButton key={'upload'} /> },
 			{
 				name: 'tags',
 				controlled: false,

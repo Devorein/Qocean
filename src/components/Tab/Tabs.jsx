@@ -21,10 +21,11 @@ const useStyles = makeStyles({
 });
 
 function CustomTabs(props) {
+	const { headers } = props;
 	const { tabs, tab } = useStyles();
 	return (
 		<Tabs {...props} classes={{ root: tabs }}>
-			{props.headers.map(({ name, icon }) => <Tab classes={{ root: tab }} key={name} label={name} icon={icon} />)}
+			{headers.map(({ name, icon }) => <Tab classes={{ root: tab }} key={name} label={name} icon={icon} />)}
 		</Tabs>
 	);
 }
