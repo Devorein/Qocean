@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
-
+import ChipContainer from '../../components/Chip/ChipContainer';
 class ExploreQuizzes extends Component {
 	decideLabel = (name) => {
 		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
@@ -39,6 +39,7 @@ class ExploreQuizzes extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
+				tags: <ChipContainer chips={item.tags} type={'regular'} />,
 				creator: item.user.username,
 				created_at: moment(item.created_at).fromNow()
 			};
