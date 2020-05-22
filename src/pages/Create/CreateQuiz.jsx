@@ -66,8 +66,26 @@ class CreateQuiz extends Component {
 		return values;
 	};
 
+	resetForm = (cb) => {
+		let { selected_folders, tags } = this.state;
+		if (this.props.user.current_environment.reset_on_success) {
+			selected_folders = [];
+			tags = [];
+			if (this.input) this.input.value = '';
+		}
+		this.setState(
+			{
+				file: null,
+				selected_folders,
+				tags
+			},
+			cb
+		);
+	};
+
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
+
 		if (this.state.file) {
 			fd.append('file', this.state.file, this.state.file.name);
 			axios
@@ -78,41 +96,21 @@ class CreateQuiz extends Component {
 					}
 				})
 				.then((data) => {
-					let { selected_folders } = this.state;
-					if (this.props.user.current_environment.reset_on_success) {
-						selected_folders = [];
-						if (this.input) this.input.value = '';
-					}
-					this.setState(
-						{
-							file: null,
-							selected_folders
-						},
-						() => {
-							setTimeout(() => {
-								this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
-							}, this.props.user.current_environment.notification_timing);
-						}
-					);
+					this.resetForm(() => {
+						setTimeout(() => {
+							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
+						}, this.props.user.current_environment.notification_timing);
+					});
 				})
 				.catch((err) => {
-					let { selected_folders } = this.state;
-					if (this.props.user.current_environment.reset_on_error) {
-						selected_folders = [];
-						if (this.input) this.input.value = '';
-					}
-					this.setState(
-						{
-							file: null,
-							selected_folders
-						},
-						() => {
-							setTimeout(() => {
-								this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-							}, this.props.user.current_environment.notification_timing);
-						}
-					);
+					this.resetForm(() => {
+						setTimeout(() => {
+							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						}, this.props.user.current_environment.notification_timing);
+					});
 				});
+		} else {
+			this.resetForm(null);
 		}
 	};
 
@@ -129,7 +127,13 @@ class CreateQuiz extends Component {
 		const { tags } = this.state;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
-		if (tagsSeparator.length === 1) {
+		if (tags.length >= 5) {
+			changeResponse(`An error occurred`, `You've added the maximum number of tags`, 'error');
+			return false;
+		} else if (tagsSeparator[0].length >= 16) {
+			changeResponse(`An error occurred`, `You cant add a tag that's more than 16 characters long`, 'error');
+			return false;
+		} else if (tagsSeparator.length === 1) {
 			changeResponse(`An error occurred`, `You've entered a partial tag, using default color`, 'warning');
 			return true;
 		} else if (tagsSeparator[1] === '') {
@@ -143,7 +147,11 @@ class CreateQuiz extends Component {
 			return false;
 		}
 		if (isPresent) {
-			changeResponse(`An error occurred`, `Tag with name ${_tag.split(':')[0]} has already been added`, 'error');
+			changeResponse(
+				`An error occurred`,
+				`Tag with name ${_tag.split(':')[0].toLowerCase()} has already been added`,
+				'error'
+			);
 			return false;
 		} else return true;
 	};
@@ -154,7 +162,7 @@ class CreateQuiz extends Component {
 			e.preventDefault();
 			const { tags } = this.state;
 			if (this.validateTags(e.target.value)) {
-				tags.push(e.target.value);
+				tags.push(e.target.value.toLowerCase());
 				e.target.value = '';
 				this.setState({
 					tags
