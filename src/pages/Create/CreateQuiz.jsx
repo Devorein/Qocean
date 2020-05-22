@@ -94,14 +94,14 @@ class CreateQuiz extends Component {
 					this.resetForm(() => {
 						setTimeout(() => {
 							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
-						}, this.props.user.current_environment.notification_timing);
+						}, this.props.user.current_environment.notification_timing + 500);
 					});
 				})
 				.catch((err) => {
 					this.resetForm(() => {
 						setTimeout(() => {
 							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-						}, this.props.user.current_environment.notification_timing);
+						}, this.props.user.current_environment.notification_timing + 500);
 					});
 				});
 		} else this.resetForm(null);
