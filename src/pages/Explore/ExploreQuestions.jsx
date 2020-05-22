@@ -8,12 +8,22 @@ class ExploreQuestions extends Component {
 	};
 
 	decideColums = () => {
-		return [ 'icon', 'created_at', 'name', 'total_quizzes', 'total_questions', 'username' ].map((name) => {
+		return [
+			{ name: 'question', sort: true, filter: false },
+			{ name: 'difficulty', sort: true, filter: true },
+			{ name: 'type', sort: true, filter: true },
+			{ name: 'time_allocated', sort: true, filter: true },
+			{ name: 'quiz', sort: true, filter: false },
+			{ name: 'creator', sort: true, filter: false },
+			{ name: 'created_at', sort: false, filter: false }
+		].map(({ name, sort, filter }) => {
 			return {
 				name,
 				label: this.decideLabel(name),
-				filter: true,
-				sort: true
+				options: {
+					filter,
+					sort
+				}
 			};
 		});
 	};
@@ -26,7 +36,8 @@ class ExploreQuestions extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				username: item.user.username,
+				quiz: item.quiz.name,
+				creator: item.user.username,
 				created_at: moment(item.created_at).fromNow()
 			};
 		});

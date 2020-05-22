@@ -12,10 +12,9 @@ class ExploreFolders extends Component {
 		return [
 			{ name: 'icon', sort: false, filter: false },
 			{ name: 'name', sort: true, filter: false },
-			{ name: 'image', sort: false, filter: false },
 			{ name: 'total_quizzes', sort: true, filter: true },
 			{ name: 'total_questions', sort: true, filter: true },
-			{ name: 'username', sort: true, filter: false },
+			{ name: 'creator', sort: true, filter: false },
 			{ name: 'created_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
@@ -37,7 +36,7 @@ class ExploreFolders extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				username: item.user.username,
+				creator: item.user.username,
 				icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow()
 			};
