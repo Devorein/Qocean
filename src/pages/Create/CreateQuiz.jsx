@@ -31,8 +31,10 @@ class CreateQuiz extends Component {
 		selected_folders: [],
 		tags: [],
 		image: 'link',
-		file: null
+		file: null,
+		input: null
 	};
+
 	componentDidMount() {
 		axios
 			.get('http://localhost:5001/api/v1/folders/me?select=name&populate=false', {
@@ -76,17 +78,42 @@ class CreateQuiz extends Component {
 					}
 				})
 				.then((data) => {
-					console.log(data);
+					let { selected_folders } = this.state;
+					if (this.props.user.current_environment.reset_on_success) {
+						selected_folders = [];
+						if (this.input) this.input.value = '';
+					}
+					this.setState(
+						{
+							file: null,
+							selected_folders
+						},
+						() => {
+							setTimeout(() => {
+								this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
+							}, this.props.user.current_environment.notification_timing);
+						}
+					);
 				})
 				.catch((err) => {
-					console.log(err);
+					let { selected_folders } = this.state;
+					if (this.props.user.current_environment.reset_on_error) {
+						selected_folders = [];
+						if (this.input) this.input.value = '';
+					}
+					this.setState(
+						{
+							file: null,
+							selected_folders
+						},
+						() => {
+							setTimeout(() => {
+								this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+							}, this.props.user.current_environment.notification_timing);
+						}
+					);
 				});
 		}
-		// if (cond) {
-		// 	this.setState({
-		// 		selected_folders: []
-		// 	});
-		// }
 	};
 
 	deleteTags = (_tag) => {
@@ -179,7 +206,10 @@ class CreateQuiz extends Component {
 			},
 			image === 'link'
 				? { name: 'link' }
-				: { type: 'component', component: <UploadButton key={'upload'} setFile={setFile} /> },
+				: {
+						type: 'component',
+						component: <UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
+					},
 			{
 				name: 'tags',
 				controlled: false,
