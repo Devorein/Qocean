@@ -1,119 +1,104 @@
 import React, { Component } from 'react';
 import InputForm from '../../components/Form/InputForm';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import * as Yup from 'yup';
 
 class QuestionForm extends Component {
 	state = {
-		options: [],
-		answers: [],
+		options: [
+			{
+				type: 'group',
+				name: 'options',
+				children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+				treeView: true
+			}
+		],
+		answers: [
+			{
+				name: 'answers',
+				type: 'radio',
+				radioItems: [
+					{ value: 'answer_1', label: 'Answer 1' },
+					{ value: 'answer_2', label: 'Answer 2' },
+					{ value: 'answer_3', label: 'Answer 3' }
+				],
+				defaultValue: 'answer_1'
+			}
+		],
 		showButton: true
 	};
 
 	decideInputs = (type) => {
 		if (type === 'MCQ') {
-			return [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ];
+			this.setState({
+				options: [
+					{
+						type: 'group',
+						name: 'options',
+						children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+						treeView: true
+					}
+				],
+				answers: [
+					{
+						name: 'answers',
+						type: 'radio',
+						radioItems: [
+							{ value: 'answer_1', label: 'Answer 1' },
+							{ value: 'answer_2', label: 'Answer 2' },
+							{ value: 'answer_3', label: 'Answer 3' }
+						],
+						defaultValue: 'answer_1'
+					}
+				]
+			});
 		} else if (type === 'MS') {
-			return [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ];
+			this.setState({
+				options: [
+					{
+						type: 'group',
+						name: 'options',
+						children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+						treeView: true
+					}
+				],
+				answers: [
+					{
+						type: 'group',
+						name: 'answers',
+						treeView: false,
+						children: [
+							{ name: 'answer_1', type: 'checkbox' },
+							{ name: 'answer_2', type: 'checkbox' },
+							{ name: 'answer_3', type: 'checkbox' }
+						]
+					}
+				]
+			});
 		} else if (type === 'FC') {
-			return [ { name: 'answers', type: 'textarea' } ];
+			this.setState({
+				answers: [ { name: 'answers', type: 'textarea' } ],
+				options: []
+			});
 		} else if (type === 'Snippet') {
-			return [ { name: 'answers' } ];
+			this.setState({
+				answers: [ { name: 'answers', type: 'textarea' } ],
+				options: []
+			});
 		} else if (type === 'FIB') {
 			return [];
 		} else if (type === 'TF') {
-			return [
-				{
-					name: 'answers',
-					type: 'radio',
-					radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
-					defaultValue: 'true'
-				}
-			];
+			this.setState({
+				answers: [
+					{
+						name: 'answers',
+						type: 'radio',
+						radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
+						defaultValue: 'true'
+					}
+				]
+			});
 		}
-		// 	this.setState({
-		// 		options: {
-		// 			type: 'group',
-		// 			name: 'options',
-		// 			children: ,
-		// 			treeView: true
-		// 		},
-		// 		answers: {
-		// 			name: 'answers',
-		// 			type: 'radio',
-		// 			radioItems: [
-		// 				{ value: 'answer_1', label: 'Answer 1' },
-		// 				{ value: 'answer_2', label: 'Answer 2' },
-		// 				{ value: 'answer_3', label: 'Answer 3' }
-		// 			],
-		// 			defaultValue: 'answer_1'
-		// 		},
-		// 		showButton: true,
-		// 		type: value
-		// 	});
-		// else if (value === 'MS')
-		// 	this.setState({
-		// 		options: {
-		// 			type: 'group',
-		// 			name: 'options',
-		// 			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-		// 			treeView: true
-		// 		},
-		// 		answers: {
-		// 			type: 'group',
-		// 			name: 'answers',
-		// 			treeView: false,
-		// 			children: [
-		// 				{ name: 'answer_1', type: 'checkbox' },
-		// 				{ name: 'answer_2', type: 'checkbox' },
-		// 				{ name: 'answer_3', type: 'checkbox' }
-		// 			]
-		// 		},
-		// 		showButton: true,
-		// 		type: value
-		// 	});
-		// else if (value === 'FC') {
-		// 	values.answers = '';
-		// 	setValues({ ...values });
-		// 	this.setState({
-		// 		answers: { name: 'answers', type: 'textarea' },
-		// 		options: null,
-		// 		showButton: false,
-		// 		type: value
-		// 	});
-		// } else if (value === 'TF') {
-		// 	Object.entries(values).forEach(([ key, value ]) => {
-		// 		if (key.startsWith('option_')) delete values[key];
-		// 	});
-		// 	values.answers = 'true';
-		// 	setValues({ ...values });
-		// 	this.setState({
-		// 		options: null,
-		// 		answers: {
-		// 			name: 'answers',
-		// 			type: 'radio',
-		// 			radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
-		// 			defaultValue: 'true'
-		// 		},
-		// 		showButton: false,
-		// 		type: value
-		// 	});
-		// } else if (value === 'FIB') {
-		// 	this.setState({
-		// 		options: null,
-		// 		answers: {},
-		// 		showButton: false,
-		// 		type: value
-		// 	});
-		// } else if (value === 'Snippet') {
-		// 	values.answers = '';
-		// 	setValues({ ...values });
-		// 	this.setState({
-		// 		options: null,
-		// 		answers: { name: 'answers' },
-		// 		showButton: false,
-		// 		type: value
-		// 	});
-		// }
 	};
 
 	/* 	addOption = () => {
@@ -175,13 +160,83 @@ class QuestionForm extends Component {
 		if (type === 'MCQ' || type === 'MS') return true;
 		else return false;
 	};
+
+	decideValidation = (type) => {
+		if (type === 'MCQ') {
+			return Yup.object({
+				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
+				option_2: Yup.string('Enter option 2').required('Option 2 is required'),
+				option_3: Yup.string('Enter option 3').required('Option 3 is required'),
+				answers: Yup.string('Enter answer')
+					.oneOf([ 'answer_1', 'answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6' ])
+					.required('An answer must be choosen')
+			});
+		} else if (type === 'MS')
+			return Yup.object({
+				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
+				option_2: Yup.string('Enter option 2').required('Option 2 is required'),
+				option_3: Yup.string('Enter option 3').required('Option 3 is required')
+			});
+		else if (type === 'Snippet')
+			return Yup.object({
+				answers: Yup.string('Enter answer').required('Answer is required')
+			});
+		else if (type === 'FC') {
+			return Yup.object({
+				answers: Yup.string('Enter answer').required('An answer must be given')
+			});
+		} else if (type === 'TF') {
+			return Yup.object({
+				answers: Yup.string('Enter answer')
+					.oneOf([ 'true', 'false' ], 'Should be either true or false')
+					.required('An answer must be given')
+			});
+		} else if (type === 'FIB') {
+			return Yup.object({
+				answers: Yup.string('Enter answer')
+					.oneOf([ 'true', 'false' ], 'Should be either true or false')
+					.required('An answer must be given')
+			});
+		}
+	};
+
+	transformValue = (values) => {
+		const { type } = this.state;
+		if (type === 'MCQ') {
+			const options = [];
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option_')) options.push(value);
+			});
+			values.options = options;
+			values.answers = parseInt(values.answers.split('_')[1]);
+		} else if (type === 'MS') {
+			const options = [];
+			const answers = [];
+			Object.entries(values).forEach(([ key, value ]) => {
+				if (key.startsWith('option_')) options.push(value);
+				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
+			});
+			values.options = options;
+			values.answers = answers.map((answer) => [ parseInt(answer) ]);
+		} else if (type === 'Snippet') values.answers = [ [ values.answers ] ];
+		else if (type === 'FC') values.answers = [ [ values.answers ] ];
+		else if (type === 'TF') values.answers = [ [ values.answers ] ];
+
+		return values;
+	};
+
 	render() {
 		const { type } = this.props;
 		const { options, answers } = this.state;
-		const inputs = this.decideInputs(type);
+		const validationSchema = this.decideValidation(type);
 		return (
 			<div className="question_form">
-				<InputForm inputs={inputs} formButtons={false} />
+				<InputForm
+					validationSchema={validationSchema}
+					inputs={[ ...options, ...answers ]}
+					formButtons={false}
+					ref={(i) => (this.InputForm = i)}
+				/>
 				<div style={{ display: 'flex', justifyContent: 'center' }}>
 					{this.showButton(type) && options.length < 6 ? (
 						<AddCircleIcon color={'primary'} onClick={this.addOption} />

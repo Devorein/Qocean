@@ -84,19 +84,29 @@ class CreateQuestion extends Component {
 	typeChangeHandler = (values, setValues, e) => {
 		const { name, value } = e.target;
 		if (name === 'type') {
-			this.setState({
-				type: value
-			});
+			this.setState(
+				{
+					type: value
+				},
+				() => {
+					this.QuestionForm.decideInputs(this.state.type);
+				}
+			);
 		}
 	};
 
 	preSubmit = (values) => {
+		values = this.QuestionForm.transformValue(values);
+		console.log(values);
+		const [ file, src ] = this.FileInput.returnData();
+		if (file) values.link = '';
+		else values.link = src;
 		return values;
 	};
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-		const [ file ] = this.refs.FileInput.returnData();
+		const [ file ] = this.FileInput.returnData();
 		if (file) {
 			fd.append('file', file, file.name);
 			axios
@@ -157,14 +167,14 @@ class CreateQuestion extends Component {
 
 		return (
 			<div className="create_question create_form page">
-				<QuestionForm type={type} />
+				<QuestionForm type={type} ref={(i) => (this.QuestionForm = i)} />
 				<InputForm
 					inputs={inputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
 				/>
-				<FileInput ref="FileInput" />
+				<FileInput ref={(r) => (this.FileInput = r)} />
 			</div>
 		);
 	}
