@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import moment from 'moment';
 import axios from 'axios';
@@ -12,8 +10,8 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
-import MUIDataTable from 'mui-datatables';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import DataTable from '../../components/DataTable/DataTable';
+import CustomTabs from '../../components/Tab/Tabs';
 
 class Explore extends Component {
 	state = {
@@ -22,35 +20,6 @@ class Explore extends Component {
 		type: null
 	};
 
-	getMuiTheme = () =>
-		createMuiTheme({
-			overrides: {
-				MUIDataTableHeadCell: {
-					fixedHeaderCommon: {
-						backgroundColor: '#000000de',
-						color: '#ddd',
-						fontFamily: 'Quantico'
-					},
-					fixedHeaderYAxis: {
-						border: 'none'
-					}
-				},
-				MUIDataTableBodyCell: {
-					root: {
-						backgroundColor: '#272727',
-						color: '#ddd',
-						fontFamily: 'Quantico',
-						borderBottom: 'none'
-					}
-				},
-				MUIDataTableSelectCell: {
-					fixedHeaderCommon: {
-						backgroundColor: '#000000de',
-						borderBottom: 'none'
-					}
-				}
-			}
-		});
 	refetchData = (type) => {
 		axios
 			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}`)
@@ -131,20 +100,19 @@ class Explore extends Component {
 		};
 		return (
 			<div className="explore page">
-				<Tabs
+				<CustomTabs
 					value={index === -1 ? 0 : index}
 					onChange={(e, value) => {
 						switchPage(headers[value]);
 					}}
-					indicatorColor="primary"
-					textColor="primary"
-					centered
-				>
-					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
-				</Tabs>
-				<MuiThemeProvider theme={this.getMuiTheme()}>
-					<MUIDataTable title={`${type} List`} data={data} columns={columns} options={options} />
-				</MuiThemeProvider>
+					height={50}
+					headers={headers}
+				/>
+				{data.length > 0 ? (
+					<DataTable title={`${type} List`} data={data} columns={columns} options={options} />
+				) : (
+					<div>Loading data</div>
+				)}
 			</div>
 		);
 	}

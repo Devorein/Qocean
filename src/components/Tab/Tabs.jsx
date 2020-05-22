@@ -5,7 +5,7 @@ import Tabs from '@material-ui/core/Tabs';
 
 const useStyles = makeStyles({
 	tabs: {
-		height: 25,
+		height: (props) => props.height,
 		'& .MuiTabs-flexContainer': {
 			height: '100%'
 		}
@@ -15,16 +15,16 @@ const useStyles = makeStyles({
 		padding: '0 10px',
 		'&.MuiButtonBase-root': {
 			margin: 0,
-			minHeight: 25
+			minHeight: (props) => props.height
 		}
 	}
 });
 
 function CustomTabs(props) {
-	const { headers } = props;
-	const { tabs, tab } = useStyles();
+	const { headers, height = 50 } = props;
+	const { tabs, tab } = useStyles({ height });
 	return (
-		<Tabs {...props} classes={{ root: tabs }}>
+		<Tabs {...props} textColor="primary" indicatorColor="primary" centered classes={{ root: tabs }}>
 			{headers.map(({ name, icon }) => <Tab classes={{ root: tab }} key={name} label={name} icon={icon} />)}
 		</Tabs>
 	);
