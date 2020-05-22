@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import getColoredIcons from '../../Utils/getColoredIcons';
-import moment from 'moment';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import './Explore.scss';
@@ -12,54 +8,26 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
-import MUIDataTable from 'mui-datatables';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import CustomTabs from '../../components/Tab/Tabs';
+import ExploreUsers from './ExploreUsers';
+import ExploreQuizzes from './ExploreQuizzes';
+import ExploreQuestions from './ExploreQuestions';
+import ExploreFolders from './ExploreFolders';
+import ExploreEnvironments from './ExploreEnvironments';
 
 class Explore extends Component {
 	state = {
 		data: [],
-		columns: [],
 		type: null
 	};
 
-	getMuiTheme = () =>
-		createMuiTheme({
-			overrides: {
-				MUIDataTableHeadCell: {
-					fixedHeaderCommon: {
-						backgroundColor: '#000000de',
-						color: '#ddd',
-						fontFamily: 'Quantico'
-					},
-					fixedHeaderYAxis: {
-						border: 'none'
-					}
-				},
-				MUIDataTableBodyCell: {
-					root: {
-						backgroundColor: '#272727',
-						color: '#ddd',
-						fontFamily: 'Quantico',
-						borderBottom: 'none'
-					}
-				},
-				MUIDataTableSelectCell: {
-					fixedHeaderCommon: {
-						backgroundColor: '#000000de',
-						borderBottom: 'none'
-					}
-				}
-			}
-		});
 	refetchData = (type) => {
 		axios
 			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}`)
 			.then(({ data: { data } }) => {
-				const columns = this.decideColums(type);
 				this.setState({
-					data: this.transformData(data, type),
-					type,
-					columns
+					data,
+					type
 				});
 			})
 			.catch((err) => {
@@ -67,57 +35,16 @@ class Explore extends Component {
 			});
 	};
 
-	transformData = (data, type) => {
-		if (type === 'folder') {
-			return data.map((item, index) => {
-				return {
-					...item,
-					username: item.user.username,
-					icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
-					created_at: moment(item.created_at).fromNow()
-				};
-			});
-		}
+	switchPage = (page) => {
+		this.props.history.push(`/${page.link}`);
+		this.refetchData(page.name);
 	};
 
-	decideLabel = (name) => {
-		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
-	};
-
-	decideColums = (type) => {
-		if (type === 'folder')
-			return [ 'icon', 'created_at', 'name', 'total_quizzes', 'total_questions', 'username' ].map((name) => {
-				return {
-					name,
-					label: this.decideLabel(name),
-					filter: true,
-					sort: true
-				};
-			});
-		else return [];
-	};
-
-	render() {
-		const switchPage = (page) => {
-			history.push(`/${page.link}`);
-			this.refetchData(page.name);
-		};
-		const { columns, data, type } = this.state;
-
-		const { history, match } = this.props;
-
-		const headers = [
-			{ name: 'user', link: 'explore/user', icon: <AccountCircleIcon /> },
-			{ name: 'quiz', link: 'explore/quiz', icon: <HorizontalSplitIcon /> },
-			{ name: 'question', link: 'explore/question', icon: <QuestionAnswerIcon /> },
-			{ name: 'folder', link: 'explore/folder', icon: <FolderOpenIcon /> },
-			{ name: 'environment', link: 'explore/environment', icon: <SettingsIcon /> }
-		];
-		const index = headers.findIndex(({ name }) => name === match.params.type);
+	decideTable = () => {
 		const options = {
 			filterType: 'checkbox',
-			total: data.length,
-			page: 2,
+			total: this.state.data.length,
+			page: 1,
 			customToolbar() {
 				return <div>Custom Toolbar</div>;
 			},
@@ -129,22 +56,40 @@ class Explore extends Component {
 				if (colIndex === 5) console.log(colData);
 			}
 		};
+		const { type } = this.state;
+		if (type === 'user') return <ExploreUsers data={this.state.data} options={options} />;
+		else if (type === 'quiz') return <ExploreQuizzes data={this.state.data} options={options} />;
+		else if (type === 'question') return <ExploreQuestions data={this.state.data} options={options} />;
+		else if (type === 'folder') return <ExploreFolders data={this.state.data} options={options} />;
+		else if (type === 'environment') return <ExploreEnvironments data={this.state.data} options={options} />;
+	};
+
+	render() {
+		const { data } = this.state;
+
+		const { match } = this.props;
+
+		const headers = [
+			{ name: 'user', link: 'explore/user', icon: <AccountCircleIcon /> },
+			{ name: 'quiz', link: 'explore/quiz', icon: <HorizontalSplitIcon /> },
+			{ name: 'question', link: 'explore/question', icon: <QuestionAnswerIcon /> },
+			{ name: 'folder', link: 'explore/folder', icon: <FolderOpenIcon /> },
+			{ name: 'environment', link: 'explore/environment', icon: <SettingsIcon /> }
+		];
+
+		const index = headers.findIndex(({ name }) => name === match.params.type);
+
 		return (
 			<div className="explore page">
-				<Tabs
+				<CustomTabs
 					value={index === -1 ? 0 : index}
 					onChange={(e, value) => {
-						switchPage(headers[value]);
+						this.switchPage(headers[value]);
 					}}
-					indicatorColor="primary"
-					textColor="primary"
-					centered
-				>
-					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
-				</Tabs>
-				<MuiThemeProvider theme={this.getMuiTheme()}>
-					<MUIDataTable title={`${type} List`} data={data} columns={columns} options={options} />
-				</MuiThemeProvider>
+					height={50}
+					headers={headers}
+				/>
+				{data.length > 0 ? this.decideTable() : <div>Loading data</div>}
 			</div>
 		);
 	}

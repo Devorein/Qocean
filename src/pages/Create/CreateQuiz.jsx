@@ -3,9 +3,13 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import UploadButton from '../../components/Buttons/UploadButton';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import CustomTabs from '../../components/Tab/Tabs';
 import ChipContainer from '../../components/Chip/ChipContainer';
 import validateColor from 'validate-color';
+import LinkIcon from '@material-ui/icons/Link';
+import PublishIcon from '@material-ui/icons/Publish';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -25,8 +29,12 @@ class CreateQuiz extends Component {
 		folders: [],
 		loading: true,
 		selected_folders: [],
-		tags: []
+		tags: [],
+		image: 'link',
+		file: null,
+		input: null
 	};
+
 	componentDidMount() {
 		axios
 			.get('http://localhost:5001/api/v1/folders/me?select=name&populate=false', {
@@ -54,14 +62,57 @@ class CreateQuiz extends Component {
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = this.state.tags;
+		if (this.state.file) values.link = '';
 		return values;
 	};
 
-	postSubmit = (cond) => {
-		if (cond) {
-			this.setState({
-				selected_folders: []
-			});
+	postSubmit = ({ data }) => {
+		const fd = new FormData();
+		if (this.state.file) {
+			fd.append('file', this.state.file, this.state.file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					let { selected_folders } = this.state;
+					if (this.props.user.current_environment.reset_on_success) {
+						selected_folders = [];
+						if (this.input) this.input.value = '';
+					}
+					this.setState(
+						{
+							file: null,
+							selected_folders
+						},
+						() => {
+							setTimeout(() => {
+								this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
+							}, this.props.user.current_environment.notification_timing);
+						}
+					);
+				})
+				.catch((err) => {
+					let { selected_folders } = this.state;
+					if (this.props.user.current_environment.reset_on_error) {
+						selected_folders = [];
+						if (this.input) this.input.value = '';
+					}
+					this.setState(
+						{
+							file: null,
+							selected_folders
+						},
+						() => {
+							setTimeout(() => {
+								this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+							}, this.props.user.current_environment.notification_timing);
+						}
+					);
+				});
 		}
 	};
 
@@ -112,15 +163,53 @@ class CreateQuiz extends Component {
 		}
 	};
 
+	switchImageHandler = (value) => {
+		this.setState({
+			image: value.name
+		});
+	};
+
+	setFile = (e) => {
+		e.persist();
+		const { files: [ file ] } = e.target;
+		this.setState({
+			file
+		});
+	};
+
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
+		const { preSubmit, handleChange, createTags, deleteTags, postSubmit, switchImageHandler, setFile } = this;
 		const { onSubmit } = this.props;
-		const { folders, loading, selected_folders, tags } = this.state;
+		const { folders, loading, selected_folders, tags, image } = this.state;
+
+		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
+
+		const index = headers.findIndex(({ name }) => name === this.state.image);
+
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
-			{ name: 'source' },
-			{ name: 'image' },
+			{
+				name: 'source',
+				sibling: (
+					<CustomTabs
+						value={index === -1 ? 0 : index}
+						onChange={(e, value) => {
+							switchImageHandler(headers[value]);
+						}}
+						indicatorColor="primary"
+						textColor="primary"
+						centered
+						headers={headers}
+					/>
+				)
+			},
+			image === 'link'
+				? { name: 'link' }
+				: {
+						type: 'component',
+						component: <UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
+					},
 			{
 				name: 'tags',
 				controlled: false,

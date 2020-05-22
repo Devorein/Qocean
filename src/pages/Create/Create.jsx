@@ -33,7 +33,7 @@ class Create extends Component {
 					}
 				}
 			)
-			.then(() => {
+			.then((data) => {
 				if (reset_on_success) resetForm();
 				setSubmitting(true);
 				setTimeout(() => {
@@ -44,7 +44,7 @@ class Create extends Component {
 					`Successsfully created ${type} ${values.name || values.question}`,
 					'success'
 				);
-				if (postSubmit) postSubmit(reset_on_success);
+				if (postSubmit) postSubmit(data);
 			})
 			.catch((err) => {
 				if (reset_on_error) resetForm();
@@ -52,8 +52,12 @@ class Create extends Component {
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
-				this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
-				if (postSubmit) postSubmit(reset_on_error);
+				this.context.changeResponse(
+					`An error occurred`,
+					err.response.data ? err.response.data.error : `Failed to create ${type}`,
+					'error'
+				);
+				if (postSubmit) postSubmit(err);
 			});
 	};
 
@@ -61,12 +65,12 @@ class Create extends Component {
 		history.push(`/create/${type}`);
 	};
 
-	decideForm = (type, changeResponse) => {
+	decideForm = (type) => {
 		type = type.toLowerCase();
 		const props = {
 			user: this.props.user,
 			onSubmit: this.submitForm,
-			changeResponse
+			changeResponse: this.context.changeResponse
 		};
 		if (type === 'quiz') return <CreateQuiz {...props} />;
 		else if (type === 'question') return <CreateQuestion {...props} />;
@@ -95,7 +99,7 @@ class Create extends Component {
 				>
 					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
 				</Tabs>
-				{this.decideForm(type, AppContext.changeResponse)}
+				{this.decideForm(type)}
 			</div>
 		);
 	}
