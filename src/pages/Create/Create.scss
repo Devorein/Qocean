@@ -11,4 +11,19 @@
       overflow: auto;
     }
   }
+  &_question {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+    .form {
+      grid-area: 1/1/3/2;
+    }
+    .FileInput {
+      grid-area: 2/2/3/3;
+      width: 100%;
+    }
+  }
+}
+
+.question_form {
+  grid-area: 1/2/2/3;
 }

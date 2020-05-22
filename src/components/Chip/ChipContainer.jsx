@@ -1,6 +1,7 @@
 import React from 'react';
 
 import DeletableChip from './DeletableChip';
+import RegularChip from './RegularChip';
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -23,6 +24,7 @@ function ChipContainer({ type, chips, onClick, onIconClick }) {
 		<div className={classes.root}>
 			{chips.map((tag) => {
 				if (type === 'delete') return <DeletableChip key={tag} tag={tag} onClick={onClick} onDelete={onIconClick} />;
+				else if (type === 'regular') return <RegularChip key={tag} tag={tag} onClick={onClick} />;
 			})}
 		</div>
 	);

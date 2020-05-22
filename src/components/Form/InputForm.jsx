@@ -23,10 +23,12 @@ class InputForm extends Component {
 				onSubmit={onSubmit}
 				validationSchema={validationSchema}
 				validateOnMount={validateOnMount ? validateOnMount : false}
+				enableReinitialize={true}
 			>
 				{(props) => {
 					return (
 						<Form
+							ref={(Form) => (this.Form = Form)}
 							{...props}
 							classNames={classNames}
 							inputs={inputs}

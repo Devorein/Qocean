@@ -1,0 +1,31 @@
+.FileInput {
+  width: 50%;
+  max-width: 450px;
+  margin: 0 auto;
+  form.form {
+    height: 70px;
+    min-height: 70px;
+    width: 100%;
+    overflow: hidden;
+    .form-content {
+      height: 100%;
+    }
+  }
+  .image_preview {
+    height: 250px;
+    font-weight: bold;
+    font-family: "Quantico";
+    color: #ddd;
+    text-align: center;
+    background-color: #272727;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+  }
+}

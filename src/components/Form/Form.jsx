@@ -45,94 +45,76 @@ const useStyles = makeStyles({
 	}
 });
 
-const Form = (props) => {
-	const [ state, setState ] = React.useState({
+class Form extends React.Component {
+	state = {
 		showPassword: false
-	});
-
-	const handleClickShowPassword = () => {
-		setState({ ...state, showPassword: !state.showPassword });
 	};
-	const {
-		values,
-		errors,
-		touched,
-		handleSubmit,
-		handleChange,
-		handleBlur,
-		isValid,
-		setFieldTouched,
-		isSubmitting,
-		submitMsg,
-		inputs,
-		setValues,
-		children,
-		resetMsg,
-		resetForm,
-		customHandler,
-		formButtons = true,
-		classNames
-	} = props;
-	const { textField, formcontrollabel } = useStyles();
 
-	const decideLabel = (name, label) => {
+	handleClickShowPassword = () => {
+		this.setState({ showPassword: !this.state.showPassword });
+	};
+
+	decideLabel = (name, label) => {
 		if (label) return label;
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
 
-	const change = (name, e) => {
+	change = (name, e) => {
+		const { values, setValues, customHandler, handleChange, setFieldTouched } = this.props;
 		e.persist();
-		if (customHandler) customHandler(values, setValues, e);
 		handleChange(e);
+		if (customHandler) customHandler(values, setValues, e);
 		setFieldTouched(name, true, false);
 	};
 
-	const formikProps = (name, label, placeholder, controlled, onChange, onkeyPress) => {
+	formikProps = (name, label, placeholder, controlled, onChange, onkeyPress) => {
+		const { values, handleBlur, touched, errors } = this.props;
 		if (controlled)
 			return {
 				name,
 				value: values[name],
-				onChange: change.bind(null, name),
+				onChange: this.change.bind(null, name),
 				onBlur: handleBlur,
 				error: touched[name] && Boolean(errors[name]),
 				helperText: touched[name] ? errors[name] : '',
-				label: decideLabel(name, label),
+				label: this.decideLabel(name, label),
 				placeholder
 			};
 		else {
 			return {
 				name,
 				onKeyPress: onkeyPress,
-				label: decideLabel(name, label)
+				label: this.decideLabel(name, label)
 			};
 		}
 	};
 
-	const decideIcon = (icon, onClick) => {
+	decideIcon = (icon, onClick) => {
 		if (icon === 'email') return <EmailIcon onClick={onClick} />;
 		else if (icon === 'person') return <PersonIcon onClick={onClick} />;
 		else if (icon === 'image') return <ImageIcon onClick={onClick} />;
 		else if (icon === 'close' || icon === 'cancel') return <CancelIcon onClick={onClick} />;
 	};
 
-	const decideAdornment = (name, InputProps, startAdornment, endAdornment) => {
+	decideAdornment = (name, InputProps, startAdornment, endAdornment) => {
 		if (InputProps) return InputProps;
 		else if (startAdornment) {
 			return {
-				startAdornment: <InputAdornment position="start">{decideIcon(startAdornment)}</InputAdornment>
+				startAdornment: <InputAdornment position="start">{this.decideIcon(startAdornment)}</InputAdornment>
 			};
 		} else if (endAdornment) {
 			return {
 				endAdornment: (
 					<InputAdornment position="end">
-						{decideIcon(endAdornment[0], endAdornment[1].bind(null, name))}
+						{this.decideIcon(endAdornment[0], endAdornment[1].bind(null, name))}
 					</InputAdornment>
 				)
 			};
 		}
 	};
 
-	const renderFormComponent = (input) => {
+	renderFormComponent = (input) => {
+		const { values, errors, handleBlur, touched } = this.props;
 		const {
 			name,
 			label,
@@ -141,19 +123,18 @@ const Form = (props) => {
 			InputProps,
 			startAdornment,
 			endAdornment,
-			type,
+			type = 'text',
 			selectItems,
 			radioItems,
 			inputProps,
 			helperText,
 			disabled,
-			sibling,
+			siblings,
 			controlled = true,
 			onChange,
 			onkeyPress,
 			component
 		} = input;
-
 		if (type === 'component') return component;
 		else if (type === 'select')
 			return (
@@ -161,8 +142,8 @@ const Form = (props) => {
 					<FormControl disabled={disabled ? disabled : false} fullWidth>
 						{!disabled ? (
 							<Fragment>
-								<InputLabel id={name}>{decideLabel(name, label)}</InputLabel>
-								<Select name={name} value={values[name]} onChange={change.bind(null, name)}>
+								<InputLabel id={name}>{this.decideLabel(name, label)}</InputLabel>
+								<Select name={name} value={values[name]} onChange={this.change.bind(null, name)}>
 									{selectItems.map(({ value, text, icon }) => {
 										return (
 											<MenuItem key={value ? value : text} value={value ? value : text}>
@@ -176,34 +157,33 @@ const Form = (props) => {
 						) : null}
 						{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
 					</FormControl>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
 		else if (type === 'checkbox')
 			return (
 				<Fragment key={name}>
 					<FormControlLabel
-						classes={{ label: formcontrollabel }}
 						control={
 							<Checkbox
 								color={'primary'}
 								checked={values[name] === true ? true : false}
 								name={name}
-								onChange={change.bind(null, name)}
+								onChange={this.change.bind(null, name)}
 								onBlur={handleBlur}
 								error={touched[name] && errors[name]}
 							/>
 						}
-						label={decideLabel(name, label)}
+						label={this.decideLabel(name, label)}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
 		else if (type === 'radio') {
 			return (
 				<Fragment key={name}>
 					<FormControl>
-						<FormLabel component="legend">{decideLabel(name, label)}</FormLabel>
+						<FormLabel component="legend">{this.decideLabel(name, label)}</FormLabel>
 						<RadioGroup row name={name} defaultValue={defaultValue}>
 							{radioItems.map(({ label, value }) => (
 								<FormControlLabel
@@ -216,22 +196,19 @@ const Form = (props) => {
 							))}
 						</RadioGroup>
 					</FormControl>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
 		} else if (type === 'number')
 			return (
 				<Fragment key={name}>
 					<TextField
-						classes={{
-							root: textField
-						}}
 						type={'number'}
-						{...formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled, onChange)}
 						fullWidth
 						inputProps={{ ...inputProps }}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
 		else if (type === 'textarea')
@@ -242,98 +219,117 @@ const Form = (props) => {
 						multiline
 						rows={10}
 						defaultValue={defaultValue}
-						{...formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled, onChange)}
 						fullWidth
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
 		else
 			return name.toLowerCase().includes('password') ? (
 				<Fragment key={name}>
 					<TextField
-						classes={{
-							root: textField
-						}}
-						type={state.showPassword ? 'text' : 'password'}
-						{...formikProps(name, label, placeholder, controlled, onChange)}
+						type={this.state.showPassword ? 'text' : 'password'}
+						{...this.formikProps(name, label, placeholder, controlled, onChange)}
 						fullWidth
 						InputProps={{
 							endAdornment: (
 								<InputAdornment position="end">
-									<IconButton aria-label="toggle password visibility" onClick={handleClickShowPassword}>
-										{state.showPassword ? <Visibility /> : <VisibilityOff />}
+									<IconButton aria-label="toggle password visibility" onClick={this.handleClickShowPassword}>
+										{this.state.showPassword ? <Visibility /> : <VisibilityOff />}
 									</IconButton>
 								</InputAdornment>
 							)
 						}}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			) : (
 				<Fragment key={name}>
 					<TextField
-						classes={{
-							root: textField
-						}}
 						type={'text'}
-						{...formikProps(name, label, placeholder, controlled, onChange, onkeyPress)}
+						{...this.formikProps(name, label, placeholder, controlled, onChange, onkeyPress)}
 						fullWidth
-						InputProps={decideAdornment(name, InputProps, startAdornment, endAdornment)}
+						InputProps={this.decideAdornment(name, InputProps, startAdornment, endAdornment)}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
 	};
 
-	return (
-		<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
-			<div className={`form-content`}>
-				{inputs.map((input) => {
-					if (input) {
-						if (input.type === 'group') {
-							if (input.treeView)
-								return (
-									<TreeView
-										key={input.name}
-										defaultCollapseIcon={<ExpandMoreIcon />}
-										defaultExpandIcon={<ChevronRightIcon />}
-										defaultExpanded={[ '1' ]}
-									>
-										<TreeItem nodeId="1" label={decideLabel(input.name)}>
-											<FormGroup row={false}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>
-										</TreeItem>
-									</TreeView>
-								);
-							else
-								return (
-									<FormGroup row={true} key={input.name}>
-										{input.children.map((child) => renderFormComponent(child))}
-									</FormGroup>
-								);
-						} else return renderFormComponent(input);
-					}
-				})}
-				{children}
-			</div>
-			{formButtons ? (
-				<FormGroup row={true}>
-					<Button
-						variant="contained"
-						color="default"
-						onClick={(e) => {
-							resetForm();
-						}}
-					>
-						{resetMsg ? resetMsg : 'Reset'}
-					</Button>
-					<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
-						{submitMsg ? submitMsg : 'Submit'}
-					</Button>
-				</FormGroup>
-			) : null}
-		</form>
-	);
-};
+	formComponentRenderer = (input) => {
+		if (input) {
+			if (input.type === 'group') {
+				if (input.treeView)
+					return (
+						<TreeView
+							key={input.name}
+							defaultCollapseIcon={<ExpandMoreIcon />}
+							defaultExpandIcon={<ChevronRightIcon />}
+							defaultExpanded={[ '1' ]}
+						>
+							<TreeItem nodeId="1" label={this.decideLabel(input.name)}>
+								<FormGroup row={false}>{input.children.map((child) => this.renderFormComponent(child))}</FormGroup>
+							</TreeItem>
+						</TreeView>
+					);
+				else
+					return (
+						<FormGroup row={true} key={input.name}>
+							{input.children.map((child) => this.renderFormComponent(child))}
+						</FormGroup>
+					);
+			} else return this.renderFormComponent(input);
+		}
+	};
+
+	render() {
+		const {
+			values,
+			errors,
+			touched,
+			handleSubmit,
+			handleChange,
+			handleBlur,
+			isValid,
+			setFieldTouched,
+			isSubmitting,
+			submitMsg,
+			inputs,
+			setValues,
+			children,
+			resetMsg,
+			resetForm,
+			customHandler,
+			formButtons = true,
+			classNames
+		} = this.props;
+
+		return (
+			<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
+				<div className={`form-content`}>
+					{inputs.map((input) => this.formComponentRenderer(input))}
+					{children}
+				</div>
+				{formButtons ? (
+					<FormGroup row={true}>
+						<Button
+							variant="contained"
+							color="default"
+							onClick={(e) => {
+								resetForm();
+							}}
+						>
+							{resetMsg ? resetMsg : 'Reset'}
+						</Button>
+						<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+							{submitMsg ? submitMsg : 'Submit'}
+						</Button>
+					</FormGroup>
+				) : null}
+			</form>
+		);
+	}
+}
 
 export default Form;

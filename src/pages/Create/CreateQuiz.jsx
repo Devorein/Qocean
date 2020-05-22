@@ -3,13 +3,10 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
-import UploadButton from '../../components/Buttons/UploadButton';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import CustomTabs from '../../components/Tab/Tabs';
 import ChipContainer from '../../components/Chip/ChipContainer';
 import validateColor from 'validate-color';
-import LinkIcon from '@material-ui/icons/Link';
-import PublishIcon from '@material-ui/icons/Publish';
+import FileInput from '../../components/Input/FileInput';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -29,10 +26,7 @@ class CreateQuiz extends Component {
 		folders: [],
 		loading: true,
 		selected_folders: [],
-		tags: [],
-		image: 'link',
-		file: null,
-		input: null
+		tags: []
 	};
 
 	componentDidMount() {
@@ -62,14 +56,33 @@ class CreateQuiz extends Component {
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = this.state.tags;
-		if (this.state.file) values.link = '';
+		const [ file, src ] = this.refs.FileInput.returnData();
+		if (file) values.link = '';
+		else values.link = src;
 		return values;
+	};
+
+	resetForm = (cb) => {
+		let { selected_folders, tags } = this.state;
+		if (this.props.user.current_environment.reset_on_success) {
+			selected_folders = [];
+			tags = [];
+			this.refs.FileInput.resetData();
+		}
+		this.setState(
+			{
+				selected_folders,
+				tags
+			},
+			cb
+		);
 	};
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-		if (this.state.file) {
-			fd.append('file', this.state.file, this.state.file.name);
+		const [ file ] = this.refs.FileInput.returnData();
+		if (file) {
+			fd.append('file', file, file.name);
 			axios
 				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
 					headers: {
@@ -78,42 +91,20 @@ class CreateQuiz extends Component {
 					}
 				})
 				.then((data) => {
-					let { selected_folders } = this.state;
-					if (this.props.user.current_environment.reset_on_success) {
-						selected_folders = [];
-						if (this.input) this.input.value = '';
-					}
-					this.setState(
-						{
-							file: null,
-							selected_folders
-						},
-						() => {
-							setTimeout(() => {
-								this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
-							}, this.props.user.current_environment.notification_timing);
-						}
-					);
+					this.resetForm(() => {
+						setTimeout(() => {
+							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
+						}, this.props.user.current_environment.notification_timing + 500);
+					});
 				})
 				.catch((err) => {
-					let { selected_folders } = this.state;
-					if (this.props.user.current_environment.reset_on_error) {
-						selected_folders = [];
-						if (this.input) this.input.value = '';
-					}
-					this.setState(
-						{
-							file: null,
-							selected_folders
-						},
-						() => {
-							setTimeout(() => {
-								this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-							}, this.props.user.current_environment.notification_timing);
-						}
-					);
+					this.resetForm(() => {
+						setTimeout(() => {
+							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						}, this.props.user.current_environment.notification_timing + 500);
+					});
 				});
-		}
+		} else this.resetForm(null);
 	};
 
 	deleteTags = (_tag) => {
@@ -129,7 +120,13 @@ class CreateQuiz extends Component {
 		const { tags } = this.state;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
-		if (tagsSeparator.length === 1) {
+		if (tags.length >= 5) {
+			changeResponse(`An error occurred`, `You've added the maximum number of tags`, 'error');
+			return false;
+		} else if (tagsSeparator[0].length >= 16) {
+			changeResponse(`An error occurred`, `You cant add a tag that's more than 16 characters long`, 'error');
+			return false;
+		} else if (tagsSeparator.length === 1) {
 			changeResponse(`An error occurred`, `You've entered a partial tag, using default color`, 'warning');
 			return true;
 		} else if (tagsSeparator[1] === '') {
@@ -143,7 +140,11 @@ class CreateQuiz extends Component {
 			return false;
 		}
 		if (isPresent) {
-			changeResponse(`An error occurred`, `Tag with name ${_tag.split(':')[0]} has already been added`, 'error');
+			changeResponse(
+				`An error occurred`,
+				`Tag with name ${_tag.split(':')[0].toLowerCase()} has already been added`,
+				'error'
+			);
 			return false;
 		} else return true;
 	};
@@ -154,7 +155,7 @@ class CreateQuiz extends Component {
 			e.preventDefault();
 			const { tags } = this.state;
 			if (this.validateTags(e.target.value)) {
-				tags.push(e.target.value);
+				tags.push(e.target.value.toLowerCase());
 				e.target.value = '';
 				this.setState({
 					tags
@@ -163,58 +164,27 @@ class CreateQuiz extends Component {
 		}
 	};
 
-	switchImageHandler = (value) => {
-		this.setState({
-			image: value.name
-		});
-	};
-
-	setFile = (e) => {
-		e.persist();
-		const { files: [ file ] } = e.target;
-		this.setState({
-			file
-		});
-	};
-
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags, postSubmit, switchImageHandler, setFile } = this;
+		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
 		const { onSubmit } = this.props;
 		const { folders, loading, selected_folders, tags, image } = this.state;
-
-		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
-
-		const index = headers.findIndex(({ name }) => name === this.state.image);
 
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
 			{
-				name: 'source',
-				sibling: (
-					<CustomTabs
-						value={index === -1 ? 0 : index}
-						onChange={(e, value) => {
-							switchImageHandler(headers[value]);
-						}}
-						indicatorColor="primary"
-						textColor="primary"
-						centered
-						headers={headers}
-					/>
-				)
+				name: 'source'
 			},
-			image === 'link'
-				? { name: 'link' }
-				: {
-						type: 'component',
-						component: <UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
-					},
 			{
 				name: 'tags',
 				controlled: false,
 				onkeyPress: createTags,
-				sibling: <ChipContainer chips={tags} type="delete" onIconClick={deleteTags} />
+				siblings: [
+					{
+						type: 'component',
+						component: <ChipContainer key={'chip_container'} chips={tags} type="delete" onIconClick={deleteTags} />
+					}
+				]
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true }
@@ -235,6 +205,7 @@ class CreateQuiz extends Component {
 						<MultiSelect label={'Folders'} selected={selected_folders} handleChange={handleChange} items={folders} />
 					)}
 				</InputForm>
+				<FileInput ref="FileInput" />
 			</div>
 		);
 	}
