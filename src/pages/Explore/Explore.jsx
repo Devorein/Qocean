@@ -93,6 +93,7 @@ class Explore extends Component {
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 50 ],
 			print: false,
+			filter: false,
 			download: false,
 			onCellClick(colData, { colIndex }) {
 				if (colIndex === 5) console.log(colData);

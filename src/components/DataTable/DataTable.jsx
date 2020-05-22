@@ -5,14 +5,48 @@ import MUIDataTable from 'mui-datatables';
 const getMuiTheme = () =>
 	createMuiTheme({
 		overrides: {
+			MUIDataTablePagination: {
+				root: {
+					overflow: 'hidden',
+					border: 'none',
+					backgroundColor: '#131313de'
+				}
+			},
+			MuiTablePagination: {
+				caption: {
+					color: '#ddd',
+					fontFamily: 'Quantico'
+				}
+			},
+			MUIDataTableToolbar: {
+				titleText: {
+					fontSize: '2em',
+					fontWeight: 'bolder',
+					color: '#ddd',
+					textTransform: 'capitalize'
+				},
+				actions: {
+					display: 'flex',
+					justifyContent: 'flex-end',
+					'& .MuiButtonBase-root': {
+						margin: '0'
+					}
+				}
+			},
 			MuiPaper: {
 				root: {
 					backgroundColor: '#272727'
 				}
 			},
+			MuiToolbar: {
+				regular: {
+					minHeight: 50,
+					height: 50
+				}
+			},
 			MUIDataTableHeadCell: {
 				fixedHeaderCommon: {
-					backgroundColor: '#1c1c1cde',
+					backgroundColor: '#131313de',
 					color: '#ddd',
 					fontFamily: 'Quantico'
 				},
@@ -29,6 +63,9 @@ const getMuiTheme = () =>
 				}
 			},
 			MUIDataTableSelectCell: {
+				headerCell: {
+					backgroundColor: '#1c1c1cde'
+				},
 				fixedHeaderCommon: {
 					backgroundColor: '#1c1c1cde',
 					borderBottom: 'none'
