@@ -9,12 +9,24 @@ class ExploreUsers extends Component {
 	};
 
 	decideColums = () => {
-		return [ 'icon', 'created_at', 'name', 'total_quizzes', 'total_questions', 'username' ].map((name) => {
+		return [
+			{ name: 'name', sort: true, filter: false },
+			{ name: 'username', sort: true, filter: false },
+			{ name: 'image', sort: false, filter: false },
+			{ name: 'total_quizzes', sort: true, filter: true },
+			{ name: 'total_questions', sort: true, filter: true },
+			{ name: 'total_folders', sort: true, filter: true },
+			{ name: 'total_environments', sort: true, filter: true },
+			{ name: 'joined_at', sort: false, filter: false },
+			{ name: 'version', sort: true, filter: true }
+		].map(({ name, sort, filter }) => {
 			return {
 				name,
 				label: this.decideLabel(name),
-				filter: true,
-				sort: true
+				options: {
+					filter,
+					sort
+				}
 			};
 		});
 	};
@@ -27,9 +39,7 @@ class ExploreUsers extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				username: item.user.username,
-				icon: getColoredIcons('User', item.icon.split('_')[0].toLowerCase()),
-				created_at: moment(item.created_at).fromNow()
+				joined_at: moment(item.joined_at).fromNow()
 			};
 		});
 	};
