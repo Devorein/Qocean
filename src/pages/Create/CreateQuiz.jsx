@@ -30,7 +30,8 @@ class CreateQuiz extends Component {
 		loading: true,
 		selected_folders: [],
 		tags: [],
-		image: 'link'
+		image: 'link',
+		file: null
 	};
 	componentDidMount() {
 		axios
@@ -59,15 +60,33 @@ class CreateQuiz extends Component {
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = this.state.tags;
+		if (this.state.file) values.link = '';
 		return values;
 	};
 
-	postSubmit = (cond) => {
-		if (cond) {
-			this.setState({
-				selected_folders: []
-			});
+	postSubmit = ({ data }) => {
+		const fd = new FormData();
+		if (this.state.file) {
+			fd.append('file', this.state.file, this.state.file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					console.log(data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		}
+		// if (cond) {
+		// 	this.setState({
+		// 		selected_folders: []
+		// 	});
+		// }
 	};
 
 	deleteTags = (_tag) => {
@@ -123,8 +142,16 @@ class CreateQuiz extends Component {
 		});
 	};
 
+	setFile = (e) => {
+		e.persist();
+		const { files: [ file ] } = e.target;
+		this.setState({
+			file
+		});
+	};
+
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags, postSubmit, switchImageHandler } = this;
+		const { preSubmit, handleChange, createTags, deleteTags, postSubmit, switchImageHandler, setFile } = this;
 		const { onSubmit } = this.props;
 		const { folders, loading, selected_folders, tags, image } = this.state;
 
@@ -150,7 +177,9 @@ class CreateQuiz extends Component {
 					/>
 				)
 			},
-			image === 'link' ? { name: 'link' } : { type: 'component', component: <UploadButton key={'upload'} /> },
+			image === 'link'
+				? { name: 'link' }
+				: { type: 'component', component: <UploadButton key={'upload'} setFile={setFile} /> },
 			{
 				name: 'tags',
 				controlled: false,

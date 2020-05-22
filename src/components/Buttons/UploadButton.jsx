@@ -18,12 +18,11 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-export default function UploadButton() {
+export default function UploadButton({ setFile }) {
 	const classes = useStyles();
-
 	return (
 		<div className={classes.root}>
-			<input accept="image/*" className={classes.input} id="contained-button-file" multiple type="file" />
+			<input accept="image/*" className={classes.input} id="contained-button-file" type="file" onChange={setFile} />
 			<label htmlFor="contained-button-file">
 				<Button variant="contained" color="primary" component="span">
 					Upload
