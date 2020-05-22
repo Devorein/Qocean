@@ -61,12 +61,12 @@ class Create extends Component {
 		history.push(`/create/${type}`);
 	};
 
-	decideForm = (type, changeResponse) => {
+	decideForm = (type) => {
 		type = type.toLowerCase();
 		const props = {
 			user: this.props.user,
 			onSubmit: this.submitForm,
-			changeResponse
+			changeResponse: this.context.changeResponse
 		};
 		if (type === 'quiz') return <CreateQuiz {...props} />;
 		else if (type === 'question') return <CreateQuestion {...props} />;
@@ -95,7 +95,7 @@ class Create extends Component {
 				>
 					{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
 				</Tabs>
-				{this.decideForm(type, AppContext.changeResponse)}
+				{this.decideForm(type)}
 			</div>
 		);
 	}

@@ -4,8 +4,11 @@ import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import CustomTabs from '../../components/Tab/Tabs';
 import ChipContainer from '../../components/Chip/ChipContainer';
 import validateColor from 'validate-color';
+import LinkIcon from '@material-ui/icons/Link';
+import PublishIcon from '@material-ui/icons/Publish';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -25,7 +28,8 @@ class CreateQuiz extends Component {
 		folders: [],
 		loading: true,
 		selected_folders: [],
-		tags: []
+		tags: [],
+		image: 'link'
 	};
 	componentDidMount() {
 		axios
@@ -112,15 +116,42 @@ class CreateQuiz extends Component {
 		}
 	};
 
+	switchImageHandler = (value) => {
+		this.setState({
+			image: value.name
+		});
+	};
+
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
+		const { preSubmit, handleChange, createTags, deleteTags, postSubmit, switchImageHandler } = this;
 		const { onSubmit } = this.props;
-		const { folders, loading, selected_folders, tags } = this.state;
+		const { folders, loading, selected_folders, tags, image } = this.state;
+
+		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
+
+		const index = headers.findIndex(({ name }) => name === this.state.image);
+
 		const inputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
-			{ name: 'source' },
-			{ name: 'image' },
+			{
+				name: 'source',
+				sibling: (
+					<CustomTabs
+						value={index === -1 ? 0 : index}
+						onChange={(e, value) => {
+							switchImageHandler(headers[value]);
+						}}
+						indicatorColor="primary"
+						textColor="primary"
+						centered
+						headers={headers}
+					/>
+				)
+			},
+			{
+				name: 'image'
+			},
 			{
 				name: 'tags',
 				controlled: false,
