@@ -9,7 +9,11 @@ import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import CustomTabs from '../../components/Tab/Tabs';
+import ExploreUsers from './ExploreUsers';
+import ExploreQuizzes from './ExploreQuizzes';
+import ExploreQuestions from './ExploreQuestions';
 import ExploreFolders from './ExploreFolders';
+import ExploreEnvironments from './ExploreEnvironments';
 
 class Explore extends Component {
 	state = {
@@ -53,7 +57,11 @@ class Explore extends Component {
 			}
 		};
 		const { type } = this.state;
-		if (type === 'folder') return <ExploreFolders data={this.state.data} options={options} />;
+		if (type === 'user') return <ExploreUsers data={this.state.data} options={options} />;
+		else if (type === 'quiz') return <ExploreQuizzes data={this.state.data} options={options} />;
+		else if (type === 'question') return <ExploreQuestions data={this.state.data} options={options} />;
+		else if (type === 'folder') return <ExploreFolders data={this.state.data} options={options} />;
+		else if (type === 'environment') return <ExploreEnvironments data={this.state.data} options={options} />;
 	};
 
 	render() {

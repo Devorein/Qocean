@@ -3,7 +3,7 @@ import DataTable from '../../components/DataTable/DataTable';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import moment from 'moment';
 
-class ExploreFolders extends Component {
+class ExploreUsers extends Component {
 	decideLabel = (name) => {
 		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
 	};
@@ -28,7 +28,7 @@ class ExploreFolders extends Component {
 			return {
 				...item,
 				username: item.user.username,
-				icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
+				icon: getColoredIcons('User', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow()
 			};
 		});
@@ -40,7 +40,7 @@ class ExploreFolders extends Component {
 		return (
 			<div>
 				<DataTable
-					title={`Folder List`}
+					title={`User List`}
 					data={transformData(data)}
 					columns={decideColums()}
 					options={transformOption(options)}
@@ -50,4 +50,4 @@ class ExploreFolders extends Component {
 	}
 }
 
-export default ExploreFolders;
+export default ExploreUsers;
