@@ -199,30 +199,50 @@ class CreateQuiz extends Component {
 			{ name: 'subject' },
 			{
 				name: 'source',
-				sibling: (
-					<CustomTabs
-						value={index === -1 ? 0 : index}
-						onChange={(e, value) => {
-							switchImageHandler(headers[value]);
-						}}
-						indicatorColor="primary"
-						textColor="primary"
-						centered
-						headers={headers}
-					/>
-				)
+				siblings: [
+					{
+						name: 'Image',
+						type: 'group',
+						treeView: true,
+						children: [
+							{
+								type: 'component',
+								component: (
+									<CustomTabs
+										value={index === -1 ? 0 : index}
+										onChange={(e, value) => {
+											switchImageHandler(headers[value]);
+										}}
+										key={'image_tabs'}
+										indicatorColor="primary"
+										textColor="primary"
+										centered
+										headers={headers}
+									/>
+								)
+							},
+							image === 'link'
+								? { name: 'link' }
+								: {
+										type: 'component',
+										component: (
+											<UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
+										)
+									}
+						]
+					}
+				]
 			},
-			image === 'link'
-				? { name: 'link' }
-				: {
-						type: 'component',
-						component: <UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
-					},
 			{
 				name: 'tags',
 				controlled: false,
 				onkeyPress: createTags,
-				sibling: <ChipContainer chips={tags} type="delete" onIconClick={deleteTags} />
+				siblings: [
+					{
+						type: 'component',
+						component: <ChipContainer key={'chip_container'} chips={tags} type="delete" onIconClick={deleteTags} />
+					}
+				]
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true }

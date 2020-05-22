@@ -141,19 +141,18 @@ const Form = (props) => {
 			InputProps,
 			startAdornment,
 			endAdornment,
-			type,
+			type = 'text',
 			selectItems,
 			radioItems,
 			inputProps,
 			helperText,
 			disabled,
-			sibling,
+			siblings,
 			controlled = true,
 			onChange,
 			onkeyPress,
 			component
 		} = input;
-
 		if (type === 'component') return component;
 		else if (type === 'select')
 			return (
@@ -176,7 +175,7 @@ const Form = (props) => {
 						) : null}
 						{helperText ? <FormHelperText>{helperText}</FormHelperText> : null}
 					</FormControl>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			);
 		else if (type === 'checkbox')
@@ -196,7 +195,7 @@ const Form = (props) => {
 						}
 						label={decideLabel(name, label)}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			);
 		else if (type === 'radio') {
@@ -216,7 +215,7 @@ const Form = (props) => {
 							))}
 						</RadioGroup>
 					</FormControl>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			);
 		} else if (type === 'number')
@@ -231,7 +230,7 @@ const Form = (props) => {
 						fullWidth
 						inputProps={{ ...inputProps }}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			);
 		else if (type === 'textarea')
@@ -245,7 +244,7 @@ const Form = (props) => {
 						{...formikProps(name, label, placeholder, controlled, onChange)}
 						fullWidth
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			);
 		else
@@ -268,7 +267,7 @@ const Form = (props) => {
 							)
 						}}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			) : (
 				<Fragment key={name}>
@@ -281,39 +280,40 @@ const Form = (props) => {
 						fullWidth
 						InputProps={decideAdornment(name, InputProps, startAdornment, endAdornment)}
 					/>
-					{sibling ? sibling : null}
+					{siblings ? siblings.map((sibling) => formComponentRederer(sibling)) : null}
 				</Fragment>
 			);
 	};
 
+	const formComponentRederer = (input) => {
+		if (input) {
+			if (input.type === 'group') {
+				if (input.treeView)
+					return (
+						<TreeView
+							key={input.name}
+							defaultCollapseIcon={<ExpandMoreIcon />}
+							defaultExpandIcon={<ChevronRightIcon />}
+							defaultExpanded={[ '1' ]}
+						>
+							<TreeItem nodeId="1" label={decideLabel(input.name)}>
+								<FormGroup row={false}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>
+							</TreeItem>
+						</TreeView>
+					);
+				else
+					return (
+						<FormGroup row={true} key={input.name}>
+							{input.children.map((child) => renderFormComponent(child))}
+						</FormGroup>
+					);
+			} else return renderFormComponent(input);
+		}
+	};
 	return (
 		<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
 			<div className={`form-content`}>
-				{inputs.map((input) => {
-					if (input) {
-						if (input.type === 'group') {
-							if (input.treeView)
-								return (
-									<TreeView
-										key={input.name}
-										defaultCollapseIcon={<ExpandMoreIcon />}
-										defaultExpandIcon={<ChevronRightIcon />}
-										defaultExpanded={[ '1' ]}
-									>
-										<TreeItem nodeId="1" label={decideLabel(input.name)}>
-											<FormGroup row={false}>{input.children.map((child) => renderFormComponent(child))}</FormGroup>
-										</TreeItem>
-									</TreeView>
-								);
-							else
-								return (
-									<FormGroup row={true} key={input.name}>
-										{input.children.map((child) => renderFormComponent(child))}
-									</FormGroup>
-								);
-						} else return renderFormComponent(input);
-					}
-				})}
+				{inputs.map((input) => formComponentRederer(input))}
 				{children}
 			</div>
 			{formButtons ? (
