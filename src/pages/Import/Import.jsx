@@ -38,10 +38,6 @@ class Import extends Component {
 		reader.readAsDataURL(file);
 	};
 
-	submitForm = (e) => {
-		console.log(e);
-	};
-
 	decideForm = (type) => {
 		let { currentType } = this.state;
 		currentType = currentType.toLowerCase();
@@ -49,7 +45,7 @@ class Import extends Component {
 
 		const props = {
 			user: this.props.user,
-			onSubmit: this.submitForm,
+			onSubmit: this.context.submitForm,
 			data: this.state.data,
 			changeResponse: this.context.changeResponse,
 			type

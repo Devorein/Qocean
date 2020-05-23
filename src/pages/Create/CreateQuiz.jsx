@@ -195,7 +195,7 @@ class CreateQuiz extends Component {
 				<InputForm
 					inputs={inputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'quiz', preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your folders</FormHelperText>

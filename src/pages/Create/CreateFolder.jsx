@@ -91,7 +91,7 @@ class CreateFolder extends Component {
 					submitMsg={submitMsg}
 					inputs={defaultInputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'folder', preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>

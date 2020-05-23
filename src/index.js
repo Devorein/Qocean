@@ -21,6 +21,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 're
 import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
+import submitForm from './operations/submitForm';
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
@@ -46,15 +47,56 @@ class App extends Component {
 		});
 	};
 
+	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+		type = type.toLowerCase();
+		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
+		let canSubmit = true;
+		if (preSubmit) {
+			let [ transformedValue, shouldSubmit ] = preSubmit(values);
+			values = transformedValue;
+			canSubmit = shouldSubmit;
+		}
+		if (canSubmit) {
+			submitForm(type, values)
+				.then((data) => {
+					if (reset_on_success) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name || values.question}`, 'success');
+					if (postSubmit) postSubmit(data);
+				})
+				.catch((err) => {
+					if (reset_on_error) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(
+						`An error occurred`,
+						err.response.data ? err.response.data.error : `Failed to create ${type}`,
+						'error'
+					);
+					if (postSubmit) postSubmit(err);
+				});
+		} else {
+			setSubmitting(true);
+			setTimeout(() => {
+				setSubmitting(false);
+			}, 2500);
+		}
+	};
+
 	render() {
-		const { changeResponse } = this;
+		const { changeResponse, submitForm } = this;
 		const { session, location, refetch, value } = this.props;
 		const { response: { isOpen, message, severity, title } } = this.state;
 		return (
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
-					<AppContext.Provider value={{ changeResponse }}>
+					<AppContext.Provider value={{ changeResponse, submitForm }}>
 						<Navbar session={session} refetch={refetch} />
 						<Switch location={location}>
 							<Route path="/" exact component={Home} />

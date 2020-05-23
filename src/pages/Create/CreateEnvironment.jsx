@@ -181,7 +181,11 @@ class CreateEnvironment extends Component {
 		];
 		return (
 			<div className="create_env create_form">
-				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit.bind(null, [])} />
+				<InputForm
+					inputs={inputs}
+					validationSchema={validationSchema}
+					onSubmit={onSubmit.bind(null, [ 'environment' ])}
+				/>
 			</div>
 		);
 	}

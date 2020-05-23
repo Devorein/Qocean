@@ -1,11 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import CreateFolder from '../Create/CreateFolder';
 import CustomList from '../../components/List/List';
+import { AppContext } from '../../context/AppContext';
 
 class ImportFolders extends Component {
+	static contextType = AppContext;
+
 	state = {
 		selectedIndex: 0
 	};
+
 	transformList = (data) => {
 		return data.map((data) => {
 			return {
@@ -47,10 +51,10 @@ class ImportFolders extends Component {
 	};
 
 	renderForm = () => {
-		const { data, type } = this.props;
+		const { data, type, onSubmit } = this.props;
 		return data.length !== 0 ? (
 			<div className={`${type}-import-section-form import-section-form`}>
-				<CreateFolder submitMsg={'Import'} customInputs={this.decideInput} onSubmit={(e) => {}} />
+				<CreateFolder submitMsg={'Import'} customInputs={this.decideInput} onSubmit={onSubmit} />
 			</div>
 		) : (
 			<div>Nothing imported</div>

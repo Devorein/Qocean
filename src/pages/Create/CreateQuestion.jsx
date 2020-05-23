@@ -186,7 +186,7 @@ class CreateQuestion extends Component {
 					inputs={inputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'question', preSubmit, postSubmit ])}
 					classNames={'question_form'}
 				/>
 				<FileInput ref={(r) => (this.FileInput = r)} />
