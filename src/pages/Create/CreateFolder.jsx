@@ -46,7 +46,7 @@ class CreateFolder extends Component {
 
 	preSubmit = (values) => {
 		values.quizzes = this.state.selected_quizzes;
-		return values;
+		return [ values, true ];
 	};
 
 	postSubmit = (cond) => {
@@ -59,33 +59,39 @@ class CreateFolder extends Component {
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit } = this.props;
+		const { onSubmit, customInputs, submitMsg } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 
-		const inputs = [
+		let defaultInputs = [
 			{ name: 'name' },
 			{
 				name: 'icon',
 				type: 'select',
-				selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
-					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
-					return {
-						text: capitalized,
-						value: `${capitalized}_folder.svg`,
-						icon: getColoredIcons('Folder', color)
-					};
-				}),
+				extra: {
+					selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+						const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+						return {
+							text: capitalized,
+							value: `${capitalized}_folder.svg`,
+							icon: getColoredIcons('Folder', color)
+						};
+					})
+				},
 				defaultValue: 'Red_folder.svg'
 			},
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true }
 		];
+
+		if (customInputs) defaultInputs = customInputs(defaultInputs);
+
 		return (
 			<div className="create_folder create_form">
 				<InputForm
-					inputs={inputs}
+					submitMsg={submitMsg}
+					inputs={defaultInputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'folder', preSubmit, postSubmit ])}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>

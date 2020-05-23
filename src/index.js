@@ -1,6 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './theme';
+
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './pages/Signin/SignIn.jsx';
@@ -9,6 +13,8 @@ import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
 import Home from './pages/Home/Home';
+import Export from './pages/Export/Export';
+import Import from './pages/Import/Import';
 import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
@@ -19,6 +25,7 @@ import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 're
 import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
+import submitForm from './operations/submitForm';
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
@@ -44,15 +51,56 @@ class App extends Component {
 		});
 	};
 
+	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+		type = type.toLowerCase();
+		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
+		let canSubmit = true;
+		if (preSubmit) {
+			let [ transformedValue, shouldSubmit ] = preSubmit(values);
+			values = transformedValue;
+			canSubmit = shouldSubmit;
+		}
+		if (canSubmit) {
+			submitForm(type, values)
+				.then((data) => {
+					if (reset_on_success) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name || values.question}`, 'success');
+					if (postSubmit) postSubmit(data);
+				})
+				.catch((err) => {
+					if (reset_on_error) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(
+						`An error occurred`,
+						err.response.data ? err.response.data.error : `Failed to create ${type}`,
+						'error'
+					);
+					if (postSubmit) postSubmit(err);
+				});
+		} else {
+			setSubmitting(true);
+			setTimeout(() => {
+				setSubmitting(false);
+			}, 2500);
+		}
+	};
+
 	render() {
-		const { changeResponse } = this;
+		const { changeResponse, submitForm } = this;
 		const { session, location, refetch, value } = this.props;
 		const { response: { isOpen, message, severity, title } } = this.state;
 		return (
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
-					<AppContext.Provider value={{ changeResponse }}>
+					<AppContext.Provider value={{ changeResponse, submitForm }}>
 						<Navbar session={session} refetch={refetch} />
 						<Switch location={location}>
 							<Route path="/" exact component={Home} />
@@ -76,6 +124,28 @@ class App extends Component {
 								render={({ history, match }) => {
 									return session.data ? (
 										<Create user={session.data.data} match={match} history={history} />
+									) : (
+										<Redirect to="/401" />
+									);
+								}}
+							/>
+							<Route
+								path="/import/:type"
+								exact
+								render={({ history, match }) => {
+									return session.data ? (
+										<Import user={session.data.data} match={match} history={history} />
+									) : (
+										<Redirect to="/401" />
+									);
+								}}
+							/>
+							<Route
+								path="/export/:type"
+								exact
+								render={({ history, match }) => {
+									return session.data ? (
+										<Export user={session.data.data} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
@@ -137,7 +207,10 @@ ReactDOM.render(
 		{({ session, refetch }) => {
 			return (
 				<Router>
-					<RoutedApp session={session} refetch={refetch} />
+					<ThemeProvider theme={theme}>
+						<CssBaseline />
+						<RoutedApp session={session} refetch={refetch} />
+					</ThemeProvider>
 				</Router>
 			);
 		}}

@@ -4,7 +4,17 @@ import Form from './Form';
 
 class InputForm extends Component {
 	render() {
-		const { validationSchema, inputs, onSubmit, customHandler, formButtons, classNames, validateOnMount } = this.props;
+		const {
+			validationSchema,
+			inputs,
+			onSubmit,
+			customHandler,
+			formButtons,
+			classNames,
+			validateOnMount,
+			errorBeforeTouched = false,
+			submitMsg
+		} = this.props;
 		const initialValues = {};
 		inputs.forEach((input) => {
 			if (input) {
@@ -34,6 +44,8 @@ class InputForm extends Component {
 							inputs={inputs}
 							customHandler={customHandler}
 							formButtons={formButtons}
+							errorBeforeTouched={errorBeforeTouched}
+							submitMsg={submitMsg}
 						>
 							{this.props.children}
 						</Form>
