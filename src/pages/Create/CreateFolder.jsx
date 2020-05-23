@@ -59,10 +59,10 @@ class CreateFolder extends Component {
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit } = this.props;
+		const { onSubmit, customInputs, submitMsg } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 
-		const inputs = [
+		let defaultInputs = [
 			{ name: 'name' },
 			{
 				name: 'icon',
@@ -82,10 +82,14 @@ class CreateFolder extends Component {
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true }
 		];
+
+		if (customInputs) defaultInputs = customInputs(defaultInputs);
+
 		return (
 			<div className="create_folder create_form">
 				<InputForm
-					inputs={inputs}
+					submitMsg={submitMsg}
+					inputs={defaultInputs}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
 				>

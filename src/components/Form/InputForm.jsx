@@ -12,7 +12,8 @@ class InputForm extends Component {
 			formButtons,
 			classNames,
 			validateOnMount,
-			errorBeforeTouched = false
+			errorBeforeTouched = false,
+			submitMsg
 		} = this.props;
 		const initialValues = {};
 		inputs.forEach((input) => {
@@ -44,6 +45,7 @@ class InputForm extends Component {
 							customHandler={customHandler}
 							formButtons={formButtons}
 							errorBeforeTouched={errorBeforeTouched}
+							submitMsg={submitMsg}
 						>
 							{this.props.children}
 						</Form>

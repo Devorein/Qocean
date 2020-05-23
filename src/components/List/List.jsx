@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
-export default function CustomList({ listItems, title, classNames, containsCheckbox }) {
+export default function CustomList({ listItems, title, classNames, containsCheckbox, onClick }) {
 	const { root, iconRoot, listTitle } = useStyles();
 	const rootClass = clsx(root, 'List', classNames);
 
@@ -58,12 +58,12 @@ export default function CustomList({ listItems, title, classNames, containsCheck
 				{title}
 			</Typography>
 			<List dense={false}>
-				{listItems.map((listItem) => {
-					const { primary, secondary, primaryIcon, secondaryIcon, _id } = listItem;
+				{listItems.map((listItem, index) => {
+					const { primary, secondary, primaryIcon, secondaryIcon } = listItem;
 					return (
-						<ListItem key={_id} onClick={handleToggle(primary)}>
+						<ListItem key={primary} onClick={onClick.bind(null, index)}>
 							{containsCheckbox ? (
-								<ListItemIcon>
+								<ListItemIcon onClick={handleToggle(primary)}>
 									<Checkbox
 										edge="start"
 										checked={checked.indexOf(primary) !== -1}

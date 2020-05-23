@@ -3,12 +3,14 @@ import CreateFolder from '../Create/CreateFolder';
 import CustomList from '../../components/List/List';
 
 class ImportFolders extends Component {
+	state = {
+		selectedIndex: 0
+	};
 	transformList = (data) => {
 		return data.map((data) => {
 			return {
 				primary: data.name,
-				primaryIcon: 'folderclose',
-				_id: data.name
+				primaryIcon: 'folderclose'
 			};
 		});
 	};
@@ -21,6 +23,11 @@ class ImportFolders extends Component {
 					containsCheckbox={true}
 					title={`Imported ${data.length} ${type.toLowerCase()}`}
 					listItems={this.transformList(data)}
+					onClick={(selectedIndex, e) => {
+						this.setState({
+							selectedIndex
+						});
+					}}
 				/>
 			</div>
 		) : (
@@ -28,11 +35,22 @@ class ImportFolders extends Component {
 		);
 	};
 
+	decideInput = (inputs) => {
+		return inputs.map((input) => {
+			return {
+				...input,
+				defaultValue: this.props.data[this.state.selectedIndex][input.name]
+					? this.props.data[this.state.selectedIndex][input.name]
+					: input.defaultValue
+			};
+		});
+	};
+
 	renderForm = () => {
 		const { data, type } = this.props;
 		return data.length !== 0 ? (
 			<div className={`${type}-import-section-form import-section-form`}>
-				<CreateFolder onSubmit={(e) => {}} />
+				<CreateFolder submitMsg={'Import'} customInputs={this.decideInput} onSubmit={(e) => {}} />
 			</div>
 		) : (
 			<div>Nothing imported</div>
