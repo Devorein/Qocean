@@ -1,9 +1,11 @@
 import React from 'react';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import FolderIcon from '@material-ui/icons/Folder';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export default function getIcons(icon) {
 	switch (icon.toLowerCase()) {
@@ -15,8 +17,12 @@ export default function getIcons(icon) {
 			return <SettingsIcon />;
 		case 'folder':
 			return <FolderOpenIcon />;
+		case 'folderClose':
+			return <FolderIcon />;
 		case 'user':
 			return <AccountCircle />;
+		case 'delete':
+			return <DeleteIcon />;
 		default:
 			return <FolderOpenIcon />;
 	}

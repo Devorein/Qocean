@@ -7,6 +7,7 @@ import ImportQuestion from './ImportQuestions';
 import ImportFolder from './ImportFolders';
 import ImportEnvironment from './ImportEnvironments';
 import { AppContext } from '../../context/AppContext';
+import './Import.scss';
 
 class Import extends Component {
 	static contextType = AppContext;
@@ -17,10 +18,11 @@ class Import extends Component {
 
 	state = {
 		data: [],
-		inputs: []
+		inputs: [],
+		currentType: ''
 	};
 
-	setFile = (e) => {
+	setFile = (type, e) => {
 		e.persist();
 		const reader = new FileReader();
 		const { files: [ file ] } = e.target;
@@ -28,6 +30,7 @@ class Import extends Component {
 		reader.onload = (e) => {
 			file.text().then((data) => {
 				this.setState({
+					currentType: type,
 					data: JSON.parse(data)
 				});
 			});
@@ -40,7 +43,10 @@ class Import extends Component {
 	};
 
 	decideForm = (type) => {
+		let { currentType } = this.state;
+		currentType = currentType.toLowerCase();
 		type = type.toLowerCase();
+
 		const props = {
 			user: this.props.user,
 			onSubmit: this.submitForm,
@@ -48,10 +54,10 @@ class Import extends Component {
 			changeResponse: this.context.changeResponse,
 			type
 		};
-		if (type === 'quiz') return <ImportQuiz {...props} />;
-		else if (type === 'question') return <ImportQuestion {...props} />;
-		else if (type === 'folder') return <ImportFolder {...props} />;
-		else if (type === 'environment') return <ImportEnvironment {...props} />;
+		if (currentType === type && type === 'quiz') return <ImportQuiz {...props} />;
+		else if (currentType === type && type === 'question') return <ImportQuestion {...props} />;
+		else if (currentType === type && type === 'folder') return <ImportFolder {...props} />;
+		else if (currentType === type && type === 'environment') return <ImportEnvironment {...props} />;
 	};
 
 	render() {
@@ -75,8 +81,8 @@ class Import extends Component {
 					height={50}
 					headers={headers}
 				/>
-				<UploadButton setFile={setFile} msg={`Import ${type}`} accept={'application/json'} />
-				{decideForm(type)}
+				<UploadButton setFile={setFile.bind(null, type)} msg={`Import ${type}`} accept={'application/json'} />
+				<div className="import_section">{decideForm(type)}</div>
 			</div>
 		);
 	}
