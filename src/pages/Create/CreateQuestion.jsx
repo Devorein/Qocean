@@ -101,7 +101,6 @@ class CreateQuestion extends Component {
 
 	preSubmit = (values) => {
 		values = this.QuestionForm.transformValue(values);
-		console.log(values);
 		const [ file, src ] = this.FileInput.returnData();
 		if (file) values.link = '';
 		else values.link = src;
@@ -110,7 +109,7 @@ class CreateQuestion extends Component {
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-		const [ file ] = this.FileInput.returnData();
+		const [ file = null ] = this.FileInput.returnData();
 		if (file) {
 			fd.append('file', file, file.name);
 			axios
@@ -130,7 +129,7 @@ class CreateQuestion extends Component {
 						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, this.props.user.current_environment.notification_timing + 500);
 				});
-		} else this.resetForm(null);
+		}
 	};
 
 	render() {

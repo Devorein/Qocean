@@ -215,7 +215,8 @@ class QuestionForm extends Component {
 	};
 
 	transformValue = (values) => {
-		const { type } = this.state;
+		const { type } = this.props;
+		const form = this.InputForm.Form.props.values;
 		if (type === 'MCQ') {
 			const options = [];
 			Object.entries(values).forEach(([ key, value ]) => {
@@ -232,10 +233,14 @@ class QuestionForm extends Component {
 			});
 			values.options = options;
 			values.answers = answers.map((answer) => [ parseInt(answer) ]);
-		} else if (type === 'Snippet') values.answers = [ [ values.answers ] ];
-		else if (type === 'FC') values.answers = [ [ values.answers ] ];
-		else if (type === 'TF') values.answers = [ [ values.answers ] ];
-
+		} else if (type === 'Snippet') {
+			values.answers = [ [ form.answers ] ];
+			if (form.alternate_1) values.answers[0].push(form.alternate_1);
+			if (form.alternate_2) values.answers[0].push(form.alternate_2);
+		} else if (type === 'FC') {
+			values.answers = [ [ form.answers ] ]
+			if (form.alternate) values.answers[0].push(form.alternate);
+		} else if (type === 'TF') values.answers = [ [ values.answers ] ];
 		return values;
 	};
 
