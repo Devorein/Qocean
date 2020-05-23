@@ -15,6 +15,8 @@ import ExploreIcon from '@material-ui/icons/Explore';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import ImageIcon from '@material-ui/icons/Image';
 import FaceIcon from '@material-ui/icons/Face';
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
+import PublishRoundedIcon from '@material-ui/icons/PublishRounded';
 
 const useStyles = makeStyles({
 	paper: {
@@ -75,7 +77,9 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 			link: `explore/${user.current_environment.default_explore_landing.toLowerCase()}`,
 			icon: <ExploreIcon />
 		},
-		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> }
+		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> },
+		{ name: 'import', link: 'import/quiz', icon: <PublishRoundedIcon /> },
+		{ name: 'export', link: 'export/quiz', icon: <GetAppRoundedIcon /> }
 	];
 	const index = headers.findIndex(({ name }) => name === location.pathname.replace(/\//g, '\\').split('\\')[1]);
 	return (

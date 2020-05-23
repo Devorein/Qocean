@@ -3,6 +3,9 @@ import { withStyles } from '@material-ui/core/styles';
 
 export default withStyles({
 	'@global': {
+		'.MuiTab-root': {
+			minWidth: 100
+		},
 		'.MuiMenu-list': {
 			background: '#343434',
 			color: '#c4c4c4'
