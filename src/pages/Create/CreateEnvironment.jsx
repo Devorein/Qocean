@@ -38,7 +38,7 @@ class CreateEnvironment extends Component {
 			{
 				type: 'group',
 				name: 'environment',
-				treeView: true,
+				extra: { treeView: true },
 				children: [
 					{ name: 'favourite', type: 'checkbox', defaultValue: false },
 					{ name: 'public', type: 'checkbox', defaultValue: true },
@@ -50,7 +50,7 @@ class CreateEnvironment extends Component {
 			{
 				type: 'group',
 				name: 'questions_group',
-				treeView: true,
+				extra: { treeView: true },
 				children: [
 					{
 						name: 'default_question_type',

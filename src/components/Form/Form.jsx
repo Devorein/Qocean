@@ -259,13 +259,13 @@ class Form extends React.Component {
 	formComponentRenderer = (input) => {
 		if (input) {
 			if (input.type === 'group') {
-				if (input.treeView)
+				if (input.extra.treeView)
 					return (
 						<TreeView
 							key={input.name}
 							defaultCollapseIcon={<ExpandMoreIcon />}
 							defaultExpandIcon={<ChevronRightIcon />}
-							defaultExpanded={[ '1' ]}
+							defaultExpanded={[ input.extra.collapse ? null : '1' ]}
 						>
 							<TreeItem nodeId="1" label={this.decideLabel(input.name)}>
 								<FormGroup row={false}>{input.children.map((child) => this.renderFormComponent(child))}</FormGroup>
@@ -305,7 +305,7 @@ class Form extends React.Component {
 		} = this.props;
 
 		return (
-			<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
+			<form className={`${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
 				<div className={`form-content`}>
 					{inputs.map((input) => this.formComponentRenderer(input))}
 					{children}
