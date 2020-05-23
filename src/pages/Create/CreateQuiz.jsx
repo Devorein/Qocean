@@ -59,7 +59,7 @@ class CreateQuiz extends Component {
 		const [ file, src ] = this.refs.FileInput.returnData();
 		if (file) values.link = '';
 		else values.link = src;
-		return values;
+		return [ values, true ];
 	};
 
 	resetForm = (cb) => {

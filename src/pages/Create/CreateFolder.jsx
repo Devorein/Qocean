@@ -46,7 +46,7 @@ class CreateFolder extends Component {
 
 	preSubmit = (values) => {
 		values.quizzes = this.state.selected_quizzes;
-		return values;
+		return [ values, true ];
 	};
 
 	postSubmit = (cond) => {

@@ -219,15 +219,15 @@ class QuestionForm extends Component {
 		const form = this.InputForm.Form.props.values;
 		if (type === 'MCQ') {
 			const options = [];
-			Object.entries(values).forEach(([ key, value ]) => {
+			Object.entries(form).forEach(([ key, value ]) => {
 				if (key.startsWith('option_')) options.push(value);
 			});
 			values.options = options;
-			values.answers = parseInt(values.answers.split('_')[1]);
+			values.answers = parseInt(form.answers.split('_')[1]);
 		} else if (type === 'MS') {
 			const options = [];
 			const answers = [];
-			Object.entries(values).forEach(([ key, value ]) => {
+			Object.entries(form).forEach(([ key, value ]) => {
 				if (key.startsWith('option_')) options.push(value);
 				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
 			});
@@ -238,7 +238,7 @@ class QuestionForm extends Component {
 			if (form.alternate_1) values.answers[0].push(form.alternate_1);
 			if (form.alternate_2) values.answers[0].push(form.alternate_2);
 		} else if (type === 'FC') {
-			values.answers = [ [ form.answers ] ]
+			values.answers = [ [ form.answers ] ];
 			if (form.alternate) values.answers[0].push(form.alternate);
 		} else if (type === 'TF') values.answers = [ [ values.answers ] ];
 		return values;
@@ -252,6 +252,8 @@ class QuestionForm extends Component {
 			<div className="question_form">
 				<InputForm
 					validationSchema={validationSchema}
+					errorBeforeTouched={true}
+					validateOnMount={true}
 					inputs={[ ...options, ...answers ]}
 					formButtons={false}
 					ref={(i) => (this.InputForm = i)}

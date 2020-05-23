@@ -20,45 +20,57 @@ class Create extends Component {
 	submitForm = ([ preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		const type = this.props.match.params.type.toLowerCase();
 		const { reset_on_success, reset_on_error } = this.props.user.current_environment;
-		if (preSubmit) values = preSubmit(values);
-		axios
-			.post(
-				`http://localhost:5001/api/v1/${pluralize(type)}`,
-				{
-					...values
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
+		let canSubmit = true;
+		if (preSubmit) {
+			let [ transformedValue, shouldSubmit ] = preSubmit(values);
+			values = transformedValue;
+			canSubmit = shouldSubmit;
+		}
+		if (canSubmit) {
+			axios
+				.post(
+					`http://localhost:5001/api/v1/${pluralize(type)}`,
+					{
+						...values
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
 					}
-				}
-			)
-			.then((data) => {
-				if (reset_on_success) resetForm();
-				setSubmitting(true);
-				setTimeout(() => {
-					setSubmitting(false);
-				}, 2500);
-				this.context.changeResponse(
-					`Success`,
-					`Successsfully created ${type} ${values.name || values.question}`,
-					'success'
-				);
-				if (postSubmit) postSubmit(data);
-			})
-			.catch((err) => {
-				if (reset_on_error) resetForm();
-				setSubmitting(true);
-				setTimeout(() => {
-					setSubmitting(false);
-				}, 2500);
-				this.context.changeResponse(
-					`An error occurred`,
-					err.response.data ? err.response.data.error : `Failed to create ${type}`,
-					'error'
-				);
-				if (postSubmit) postSubmit(err);
-			});
+				)
+				.then((data) => {
+					if (reset_on_success) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.context.changeResponse(
+						`Success`,
+						`Successsfully created ${type} ${values.name || values.question}`,
+						'success'
+					);
+					if (postSubmit) postSubmit(data);
+				})
+				.catch((err) => {
+					if (reset_on_error) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.context.changeResponse(
+						`An error occurred`,
+						err.response.data ? err.response.data.error : `Failed to create ${type}`,
+						'error'
+					);
+					if (postSubmit) postSubmit(err);
+				});
+		} else {
+			setSubmitting(true);
+			setTimeout(() => {
+				setSubmitting(false);
+			}, 2500);
+		}
 	};
 
 	changeForm = (history, type) => {

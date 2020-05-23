@@ -100,11 +100,15 @@ class CreateQuestion extends Component {
 	};
 
 	preSubmit = (values) => {
-		values = this.QuestionForm.transformValue(values);
-		const [ file, src ] = this.FileInput.returnData();
-		if (file) values.link = '';
-		else values.link = src;
-		return values;
+		const form = this.QuestionForm.InputForm.Form.props;
+		const isValid = form.isValid;
+		if (isValid) {
+			values = this.QuestionForm.transformValue(values);
+			const [ file, src ] = this.FileInput.returnData();
+			if (file) values.link = '';
+			else values.link = src;
+			return [ values, true ];
+		} else return [ values, false ];
 	};
 
 	postSubmit = ({ data }) => {
@@ -120,15 +124,20 @@ class CreateQuestion extends Component {
 					}
 				})
 				.then((data) => {
+					if (this.props.user.current_environment.reset_on_success) this.QuestionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
 					}, this.props.user.current_environment.notification_timing + 500);
 				})
 				.catch((err) => {
+					if (this.props.user.current_environment.reset_on_error) this.QuestionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, this.props.user.current_environment.notification_timing + 500);
 				});
+		} else {
+			const env = this.props.user.current_environment;
+			if (env.reset_on_success || env.reset_on_error) this.QuestionForm.InputForm.Form.props.resetForm();
 		}
 	};
 

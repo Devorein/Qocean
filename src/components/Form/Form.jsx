@@ -68,15 +68,15 @@ class Form extends React.Component {
 	};
 
 	formikProps = (name, label, placeholder, controlled, onChange, onkeyPress) => {
-		const { values, handleBlur, touched, errors } = this.props;
+		const { values, handleBlur, touched, errors, errorBeforeTouched } = this.props;
 		if (controlled)
 			return {
 				name,
 				value: values[name],
 				onChange: this.change.bind(null, name),
 				onBlur: handleBlur,
-				error: touched[name] && Boolean(errors[name]),
-				helperText: touched[name] ? errors[name] : '',
+				error: errorBeforeTouched ? Boolean(errors[name]) : touched[name] && Boolean(errors[name]),
+				helperText: errorBeforeTouched ? errors[name] : touched[name] ? errors[name] : '',
 				label: this.decideLabel(name, label),
 				placeholder
 			};
