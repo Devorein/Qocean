@@ -82,7 +82,7 @@ class Import extends Component {
 					headers={headers}
 				/>
 				<UploadButton setFile={setFile.bind(null, type)} msg={`Import ${type}`} accept={'application/json'} />
-				<div className="import_section">{decideForm(type)}</div>
+				<div className={`import-section ${type}-import-section`}>{decideForm(type)}</div>
 			</div>
 		);
 	}

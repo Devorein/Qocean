@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import CreateFolder from '../Create/CreateFolder';
 import CustomList from '../../components/List/List';
 
@@ -7,7 +7,7 @@ class ImportFolders extends Component {
 		return data.map((data) => {
 			return {
 				primary: data.name,
-				primaryIcon: 'folderClose',
+				primaryIcon: 'folderclose',
 				_id: data.name
 			};
 		});
@@ -16,7 +16,13 @@ class ImportFolders extends Component {
 	renderList = () => {
 		const { data, type } = this.props;
 		return data.length !== 0 ? (
-			<CustomList title={`Imported ${type}(s)`} listItems={this.transformList(data)} />
+			<div className={`${type}-import-section-list import-section-list`}>
+				<CustomList
+					containsCheckbox={true}
+					title={`Imported ${data.length} ${type.toLowerCase()}`}
+					listItems={this.transformList(data)}
+				/>
+			</div>
 		) : (
 			<div>Nothing imported</div>
 		);
@@ -24,18 +30,22 @@ class ImportFolders extends Component {
 
 	renderForm = () => {
 		const { data, type } = this.props;
-		return data.length !== 0 ? <CreateFolder onSubmit={(e) => {}} /> : <div>Nothing imported</div>;
+		return data.length !== 0 ? (
+			<div className={`${type}-import-section-form import-section-form`}>
+				<CreateFolder onSubmit={(e) => {}} />
+			</div>
+		) : (
+			<div>Nothing imported</div>
+		);
 	};
 
 	render() {
 		const { renderList, renderForm } = this;
-		const { data, type } = this.props;
 		return (
-			<div>
-				<div>{`Imported ${data.length} ${type.toLowerCase()}`}</div>
+			<Fragment>
 				{renderList()}
 				{renderForm()}
-			</div>
+			</Fragment>
 		);
 	}
 }

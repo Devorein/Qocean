@@ -15,10 +15,10 @@ export default function getIcons(icon) {
 			return <QuestionAnswerIcon />;
 		case 'environment':
 			return <SettingsIcon />;
+		case 'folderclose':
+			return <FolderIcon />;
 		case 'folder':
 			return <FolderOpenIcon />;
-		case 'folderClose':
-			return <FolderIcon />;
 		case 'user':
 			return <AccountCircle />;
 		case 'delete':
