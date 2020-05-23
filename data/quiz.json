@@ -1,6 +1,5 @@
 [
   {
-    "_id": "5eb78eacffe758058c7303cd",
     "name": "1.2 Getting Started - A Short History of Git",
     "subject": "Git",
     "tags": [
@@ -8,7 +7,7 @@
     ],
     "source": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git",
     "favourite": false,
-    "user": "5ebb74772c952d08c0644884"
+    "public": true
   },
   {
     "_id": "5eb78ec6ffe758058c7303ce",
