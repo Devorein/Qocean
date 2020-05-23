@@ -59,9 +59,9 @@ class Explore extends Component {
 			customToolbar() {
 				return <div>Custom Toolbar</div>;
 			},
-			rowsPerPage,
+			rowsPerPage: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15,
 			responsive: 'scrollMaxHeight',
-			rowsPerPageOptions: [ 10, 15, 20, 30, 50 ],
+			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
 			onCellClick(colData, { colIndex }) {

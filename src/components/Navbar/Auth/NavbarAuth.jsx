@@ -43,7 +43,7 @@ const CustomButtom = withStyles((theme) => ({
 	}
 }))(Button);
 
-function NavbarAuth({ session, refetch, history, match, location }) {
+function NavbarAuth({ user, refetch, history, match, location }) {
 	const { paper } = useStyles();
 
 	const logout = () => {
@@ -69,8 +69,12 @@ function NavbarAuth({ session, refetch, history, match, location }) {
 
 	const headers = [
 		{ name: 'home', link: '', icon: <HomeIcon /> },
-		{ name: 'create', link: 'create/Quiz', icon: <NoteAddIcon /> },
-		{ name: 'explore', link: 'explore/User', icon: <ExploreIcon /> },
+		{ name: 'create', link: `create/${user.current_environment.default_create_landing}`, icon: <NoteAddIcon /> },
+		{
+			name: 'explore',
+			link: `explore/${user.current_environment.default_explore_landing.toLowerCase()}`,
+			icon: <ExploreIcon />
+		},
 		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> }
 	];
 	const index = headers.findIndex(({ name }) => name === location.pathname.replace(/\//g, '\\').split('\\')[1]);
@@ -88,8 +92,8 @@ function NavbarAuth({ session, refetch, history, match, location }) {
 				{headers.map(({ name, icon }) => <Tab key={name} label={name} icon={icon} />)}
 			</Tabs>
 			<div className="user-links">
-				{session.data.data.image !== 'none.png' ? (
-					<Avatar variant="square" alt="Username" src={session.data.data.image} />
+				{user.image !== 'none.png' ? (
+					<Avatar variant="square" alt="Username" src={user.image} />
 				) : (
 					<Avatar variant="square" alt="Username">
 						<ImageIcon />
@@ -97,7 +101,7 @@ function NavbarAuth({ session, refetch, history, match, location }) {
 				)}
 
 				<span className="navbar-link-item navbar-link-item--username" onClick={handleClick}>
-					{session.data.data.username}
+					{user.username}
 				</span>
 			</div>
 			<Menu
