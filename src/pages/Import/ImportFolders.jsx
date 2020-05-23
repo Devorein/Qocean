@@ -35,7 +35,13 @@ class ImportFolders extends Component {
 					}}
 					ref={(r) => (this.CustomList = r)}
 					selectedIcons={[
-						<DeleteIcon key={'delete'} />,
+						<DeleteIcon
+							key={'delete'}
+							onClick={(e) => {
+								this.props.deleteItems(this.CustomList.state.checked);
+								this.CustomList.state.checked = [];
+							}}
+						/>,
 						<PublishIcon
 							key={'publish'}
 							onClick={(e) => {

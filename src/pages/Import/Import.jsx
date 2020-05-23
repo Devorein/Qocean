@@ -38,6 +38,13 @@ class Import extends Component {
 		reader.readAsDataURL(file);
 	};
 
+	deleteItems = (indexes) => {
+		const filtered = this.state.data.filter((data, index) => !indexes.includes(index));
+		this.setState({
+			data: filtered
+		});
+	};
+
 	decideForm = (type) => {
 		let { currentType } = this.state;
 		currentType = currentType.toLowerCase();
@@ -48,7 +55,8 @@ class Import extends Component {
 			onSubmit: this.context.submitForm,
 			data: this.state.data,
 			changeResponse: this.context.changeResponse,
-			type
+			type,
+			deleteItems: this.deleteItems
 		};
 		if (currentType === type && type === 'quiz') return <ImportQuiz {...props} />;
 		else if (currentType === type && type === 'question') return <ImportQuestion {...props} />;
