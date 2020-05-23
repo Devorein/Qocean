@@ -49,6 +49,49 @@ class CreateEnvironment extends Component {
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
 			{
 				type: 'group',
+				name: 'Explore_group',
+				extra: { treeView: true },
+				children: [
+					{
+						name: 'default_explore_landing',
+						type: 'select',
+						extra: {
+							selectItems: [ 'user', 'quiz', 'question', 'folder', 'environment' ].map((land) => {
+								return {
+									text: land.charAt(0).toUpperCase() + land.substr(1)
+								};
+							})
+						},
+						defaultValue: 'User'
+					},
+					{
+						name: 'default_explore_rpp',
+						type: 'select',
+						extra: {
+							selectItems: [ 10, 15, 20, 30, 40, 50 ].map((rpp) => {
+								return {
+									text: rpp
+								};
+							})
+						},
+						defaultValue: 15
+					}
+				]
+			},
+			{
+				name: 'default_create_landing',
+				type: 'select',
+				extra: {
+					selectItems: [ 'quiz', 'question', 'folder', 'environment' ].map((land) => {
+						return {
+							text: land.charAt(0).toUpperCase() + land.substr(1)
+						};
+					})
+				},
+				defaultValue: 'Quiz'
+			},
+			{
+				type: 'group',
 				name: 'questions_group',
 				extra: { treeView: true },
 				children: [
