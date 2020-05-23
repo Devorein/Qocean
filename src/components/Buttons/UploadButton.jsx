@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -20,8 +21,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UploadButton({ setFile, inputRef }) {
 	const classes = useStyles();
+	const classNames = clsx(classes.root, 'upload_button');
 	return (
-		<div className={classes.root}>
+		<div className={classNames}>
 			<input
 				accept="image/*"
 				className={classes.input}

@@ -1,18 +1,16 @@
 .FileInput {
-  width: 50%;
-  max-width: 450px;
-  margin: 0 auto;
-  form.form {
+  form {
     height: 70px;
     min-height: 70px;
     width: 100%;
     overflow: hidden;
     .form-content {
       height: 100%;
+      max-height: 100%;
     }
   }
   .image_preview {
-    height: 250px;
+    height: 100%;
     font-weight: bold;
     font-family: "Quantico";
     color: #ddd;
@@ -26,6 +24,7 @@
       max-width: 100%;
       max-height: 100%;
       display: block;
+      object-fit: contain;
     }
   }
 }

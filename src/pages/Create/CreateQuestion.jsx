@@ -180,7 +180,7 @@ class CreateQuestion extends Component {
 		};
 
 		return (
-			<div className="create_question create_form page">
+			<div className="create_question create_form">
 				<QuestionForm type={type} ref={(i) => (this.QuestionForm = i)} />
 				<InputForm
 					inputs={inputs}
