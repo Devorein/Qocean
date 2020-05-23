@@ -67,14 +67,16 @@ class CreateFolder extends Component {
 			{
 				name: 'icon',
 				type: 'select',
-				selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
-					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
-					return {
-						text: capitalized,
-						value: `${capitalized}_folder.svg`,
-						icon: getColoredIcons('Folder', color)
-					};
-				}),
+				extra: {
+					selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+						const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+						return {
+							text: capitalized,
+							value: `${capitalized}_folder.svg`,
+							icon: getColoredIcons('Folder', color)
+						};
+					})
+				},
 				defaultValue: 'Red_folder.svg'
 			},
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },

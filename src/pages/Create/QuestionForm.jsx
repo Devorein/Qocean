@@ -17,11 +17,13 @@ class QuestionForm extends Component {
 			{
 				name: 'answers',
 				type: 'radio',
-				radioItems: [
-					{ value: 'answer_1', label: 'Answer 1' },
-					{ value: 'answer_2', label: 'Answer 2' },
-					{ value: 'answer_3', label: 'Answer 3' }
-				],
+				extra: {
+					radioItems: [
+						{ value: 'answer_1', label: 'Answer 1' },
+						{ value: 'answer_2', label: 'Answer 2' },
+						{ value: 'answer_3', label: 'Answer 3' }
+					]
+				},
 				defaultValue: 'answer_1'
 			}
 		],
@@ -43,11 +45,13 @@ class QuestionForm extends Component {
 					{
 						name: 'answers',
 						type: 'radio',
-						radioItems: [
-							{ value: 'answer_1', label: 'Answer 1' },
-							{ value: 'answer_2', label: 'Answer 2' },
-							{ value: 'answer_3', label: 'Answer 3' }
-						],
+						extra: {
+							radioItems: [
+								{ value: 'answer_1', label: 'Answer 1' },
+								{ value: 'answer_2', label: 'Answer 2' },
+								{ value: 'answer_3', label: 'Answer 3' }
+							]
+						},
 						defaultValue: 'answer_1'
 					}
 				]
@@ -77,23 +81,33 @@ class QuestionForm extends Component {
 			});
 		} else if (type === 'FC') {
 			this.setState({
-				answers: [ { name: 'answers', type: 'textarea' } ],
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 4 } },
+					{ name: 'alternate', type: 'textarea', extra: { row: 4 } }
+				],
 				options: []
 			});
 		} else if (type === 'Snippet') {
 			this.setState({
-				answers: [ { name: 'answers', type: 'textarea' } ],
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+				],
 				options: []
 			});
 		} else if (type === 'FIB') {
 			return [];
 		} else if (type === 'TF') {
 			this.setState({
+				options: [],
 				answers: [
 					{
 						name: 'answers',
 						type: 'radio',
-						radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
+						extra: {
+							radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ]
+						},
 						defaultValue: 'true'
 					}
 				]

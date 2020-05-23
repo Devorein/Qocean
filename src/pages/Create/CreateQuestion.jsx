@@ -11,24 +11,28 @@ const inputs = [
 	{
 		name: 'type',
 		type: 'select',
-		selectItems: [
-			{ text: 'Multiple Choice', value: 'MCQ' },
-			{ text: 'Multiple Select', value: 'MS' },
-			{ text: 'Fill In the Blanks', value: 'FIB' },
-			{ text: 'Snippet', value: 'Snippet' },
-			{ text: 'Flashcard', value: 'FC' },
-			{ text: 'True/False', value: 'TF' }
-		],
+		extra: {
+			selectItems: [
+				{ text: 'Multiple Choice', value: 'MCQ' },
+				{ text: 'Multiple Select', value: 'MS' },
+				{ text: 'Fill In the Blanks', value: 'FIB' },
+				{ text: 'Snippet', value: 'Snippet' },
+				{ text: 'Flashcard', value: 'FC' },
+				{ text: 'True/False', value: 'TF' }
+			]
+		},
 		defaultValue: 'MCQ'
 	},
 	{
 		name: 'difficulty',
 		type: 'radio',
-		radioItems: [
-			{ label: 'Beginner', value: 'Beginner' },
-			{ label: 'Intermediate', value: 'Intermediate' },
-			{ label: 'Advanced', value: 'Advanced' }
-		],
+		extra: {
+			radioItems: [
+				{ label: 'Beginner', value: 'Beginner' },
+				{ label: 'Intermediate', value: 'Intermediate' },
+				{ label: 'Advanced', value: 'Advanced' }
+			]
+		},
 		defaultValue: 'Beginner'
 	},
 	{
@@ -155,12 +159,14 @@ class CreateQuestion extends Component {
 		inputs[1] = {
 			name: 'quiz',
 			type: 'select',
-			selectItems: quizzes.map(({ _id, name }) => {
-				return {
-					value: _id,
-					text: name
-				};
-			}),
+			extra: {
+				selectItems: quizzes.map(({ _id, name }) => {
+					return {
+						value: _id,
+						text: name
+					};
+				})
+			},
 			disabled: quizzes.length < 1,
 			helperText: loading ? 'Loading your quizzes' : quizzes.length < 1 ? 'You have not created any quizzes yet' : null
 		};

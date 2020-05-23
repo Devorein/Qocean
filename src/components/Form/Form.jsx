@@ -124,8 +124,6 @@ class Form extends React.Component {
 			startAdornment,
 			endAdornment,
 			type = 'text',
-			selectItems,
-			radioItems,
 			inputProps,
 			helperText,
 			disabled,
@@ -133,7 +131,8 @@ class Form extends React.Component {
 			controlled = true,
 			onChange,
 			onkeyPress,
-			component
+			component,
+			extra
 		} = input;
 		if (type === 'component') return component;
 		else if (type === 'select')
@@ -144,7 +143,7 @@ class Form extends React.Component {
 							<Fragment>
 								<InputLabel id={name}>{this.decideLabel(name, label)}</InputLabel>
 								<Select name={name} value={values[name]} onChange={this.change.bind(null, name)}>
-									{selectItems.map(({ value, text, icon }) => {
+									{extra.selectItems.map(({ value, text, icon }) => {
 										return (
 											<MenuItem key={value ? value : text} value={value ? value : text}>
 												{icon ? <Icon>{icon}</Icon> : null}
@@ -185,7 +184,7 @@ class Form extends React.Component {
 					<FormControl>
 						<FormLabel component="legend">{this.decideLabel(name, label)}</FormLabel>
 						<RadioGroup row name={name} defaultValue={defaultValue}>
-							{radioItems.map(({ label, value }) => (
+							{extra.radioItems.map(({ label, value }) => (
 								<FormControlLabel
 									key={value}
 									control={<Radio color="primary" />}
@@ -217,7 +216,7 @@ class Form extends React.Component {
 					<TextField
 						type={'text'}
 						multiline
-						rows={10}
+						rows={extra.row ? extra.row : 5}
 						defaultValue={defaultValue}
 						{...this.formikProps(name, label, placeholder, controlled, onChange)}
 						fullWidth

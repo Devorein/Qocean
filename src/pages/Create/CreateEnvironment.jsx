@@ -21,14 +21,16 @@ class CreateEnvironment extends Component {
 			{
 				name: 'icon',
 				type: 'select',
-				selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
-					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
-					return {
-						text: capitalized,
-						value: `${capitalized}_env.svg`,
-						icon: getColoredIcons('Settings', color)
-					};
-				}),
+				extra: {
+					selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+						const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+						return {
+							text: capitalized,
+							value: `${capitalized}_env.svg`,
+							icon: getColoredIcons('Settings', color)
+						};
+					})
+				},
 				defaultValue: 'Red_env.svg'
 			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
@@ -53,30 +55,34 @@ class CreateEnvironment extends Component {
 					{
 						name: 'default_question_type',
 						type: 'select',
-						selectItems: [
-							{ text: 'Fill In the Blanks', value: 'FIB' },
-							{ text: 'Multiple Choice', value: 'MCQ' },
-							{ text: 'Multiple Select', value: 'MS' },
-							{ text: 'Snippet', value: 'Snippet' },
-							{ text: 'Flashcard', value: 'FC' },
-							{ text: 'True/False', value: 'TF' }
-						],
+						extra: {
+							selectItems: [
+								{ text: 'Fill In the Blanks', value: 'FIB' },
+								{ text: 'Multiple Choice', value: 'MCQ' },
+								{ text: 'Multiple Select', value: 'MS' },
+								{ text: 'Snippet', value: 'Snippet' },
+								{ text: 'Flashcard', value: 'FC' },
+								{ text: 'True/False', value: 'TF' }
+							]
+						},
 						defaultValue: 'MCQ'
 					},
 					{
 						name: 'default_question_difficulty',
 						type: 'select',
-						selectItems: [
-							{
-								text: 'Beginner'
-							},
-							{
-								text: 'Intermediate'
-							},
-							{
-								text: 'Advanced'
-							}
-						],
+						extra: {
+							selectItems: [
+								{
+									text: 'Beginner'
+								},
+								{
+									text: 'Intermediate'
+								},
+								{
+									text: 'Advanced'
+								}
+							]
+						},
 						defaultValue: 'Beginner'
 					},
 					{
@@ -104,17 +110,19 @@ class CreateEnvironment extends Component {
 			{
 				name: 'theme',
 				type: 'select',
-				selectItems: [
-					{
-						text: 'Light'
-					},
-					{
-						text: 'Dark'
-					},
-					{
-						text: 'Navy'
-					}
-				],
+				extra: {
+					selectItems: [
+						{
+							text: 'Light'
+						},
+						{
+							text: 'Dark'
+						},
+						{
+							text: 'Navy'
+						}
+					]
+				},
 				defaultValue: 'Light'
 			},
 			{
