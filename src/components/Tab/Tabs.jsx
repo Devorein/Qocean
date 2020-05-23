@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import getIcons from '../../Utils/getIcons';
 
 const useStyles = makeStyles({
 	tabs: {
@@ -21,18 +22,21 @@ const useStyles = makeStyles({
 });
 
 function CustomTabs(props) {
-	const { headers, onChange, height = 50, value } = props;
+	const { headers, onChange, height = 50, against, addIcon = true } = props;
+	const value = headers.findIndex(({ name }) => name === against);
 	const { tabs, tab } = useStyles({ height });
 	return (
 		<Tabs
-			value={value}
+			value={value === -1 ? 0 : value}
 			onChange={onChange}
 			textColor="primary"
 			indicatorColor="primary"
 			centered
 			classes={{ root: tabs }}
 		>
-			{headers.map(({ name, icon }) => <Tab classes={{ root: tab }} key={name} label={name} icon={icon} />)}
+			{headers.map(({ name, icon }) => (
+				<Tab classes={{ root: tab }} key={name} label={name} icon={addIcon ? getIcons(name) : icon} />
+			))}
 		</Tabs>
 	);
 }
