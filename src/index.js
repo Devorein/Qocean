@@ -1,6 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@material-ui/core/styles';
+import theme from './theme';
+
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './pages/Signin/SignIn.jsx';
@@ -203,7 +207,10 @@ ReactDOM.render(
 		{({ session, refetch }) => {
 			return (
 				<Router>
-					<RoutedApp session={session} refetch={refetch} />
+					<ThemeProvider theme={theme}>
+						<CssBaseline />
+						<RoutedApp session={session} refetch={refetch} />
+					</ThemeProvider>
 				</Router>
 			);
 		}}

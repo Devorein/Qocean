@@ -1,129 +1,106 @@
 import { green, red } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
 
-export default withStyles({
-	'@global': {
-		'.MuiTab-root': {
-			minWidth: 100
-		},
-		'.MuiMenu-list': {
-			background: '#343434',
-			color: '#c4c4c4'
-		},
-		'.MuiMenuItem-root': {
-			fontFamily: 'Quantico',
-			fontSize: '16px'
-		},
-		'.MuiInputBase-input': {
-			fontFamily: 'Quantico',
-			color: '#ddd'
-		},
-		'.MuiButtonBase-root.MuiCheckbox-root': {
-			margin: 0
-		},
-		'.MuiTreeView-root': {
-			margin: '10px 0px'
-		},
-		'.MuiFormLabel-root': {
-			fontFamily: 'Quantico',
-			color: '#ccc',
-			opacity: '0.75',
-			fontSize: '14px',
-			margin: '5px 0px',
-			'&.Mui-focused': {
-				opacity: 1,
-				fontWeight: 'bolder'
+export default withStyles(
+	(theme) => ({
+		'@global': {
+			'.MuiTab-root': {
+				minWidth: 100
 			},
-			'&.Mui-disabled': {
-				color: '#bbb'
-			}
-		},
-		'.MuiFormControl-root': {
-			margin: '5px'
-		},
-		'.MuiFormHelperText-root': {
-			color: '#f44336d6',
-			fontWeight: 'bold',
-			fontFamily: 'Quantico',
-			'&.Mui-disabled': {
-				color: '#ddd',
-				fontWeight: 'bolder'
-			}
-		},
-		'.MuiButtonBase-root': {
-			display: 'block',
-			margin: '5px auto',
-			fontFamily: 'Quantico',
-			color: '#ddd',
-			fontWeight: 'bolder',
-			'& .MuiButton-label': {
-				color: '#ddd',
-				fontWeight: 'bold'
+			'.MuiMenuItem-root': {
+				fontSize: '16px'
 			},
-			'&.MuiButton-contained.MuiButton-containedPrimary.Mui-disabled': {
-				backgroundColor: '#c10000'
-			}
-		},
-		'.MuiInput-underline': {
-			paddingBottom: '5px'
-		},
-		'.MuiTabs-flexContainer': {
-			background: '#272727'
-		},
-		'.MuiTab-wrapper': {
-			flexDirection: 'row'
-		},
-		'.MuiTab-labelIcon .MuiTab-wrapper > *:first-child': {
-			marginRight: '5px',
-			marginBottom: '0px'
-		},
-		'.MuiIcon-root': {
-			marginRight: '5px',
-			display: 'flex'
-		},
-		'.MuiSelect-select': {
-			display: 'flex',
-			alignItems: 'center'
-		},
-		'.MuiMenuItem-root.MuiListItem-root': {
-			display: 'flex',
-			flexDirection: 'row'
-		},
-		'.MuiListItem-root': {
-			padding: 10,
-			height: 40
-		},
-		'.MuiTypography-root': {
-			fontFamily: 'Quantico'
-		},
-		'.MuiListItem-button': {
-			'&:hover': {
-				backgroundColor: 'rgba(0, 0, 0, 0.2)'
-			}
-		},
-		'.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {
-			backgroundColor: '#00000059'
-		},
-		'.MuiButton-contained': {
-			backgroundColor: '#2d2d2d',
-			'&:hover': {
-				backgroundColor: '#535353'
-			}
-		},
-		'.MuiButton-contained.MuiButton-containedPrimary': {
-			color: '#fff',
-			backgroundColor: '#3f51b5'
-		},
-		'.MuiAlert': {
-			'&-filledSuccess': {
-				backgroundColor: green[600]
+			'.MuiButtonBase-root.MuiCheckbox-root': {
+				margin: 0
 			},
-			'&-filledError': {
-				backgroundColor: red[600]
+			'.MuiTreeView-root': {
+				margin: '10px 0px'
 			},
-			'&-filledSuccess,&-filledError': {
-				fontFamily: 'Quantico'
+			'.MuiFormLabel-root': {
+				color: theme.palette.grey[400],
+				fontSize: '14px',
+				margin: '5px 0px',
+				'&.Mui-focused': {
+					opacity: 1,
+					fontWeight: 'bolder'
+				}
+			},
+			'.MuiFormControl-root': {
+				margin: '5px'
+			},
+			'.MuiFormHelperText-root': {
+				color: theme.palette.error.main,
+				fontWeight: 'bold',
+
+				'&.Mui-disabled': {
+					fontWeight: 'bolder'
+				}
+			},
+			'.MuiButtonBase-root': {
+				display: 'block',
+				margin: '5px auto',
+				color: theme.palette.text.primary,
+				fontWeight: 'bolder',
+				'& .MuiButton-label': {
+					color: theme.palette.text.primary,
+					fontWeight: 'bold'
+				},
+				'&.MuiButton-contained.MuiButton-containedPrimary.Mui-disabled': {
+					backgroundColor: theme.palette.error.dark
+				}
+			},
+			'.MuiInput-underline': {
+				'&:before': {
+					borderBottomColor: theme.palette.text.secondary
+				},
+				paddingBottom: '5px'
+			},
+			'.MuiTabs-flexContainer': {
+				background: theme.palette.grey['900']
+			},
+			'.MuiTab-wrapper': {
+				flexDirection: 'row'
+			},
+			'.MuiTab-labelIcon .MuiTab-wrapper > *:first-child': {
+				marginRight: '5px',
+				marginBottom: '0px'
+			},
+			'.MuiIcon-root': {
+				marginRight: '5px',
+				display: 'flex'
+			},
+			'.MuiSelect-select': {
+				display: 'flex',
+				alignItems: 'center'
+			},
+			'.MuiMenuItem-root.MuiListItem-root': {
+				display: 'flex',
+				flexDirection: 'row'
+			},
+			'.MuiListItem-root': {
+				padding: 10,
+				height: 40
+			},
+			'.MuiListItem-button': {
+				'&:hover': {}
+			},
+			'.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {},
+			'.MuiButton-contained': {
+				backgroundColor: theme.palette.grey[800],
+				'&:hover': {}
+			},
+			'.MuiButton-contained.MuiButton-containedPrimary': {
+				backgroundColor: theme.palette.primary.dark
+			},
+			'.MuiAlert': {
+				'&-filledSuccess': {
+					backgroundColor: green[600]
+				},
+				'&-filledError': {
+					backgroundColor: red[600]
+				}
 			}
 		}
-	}
-})(() => null);
+	}),
+	{ withTheme: true }
+)(() => null);
