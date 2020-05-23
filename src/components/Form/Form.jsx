@@ -67,7 +67,7 @@ class Form extends React.Component {
 		setFieldTouched(name, true, false);
 	};
 
-	formikProps = (name, label, placeholder, controlled, onChange, onkeyPress) => {
+	formikProps = (name, label, placeholder, controlled, onkeyPress) => {
 		const { values, handleBlur, touched, errors, errorBeforeTouched } = this.props;
 		if (controlled)
 			return {
@@ -114,7 +114,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched } = this.props;
+		const { values, errors, handleBlur, touched, setValues } = this.props;
 		const {
 			name,
 			label,
@@ -129,7 +129,6 @@ class Form extends React.Component {
 			disabled,
 			siblings,
 			controlled = true,
-			onChange,
 			onkeyPress,
 			component,
 			extra
@@ -179,11 +178,14 @@ class Form extends React.Component {
 				</Fragment>
 			);
 		else if (type === 'radio') {
+			const props = this.formikProps(name, label, placeholder, controlled);
+			delete props.helperText;
+			delete props.error;
 			return (
 				<Fragment key={name}>
 					<FormControl>
 						<FormLabel component="legend">{this.decideLabel(name, label)}</FormLabel>
-						<RadioGroup row name={name} defaultValue={defaultValue}>
+						<RadioGroup row {...props} defaultValue={defaultValue}>
 							{extra.radioItems.map(({ label, value }) => (
 								<FormControlLabel
 									key={value}
@@ -203,7 +205,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={'number'}
-						{...this.formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled)}
 						fullWidth
 						inputProps={{ ...inputProps }}
 					/>
@@ -218,7 +220,7 @@ class Form extends React.Component {
 						multiline
 						rows={extra.row ? extra.row : 5}
 						defaultValue={defaultValue}
-						{...this.formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled)}
 						fullWidth
 					/>
 					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
@@ -229,7 +231,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={this.state.showPassword ? 'text' : 'password'}
-						{...this.formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled)}
 						fullWidth
 						InputProps={{
 							endAdornment: (
@@ -247,7 +249,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={'text'}
-						{...this.formikProps(name, label, placeholder, controlled, onChange, onkeyPress)}
+						{...this.formikProps(name, label, placeholder, controlled, onkeyPress)}
 						fullWidth
 						InputProps={this.decideAdornment(name, InputProps, startAdornment, endAdornment)}
 					/>

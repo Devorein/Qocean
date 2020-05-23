@@ -173,7 +173,7 @@ class QuestionForm extends Component {
 		if (type === 'MCQ') {
 			const options = [];
 			Object.entries(form).forEach(([ key, value ]) => {
-				if (key.startsWith('option_')) options.push(value);
+				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
 			values.options = options;
 			values.answers = parseInt(form.answers.split('_')[1]);
@@ -181,7 +181,7 @@ class QuestionForm extends Component {
 			const options = [];
 			const answers = [];
 			Object.entries(form).forEach(([ key, value ]) => {
-				if (key.startsWith('option_')) options.push(value);
+				if (key.startsWith('option_') && value !== '') options.push(value);
 				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
 			});
 			values.options = options;

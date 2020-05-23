@@ -33,7 +33,7 @@ const inputs = [
 				{ label: 'Advanced', value: 'Advanced' }
 			]
 		},
-		defaultValue: 'Beginner'
+		defaultValue: 'Advanced'
 	},
 	{
 		name: 'question_weight',
