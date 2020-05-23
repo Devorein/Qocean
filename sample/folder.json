@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Collection 1",
+    "icon": "Blue_folder.svg",
+    "public": false,
+    "favourite": true
+  },
+  {
+    "name": "Collection 2"
+  },
+  {
+    "name": "Collection 3"
+  }
+]
