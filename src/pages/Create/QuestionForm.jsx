@@ -74,43 +74,57 @@ class QuestionForm extends Component {
 	};
 
 	decideInputs = (type) => {
+		const validateForm = () => {
+			this.InputForm.Form.props.validateForm().then((error) => {
+				this.InputForm.Form.props.setErrors(error);
+			});
+		};
 		if (type === 'MCQ') {
-			this.setState(INIT_MCQ_STATE);
+			this.setState(INIT_MCQ_STATE, validateForm);
 		} else if (type === 'MS') {
-			this.setState(INIT_MS_STATE);
+			this.setState(INIT_MS_STATE, validateForm);
 		} else if (type === 'FC') {
-			this.setState({
-				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 4 } },
-					{ name: 'alternate', type: 'textarea', extra: { row: 4 } }
-				],
-				options: []
-			});
+			this.setState(
+				{
+					answers: [
+						{ name: 'answers', type: 'textarea', extra: { row: 4 } },
+						{ name: 'alternate', type: 'textarea', extra: { row: 4 } }
+					],
+					options: []
+				},
+				validateForm
+			);
 		} else if (type === 'Snippet') {
-			this.setState({
-				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
-				],
-				options: []
-			});
+			this.setState(
+				{
+					answers: [
+						{ name: 'answers', type: 'textarea', extra: { row: 2 } },
+						{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
+						{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+					],
+					options: []
+				},
+				validateForm
+			);
 		} else if (type === 'FIB') {
 			return [];
 		} else if (type === 'TF') {
-			this.setState({
-				options: [],
-				answers: [
-					{
-						name: 'answers',
-						type: 'radio',
-						extra: {
-							radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ]
-						},
-						defaultValue: 'true'
-					}
-				]
-			});
+			this.setState(
+				{
+					options: [],
+					answers: [
+						{
+							name: 'answers',
+							type: 'radio',
+							extra: {
+								radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ]
+							},
+							defaultValue: 'true'
+						}
+					]
+				},
+				validateForm
+			);
 		}
 	};
 
