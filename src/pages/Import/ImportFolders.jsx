@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 import CreateFolder from '../Create/CreateFolder';
 import CustomList from '../../components/List/List';
 import { AppContext } from '../../context/AppContext';
-
+import DeleteIcon from '@material-ui/icons/Delete';
+import PublishIcon from '@material-ui/icons/Publish';
 class ImportFolders extends Component {
 	static contextType = AppContext;
 
@@ -32,6 +33,16 @@ class ImportFolders extends Component {
 							selectedIndex
 						});
 					}}
+					ref={(r) => (this.CustomList = r)}
+					selectedIcons={[
+						<DeleteIcon key={'delete'} />,
+						<PublishIcon
+							key={'publish'}
+							onClick={(e) => {
+								console.log(`You sure you want to import ${this.CustomList.state.checked.length} item(s)`);
+							}}
+						/>
+					]}
 				/>
 			</div>
 		) : (

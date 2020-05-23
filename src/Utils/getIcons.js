@@ -6,24 +6,27 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
+import PublishIcon from '@material-ui/icons/Publish';
 
-export default function getIcons(icon) {
+export default function getIcons(icon, onClick, key) {
 	switch (icon.toLowerCase()) {
 		case 'quiz':
-			return <HorizontalSplitIcon />;
+			return <HorizontalSplitIcon onClick={onClick} key={key ? key : icon} />;
 		case 'question':
-			return <QuestionAnswerIcon />;
+			return <QuestionAnswerIcon onClick={onClick} key={key ? key : icon} />;
 		case 'environment':
-			return <SettingsIcon />;
+			return <SettingsIcon onClick={onClick} key={key ? key : icon} />;
 		case 'folderclose':
-			return <FolderIcon />;
+			return <FolderIcon onClick={onClick} key={key ? key : icon} />;
 		case 'folder':
-			return <FolderOpenIcon />;
+			return <FolderOpenIcon onClick={onClick} key={key ? key : icon} />;
 		case 'user':
-			return <AccountCircle />;
+			return <AccountCircle onClick={onClick} key={key ? key : icon} />;
 		case 'delete':
-			return <DeleteIcon />;
+			return <DeleteIcon onClick={onClick} key={key ? key : icon} />;
+		case 'upload':
+			return <PublishIcon onClick={onClick} key={key ? key : icon} />;
 		default:
-			return <FolderOpenIcon />;
+			return <FolderOpenIcon onClick={onClick} key={key ? key : icon} />;
 	}
 }
