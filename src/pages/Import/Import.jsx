@@ -14,6 +14,10 @@ class Import extends Component {
 
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
+		this.setState({
+			inputs: [],
+			data: []
+		});
 	};
 
 	state = {
@@ -26,7 +30,8 @@ class Import extends Component {
 		e.persist();
 		const reader = new FileReader();
 		const { files: [ file ] } = e.target;
-
+		delete this.UploadButton.files[0];
+		this.UploadButton.value = '';
 		reader.onload = (e) => {
 			file.text().then((data) => {
 				this.setState({
@@ -85,7 +90,12 @@ class Import extends Component {
 					height={50}
 					headers={headers}
 				/>
-				<UploadButton setFile={setFile.bind(null, type)} msg={`Import ${type}`} accept={'application/json'} />
+				<UploadButton
+					setFile={setFile.bind(null, type)}
+					msg={`Import ${type}`}
+					accept={'application/json'}
+					inputRef={(i) => (this.UploadButton = i)}
+				/>
 				<div className={`import-section ${type}-import-section`}>{decideForm(type)}</div>
 			</div>
 		);
