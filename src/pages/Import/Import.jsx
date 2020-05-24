@@ -10,6 +10,7 @@ import CreateFolder from '../Create/CreateFolder';
 import CreateQuestion from '../Create/CreateQuestion';
 import CreateQuiz from '../Create/CreateQuiz';
 import CreateEnvironment from '../Create/CreateEnvironment';
+import ChipContainer from '../../components/Chip/ChipContainer';
 
 import './Import.scss';
 
@@ -60,14 +61,31 @@ class Import extends Component {
 	};
 
 	decideInput = (inputs) => {
-		return inputs.map((input) => {
-			return {
-				...input,
-				defaultValue: this.props.data[this.state.selectedIndex][input.name]
-					? this.props.data[this.state.selectedIndex][input.name]
-					: input.defaultValue
-			};
-		});
+		const { currentType } = this.state;
+		if (currentType === 'folder' || currentType === 'environment') {
+			return inputs.map((input) => {
+				return {
+					...input,
+					defaultValue: this.state.data[this.state.selectedIndex][input.name]
+						? this.state.data[this.state.selectedIndex][input.name]
+						: input.defaultValue
+				};
+			});
+		} else if (currentType === 'quiz') {
+			return inputs.map((input) => {
+				if (input.name === 'tags')
+					return {
+						...input
+					};
+				else
+					return {
+						...input,
+						defaultValue: this.state.data[this.state.selectedIndex][input.name]
+							? this.state.data[this.state.selectedIndex][input.name]
+							: input.defaultValue
+					};
+			});
+		}
 	};
 
 	renderForm = () => {
@@ -115,7 +133,7 @@ class Import extends Component {
 												selectedIndex: checked
 											},
 											() => {
-												_this.CreateFolder.InputForm.Form.SubmitButton.click();
+												_this.Create.InputForm.Form.SubmitButton.click();
 											}
 										);
 									}, 2500 * index);
@@ -146,16 +164,12 @@ class Import extends Component {
 
 		const props = {
 			submitMsg: 'Import',
-			ref: (r) => (this.CreateFolder = r),
-			user: this.props.user,
+			ref: (r) => (this.Create = r),
 			onSubmit: this.context.submitForm,
-			data: this.state.data,
-			changeResponse: this.context.changeResponse,
-			type,
 			customInputs: this.decideInput
 		};
 
-		if (currentType === type && type === 'quiz') return <CreateQuiz {...props} />;
+		if (currentType === type && type === 'quiz') return <CreateQuiz {...props} ref={(r) => (this.Create = r)} />;
 		else if (currentType === type && type === 'question') return <CreateQuestion {...props} />;
 		else if (currentType === type && type === 'folder') return <CreateFolder {...props} />;
 		else if (currentType === type && type === 'environment') return <CreateEnvironment {...props} />;
@@ -190,7 +204,7 @@ class Import extends Component {
 				/>
 				<div className={`import-section ${type}-import-section`}>
 					{renderList()}
-					{/* {renderForm()} */}
+					{renderForm()}
 				</div>
 			</div>
 		);

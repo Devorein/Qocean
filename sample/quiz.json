@@ -3,7 +3,7 @@
     "name": "1.2 Getting Started - A Short History of Git",
     "subject": "Git",
     "tags": [
-      "Version Control"
+      "Version Control:orangered"
     ],
     "source": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git",
     "favourite": false,
@@ -14,7 +14,7 @@
     "name": "Introduction to MongoDB - Getting Started",
     "subject": "MongoDB",
     "tags": [
-      "Database"
+      "Database:red"
     ],
     "source": "https://docs.mongodb.com/manual/tutorial/getting-started/",
     "favourite": true
@@ -24,7 +24,7 @@
     "name": "User Guide - Configuring ESLint",
     "subject": "ESLint",
     "tags": [
-      "Linter"
+      "Linter:blue"
     ],
     "source": "https://eslint.org/docs/user-guide/configuring",
     "favourite": false

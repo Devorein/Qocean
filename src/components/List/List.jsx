@@ -70,7 +70,7 @@ const MiniGridTitle2 = withStyles((theme) => ({
 const EnhancedListItem = withStyles((theme) => ({
 	root: {
 		'&.selected': {
-			backgroundColor: theme.palette.grey[800]
+			backgroundColor: theme.palette.grey['A400']
 		}
 	}
 }))(ListItem);
@@ -163,7 +163,9 @@ class CustomList extends React.Component {
 											{
 												lastClicked: index
 											},
-											() => onClick.bind(null, index)
+											() => {
+												onClick(index);
+											}
 										);
 									}}
 								/>
