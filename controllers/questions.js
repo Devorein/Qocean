@@ -24,10 +24,12 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${req.body.quiz} found`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to add a question to this quiz`, 401));
-
-	req.body.user = req.user._id;
-	const question = await Question.create(req.body);
-	res.status(200).json({ success: true, data: question });
+	const [ isValidQuestion, message ] = await Question.validateQuestion(req.body);
+	if (isValidQuestion) {
+		req.body.user = req.user._id;
+		const question = await Question.create(req.body);
+		res.status(200).json({ success: true, data: question });
+	} else return next(new ErrorResponse(message, 401));
 });
 
 // @desc: Update a question
