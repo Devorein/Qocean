@@ -139,9 +139,9 @@ class CustomList extends React.Component {
 
 				<List dense={false} style={{ overflowY: 'auto', maxHeight: '75%' }}>
 					{listItems.map((listItem, index) => {
-						const { primary, secondary, primaryIcon, secondaryIcon } = listItem;
+						const { primary, secondary, primaryIcon, secondaryIcon, key } = listItem;
 						return (
-							<EnhancedListItem key={primary} className={lastClicked === index ? 'selected' : null}>
+							<EnhancedListItem key={key ? key : primary} className={lastClicked === index ? 'selected' : null}>
 								{containsCheckbox ? (
 									<ListItemIcon onClick={handleToggle(index)}>
 										<Checkbox
