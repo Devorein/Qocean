@@ -15,7 +15,7 @@ class Play extends Component {
 
 	componentDidMount() {
 		axios
-			.get(`http://localhost:5001/api/v1/quizzes/me`, {
+			.get(`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=type,difficulty`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}
@@ -69,7 +69,10 @@ class Play extends Component {
 						/>
 					]}
 				/>
-				<PlayStats quizzes={this.state.checked.map((checked) => quizzes[checked])} />
+				<PlayStats
+					quizzes={this.state.quizzes}
+					selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
+				/>
 				<GenericButton text="Play" />
 			</div>
 		);
