@@ -127,7 +127,7 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 					<EqualizerIcon />
 					Stats
 				</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, 'self')}>
+				<MenuItem onClick={switchPage.bind(null, 'self/Quiz')}>
 					<FaceIcon />
 					Self
 				</MenuItem>

@@ -173,7 +173,7 @@ class App extends Component {
 								}}
 							/>
 							<Route
-								path="/self"
+								path="/self/:type"
 								exact
 								render={() => {
 									return session.data ? <Self user={session.data.data} /> : <Redirect to="/401" />;
