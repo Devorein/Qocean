@@ -31,7 +31,7 @@ const ListContainer = withStyles((theme) => ({
 			color: theme.palette.primary.main
 		}
 	}
-}))('div');
+}))(Container);
 
 const IconContainer = withStyles((theme) => ({
 	root: {
@@ -85,8 +85,20 @@ class CustomList extends React.Component {
 		});
 	};
 
+	handleToggleAll = () => {
+		const shouldCheck = this.state.checked.length < this.props.listItems.length;
+		if (shouldCheck)
+			this.setState({
+				checked: this.props.listItems.map((_, index) => index)
+			});
+		else
+			this.setState({
+				checked: []
+			});
+	};
+
 	render() {
-		const { handleToggle } = this;
+		const { handleToggle, handleToggleAll } = this;
 		const { checked } = this.state;
 		const { listItems, title, containsCheckbox, onClick, selectedIcons } = this.props;
 		return (
@@ -94,7 +106,21 @@ class CustomList extends React.Component {
 				<MiniGrid>
 					<MiniGridTitle variant="h6">{title}</MiniGridTitle>
 					<MiniGridTitle2 variant="body2">{checked.length}(s) selected</MiniGridTitle2>
-					{checked.length >= 1 ? <IconContainer>{selectedIcons.map((icon) => icon)}</IconContainer> : null}
+					{
+						<IconContainer>
+							<ListItemIcon onClick={handleToggleAll}>
+								<Checkbox
+									edge="start"
+									checked={checked.length === listItems.length}
+									tabIndex={-1}
+									disableRipple
+									color="primary"
+									inputProps={{ 'aria-labelledby': 'Select All' }}
+								/>
+							</ListItemIcon>
+							{checked.length >= 1 ? selectedIcons.map((icon) => icon) : null}
+						</IconContainer>
+					}
 				</MiniGrid>
 
 				<List dense={false}>
