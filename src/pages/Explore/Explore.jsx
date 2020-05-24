@@ -14,6 +14,7 @@ class Explore extends Component {
 		data: [],
 		type: null,
 		rowsPerPage: 15,
+		totaCount: 0,
 		page: 0
 	};
 
@@ -25,11 +26,15 @@ class Explore extends Component {
 					.join('&')
 			: '';
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${queryString}`)
-			.then(({ data: { data } }) => {
-				this.setState({
-					data,
-					type
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countAll`)
+			.then(({ data: { data: totalCount } }) => {
+				axios.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${queryString}`).then(({ data: { data } }) => {
+					this.setState({
+						data,
+						type,
+						totalCount,
+						page: 0
+					});
 				});
 			})
 			.catch((err) => {
@@ -45,10 +50,10 @@ class Explore extends Component {
 	};
 
 	decideTable = () => {
-		const { page, rowsPerPage } = this.state;
+		const { page, rowsPerPage, totalCount } = this.state;
 		const options = {
 			filterType: 'checkbox',
-			count: 50,
+			count: totalCount,
 			page,
 			customToolbar() {
 				return <div>Custom Toolbar</div>;

@@ -12,7 +12,8 @@ class Self extends Component {
 		data: [],
 		type: null,
 		rowsPerPage: 15,
-		page: 0
+		page: 0,
+		totalCount: 0
 	};
 
 	refetchData = (type, queryParams) => {
@@ -22,17 +23,28 @@ class Self extends Component {
 					.map((key) => key + '=' + (key === 'page' ? parseInt(queryParams[key]) + 1 : queryParams[key]))
 					.join('&')
 			: '';
+		const headers = {
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
+		};
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/me${queryString}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine`, {
+				...headers
 			})
-			.then(({ data: { data } }) => {
-				this.setState({
-					data,
-					type
-				});
+			.then(({ data: { data: totalCount } }) => {
+				axios
+					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/me${queryString}`, {
+						...headers
+					})
+					.then(({ data: { data } }) => {
+						this.setState({
+							data,
+							type,
+							totalCount,
+							page: 0
+						});
+					});
 			})
 			.catch((err) => {
 				console.log(err);
@@ -47,10 +59,10 @@ class Self extends Component {
 	};
 
 	decideTable = () => {
-		const { page, rowsPerPage } = this.state;
+		const { page, rowsPerPage, totalCount } = this.state;
 		const options = {
 			filterType: 'checkbox',
-			count: 50,
+			count: totalCount,
 			page,
 			customToolbar() {
 				return <div>Custom Toolbar</div>;
