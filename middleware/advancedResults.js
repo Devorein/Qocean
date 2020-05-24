@@ -20,20 +20,20 @@ const advancedResults = (model, populate, option = {}) =>
 			res.status(200).json({ success: true, data: result });
 		} else {
 			let query;
-			const reqQuery = { ...req.query };
+			let reqQuery = { ...req.query };
 			// Fields to exclude
-			const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populate' ];
+			const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
 			excludeFields.forEach((param) => delete reqQuery[param]);
 
-			let queryStr = JSON.stringify(reqQuery);
+			reqQuery = JSON.stringify(reqQuery);
 
 			// Create mongodb operators
-			queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
-			queryStr = JSON.parse(queryStr);
+			reqQuery = reqQuery.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
+			reqQuery = JSON.parse(reqQuery);
 			option.match = { ...option.match };
 			if (req.route.path === '/me') option.match.user = req.user._id;
-			queryStr = { ...queryStr, ...option.match };
-			query = model.find(queryStr);
+			reqQuery = { ...reqQuery, ...option.match };
+			query = model.find(reqQuery);
 			let fields = '';
 			if (req.query.select) {
 				fields = req.query.select.split(',');
@@ -49,13 +49,20 @@ const advancedResults = (model, populate, option = {}) =>
 			// Pagination
 			const page = parseInt(req.query.page) || 1;
 			const limit = parseInt(req.query.limit) || 10;
-			const shouldPopulate = req.query.populate ? (req.query.populate === 'true' ? true : false) : true;
+			const shouldPopulate = req.query.populate ? true : false;
 			const startIndex = (page - 1) * limit;
 			const endIndex = page * limit;
 			const total = await model.countDocuments();
 
 			query = query.skip(startIndex).limit(limit);
-			if (shouldPopulate && populate) {
+			if (shouldPopulate) {
+				let { populateFields } = req.query;
+				populateFields = populateFields.split(',').join(' ');
+				query.populate({
+					path: req.query.populate.split(',')[0],
+					select: populateFields
+				});
+			} else if (populate) {
 				if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
 				else query = query.populate(populate);
 			}

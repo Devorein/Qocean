@@ -7,7 +7,7 @@ const { protect } = require('../middleware/auth');
 
 const { createQuiz, updateQuiz, deleteQuiz, quizPhotoUpload } = require('../controllers/quizzes');
 
-router.route('/me').get(protect, advancedResults(Quiz, 'questions'));
+router.route('/me').get(protect, advancedResults(Quiz));
 
 router
 	.route('/')
