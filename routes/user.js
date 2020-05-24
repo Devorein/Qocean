@@ -1,10 +1,12 @@
 const express = require('express');
 const User = require('../models/User');
-const { updateUserDetails, updateUserPassword, deleteUser, getMe } = require('../controllers/user');
+const { countAllUsers, updateUserDetails, updateUserPassword, deleteUser, getMe } = require('../controllers/user');
 const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
 
 const router = express.Router();
+
+router.route('/countAll').get(countAllUsers);
 
 router.route('/').delete(protect, deleteUser).get(
 	advancedResults(User, null, {

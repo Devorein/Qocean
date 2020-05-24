@@ -11,25 +11,29 @@ const inputs = [
 	{
 		name: 'type',
 		type: 'select',
-		selectItems: [
-			{ text: 'Multiple Choice', value: 'MCQ' },
-			{ text: 'Multiple Select', value: 'MS' },
-			{ text: 'Fill In the Blanks', value: 'FIB' },
-			{ text: 'Snippet', value: 'Snippet' },
-			{ text: 'Flashcard', value: 'FC' },
-			{ text: 'True/False', value: 'TF' }
-		],
+		extra: {
+			selectItems: [
+				{ text: 'Multiple Choice', value: 'MCQ' },
+				{ text: 'Multiple Select', value: 'MS' },
+				{ text: 'Fill In the Blanks', value: 'FIB' },
+				{ text: 'Snippet', value: 'Snippet' },
+				{ text: 'Flashcard', value: 'FC' },
+				{ text: 'True/False', value: 'TF' }
+			]
+		},
 		defaultValue: 'MCQ'
 	},
 	{
 		name: 'difficulty',
 		type: 'radio',
-		radioItems: [
-			{ label: 'Beginner', value: 'Beginner' },
-			{ label: 'Intermediate', value: 'Intermediate' },
-			{ label: 'Advanced', value: 'Advanced' }
-		],
-		defaultValue: 'Beginner'
+		extra: {
+			radioItems: [
+				{ label: 'Beginner', value: 'Beginner' },
+				{ label: 'Intermediate', value: 'Intermediate' },
+				{ label: 'Advanced', value: 'Advanced' }
+			]
+		},
+		defaultValue: 'Advanced'
 	},
 	{
 		name: 'question_weight',
@@ -96,17 +100,20 @@ class CreateQuestion extends Component {
 	};
 
 	preSubmit = (values) => {
-		values = this.QuestionForm.transformValue(values);
-		console.log(values);
-		const [ file, src ] = this.FileInput.returnData();
-		if (file) values.link = '';
-		else values.link = src;
-		return values;
+		const form = this.QuestionForm.InputForm.Form.props;
+		const isValid = form.isValid;
+		if (isValid) {
+			values = this.QuestionForm.transformValue(values);
+			const [ file, src ] = this.FileInput.returnData();
+			if (file) values.link = '';
+			else values.link = src;
+			return [ values, true ];
+		} else return [ values, false ];
 	};
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-		const [ file ] = this.FileInput.returnData();
+		const [ file = null ] = this.FileInput.returnData();
 		if (file) {
 			fd.append('file', file, file.name);
 			axios
@@ -117,16 +124,21 @@ class CreateQuestion extends Component {
 					}
 				})
 				.then((data) => {
+					if (this.props.user.current_environment.reset_on_success) this.QuestionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
 					}, this.props.user.current_environment.notification_timing + 500);
 				})
 				.catch((err) => {
+					if (this.props.user.current_environment.reset_on_error) this.QuestionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, this.props.user.current_environment.notification_timing + 500);
 				});
-		} else this.resetForm(null);
+		} else {
+			const env = this.props.user.current_environment;
+			if (env.reset_on_success || env.reset_on_error) this.QuestionForm.InputForm.Form.props.resetForm();
+		}
 	};
 
 	render() {
@@ -155,24 +167,27 @@ class CreateQuestion extends Component {
 		inputs[1] = {
 			name: 'quiz',
 			type: 'select',
-			selectItems: quizzes.map(({ _id, name }) => {
-				return {
-					value: _id,
-					text: name
-				};
-			}),
+			extra: {
+				selectItems: quizzes.map(({ _id, name }) => {
+					return {
+						value: _id,
+						text: name
+					};
+				})
+			},
 			disabled: quizzes.length < 1,
 			helperText: loading ? 'Loading your quizzes' : quizzes.length < 1 ? 'You have not created any quizzes yet' : null
 		};
 
 		return (
-			<div className="create_question create_form page">
+			<div className="create_question create_form">
 				<QuestionForm type={type} ref={(i) => (this.QuestionForm = i)} />
 				<InputForm
 					inputs={inputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'question', preSubmit, postSubmit ])}
+					classNames={'question_form'}
 				/>
 				<FileInput ref={(r) => (this.FileInput = r)} />
 			</div>

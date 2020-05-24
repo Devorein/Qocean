@@ -54,6 +54,26 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		min: [ 1, 'Weight cant be less than 1' ],
 		max: [ 10, 'Weight cant be less than 10' ]
 	},
+	default_explore_landing: {
+		type: String,
+		default: 'User'
+	},
+	default_explore_rpp: {
+		type: Number,
+		default: 15
+	},
+	default_create_landing: {
+		type: String,
+		default: 'Quiz'
+	},
+	default_self_rpp: {
+		type: Number,
+		default: 15
+	},
+	default_self_landing: {
+		type: String,
+		default: 'Quiz'
+	},
 	reset_on_success: {
 		type: Boolean,
 		default: true

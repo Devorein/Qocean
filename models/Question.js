@@ -111,6 +111,52 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 	}
 };
 
+QuestionSchema.statics.validateQuestion = async function(question) {
+	const { type } = question;
+	if (!question.answers) return [ false, 'Provide the answers for the question' ];
+	if (!Array.isArray(question.answers)) return [ false, 'Answers must be an array' ];
+	if (question.answers.length <= 0) return [ false, 'Provide atleast one answer for the question' ];
+	if (type === 'MCQ' || type === 'MS' || type === 'TF') {
+		if (type === 'MCQ' || type === 'MS') {
+			if (!question.options) return [ false, 'Provide the options for the question' ];
+			if (question.options.length < 3) return [ false, 'Provide atleast 3 options for the question' ];
+			if (question.options.length > 6) return [ false, 'Options for the question cant be more than 6' ];
+			if (!Array.isArray(question.options)) return [ false, 'Options must be an array' ];
+			const containsDuplicate =
+				new Set(question.options.map((option) => option.toString().trim())).size !== question.options.length;
+			if (containsDuplicate) return [ false, 'There is duplicate options for the question' ];
+			if (question.answers.length > question.options.length) return [ false, 'You provided more answer than options' ];
+			const containsDuplicateAnswer =
+				new Set(question.answers.map((answer) => answer.toString().trim())).size !== question.answers.length;
+			if (containsDuplicateAnswer) return [ false, 'There is duplicate answer for the question' ];
+			const isValidAnswer = question.answers.every((answer) => parseInt(answer) >= 1 && parseInt(answer) <= 6);
+			if (!isValidAnswer) return [ false, 'Your answer is out of range' ];
+			if (type === 'MS') if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
+		} else if (type === 'TF') {
+			if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
+			if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
+			const isValidAnswer = question.answers.every((answer) => parseInt(answer) >= 0 && parseInt(answer) <= 1);
+			if (!isValidAnswer) return [ false, 'Your answer is out of range' ];
+		}
+	} else if (type === 'FC' || type === 'Snippet') {
+		if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
+		if (question.answers.length >= 2) return [ false, 'You provided too many answers' ];
+		if (question.answers[0].length <= 0) return [ false, 'Provide atleast one answer for the question' ];
+		if (question.answers[0].length > 3) return [ false, 'You provided too many answers' ];
+	} else if (type === 'FIB') {
+		if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
+		if (question.answers.length <= 0 || question.answers[0].length <= 0)
+			return [ false, 'Provide atleast one answer for the question' ];
+		const isAnyEmpty = question.answers.some((answer) => answer.length === 0);
+		if (isAnyEmpty) return [ false, 'Your cant have any empty answers' ];
+		const isAnyOverflow = question.answers.some((answer) => answer.length > 3);
+		if (isAnyOverflow) return [ false, 'You provided too many alternatives' ];
+		const count = (question.question.match(/\$\{\_\}/g) || []).length;
+		if (count !== question.answers.length) return [ false, 'You provided incorrect number of answers' ];
+	}
+	return [ true ];
+};
+
 QuestionSchema.post('save', async function() {
 	await this.model('User').add(this.user, 'questions', this._id);
 	await this.model('Quiz').add(this.quiz, 'questions', this._id);

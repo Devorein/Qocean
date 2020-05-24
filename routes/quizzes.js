@@ -5,10 +5,18 @@ const advancedResults = require('../middleware/advancedResults');
 const imageUpload = require('../middleware/imageUpload');
 const { protect } = require('../middleware/auth');
 
-const { createQuiz, updateQuiz, deleteQuiz, quizPhotoUpload } = require('../controllers/quizzes');
+const {
+	countAllQuizzes,
+	countMyQuizzes,
+	createQuiz,
+	updateQuiz,
+	deleteQuiz,
+	quizPhotoUpload
+} = require('../controllers/quizzes');
 
-router.route('/me').get(protect, advancedResults(Quiz, 'questions'));
-
+router.route('/me').get(protect, advancedResults(Quiz));
+router.route('/countAll').get(countAllQuizzes);
+router.route('/countMine').get(protect, countMyQuizzes);
 router
 	.route('/')
 	.get(

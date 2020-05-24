@@ -3,7 +3,10 @@ const Environment = require('../models/Environment');
 const router = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
+
 const {
+	countAllEnvironments,
+	countMyEnvironments,
 	getCurrentEnvironment,
 	createEnvironment,
 	updateEnvironment,
@@ -11,6 +14,10 @@ const {
 } = require('../controllers/environment');
 
 router.route('/me').get(protect, advancedResults(Environment, null));
+
+router.route('/countAll').get(countAllEnvironments);
+router.route('/countMine').get(protect, countMyEnvironments);
+
 router.route('/current').get(protect, getCurrentEnvironment);
 
 router

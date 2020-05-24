@@ -1,35 +1,32 @@
 [
   {
-    "_id": "5eb78eacffe758058c7303cd",
     "name": "1.2 Getting Started - A Short History of Git",
     "subject": "Git",
     "tags": [
-      "Version Control"
+      "Version Control:orangered"
     ],
     "source": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git",
     "favourite": false,
-    "user": "5ebb74772c952d08c0644884"
+    "public": true
   },
   {
     "_id": "5eb78ec6ffe758058c7303ce",
     "name": "Introduction to MongoDB - Getting Started",
     "subject": "MongoDB",
     "tags": [
-      "Database"
+      "Database:red"
     ],
     "source": "https://docs.mongodb.com/manual/tutorial/getting-started/",
-    "favourite": true,
-    "user": "5ebb74772c952d08c0644885"
+    "favourite": true
   },
   {
     "_id": "5eb78efbffe758058c7303d0",
     "name": "User Guide - Configuring ESLint",
     "subject": "ESLint",
     "tags": [
-      "Linter"
+      "Linter:blue"
     ],
     "source": "https://eslint.org/docs/user-guide/configuring",
-    "favourite": false,
-    "user": "5ebb74772c952d08c0644886"
+    "favourite": false
   }
 ]

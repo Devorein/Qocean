@@ -4,9 +4,8 @@ import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import ChipContainer from '../../components/Chip/ChipContainer';
-import validateColor from 'validate-color';
 import FileInput from '../../components/Input/FileInput';
+import TagCreator from '../../components/Chip/TagCreator';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -25,8 +24,7 @@ class CreateQuiz extends Component {
 	state = {
 		folders: [],
 		loading: true,
-		selected_folders: [],
-		tags: []
+		selected_folders: []
 	};
 
 	componentDidMount() {
@@ -55,11 +53,11 @@ class CreateQuiz extends Component {
 
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
-		values.tags = this.state.tags;
-		const [ file, src ] = this.refs.FileInput.returnData();
+		values.tags = this.TagCreator.state.tags;
+		const [ file, src ] = this.FileInput.returnData();
 		if (file) values.link = '';
 		else values.link = src;
-		return values;
+		return [ values, true ];
 	};
 
 	resetForm = (cb) => {
@@ -67,7 +65,10 @@ class CreateQuiz extends Component {
 		if (this.props.user.current_environment.reset_on_success) {
 			selected_folders = [];
 			tags = [];
-			this.refs.FileInput.resetData();
+			this.FileInput.resetData();
+			this.TagCreator.setState({
+				tags: []
+			});
 		}
 		this.setState(
 			{
@@ -107,95 +108,34 @@ class CreateQuiz extends Component {
 		} else this.resetForm(null);
 	};
 
-	deleteTags = (_tag) => {
-		let { tags } = this.state;
-		tags = tags.filter((tag) => tag.split(':')[0].toLowerCase() !== _tag.toLowerCase());
-		this.setState({
-			tags
-		});
-	};
-
-	validateTags = (_tag) => {
-		const { changeResponse } = this.props;
-		const { tags } = this.state;
-		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
-		const tagsSeparator = _tag.split(':');
-		if (tags.length >= 5) {
-			changeResponse(`An error occurred`, `You've added the maximum number of tags`, 'error');
-			return false;
-		} else if (tagsSeparator[0].length >= 16) {
-			changeResponse(`An error occurred`, `You cant add a tag that's more than 16 characters long`, 'error');
-			return false;
-		} else if (tagsSeparator.length === 1) {
-			changeResponse(`An error occurred`, `You've entered a partial tag, using default color`, 'warning');
-			return true;
-		} else if (tagsSeparator[1] === '') {
-			changeResponse(`An error occurred`, `You've not supplied a color, using default color`, 'warning');
-			return true;
-		} else if (!validateColor(tagsSeparator[1])) {
-			changeResponse(`An error occurred`, `You've supplied an invalid color`, 'error');
-			return false;
-		} else if (tagsSeparator.length > 2) {
-			changeResponse(`An error occurred`, `Your tag is malformed, check it again`, 'error');
-			return false;
-		}
-		if (isPresent) {
-			changeResponse(
-				`An error occurred`,
-				`Tag with name ${_tag.split(':')[0].toLowerCase()} has already been added`,
-				'error'
-			);
-			return false;
-		} else return true;
-	};
-
-	createTags = (e) => {
-		e.persist();
-		if (e.key === 'Enter') {
-			e.preventDefault();
-			const { tags } = this.state;
-			if (this.validateTags(e.target.value)) {
-				tags.push(e.target.value.toLowerCase());
-				e.target.value = '';
-				this.setState({
-					tags
-				});
-			}
-		}
-	};
-
 	render() {
-		const { preSubmit, handleChange, createTags, deleteTags, postSubmit } = this;
-		const { onSubmit } = this.props;
-		const { folders, loading, selected_folders, tags, image } = this.state;
+		const { preSubmit, handleChange, postSubmit } = this;
+		const { onSubmit, customInputs, submitMsg } = this.props;
+		const { folders, loading, selected_folders, image } = this.state;
 
-		const inputs = [
+		let defaultInputs = [
 			{ name: 'name' },
 			{ name: 'subject' },
 			{
 				name: 'source'
 			},
 			{
-				name: 'tags',
-				controlled: false,
-				onkeyPress: createTags,
-				siblings: [
-					{
-						type: 'component',
-						component: <ChipContainer key={'chip_container'} chips={tags} type="delete" onIconClick={deleteTags} />
-					}
-				]
+				type: 'component',
+				component: <TagCreator ref={(r) => (this.TagCreator = r)} key={'tags'} />
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true }
 		];
 
+		if (customInputs) defaultInputs = customInputs(defaultInputs);
 		return (
 			<div className="create_quiz create_form">
 				<InputForm
-					inputs={inputs}
+					submitMsg={submitMsg}
+					inputs={defaultInputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ preSubmit, postSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'quiz', preSubmit, postSubmit ])}
+					ref={(r) => (this.InputForm = r)}
 				>
 					{loading ? (
 						<FormHelperText>Loading your folders</FormHelperText>
@@ -205,7 +145,7 @@ class CreateQuiz extends Component {
 						<MultiSelect label={'Folders'} selected={selected_folders} handleChange={handleChange} items={folders} />
 					)}
 				</InputForm>
-				<FileInput ref="FileInput" />
+				<FileInput ref={(r) => (this.FileInput = r)} />
 			</div>
 		);
 	}

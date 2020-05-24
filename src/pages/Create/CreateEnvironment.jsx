@@ -21,14 +21,16 @@ class CreateEnvironment extends Component {
 			{
 				name: 'icon',
 				type: 'select',
-				selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
-					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
-					return {
-						text: capitalized,
-						value: `${capitalized}_env.svg`,
-						icon: getColoredIcons('Settings', color)
-					};
-				}),
+				extra: {
+					selectItems: [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+						const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+						return {
+							text: capitalized,
+							value: `${capitalized}_env.svg`,
+							icon: getColoredIcons('Settings', color)
+						};
+					})
+				},
 				defaultValue: 'Red_env.svg'
 			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
@@ -36,7 +38,7 @@ class CreateEnvironment extends Component {
 			{
 				type: 'group',
 				name: 'environment',
-				treeView: true,
+				extra: { treeView: true },
 				children: [
 					{ name: 'favourite', type: 'checkbox', defaultValue: false },
 					{ name: 'public', type: 'checkbox', defaultValue: true },
@@ -47,36 +49,83 @@ class CreateEnvironment extends Component {
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
 			{
 				type: 'group',
+				name: 'Explore_group',
+				extra: { treeView: true },
+				children: [
+					{
+						name: 'default_explore_landing',
+						type: 'select',
+						extra: {
+							selectItems: [ 'user', 'quiz', 'question', 'folder', 'environment' ].map((land) => {
+								return {
+									text: land.charAt(0).toUpperCase() + land.substr(1)
+								};
+							})
+						},
+						defaultValue: 'User'
+					},
+					{
+						name: 'default_explore_rpp',
+						type: 'select',
+						extra: {
+							selectItems: [ 10, 15, 20, 30, 40, 50 ].map((rpp) => {
+								return {
+									text: rpp
+								};
+							})
+						},
+						defaultValue: 15
+					}
+				]
+			},
+			{
+				name: 'default_create_landing',
+				type: 'select',
+				extra: {
+					selectItems: [ 'quiz', 'question', 'folder', 'environment' ].map((land) => {
+						return {
+							text: land.charAt(0).toUpperCase() + land.substr(1)
+						};
+					})
+				},
+				defaultValue: 'Quiz'
+			},
+			{
+				type: 'group',
 				name: 'questions_group',
-				treeView: true,
+				extra: { treeView: true },
 				children: [
 					{
 						name: 'default_question_type',
 						type: 'select',
-						selectItems: [
-							{ text: 'Fill In the Blanks', value: 'FIB' },
-							{ text: 'Multiple Choice', value: 'MCQ' },
-							{ text: 'Multiple Select', value: 'MS' },
-							{ text: 'Snippet', value: 'Snippet' },
-							{ text: 'Flashcard', value: 'FC' },
-							{ text: 'True/False', value: 'TF' }
-						],
+						extra: {
+							selectItems: [
+								{ text: 'Fill In the Blanks', value: 'FIB' },
+								{ text: 'Multiple Choice', value: 'MCQ' },
+								{ text: 'Multiple Select', value: 'MS' },
+								{ text: 'Snippet', value: 'Snippet' },
+								{ text: 'Flashcard', value: 'FC' },
+								{ text: 'True/False', value: 'TF' }
+							]
+						},
 						defaultValue: 'MCQ'
 					},
 					{
 						name: 'default_question_difficulty',
 						type: 'select',
-						selectItems: [
-							{
-								text: 'Beginner'
-							},
-							{
-								text: 'Intermediate'
-							},
-							{
-								text: 'Advanced'
-							}
-						],
+						extra: {
+							selectItems: [
+								{
+									text: 'Beginner'
+								},
+								{
+									text: 'Intermediate'
+								},
+								{
+									text: 'Advanced'
+								}
+							]
+						},
 						defaultValue: 'Beginner'
 					},
 					{
@@ -104,17 +153,19 @@ class CreateEnvironment extends Component {
 			{
 				name: 'theme',
 				type: 'select',
-				selectItems: [
-					{
-						text: 'Light'
-					},
-					{
-						text: 'Dark'
-					},
-					{
-						text: 'Navy'
-					}
-				],
+				extra: {
+					selectItems: [
+						{
+							text: 'Light'
+						},
+						{
+							text: 'Dark'
+						},
+						{
+							text: 'Navy'
+						}
+					]
+				},
 				defaultValue: 'Light'
 			},
 			{
@@ -130,7 +181,11 @@ class CreateEnvironment extends Component {
 		];
 		return (
 			<div className="create_env create_form">
-				<InputForm inputs={inputs} validationSchema={validationSchema} onSubmit={onSubmit.bind(null, [])} />
+				<InputForm
+					inputs={inputs}
+					validationSchema={validationSchema}
+					onSubmit={onSubmit.bind(null, [ 'environment' ])}
+				/>
 			</div>
 		);
 	}

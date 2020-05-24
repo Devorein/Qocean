@@ -3,23 +3,18 @@ import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import './Explore.scss';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import FolderOpenIcon from '@material-ui/icons/FolderOpen';
-import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
-import SettingsIcon from '@material-ui/icons/Settings';
-import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import CustomTabs from '../../components/Tab/Tabs';
 import ExploreUsers from './ExploreUsers';
 import ExploreQuizzes from './ExploreQuizzes';
 import ExploreQuestions from './ExploreQuestions';
 import ExploreFolders from './ExploreFolders';
 import ExploreEnvironments from './ExploreEnvironments';
-
 class Explore extends Component {
 	state = {
 		data: [],
 		type: null,
 		rowsPerPage: 15,
+		totaCount: 0,
 		page: 0
 	};
 
@@ -31,11 +26,15 @@ class Explore extends Component {
 					.join('&')
 			: '';
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${queryString}`)
-			.then(({ data: { data } }) => {
-				this.setState({
-					data,
-					type
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countAll`)
+			.then(({ data: { data: totalCount } }) => {
+				axios.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${queryString}`).then(({ data: { data } }) => {
+					this.setState({
+						data,
+						type,
+						totalCount,
+						page: 0
+					});
 				});
 			})
 			.catch((err) => {
@@ -51,17 +50,17 @@ class Explore extends Component {
 	};
 
 	decideTable = () => {
-		const { page, rowsPerPage } = this.state;
+		const { page, rowsPerPage, totalCount } = this.state;
 		const options = {
 			filterType: 'checkbox',
-			count: 50,
+			count: totalCount,
 			page,
 			customToolbar() {
 				return <div>Custom Toolbar</div>;
 			},
-			rowsPerPage,
+			rowsPerPage: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15,
 			responsive: 'scrollMaxHeight',
-			rowsPerPageOptions: [ 10, 15, 20, 30, 50 ],
+			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
 			onCellClick(colData, { colIndex }) {
@@ -116,22 +115,19 @@ class Explore extends Component {
 	render() {
 		const { data } = this.state;
 
-		const { match } = this.props;
+		const { match: { params: { type } } } = this.props;
 
-		const headers = [
-			{ name: 'user', link: 'explore/user', icon: <AccountCircleIcon /> },
-			{ name: 'quiz', link: 'explore/quiz', icon: <HorizontalSplitIcon /> },
-			{ name: 'question', link: 'explore/question', icon: <QuestionAnswerIcon /> },
-			{ name: 'folder', link: 'explore/folder', icon: <FolderOpenIcon /> },
-			{ name: 'environment', link: 'explore/environment', icon: <SettingsIcon /> }
-		];
-
-		const index = headers.findIndex(({ name }) => name === match.params.type);
+		const headers = [ 'user', 'quiz', 'question', 'folder', 'environment' ].map((header) => {
+			return {
+				name: header,
+				link: `explore/${header}`
+			};
+		});
 
 		return (
 			<div className="explore page">
 				<CustomTabs
-					value={index === -1 ? 0 : index}
+					against={type}
 					onChange={(e, value) => {
 						this.switchPage(headers[value]);
 					}}

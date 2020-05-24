@@ -1,164 +1,131 @@
 import React, { Component } from 'react';
 import InputForm from '../../components/Form/InputForm';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import * as Yup from 'yup';
 
-class QuestionForm extends Component {
-	state = {
-		options: [
-			{
-				type: 'group',
-				name: 'options',
-				children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-				treeView: true
-			}
-		],
-		answers: [
-			{
-				name: 'answers',
-				type: 'radio',
+const INIT_MCQ_STATE = {
+	options: [
+		{
+			type: 'group',
+			name: 'options',
+			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+			extra: { treeView: true }
+		},
+		{
+			type: 'group',
+			name: 'additional_options',
+			children: [ { name: 'option_4' }, { name: 'option_5' }, { name: 'option_6' } ],
+			extra: { treeView: true, collapse: true }
+		}
+	],
+	answers: [
+		{
+			name: 'answers',
+			type: 'radio',
+			extra: {
 				radioItems: [
 					{ value: 'answer_1', label: 'Answer 1' },
 					{ value: 'answer_2', label: 'Answer 2' },
-					{ value: 'answer_3', label: 'Answer 3' }
-				],
-				defaultValue: 'answer_1'
-			}
-		],
-		showButton: true
+					{ value: 'answer_3', label: 'Answer 3' },
+					{ value: 'answer_4', label: 'Answer 4' },
+					{ value: 'answer_5', label: 'Answer 5' },
+					{ value: 'answer_6', label: 'Answer 6' }
+				]
+			},
+			defaultValue: 'answer_1'
+		}
+	]
+};
+
+const INIT_MS_STATE = {
+	options: [
+		{
+			type: 'group',
+			name: 'options',
+			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
+			extra: { treeView: true }
+		},
+		{
+			type: 'group',
+			name: 'additional_options',
+			children: [ { name: 'option_4' }, { name: 'option_5' }, { name: 'option_6' } ],
+			extra: { treeView: true, collapse: true }
+		}
+	],
+	answers: [
+		{
+			type: 'group',
+			name: 'answers',
+			extra: { treeView: false },
+			children: [
+				{ name: 'answer_1', type: 'checkbox' },
+				{ name: 'answer_2', type: 'checkbox' },
+				{ name: 'answer_3', type: 'checkbox' },
+				{ name: 'answer_4', type: 'checkbox' },
+				{ name: 'answer_5', type: 'checkbox' },
+				{ name: 'answer_6', type: 'checkbox' }
+			]
+		}
+	]
+};
+
+class QuestionForm extends Component {
+	state = {
+		...INIT_MCQ_STATE
 	};
 
 	decideInputs = (type) => {
+		const validateForm = () => {
+			this.InputForm.Form.props.validateForm().then((error) => {
+				this.InputForm.Form.props.setErrors(error);
+			});
+		};
 		if (type === 'MCQ') {
-			this.setState({
-				options: [
-					{
-						type: 'group',
-						name: 'options',
-						children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-						treeView: true
-					}
-				],
-				answers: [
-					{
-						name: 'answers',
-						type: 'radio',
-						radioItems: [
-							{ value: 'answer_1', label: 'Answer 1' },
-							{ value: 'answer_2', label: 'Answer 2' },
-							{ value: 'answer_3', label: 'Answer 3' }
-						],
-						defaultValue: 'answer_1'
-					}
-				]
-			});
+			this.setState(INIT_MCQ_STATE, validateForm);
 		} else if (type === 'MS') {
-			this.setState({
-				options: [
-					{
-						type: 'group',
-						name: 'options',
-						children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-						treeView: true
-					}
-				],
-				answers: [
-					{
-						type: 'group',
-						name: 'answers',
-						treeView: false,
-						children: [
-							{ name: 'answer_1', type: 'checkbox' },
-							{ name: 'answer_2', type: 'checkbox' },
-							{ name: 'answer_3', type: 'checkbox' }
-						]
-					}
-				]
-			});
+			this.setState(INIT_MS_STATE, validateForm);
 		} else if (type === 'FC') {
-			this.setState({
-				answers: [ { name: 'answers', type: 'textarea' } ],
-				options: []
-			});
+			this.setState(
+				{
+					answers: [
+						{ name: 'answers', type: 'textarea', extra: { row: 4 } },
+						{ name: 'alternate', type: 'textarea', extra: { row: 4 } }
+					],
+					options: []
+				},
+				validateForm
+			);
 		} else if (type === 'Snippet') {
-			this.setState({
-				answers: [ { name: 'answers', type: 'textarea' } ],
-				options: []
-			});
+			this.setState(
+				{
+					answers: [
+						{ name: 'answers', type: 'textarea', extra: { row: 2 } },
+						{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
+						{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+					],
+					options: []
+				},
+				validateForm
+			);
 		} else if (type === 'FIB') {
 			return [];
 		} else if (type === 'TF') {
-			this.setState({
-				answers: [
-					{
-						name: 'answers',
-						type: 'radio',
-						radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ],
-						defaultValue: 'true'
-					}
-				]
-			});
-		}
-	};
-
-	/* 	addOption = () => {
-		let { options, type, answers } = this.state;
-		options = [ ...options, { name: `option_${options.length + 1}`, endAdornment: [ 'close', this.removeOption ] } ];
-
-		if (type === 'MCQ') {
-			answers = [
+			this.setState(
 				{
-					name: 'answers',
-					type: 'radio',
-					radioItems: [
-						...answers[0].radioItems,
+					options: [],
+					answers: [
 						{
-							label: `Answer ${answers[0].radioItems.length + 1}`,
-							value: `answer_${answers[0].radioItems.length + 1}`
+							name: 'answers',
+							type: 'radio',
+							extra: {
+								radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ]
+							},
+							defaultValue: 'true'
 						}
 					]
-				}
-			];
-		} else if (type === 'MS') answers = [ ...answers, { name: `answer_${answers.length + 1}`, type: 'checkbox' } ];
-
-		this.setState({
-			options,
-			answers
-		});
-	};
-
-	removeOption = (name, e) => {
-		let { options, type, answers } = this.state;
-		options = options.filter((option) => option.name !== name).map((option, index) => {
-			return { ...option, name: `option_${index + 1}` };
-		});
-		if (type === 'MCQ') {
-			answers = [
-				{
-					name: 'answers',
-					type: 'radio',
-					radioItems: answers[0].radioItems
-						.filter((answer) => answer.value.replace('answer', 'option') !== name)
-						.map((answer, index) => {
-							return { label: `Answer ${index + 1}`, value: `answer_${index + 1}` };
-						})
-				}
-			];
-		} else if (type === 'MS') {
-			answers = answers.filter((answer) => answer.name.replace('answer', 'option') !== name).map((answer, index) => {
-				return { ...answer, name: `answer_${index + 1}` };
-			});
+				},
+				validateForm
+			);
 		}
-
-		this.setState({
-			options,
-			answers
-		});
-	}; */
-
-	showButton = (type) => {
-		if (type === 'MCQ' || type === 'MS') return true;
-		else return false;
 	};
 
 	decideValidation = (type) => {
@@ -201,27 +168,32 @@ class QuestionForm extends Component {
 	};
 
 	transformValue = (values) => {
-		const { type } = this.state;
+		const { type } = this.props;
+		const form = this.InputForm.Form.props.values;
 		if (type === 'MCQ') {
 			const options = [];
-			Object.entries(values).forEach(([ key, value ]) => {
-				if (key.startsWith('option_')) options.push(value);
+			Object.entries(form).forEach(([ key, value ]) => {
+				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
 			values.options = options;
-			values.answers = parseInt(values.answers.split('_')[1]);
+			values.answers = parseInt(form.answers.split('_')[1]);
 		} else if (type === 'MS') {
 			const options = [];
 			const answers = [];
-			Object.entries(values).forEach(([ key, value ]) => {
-				if (key.startsWith('option_')) options.push(value);
+			Object.entries(form).forEach(([ key, value ]) => {
+				if (key.startsWith('option_') && value !== '') options.push(value);
 				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
 			});
 			values.options = options;
 			values.answers = answers.map((answer) => [ parseInt(answer) ]);
-		} else if (type === 'Snippet') values.answers = [ [ values.answers ] ];
-		else if (type === 'FC') values.answers = [ [ values.answers ] ];
-		else if (type === 'TF') values.answers = [ [ values.answers ] ];
-
+		} else if (type === 'Snippet') {
+			values.answers = [ [ form.answers ] ];
+			if (form.alternate_1) values.answers[0].push(form.alternate_1);
+			if (form.alternate_2) values.answers[0].push(form.alternate_2);
+		} else if (type === 'FC') {
+			values.answers = [ [ form.answers ] ];
+			if (form.alternate) values.answers[0].push(form.alternate);
+		} else if (type === 'TF') values.answers = [ [ values.answers ] ];
 		return values;
 	};
 
@@ -230,26 +202,20 @@ class QuestionForm extends Component {
 		const { options, answers } = this.state;
 		const validationSchema = this.decideValidation(type);
 		return (
-			<div className="question_form">
+			<div className="answers_form">
 				<InputForm
 					validationSchema={validationSchema}
+					errorBeforeTouched={true}
+					validateOnMount={true}
 					inputs={[ ...options, ...answers ]}
 					formButtons={false}
 					ref={(i) => (this.InputForm = i)}
 				/>
-				<div style={{ display: 'flex', justifyContent: 'center' }}>
-					{this.showButton(type) && options.length < 6 ? (
-						<AddCircleIcon color={'primary'} onClick={this.addOption} />
-					) : null}
-				</div>
 			</div>
 		);
 	}
 }
 
-// Client side Schema validation
-// Alternate
-// Form Submission
 // Backend question Validation
 
 export default QuestionForm;

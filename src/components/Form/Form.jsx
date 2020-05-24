@@ -67,16 +67,16 @@ class Form extends React.Component {
 		setFieldTouched(name, true, false);
 	};
 
-	formikProps = (name, label, placeholder, controlled, onChange, onkeyPress) => {
-		const { values, handleBlur, touched, errors } = this.props;
+	formikProps = (name, label, placeholder, controlled, onkeyPress) => {
+		const { values, handleBlur, touched, errors, errorBeforeTouched } = this.props;
 		if (controlled)
 			return {
 				name,
 				value: values[name],
 				onChange: this.change.bind(null, name),
 				onBlur: handleBlur,
-				error: touched[name] && Boolean(errors[name]),
-				helperText: touched[name] ? errors[name] : '',
+				error: errorBeforeTouched ? Boolean(errors[name]) : touched[name] && Boolean(errors[name]),
+				helperText: errorBeforeTouched ? errors[name] : touched[name] ? errors[name] : '',
 				label: this.decideLabel(name, label),
 				placeholder
 			};
@@ -114,7 +114,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched } = this.props;
+		const { values, errors, handleBlur, touched, setValues } = this.props;
 		const {
 			name,
 			label,
@@ -124,16 +124,14 @@ class Form extends React.Component {
 			startAdornment,
 			endAdornment,
 			type = 'text',
-			selectItems,
-			radioItems,
 			inputProps,
 			helperText,
 			disabled,
 			siblings,
 			controlled = true,
-			onChange,
 			onkeyPress,
-			component
+			component,
+			extra
 		} = input;
 		if (type === 'component') return component;
 		else if (type === 'select')
@@ -144,7 +142,7 @@ class Form extends React.Component {
 							<Fragment>
 								<InputLabel id={name}>{this.decideLabel(name, label)}</InputLabel>
 								<Select name={name} value={values[name]} onChange={this.change.bind(null, name)}>
-									{selectItems.map(({ value, text, icon }) => {
+									{extra.selectItems.map(({ value, text, icon }) => {
 										return (
 											<MenuItem key={value ? value : text} value={value ? value : text}>
 												{icon ? <Icon>{icon}</Icon> : null}
@@ -180,12 +178,15 @@ class Form extends React.Component {
 				</Fragment>
 			);
 		else if (type === 'radio') {
+			const props = this.formikProps(name, label, placeholder, controlled);
+			delete props.helperText;
+			delete props.error;
 			return (
 				<Fragment key={name}>
 					<FormControl>
 						<FormLabel component="legend">{this.decideLabel(name, label)}</FormLabel>
-						<RadioGroup row name={name} defaultValue={defaultValue}>
-							{radioItems.map(({ label, value }) => (
+						<RadioGroup row {...props} defaultValue={defaultValue}>
+							{extra.radioItems.map(({ label, value }) => (
 								<FormControlLabel
 									key={value}
 									control={<Radio color="primary" />}
@@ -204,7 +205,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={'number'}
-						{...this.formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled)}
 						fullWidth
 						inputProps={{ ...inputProps }}
 					/>
@@ -217,9 +218,9 @@ class Form extends React.Component {
 					<TextField
 						type={'text'}
 						multiline
-						rows={10}
+						rows={extra.row ? extra.row : 5}
 						defaultValue={defaultValue}
-						{...this.formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled)}
 						fullWidth
 					/>
 					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
@@ -230,7 +231,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={this.state.showPassword ? 'text' : 'password'}
-						{...this.formikProps(name, label, placeholder, controlled, onChange)}
+						{...this.formikProps(name, label, placeholder, controlled)}
 						fullWidth
 						InputProps={{
 							endAdornment: (
@@ -248,7 +249,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={'text'}
-						{...this.formikProps(name, label, placeholder, controlled, onChange, onkeyPress)}
+						{...this.formikProps(name, label, placeholder, controlled, onkeyPress)}
 						fullWidth
 						InputProps={this.decideAdornment(name, InputProps, startAdornment, endAdornment)}
 					/>
@@ -260,13 +261,13 @@ class Form extends React.Component {
 	formComponentRenderer = (input) => {
 		if (input) {
 			if (input.type === 'group') {
-				if (input.treeView)
+				if (input.extra.treeView)
 					return (
 						<TreeView
 							key={input.name}
 							defaultCollapseIcon={<ExpandMoreIcon />}
 							defaultExpandIcon={<ChevronRightIcon />}
-							defaultExpanded={[ '1' ]}
+							defaultExpanded={[ input.extra.collapse ? null : '1' ]}
 						>
 							<TreeItem nodeId="1" label={this.decideLabel(input.name)}>
 								<FormGroup row={false}>{input.children.map((child) => this.renderFormComponent(child))}</FormGroup>
@@ -306,7 +307,7 @@ class Form extends React.Component {
 		} = this.props;
 
 		return (
-			<form className={`form${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
+			<form className={`${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
 				<div className={`form-content`}>
 					{inputs.map((input) => this.formComponentRenderer(input))}
 					{children}
@@ -322,7 +323,13 @@ class Form extends React.Component {
 						>
 							{resetMsg ? resetMsg : 'Reset'}
 						</Button>
-						<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+						<Button
+							ref={(r) => (this.SubmitButton = r)}
+							type="submit"
+							variant="contained"
+							color="primary"
+							disabled={isSubmitting || !isValid}
+						>
 							{submitMsg ? submitMsg : 'Submit'}
 						</Button>
 					</FormGroup>

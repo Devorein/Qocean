@@ -4,9 +4,7 @@
     "theme": "Light",
     "animation": true,
     "sound": true,
-    "default_quiz_time": 30,
-    "user": "5ebb74772c952d08c0644884",
-    "_id": "5ebb74772c952d08c0644874"
+    "default_quiz_time": 30
   },
   {
     "name": "Env 2",
