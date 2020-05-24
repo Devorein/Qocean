@@ -87,16 +87,34 @@ class CustomList extends React.Component {
 		checked: []
 	};
 
-	handleToggle = (value) => () => {
-		const { checked } = this.state;
-		const currentIndex = checked.indexOf(value);
-		const newChecked = [ ...checked ];
+	handleToggle = (index, e) => {
+		if (e.shiftKey)
+			this.setState({
+				checked: new Array(index + 1).fill(0).map((_, index) => index)
+			});
+		else if (e.altKey) {
+			const isThere = this.state.checked.includes(index);
+			if (isThere)
+				this.setState({
+					checked: new Array(this.props.listItems.length)
+						.fill(0)
+						.map((_, _index) => (_index !== index ? index : void 0))
+				});
+			else
+				this.setState({
+					checked: [ index ]
+				});
+		} else {
+			const { checked } = this.state;
+			const currentIndex = checked.indexOf(index);
+			const newChecked = [ ...checked ];
 
-		if (currentIndex === -1) newChecked.push(value);
-		else newChecked.splice(currentIndex, 1);
-		this.setState({
-			checked: newChecked
-		});
+			if (currentIndex === -1) newChecked.push(index);
+			else newChecked.splice(currentIndex, 1);
+			this.setState({
+				checked: newChecked
+			});
+		}
 	};
 
 	handleToggleAll = () => {
@@ -143,7 +161,7 @@ class CustomList extends React.Component {
 						return (
 							<EnhancedListItem key={key ? key : primary} className={lastClicked === index ? 'selected' : null}>
 								{containsCheckbox ? (
-									<ListItemIcon onClick={handleToggle(index)}>
+									<ListItemIcon onClick={handleToggle.bind(null, index)}>
 										<Checkbox
 											edge="start"
 											checked={checked.indexOf(index) !== -1}
