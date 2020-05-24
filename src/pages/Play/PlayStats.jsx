@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import BasicTable from '../../components/DataTable/BasicTable';
 
 class PlayStats extends Component {
 	calculateQuestions = () => {
