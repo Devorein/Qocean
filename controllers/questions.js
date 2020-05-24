@@ -3,6 +3,16 @@ const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
+exports.countAllQuestions = asyncHandler(async (req, res, next) => {
+	const question = await Question.countDocuments();
+	res.status(200).json({ success: true, data: question });
+});
+
+exports.countMyQuestions = asyncHandler(async (req, res, next) => {
+	const question = await Question.countDocuments({ user: req.user._id });
+	res.status(200).json({ success: true, data: question });
+});
+
 // @desc: Create a question
 // @route: POST /api/v1/quizzes
 // @access: Private

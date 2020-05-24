@@ -3,6 +3,11 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendTokenResponse = require('../utils/sendTokenResponse');
 
+exports.countAllUsers = asyncHandler(async (req, res, next) => {
+	const user = await User.countDocuments();
+	res.status(200).json({ success: true, data: user });
+});
+
 // @desc     Update current user details
 // @route    PUT /api/v1/users/updateDetails
 // @access   Private

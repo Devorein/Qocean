@@ -3,6 +3,16 @@ const Folder = require('../models/Folder');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
+exports.countAllQuizzes = asyncHandler(async (req, res, next) => {
+	const quiz = await Quiz.countDocuments();
+	res.status(200).json({ success: true, data: quiz });
+});
+
+exports.countMyQuizzes = asyncHandler(async (req, res, next) => {
+	const quiz = await Quiz.countDocuments({ user: req.user._id });
+	res.status(200).json({ success: true, data: quiz });
+});
+
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
 // @access: Private
@@ -10,21 +20,21 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
 	const prevQuiz = await Quiz.countDocuments({ name: req.body.name, user: req.user._id });
 	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${req.body.name}`, 400));
-	const targetFolders = req.body.folders;
-	delete req.body.folders;
+	const targetQuizs = req.body.quizs;
+	delete req.body.quizs;
 	const quiz = await Quiz.create(req.body);
-	if (targetFolders) {
-		const foldersPromise = [];
-		for (let i = 0; i < targetFolders.length; i++) {
-			const folderId = targetFolders[i];
-			foldersPromise.push(Folder.findById(folderId));
+	if (targetQuizs) {
+		const quizsPromise = [];
+		for (let i = 0; i < targetQuizs.length; i++) {
+			const quizId = targetQuizs[i];
+			quizsPromise.push(Quiz.findById(quizId));
 		}
 		try {
-			const folders = await Promise.all(foldersPromise);
-			for (let i = 0; i < folders.length; i++) {
-				const folder = folders[i];
-				await folder.quiz(1, quiz._id);
-				await folder.save();
+			const quizs = await Promise.all(quizsPromise);
+			for (let i = 0; i < quizs.length; i++) {
+				const quiz = quizs[i];
+				await quiz.quiz(1, quiz._id);
+				await quiz.save();
 			}
 		} catch (err) {
 			return next(new ErrorResponse(err), 404);
