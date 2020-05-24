@@ -7,7 +7,7 @@ const theme = createMuiTheme({
 		primary: { main: blue['500'] },
 		text: {
 			primary: '#ddd',
-			secondary: '#ccc'
+			secondary: '#ccccccd1'
 		},
 		error: {
 			main: red[500],

@@ -10,35 +10,15 @@ import Typography from '@material-ui/core/Typography';
 import getIcons from '../../Utils/getIcons';
 import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
-import GridList from '@material-ui/core/GridList';
 import clsx from 'clsx';
-
-const ListContainer = withStyles((theme) => ({
-	root: {
-		height: '100%',
-		background: '#202020',
-		color: '#ddd',
-		padding: '5px',
-		'& .MuiListItem-root': {
-			'&:hover': {
-				cursor: 'pointer',
-				background: theme.palette.primary.dark,
-				transition: 'background 150ms ease-in-out',
-				color: theme.palette.primary.contrastText
-			}
-		},
-		'& .MuiListItemIcon-root': {
-			color: theme.palette.primary.main
-		}
-	}
-}))(Container);
 
 const IconContainer = withStyles((theme) => ({
 	root: {
 		gridArea: '2/2/3/3',
 		display: 'flex',
-		justifyContent: 'space-around',
-		alignItems: 'center'
+		justifyContent: 'flex-end',
+		alignItems: 'center',
+		padding: 0
 	}
 }))(Container);
 
@@ -49,31 +29,15 @@ const MiniGrid = withStyles((theme) => ({
 	}
 }))(Container);
 
-const MiniGridTitle = withStyles((theme) => ({
-	root: {
-		margin: theme.spacing(1, 0, 2),
-		gridArea: '1/1/2/3',
-		textAlign: 'center'
-	}
-}))(Typography);
-
 const MiniGridTitle2 = withStyles((theme) => ({
 	root: {
 		gridArea: '2/1/3/2',
 		textAlign: 'center',
 		display: 'flex',
-		justifyContent: 'center',
+		justifyContent: 'flex-start',
 		alignItems: 'center'
 	}
 }))(Typography);
-
-const EnhancedListItem = withStyles((theme) => ({
-	root: {
-		'&.selected': {
-			backgroundColor: theme.palette.grey['A400']
-		}
-	}
-}))(ListItem);
 
 const EnhancedListItemText = withStyles((theme) => ({
 	root: {
@@ -132,15 +96,17 @@ class CustomList extends React.Component {
 	render() {
 		const { handleToggle, handleToggleAll } = this;
 		const { checked, lastClicked } = this.state;
-		const { listItems, title, containsCheckbox, onClick, selectedIcons } = this.props;
+		const { listItems, title, containsCheckbox, onClick, selectedIcons, classes } = this.props;
 		return (
-			<ListContainer>
+			<Container classes={{ root: classes.listContainer }}>
 				<MiniGrid>
-					<MiniGridTitle variant="h6">{title}</MiniGridTitle>
+					<Typography variant="h6" classes={{ root: classes.listHeader }}>
+						{title}
+					</Typography>
 					<MiniGridTitle2 variant="body2">{checked.length}(s) selected</MiniGridTitle2>
 					{
 						<IconContainer>
-							<ListItemIcon onClick={handleToggleAll}>
+							<ListItemIcon classes={{ root: classes.listItemIcon }} onClick={handleToggleAll}>
 								<Checkbox
 									edge="start"
 									checked={checked.length === listItems.length}
@@ -155,11 +121,15 @@ class CustomList extends React.Component {
 					}
 				</MiniGrid>
 
-				<List dense={false} style={{ overflowY: 'auto', maxHeight: '75%' }}>
+				<List dense={false} classes={{ root: classes.listBody }}>
 					{listItems.map((listItem, index) => {
 						const { primary, secondary, primaryIcon, secondaryIcon, key } = listItem;
 						return (
-							<EnhancedListItem key={key ? key : primary} className={lastClicked === index ? 'selected' : null}>
+							<ListItem
+								key={key ? key : primary}
+								classes={{ root: classes.listItem }}
+								className={lastClicked === index ? 'selected' : null}
+							>
 								{containsCheckbox ? (
 									<ListItemIcon onClick={handleToggle.bind(null, index)}>
 										<Checkbox
@@ -192,13 +162,59 @@ class CustomList extends React.Component {
                   {getIcons(secondaryIcon)}
                 </IconButton>
               </ListItemSecondaryAction> */}
-							</EnhancedListItem>
+							</ListItem>
 						);
 					})}
 				</List>
-			</ListContainer>
+			</Container>
 		);
 	}
 }
 
-export default CustomList;
+export default withStyles((theme) => ({
+	listContainer: {
+		height: '100%',
+		background: '#202020',
+		color: '#ddd',
+		padding: '5px',
+		'& .MuiListItem-root': {
+			'&:hover': {
+				cursor: 'pointer',
+				background: theme.palette.primary.dark,
+				transition: 'background 150ms ease-in-out',
+				color: theme.palette.primary.contrastText
+			}
+		},
+		'& .MuiListItemIcon-root': {
+			color: theme.palette.primary.main
+		}
+	},
+	listHeader: {
+		fontSize: '1.5rem',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		margin: theme.spacing(1, 0, 1.25),
+		fontWeight: 'bolder',
+		gridArea: '1/1/2/3',
+		textAlign: 'center',
+		backgroundColor: theme.palette.grey[900]
+	},
+	listBody: {
+		overflowY: 'auto',
+		maxHeight: '75%',
+		background: theme.palette.grey[800]
+	},
+	listItem: {
+		'&.MuiListItem-root': {
+			height: 50,
+			padding: 5
+		},
+		'&.selected': {
+			backgroundColor: theme.palette.grey['A400']
+		}
+	},
+	listItemIcon: {
+		minWidth: 25
+	}
+}))(CustomList);
