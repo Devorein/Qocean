@@ -92,6 +92,7 @@ class CreateFolder extends Component {
 					inputs={defaultInputs}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ 'folder', preSubmit, postSubmit ])}
+					ref={(r) => (this.InputForm = r)}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>

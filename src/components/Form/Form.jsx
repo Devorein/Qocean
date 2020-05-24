@@ -323,7 +323,13 @@ class Form extends React.Component {
 						>
 							{resetMsg ? resetMsg : 'Reset'}
 						</Button>
-						<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+						<Button
+							ref={(r) => (this.SubmitButton = r)}
+							type="submit"
+							variant="contained"
+							color="primary"
+							disabled={isSubmitting || !isValid}
+						>
 							{submitMsg ? submitMsg : 'Submit'}
 						</Button>
 					</FormGroup>

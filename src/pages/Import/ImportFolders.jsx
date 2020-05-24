@@ -45,7 +45,19 @@ class ImportFolders extends Component {
 						<PublishIcon
 							key={'publish'}
 							onClick={(e) => {
-								console.log(`You sure you want to import ${this.CustomList.state.checked.length} item(s)`);
+								let _this = this;
+								this.CustomList.state.checked.forEach((checked, index) => {
+									setTimeout(() => {
+										this.setState(
+											{
+												selectedIndex: checked
+											},
+											() => {
+												_this.CreateFolder.InputForm.Form.SubmitButton.click();
+											}
+										);
+									}, 2500 * index);
+								});
 							}}
 						/>
 					]}
@@ -71,7 +83,12 @@ class ImportFolders extends Component {
 		const { data, type, onSubmit } = this.props;
 		return data.length !== 0 ? (
 			<div className={`${type}-import-section-form import-section-form`}>
-				<CreateFolder submitMsg={'Import'} customInputs={this.decideInput} onSubmit={onSubmit} />
+				<CreateFolder
+					ref={(r) => (this.CreateFolder = r)}
+					submitMsg={'Import'}
+					customInputs={this.decideInput}
+					onSubmit={onSubmit}
+				/>
 			</div>
 		) : (
 			<div>Nothing imported</div>

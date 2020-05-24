@@ -68,6 +68,14 @@ const MiniGridTitle2 = withStyles((theme) => ({
 	}
 }))(Typography);
 
+const EnhancedListItem = withStyles((theme) => ({
+	root: {
+		'&.selected': {
+			backgroundColor: theme.palette.grey[800]
+		}
+	}
+}))(ListItem);
+
 class CustomList extends React.Component {
 	state = {
 		checked: []
@@ -99,7 +107,7 @@ class CustomList extends React.Component {
 
 	render() {
 		const { handleToggle, handleToggleAll } = this;
-		const { checked } = this.state;
+		const { checked, lastClicked } = this.state;
 		const { listItems, title, containsCheckbox, onClick, selectedIcons } = this.props;
 		return (
 			<ListContainer>
@@ -127,7 +135,7 @@ class CustomList extends React.Component {
 					{listItems.map((listItem, index) => {
 						const { primary, secondary, primaryIcon, secondaryIcon } = listItem;
 						return (
-							<ListItem key={primary}>
+							<EnhancedListItem key={primary} className={lastClicked === index ? 'selected' : null}>
 								{containsCheckbox ? (
 									<ListItemIcon onClick={handleToggle(index)}>
 										<Checkbox
@@ -141,13 +149,24 @@ class CustomList extends React.Component {
 									</ListItemIcon>
 								) : null}
 								<ListItemIcon>{getIcons(primaryIcon)}</ListItemIcon>
-								<ListItemText primary={primary} secondary={secondary} onClick={onClick.bind(null, index)} />
+								<ListItemText
+									primary={primary}
+									secondary={secondary}
+									onClick={(e) => {
+										this.setState(
+											{
+												lastClicked: index
+											},
+											() => onClick.bind(null, index)
+										);
+									}}
+								/>
 								{/* <ListItemSecondaryAction>
                 <IconButton edge="end" aria-label="delete">
                   {getIcons(secondaryIcon)}
                 </IconButton>
               </ListItemSecondaryAction> */}
-							</ListItem>
+							</EnhancedListItem>
 						);
 					})}
 				</List>

@@ -6,7 +6,8 @@
     "favourite": true
   },
   {
-    "name": "Collection 2"
+    "name": "Collection 2",
+    "icon": "Indigo_folder.svg"
   },
   {
     "name": "Collection 3"
