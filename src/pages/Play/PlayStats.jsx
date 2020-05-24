@@ -44,14 +44,47 @@ class PlayStats extends Component {
 		return `${(res / quizzes.length).toFixed(2)} (s)`;
 	};
 
-	calculateDifficultyTable = () => {
+	calculateTypeTable = () => {
 		const { quizzes } = this.props;
 		const rows = [];
+		const headers = [ 'MCQ', 'MS', 'FIB', 'FC', 'Snippet', 'TF' ];
 		for (let i = 0; i < quizzes.length; i++) {
 			const quiz = quizzes[i];
 			const temp = {};
 
-			[ 'Beginner', 'Intermediate', 'Advanced' ].forEach((header) => {
+			headers.forEach((header) => {
+				temp[header] = 0;
+			});
+
+			quiz.questions.forEach((question) => {
+				temp[question.type] = temp[question.type] ? temp[question.type] + 1 : 1;
+			});
+
+			rows.push({
+				name: quiz.name,
+				...temp
+			});
+		}
+		headers.unshift('name');
+		return [
+			headers.map((name) => {
+				return {
+					name
+				};
+			}),
+			rows.length !== 0 ? rows : []
+		];
+	};
+
+	calculateDifficultyTable = () => {
+		const { quizzes } = this.props;
+		const rows = [];
+		const headers = [ 'Beginner', 'Intermediate', 'Advanced' ];
+		for (let i = 0; i < quizzes.length; i++) {
+			const quiz = quizzes[i];
+			const temp = {};
+
+			headers.forEach((header) => {
 				temp[header] = 0;
 			});
 
@@ -64,21 +97,34 @@ class PlayStats extends Component {
 				...temp
 			});
 		}
+		headers.unshift('name');
 		return [
-			[ { name: 'name' }, { name: 'Beginner' }, { name: 'Intermediate' }, { name: 'Advanced' } ],
+			headers.map((header) => {
+				return {
+					name: header
+				};
+			}),
 			rows.length !== 0 ? rows : []
 		];
 	};
 
 	render() {
-		const { calculateQuestions, calculateDifficulty, calculateTime, calculateDifficultyTable } = this;
+		const {
+			calculateQuestions,
+			calculateDifficulty,
+			calculateTime,
+			calculateDifficultyTable,
+			calculateTypeTable
+		} = this;
 		const [ difficultyHeaders, difficultyRows ] = calculateDifficultyTable();
+		const [ typeHeaders, typeRows ] = calculateTypeTable();
 		return (
 			<div className="play_stats">
 				<div className="play_stats-questions">{calculateQuestions()}</div>
 				<div className="play_stats-time">{calculateTime()}</div>
 				<div className="play_stats-difficulty">{calculateDifficulty()}</div>
-				<BasicTable headers={difficultyHeaders} rows={difficultyRows} />
+				<BasicTable title={'Question Difficulty'} headers={difficultyHeaders} rows={difficultyRows} />
+				<BasicTable title={'Question Types'} headers={typeHeaders} rows={typeRows} />
 			</div>
 		);
 	}
