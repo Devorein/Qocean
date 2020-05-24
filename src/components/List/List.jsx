@@ -45,8 +45,7 @@ const IconContainer = withStyles((theme) => ({
 const MiniGrid = withStyles((theme) => ({
 	root: {
 		display: 'grid',
-		gridTemplate: '75px 50px/1fr 1fr',
-		height: 150
+		gridTemplate: '75px 50px/1fr 1fr'
 	}
 }))(Container);
 
@@ -75,6 +74,13 @@ const EnhancedListItem = withStyles((theme) => ({
 		}
 	}
 }))(ListItem);
+
+const EnhancedListItemText = withStyles((theme) => ({
+	root: {
+		whiteSpace: 'nowrap',
+		overflowX: 'auto'
+	}
+}))(ListItemText);
 
 class CustomList extends React.Component {
 	state = {
@@ -131,7 +137,7 @@ class CustomList extends React.Component {
 					}
 				</MiniGrid>
 
-				<List dense={false}>
+				<List dense={false} style={{ overflowY: 'auto', maxHeight: '75%' }}>
 					{listItems.map((listItem, index) => {
 						const { primary, secondary, primaryIcon, secondaryIcon } = listItem;
 						return (
@@ -149,7 +155,7 @@ class CustomList extends React.Component {
 									</ListItemIcon>
 								) : null}
 								<ListItemIcon>{getIcons(primaryIcon)}</ListItemIcon>
-								<ListItemText
+								<EnhancedListItemText
 									primary={primary}
 									secondary={secondary}
 									onClick={(e) => {

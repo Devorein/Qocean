@@ -1,29 +1,35 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';
 import UploadButton from '../../components/Buttons/UploadButton';
-import ImportQuiz from './ImportQuizzes';
-import ImportQuestion from './ImportQuestions';
-import ImportFolder from './ImportFolders';
-import ImportEnvironment from './ImportEnvironments';
 import { AppContext } from '../../context/AppContext';
+import CustomList from '../../components/List/List';
+import DeleteIcon from '@material-ui/icons/Delete';
+import PublishIcon from '@material-ui/icons/Publish';
+import CreateFolder from '../Create/CreateFolder';
+import CreateQuestion from '../Create/CreateQuestion';
+import CreateQuiz from '../Create/CreateQuiz';
+import CreateEnvironment from '../Create/CreateEnvironment';
+
 import './Import.scss';
 
 class Import extends Component {
 	static contextType = AppContext;
 
+	state = {
+		data: [],
+		inputs: [],
+		currentType: '',
+		selectedIndex: 0
+	};
+
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
 		this.setState({
 			inputs: [],
-			data: []
+			data: [],
+			selectedIndex: 0
 		});
-	};
-
-	state = {
-		data: [],
-		inputs: [],
-		currentType: ''
 	};
 
 	setFile = (type, e) => {
@@ -43,6 +49,87 @@ class Import extends Component {
 		reader.readAsDataURL(file);
 	};
 
+	transformList = (data) => {
+		const { match: { params: { type } } } = this.props;
+		return data.map((data) => {
+			return {
+				primary: data.name || data.question,
+				primaryIcon: type
+			};
+		});
+	};
+
+	decideInput = (inputs) => {
+		return inputs.map((input) => {
+			return {
+				...input,
+				defaultValue: this.props.data[this.state.selectedIndex][input.name]
+					? this.props.data[this.state.selectedIndex][input.name]
+					: input.defaultValue
+			};
+		});
+	};
+
+	renderForm = () => {
+		const { data } = this.state;
+		const { match: { params: { type } } } = this.props;
+
+		return data.length !== 0 ? (
+			<div className={`${type}-import-section-form import-section-form`}>{this.decideForm()}</div>
+		) : (
+			<div>Nothing imported</div>
+		);
+	};
+
+	renderList = () => {
+		const { match: { params: { type } } } = this.props;
+		const { data } = this.state;
+		return data.length !== 0 ? (
+			<div className={`${type}-import-section-list import-section-list`}>
+				<CustomList
+					containsCheckbox={true}
+					title={`Imported ${data.length} ${type.toLowerCase()}`}
+					listItems={this.transformList(data)}
+					onClick={(selectedIndex, e) => {
+						this.setState({
+							selectedIndex
+						});
+					}}
+					ref={(r) => (this.CustomList = r)}
+					selectedIcons={[
+						<DeleteIcon
+							key={'delete'}
+							onClick={(e) => {
+								this.deleteItems(this.CustomList.state.checked);
+								this.CustomList.state.checked = [];
+							}}
+						/>,
+						<PublishIcon
+							key={'publish'}
+							onClick={(e) => {
+								let _this = this;
+								this.CustomList.state.checked.forEach((checked, index) => {
+									setTimeout(() => {
+										this.setState(
+											{
+												selectedIndex: checked
+											},
+											() => {
+												_this.CreateFolder.InputForm.Form.SubmitButton.click();
+											}
+										);
+									}, 2500 * index);
+								});
+							}}
+						/>
+					]}
+				/>
+			</div>
+		) : (
+			<div>Nothing imported</div>
+		);
+	};
+
 	deleteItems = (indexes) => {
 		const filtered = this.state.data.filter((data, index) => !indexes.includes(index));
 		this.setState({
@@ -50,27 +137,32 @@ class Import extends Component {
 		});
 	};
 
-	decideForm = (type) => {
+	decideForm = () => {
+		let { match: { params: { type } } } = this.props;
 		let { currentType } = this.state;
+
 		currentType = currentType.toLowerCase();
 		type = type.toLowerCase();
 
 		const props = {
+			submitMsg: 'Import',
+			ref: (r) => (this.CreateFolder = r),
 			user: this.props.user,
 			onSubmit: this.context.submitForm,
 			data: this.state.data,
 			changeResponse: this.context.changeResponse,
 			type,
-			deleteItems: this.deleteItems
+			customInputs: this.decideInput
 		};
-		if (currentType === type && type === 'quiz') return <ImportQuiz {...props} />;
-		else if (currentType === type && type === 'question') return <ImportQuestion {...props} />;
-		else if (currentType === type && type === 'folder') return <ImportFolder {...props} />;
-		else if (currentType === type && type === 'environment') return <ImportEnvironment {...props} />;
+
+		if (currentType === type && type === 'quiz') return <CreateQuiz {...props} />;
+		else if (currentType === type && type === 'question') return <CreateQuestion {...props} />;
+		else if (currentType === type && type === 'folder') return <CreateFolder {...props} />;
+		else if (currentType === type && type === 'environment') return <CreateEnvironment {...props} />;
 	};
 
 	render() {
-		const { setFile, decideForm } = this;
+		const { setFile, renderList, renderForm } = this;
 		const { match: { params: { type } } } = this.props;
 
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
@@ -96,7 +188,10 @@ class Import extends Component {
 					accept={'application/json'}
 					inputRef={(i) => (this.UploadButton = i)}
 				/>
-				<div className={`import-section ${type}-import-section`}>{decideForm(type)}</div>
+				<div className={`import-section ${type}-import-section`}>
+					{renderList()}
+					{/* {renderForm()} */}
+				</div>
 			</div>
 		);
 	}
