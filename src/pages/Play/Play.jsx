@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import CustomList from '../../components/List/List';
+import PlayStats from './PlayStats';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GenericButton from '../../components/Buttons/GenericButton';
 import './Play.scss';
@@ -8,7 +9,8 @@ import './Play.scss';
 class Play extends Component {
 	state = {
 		quizzes: [],
-		selectedIndex: 0
+		selectedIndex: 0,
+		checked: []
 	};
 
 	componentDidMount() {
@@ -36,15 +38,22 @@ class Play extends Component {
 		});
 	};
 
+	setChecked = (checked) => {
+		this.setState({
+			checked
+		});
+	};
 	render() {
 		const { quizzes } = this.state;
 		return (
 			<div className="play pages">
 				<CustomList
+					setChecked={this.setChecked}
+					className="play_list"
 					containsCheckbox={true}
 					ref={(r) => (this.CustomList = r)}
 					title={`Your quizzes`}
-					listItems={this.transformList(this.state.quizzes)}
+					listItems={this.transformList(quizzes)}
 					onClick={(selectedIndex, e) => {
 						this.setState({
 							selectedIndex
@@ -60,6 +69,7 @@ class Play extends Component {
 						/>
 					]}
 				/>
+				<PlayStats quizzes={this.state.checked.map((checked) => quizzes[checked])} />
 				<GenericButton text="Play" />
 			</div>
 		);

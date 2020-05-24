@@ -52,22 +52,39 @@ class CustomList extends React.Component {
 	};
 
 	handleToggle = (index, e) => {
+		const { setChecked } = this.props;
+
 		if (e.shiftKey)
-			this.setState({
-				checked: new Array(index + 1).fill(0).map((_, index) => index)
-			});
+			this.setState(
+				{
+					checked: new Array(index + 1).fill(0).map((_, index) => index)
+				},
+				() => {
+					if (setChecked) setChecked(this.state.checked);
+				}
+			);
 		else if (e.altKey) {
 			const isThere = this.state.checked.includes(index);
 			if (isThere)
-				this.setState({
-					checked: new Array(this.props.listItems.length)
-						.fill(0)
-						.map((_, _index) => (_index !== index ? index : void 0))
-				});
+				this.setState(
+					{
+						checked: new Array(this.props.listItems.length)
+							.fill(0)
+							.map((_, _index) => (_index !== index ? index : void 0))
+					},
+					() => {
+						if (setChecked) setChecked(this.state.checked);
+					}
+				);
 			else
-				this.setState({
-					checked: [ index ]
-				});
+				this.setState(
+					{
+						checked: [ index ]
+					},
+					() => {
+						if (setChecked) setChecked(this.state.checked);
+					}
+				);
 		} else {
 			const { checked } = this.state;
 			const currentIndex = checked.indexOf(index);
@@ -75,30 +92,47 @@ class CustomList extends React.Component {
 
 			if (currentIndex === -1) newChecked.push(index);
 			else newChecked.splice(currentIndex, 1);
-			this.setState({
-				checked: newChecked
-			});
+			this.setState(
+				{
+					checked: newChecked
+				},
+				() => {
+					if (setChecked) setChecked(this.state.checked);
+				}
+			);
 		}
 	};
 
 	handleToggleAll = () => {
+		const { setChecked } = this.props;
 		const shouldCheck = this.state.checked.length < this.props.listItems.length;
 		if (shouldCheck)
-			this.setState({
-				checked: this.props.listItems.map((_, index) => index)
-			});
+			this.setState(
+				{
+					checked: this.props.listItems.map((_, index) => index)
+				},
+				() => {
+					if (setChecked) setChecked(this.state.checked);
+				}
+			);
 		else
-			this.setState({
-				checked: []
-			});
+			this.setState(
+				{
+					checked: []
+				},
+				() => {
+					if (setChecked) setChecked(this.state.checked);
+				}
+			);
 	};
 
 	render() {
 		const { handleToggle, handleToggleAll } = this;
 		const { checked, lastClicked } = this.state;
-		const { listItems, title, containsCheckbox, onClick, selectedIcons, classes } = this.props;
+		const { listItems, title, containsCheckbox, onClick, selectedIcons, classes, className } = this.props;
+		const rootClass = clsx(className, classes.listContainer);
 		return (
-			<Container classes={{ root: classes.listContainer }}>
+			<Container className={rootClass}>
 				<MiniGrid>
 					<Typography variant="h6" classes={{ root: classes.listHeader }}>
 						{title}
@@ -130,6 +164,7 @@ class CustomList extends React.Component {
 								classes={{ root: classes.listItem }}
 								className={lastClicked === index ? 'selected' : null}
 							>
+								<ListItemText classes={{ root: classes.listIndex }}>{index + 1}</ListItemText>
 								{containsCheckbox ? (
 									<ListItemIcon onClick={handleToggle.bind(null, index)}>
 										<Checkbox
@@ -202,8 +237,15 @@ export default withStyles((theme) => ({
 	},
 	listBody: {
 		overflowY: 'auto',
-		maxHeight: '75%',
+		maxHeight: '80%',
 		background: theme.palette.grey[800]
+	},
+	listIndex: {
+		fontWeight: 'bolder',
+		display: 'flex',
+		justifyContent: 'flex-end',
+		flex: 'none',
+		width: 25
 	},
 	listItem: {
 		'&.MuiListItem-root': {
