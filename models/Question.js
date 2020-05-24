@@ -133,18 +133,18 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 			if (!isValidAnswer) return [ false, 'Your answer is out of range' ];
 			if (type === 'MS') if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
 		} else if (type === 'TF') {
-			if (question.options) return [ false, 'No need to provide the options' ];
+			if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
 			if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
 			const isValidAnswer = question.answers.every((answer) => parseInt(answer) >= 0 && parseInt(answer) <= 1);
 			if (!isValidAnswer) return [ false, 'Your answer is out of range' ];
 		}
 	} else if (type === 'FC' || type === 'Snippet') {
-		if (question.options) return [ false, 'No need to provide the options' ];
+		if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
 		if (question.answers.length >= 2) return [ false, 'You provided too many answers' ];
 		if (question.answers[0].length <= 0) return [ false, 'Provide atleast one answer for the question' ];
 		if (question.answers[0].length > 3) return [ false, 'You provided too many answers' ];
 	} else if (type === 'FIB') {
-		if (question.options) return [ false, 'No need to provide the options' ];
+		if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
 		if (question.answers.length <= 0 || question.answers[0].length <= 0)
 			return [ false, 'Provide atleast one answer for the question' ];
 		const isAnyEmpty = question.answers.some((answer) => answer.length === 0);

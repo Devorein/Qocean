@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const colors = require('colors');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const randomColor = require('randomcolor');
 
 dotenv.config({ path: './config/config.env' });
 
@@ -22,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI, {
 	useUnifiedTopology: true
 });
 
-const icons = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet' ];
+const icons = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ];
 
 casual.define('user', function() {
 	return {
@@ -38,7 +39,7 @@ casual.define('quiz', function() {
 	return {
 		name: casual.title,
 		subject: casual.word,
-		tags: casual.array_of_words(casual.integer(0, 3)),
+		tags: `${casual.array_of_words(casual.integer(0, 3))}:${randomColor()}`,
 		source: faker.internet.url(),
 		favourite: casual.boolean,
 		public: casual.boolean
@@ -58,7 +59,7 @@ casual.define('folder', function() {
 
 casual.define('question', function() {
 	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC' ];
-	const type = types[casual.integer(0, types.length - 1)];
+	const type = 'FC' /* types[casual.integer(0, types.length - 1)] */;
 	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
 	const time = times[casual.integer(0, times.length - 1)];
 	let options,
@@ -66,23 +67,23 @@ casual.define('question', function() {
 
 	if (type === 'MCQ') {
 		const total_options = casual.integer(3, 6);
-		options = [ ...'1'.repeat(total_options) ].map((_) => casual.sentence);
+		options = Array(total_options).fill(0).map((_) => casual.sentence);
 		const total_answers = casual.integer(1, total_options - 1);
-		for (let i = 1; i <= total_answers; i++) {
-			let random_choice = casual.integer(1, total_options - 1);
-			while (answers.indexOf(random_choice) === -1) random_choice = casual.integer(1, total_options - 1);
-			answers.push(random_choice);
+
+		while (answers.length <= total_answers) {
+			const r = casual.integer(1, total_options - 1);
+			if (answers.indexOf(r) === -1) answers.push(r);
 		}
 	} else if (type === 'MS') {
 		const total_options = casual.integer(3, 6);
-		options = [ ...'1'.repeat(total_options) ].map((_) => casual.sentence);
+		options = Array(total_options).fill(0).map((_) => casual.sentence);
 		answers.push(casual.integer(1, total_options - 1));
 	} else if (type === 'TF') {
-		options = [ 'True', 'False' ];
-		answers.push(options[casual.integer(0, 1)]);
+		options = [];
+		answers.push([ 0, 1 ][casual.integer(0, 1)]);
 	} else if (type === 'FC') {
 		options = [];
-		answers = [ casual.sentence ];
+		answers = [ Array(casual.integer(1, 3)).map((_) => casual.sentence) ];
 	} else if (type === 'FIB') {
 		options = [];
 		answers = [ casual.sentence ];
@@ -111,6 +112,8 @@ casual.define('environment', function() {
 	const time = times[casual.integer(0, times.length - 1)];
 	const notification_timings = [ 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 ];
 	const notification_timing = notification_timings[casual.integer(0, notification_timings.length - 1)];
+	const resources = [ 'User', 'Question', 'Quiz', 'Folder', 'Environment' ];
+	const rpp = [ 10, 15, 20, 25, 30, 40, 50 ];
 	return {
 		name: casual.array_of_words(2).join(''),
 		icon: `${icons[casual.integer(0, icons.length - 1)]}_env.svg`,
@@ -119,11 +122,18 @@ casual.define('environment', function() {
 		theme: [ 'Light', 'Dark', 'Navy' ][casual.integer(0, 2)],
 		animation: casual.boolean,
 		sound: casual.boolean,
-		default_question_time: time,
+		default_question_timing: time,
+		default_question_type: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ][casual.integer(0, 5)],
 		default_question_difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][casual.integer(0, 2)],
 		default_question_weight: casual.integer(1, 10),
 		reset_on_success: casual.boolean,
 		reset_on_error: casual.boolean,
+		default_explore_landing: resources[casual.integer(0, resources.length - 1)],
+		default_create_landing: resources.splice(1)[casual.integer(0, resources.length - 2)],
+		default_self_landing: resources.splice(1)[casual.integer(0, resources.length - 2)],
+		default_explore_rpp: rpp[casual.integer(0, rpp.length - 1)],
+		default_create_rpp: rpp[casual.integer(0, rpp.length - 1)],
+		default_self_rpp: rpp[casual.integer(0, rpp.length - 1)],
 		notification_timing
 	};
 });
@@ -134,11 +144,11 @@ const users = [],
 	folders = [],
 	envs = [];
 
-const total_users = casual.integer(5, 10),
-	total_quizzes = casual.integer(15, 25),
-	total_questions = casual.integer(40, 50),
-	total_folders = casual.integer(15, 30),
-	total_envs = casual.integer(10, 15);
+const total_users = casual.integer(1, 5),
+	total_quizzes = casual.integer(1, 5),
+	total_questions = casual.integer(10, 15),
+	total_folders = casual.integer(1, 5),
+	total_envs = casual.integer(1, 5);
 
 const loginData = [];
 
@@ -274,7 +284,7 @@ const createEnvironment = async () => {
 		if (users.length < total_users) await createUser();
 		else {
 			clearInterval(userInterval);
-			const data = loginData.map(({ password, username, email }) => `${username} ${email} ${password}\n`);
+			const data = loginData.map(({ password, username, email }) => `${username} ${email} ${password}`).join('\n');
 			fs.writeFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
 			const quizInterval = setInterval(async () => {
 				if (quizzes.length < total_quizzes) await createQuiz();

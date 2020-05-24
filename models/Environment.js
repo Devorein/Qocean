@@ -66,6 +66,14 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: String,
 		default: 'Quiz'
 	},
+	default_self_rpp: {
+		type: Number,
+		default: 15
+	},
+	default_self_landing: {
+		type: String,
+		default: 'Quiz'
+	},
 	reset_on_success: {
 		type: Boolean,
 		default: true
