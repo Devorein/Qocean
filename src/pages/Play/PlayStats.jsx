@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import BasicTable from '../../components/DataTable/BasicTable';
+import CustomCard from '../../components/Card/CustomCard';
 
 class PlayStats extends Component {
 	calculateQuestions = () => {
@@ -120,9 +121,23 @@ class PlayStats extends Component {
 		const [ typeHeaders, typeRows ] = calculateTypeTable();
 		return (
 			<div className="play_stats">
-				<div className="play_stats-questions">{calculateQuestions()}</div>
-				<div className="play_stats-time">{calculateTime()}</div>
-				<div className="play_stats-difficulty">{calculateDifficulty()}</div>
+				<CustomCard
+					title={'Question stats'}
+					rows={[
+						{
+							title: 'Total Qs',
+							text: calculateQuestions()
+						},
+						{
+							title: 'Average Time',
+							text: calculateTime()
+						},
+						{
+							title: 'Average Diff',
+							text: calculateDifficulty()
+						}
+					]}
+				/>
 				<BasicTable title={'Question Difficulty'} headers={difficultyHeaders} rows={difficultyRows} />
 				<BasicTable title={'Question Types'} headers={typeHeaders} rows={typeRows} />
 			</div>
