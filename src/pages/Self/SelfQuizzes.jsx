@@ -49,14 +49,12 @@ class SelfQuizzes extends Component {
 		const { decideColums, transformData, transformOption } = this;
 		let { options, data } = this.props;
 		return (
-			<div>
-				<DataTable
-					title={`Quiz List`}
-					data={transformData(data)}
-					columns={decideColums()}
-					options={transformOption(options)}
-				/>
-			</div>
+			<DataTable
+				title={`Quiz List`}
+				data={transformData(data)}
+				columns={decideColums()}
+				options={transformOption(options)}
+			/>
 		);
 	}
 }

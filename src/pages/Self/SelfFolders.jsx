@@ -46,14 +46,12 @@ class SelfFolders extends Component {
 		const { decideColums, transformData, transformOption } = this;
 		const { options, data } = this.props;
 		return (
-			<div>
-				<DataTable
-					title={`Folder List`}
-					data={transformData(data)}
-					columns={decideColums()}
-					options={transformOption(options)}
-				/>
-			</div>
+			<DataTable
+				title={`Folder List`}
+				data={transformData(data)}
+				columns={decideColums()}
+				options={transformOption(options)}
+			/>
 		);
 	}
 }

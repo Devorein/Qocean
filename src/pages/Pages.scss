@@ -1,7 +1,8 @@
 .page {
   height: calc(100% - 50px);
   width: 100vw;
-
+  display: flex;
+  flex-direction: column;
   &-title,
   &-text {
     position: absolute;

@@ -10,6 +10,8 @@ import SelfEnvironments from './SelfEnvironments';
 import deleteResource from '../../operations/deleteResource';
 import { withSnackbar } from 'notistack';
 import DeleteIcon from '@material-ui/icons/Delete';
+import LinearList from '../../components/List/LinearList';
+import './Self.scss';
 
 class Self extends Component {
 	state = {
@@ -17,7 +19,8 @@ class Self extends Component {
 		type: this.props.user.current_environment.default_self_landing,
 		rowsPerPage: this.props.user.current_environment.default_self_rpp,
 		page: 0,
-		totalCount: 0
+		totalCount: 0,
+		selectedData: null
 	};
 
 	componentDidMount() {
@@ -102,7 +105,14 @@ class Self extends Component {
 		reductiveDownloadChain(selectedRows);
 	};
 
+	getDetails = (selectedData) => {
+		this.setState({
+			selectedData
+		});
+	};
+
 	decideTable = () => {
+		const { getDetails } = this;
 		const { page, rowsPerPage, totalCount, type } = this.state;
 		const CLASS = this;
 		const options = {
@@ -169,7 +179,8 @@ class Self extends Component {
 			refetchData: this.refetchData,
 			data: this.state.data,
 			options,
-			page
+			page,
+			getDetails
 		};
 
 		if (type === 'Quiz') return <SelfQuizzes {...props} />;
@@ -179,7 +190,7 @@ class Self extends Component {
 	};
 
 	render() {
-		const { data } = this.state;
+		const { data, selectedData } = this.state;
 
 		const { match: { params: { type } } } = this.props;
 
@@ -200,7 +211,16 @@ class Self extends Component {
 					height={50}
 					headers={headers}
 				/>
-				{data.length > 0 ? this.decideTable() : <div>You've not created any {type} yet</div>}
+				<div className={`self_${type}_content self_content`}>
+					{data.length > 0 ? (
+						<div className={`self_${type}_table self_content_table`}>{this.decideTable()}</div>
+					) : (
+						<div>You've not created any {type} yet</div>
+					)}
+					<div className={`self_${type}_list--linear self_content_list`}>
+						<LinearList data={selectedData} />
+					</div>
+				</div>
 			</div>
 		);
 	}

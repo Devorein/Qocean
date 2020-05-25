@@ -46,6 +46,12 @@ class SelfEnvironments extends Component {
 		return option;
 	};
 
+	filterData = (data) => {
+		return {
+			name: data.name
+		};
+	};
+
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {
@@ -53,7 +59,11 @@ class SelfEnvironments extends Component {
 				name: (
 					<IconRow>
 						<UpdateIcon />
-						<InfoIcon />
+						<InfoIcon
+							onClick={(e) => {
+								this.props.getDetails(this.filterData(data));
+							}}
+						/>
 						<div>{item.name}</div>
 					</IconRow>
 				),
@@ -69,14 +79,12 @@ class SelfEnvironments extends Component {
 		const { decideColumns, transformData, transformOption } = this;
 		const { options, data } = this.props;
 		return (
-			<div>
-				<DataTable
-					title={`Environment List`}
-					data={transformData(data)}
-					columns={decideColumns()}
-					options={transformOption(options)}
-				/>
-			</div>
+			<DataTable
+				title={`Environment List`}
+				data={transformData(data)}
+				columns={decideColumns()}
+				options={transformOption(options)}
+			/>
 		);
 	}
 }
