@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 
@@ -7,6 +7,8 @@ const LinearListRoot = styled.div`
 	height: 100%;
 `;
 
+const LinearListPrimaryRow = styled.div`padding: 5px;`;
+
 const LinearListRow = styled.div`
 	display: flex;
 	justify-content: space-around;
@@ -14,7 +16,18 @@ const LinearListRow = styled.div`
 	align-items: center;
 `;
 
-const LinearListRowKey = styled.div`
+const LinearListRowPrimaryKey = styled.div`
+	width: 50%;
+	display: flex;
+	justify-content: flex-start;
+	& span {
+		background: ${(props) => props.theme.palette.grey[900]};
+		padding: 5px;
+		width: fit-content;
+	}
+`;
+
+const LinearListRowSecondaryKey = styled.div`
 	width: 50%;
 	display: flex;
 	justify-content: flex-start;
@@ -33,27 +46,70 @@ const LinearListRowValue = styled.div`
 `;
 
 class LinearList extends Component {
+	renderPrimaryData = (primaryData) => {
+		return (
+			<LinearListPrimaryRow>
+				{primaryData.map((key) => {
+					const { theme } = this.props;
+					const value = this.props.selectedData.data[key];
+					return (
+						<LinearListRow key={key}>
+							<LinearListRowPrimaryKey theme={theme} className={'listrowkey'}>
+								<span>
+									{key.toString().split('_').map((key) => key.charAt(0).toUpperCase() + key.substr(1)).join(' ')}
+								</span>
+							</LinearListRowPrimaryKey>
+							<LinearListRowValue theme={theme}>{value.toString()}</LinearListRowValue>
+						</LinearListRow>
+					);
+				})}
+			</LinearListPrimaryRow>
+		);
+	};
+
+	renderSecondaryData = (secondaryData) => {
+		return secondaryData.map((key) => {
+			const { theme } = this.props;
+			const value = this.props.selectedData.data[key];
+			return (
+				<LinearListRow key={key}>
+					<LinearListRowSecondaryKey theme={theme} className={'listrowkey'}>
+						<span>{key.toString().split('_').map((key) => key.charAt(0).toUpperCase() + key.substr(1)).join(' ')}</span>
+					</LinearListRowSecondaryKey>
+					<LinearListRowValue theme={theme}>{value.toString()}</LinearListRowValue>
+				</LinearListRow>
+			);
+		});
+	};
+
 	render() {
 		let target = {};
-		const { data, theme, sort = true } = this.props;
-		if (sort && data) {
-			Object.keys(data).sort().forEach((key) => {
-				target[key] = data[key];
+		const { renderPrimaryData, renderSecondaryData } = this;
+		const { theme, sort = true } = this.props;
+		const selectedData = this.props.selectedData ? this.props.selectedData : {};
+		let secondaryData = [];
+		let primaryData = [];
+		if (selectedData.data) {
+			let { data, exclude, primary, secondary = [] } = selectedData;
+			Object.entries(data).forEach(([ key, value ]) => {
+				if (!exclude.includes(key)) target[key] = value.toString();
 			});
-		} else target = data;
+			primaryData = primary;
+			if (secondary.length !== 0) secondaryData = secondary;
+			else
+				secondaryData = Object.keys(data).filter(
+					(key) => (!primary.includes(key) && !exclude.includes(key) ? key : null)
+				);
+			if (sort) secondaryData = secondaryData.sort();
+		}
+
 		return (
 			<LinearListRoot className={'linearList'}>
-				{data ? (
-					Object.entries(target).map(([ key, value ]) => {
-						return (
-							<LinearListRow key={key} className={`linearListRow`}>
-								<LinearListRowKey theme={theme}>
-									<span>{key.split('_').map((key) => key.charAt(0).toUpperCase() + key.substr(1)).join(' ')}</span>
-								</LinearListRowKey>
-								<LinearListRowValue theme={theme}>{value}</LinearListRowValue>
-							</LinearListRow>
-						);
-					})
+				{selectedData.data ? (
+					<Fragment>
+						{renderPrimaryData(primaryData)}
+						{renderSecondaryData(secondaryData)}
+					</Fragment>
 				) : (
 					<div>You havent selected anything yet</div>
 				)}

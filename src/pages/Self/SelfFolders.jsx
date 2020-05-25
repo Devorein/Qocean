@@ -31,6 +31,15 @@ class SelfFolders extends Component {
 		return option;
 	};
 
+	filterData = (item) => {
+		const obj = {};
+		const exlcude = [ '__v', 'user', '_id' ];
+		Object.entries(item).forEach(([ key, value ]) => {
+			if (!exlcude.includes(key)) obj[key] = value.toString();
+		});
+		return obj;
+	};
+
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {

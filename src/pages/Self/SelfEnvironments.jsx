@@ -42,17 +42,17 @@ class SelfEnvironments extends Component {
 			// console.log(colData);
 			// console.log(cellMeta);
 		};
-		option.onTableInit = (action, tableState) => {};
 		return option;
 	};
 
 	filterData = (item) => {
-		const obj = {};
-		const exlcude = [ '__v', 'user', '_id' ];
-		Object.entries(item).forEach(([ key, value ]) => {
-			if (!exlcude.includes(key)) obj[key] = value.toString();
-		});
-		return obj;
+		const exclude = [ '__v', 'user', '_id' ];
+		const primary = [ 'name', 'public', 'favourite' ];
+
+		return {
+			exclude,
+			primary
+		};
 	};
 
 	transformData = (data) => {
@@ -64,7 +64,7 @@ class SelfEnvironments extends Component {
 						<UpdateIcon />
 						<InfoIcon
 							onClick={(e) => {
-								this.props.getDetails(this.filterData(item));
+								this.props.getDetails(this.filterData(item), index);
 							}}
 						/>
 						<div>{item.name}</div>

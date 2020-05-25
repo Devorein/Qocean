@@ -105,9 +105,13 @@ class Self extends Component {
 		reductiveDownloadChain(selectedRows);
 	};
 
-	getDetails = (selectedData) => {
+	getDetails = ({ exclude, primary }, index) => {
 		this.setState({
-			selectedData
+			selectedData: {
+				exclude,
+				primary,
+				data: this.state.data[index]
+			}
 		});
 	};
 
@@ -218,7 +222,7 @@ class Self extends Component {
 						<div>You've not created any {type} yet</div>
 					)}
 					<div className={`self_${type}_list--linear self_content_list`}>
-						<LinearList data={selectedData} />
+						<LinearList selectedData={selectedData} />
 					</div>
 				</div>
 			</div>
