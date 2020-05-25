@@ -10,11 +10,18 @@ import SelfEnvironments from './SelfEnvironments';
 class Self extends Component {
 	state = {
 		data: [],
-		type: null,
+		type: this.props.user.current_environment.default_self_landing,
 		rowsPerPage: this.props.user.current_environment.default_self_rpp,
 		page: 0,
 		totalCount: 0
 	};
+
+	componentDidMount() {
+		this.refetchData(this.state.type, {
+			limit: this.state.rowsPerPage,
+			page: this.state.page
+		});
+	}
 
 	refetchData = (type, queryParams) => {
 		const queryString = queryParams

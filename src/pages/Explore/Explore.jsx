@@ -12,11 +12,18 @@ import ExploreEnvironments from './ExploreEnvironments';
 class Explore extends Component {
 	state = {
 		data: [],
-		type: null,
-		rowsPerPage: this.props.user.current_environment.default_explore_rpp,
+		type: this.props.user ? this.props.user.current_environment.default_explore_landing.toLowerCase() : 'user',
+		rowsPerPage: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15,
 		totaCount: 0,
 		page: 0
 	};
+
+	componentDidMount() {
+		this.refetchData(this.state.type, {
+			limit: this.state.rowsPerPage,
+			page: this.state.page
+		});
+	}
 
 	refetchData = (type, queryParams) => {
 		const queryString = queryParams
