@@ -1,17 +1,44 @@
 import React, { Component } from 'react';
-
+import { SketchPicker } from 'react-color';
+import Button from '@material-ui/core/Button';
 import { AppContext } from '../../context/AppContext';
-
+import styled from 'styled-components';
 import DeletableChip from './DeletableChip';
 import { withStyles } from '@material-ui/core/styles';
 import validateColor from 'validate-color';
 import { FormLabel, TextField } from '@material-ui/core';
 
+const TagContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	height: 50px;
+	width: 100%;
+`;
 class TagCreator extends Component {
 	static contextType = AppContext;
 
 	state = {
-		tags: this.props.tags || []
+		tags: this.props.tags || [],
+		tagColor: '#000',
+		displayColorPicker: false,
+		input: ''
+	};
+
+	openCP = () => {
+		let { displayColorPicker, input, tagColor, tags } = this.state;
+		if (displayColorPicker) {
+			tags.push((input.includes(':') ? input : input + ':') + tagColor);
+			input = '';
+		}
+		this.setState({
+			input,
+			displayColorPicker: !displayColorPicker,
+			tags
+		});
+	};
+
+	handleChangeComplete = (color) => {
+		this.setState({ tagColor: color.hex });
 	};
 
 	deleteTags = (_tag) => {
@@ -63,26 +90,38 @@ class TagCreator extends Component {
 			const { tags } = this.state;
 			if (this.validateTags(e.target.value)) {
 				tags.push(e.target.value.toLowerCase());
-				e.target.value = '';
 				this.setState({
-					tags
+					tags,
+					input: ''
 				});
 			}
 		}
 	};
 
 	render() {
-		const { deleteTags, createTags } = this;
+		const { deleteTags, createTags, openCP } = this;
 		const { classes } = this.props;
-		const { tags } = this.state;
+		const { tags, displayColorPicker, input, tagColor } = this.state;
 
 		return (
 			<div className={classes.root}>
 				<FormLabel>Tags</FormLabel>
-				<TextField type={'text'} onKeyPress={createTags} fullWidth />
-				{tags.map((tag) => {
-					return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
-				})}
+				<TextField
+					type={'text'}
+					value={input}
+					onChange={(e) => this.setState({ input: e.target.value })}
+					onKeyPress={createTags}
+					fullWidth
+				/>
+				<TagContainer>
+					{tags.map((tag) => {
+						return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
+					})}
+				</TagContainer>
+				<Button onClick={openCP}>{displayColorPicker ? 'Close' : 'Open'} picker</Button>
+				{displayColorPicker ? (
+					<SketchPicker disableAlpha presetColors={[]} color={tagColor} onChangeComplete={this.handleChangeComplete} />
+				) : null}
 			</div>
 		);
 	}
@@ -93,6 +132,13 @@ export default withStyles((theme) => ({
 		display: 'flex',
 		justifyContent: 'center',
 		flexWrap: 'wrap',
+		'& .sketch-picker': {
+			position: 'absolute',
+			left: '100%',
+			'& input': {
+				textAlign: 'center'
+			}
+		},
 		'& > *': {
 			margin: theme.spacing(0.5)
 		},
