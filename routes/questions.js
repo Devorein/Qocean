@@ -8,6 +8,7 @@ const { protect } = require('../middleware/auth');
 const {
 	countAllQuestions,
 	countMyQuestions,
+	validateQuestion,
 	createQuestion,
 	updateQuestion,
 	deleteQuestion,
@@ -17,6 +18,7 @@ const {
 router.route('/me').get(protect, advancedResults(Question));
 router.route('/countAll').get(countAllQuestions);
 router.route('/countMine').get(protect, countMyQuestions);
+router.route('/validation').get(validateQuestion);
 router
 	.route('/')
 	.get(

@@ -131,7 +131,7 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 			if (containsDuplicateAnswer) return [ false, 'There is duplicate answer for the question' ];
 			const isValidAnswer = question.answers.every((answer) => parseInt(answer) >= 1 && parseInt(answer) <= 6);
 			if (!isValidAnswer) return [ false, 'Your answer is out of range' ];
-			if (type === 'MS') if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
+			if (type === 'MCQ') if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
 		} else if (type === 'TF') {
 			if (question.options.length >= 1) return [ false, 'No need to provide the options' ];
 			if (question.answers.length > 1) return [ false, 'Your provided more answers than needed' ];
@@ -155,6 +155,28 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 		if (count !== question.answers.length) return [ false, 'You provided incorrect number of answers' ];
 	}
 	return [ true ];
+};
+
+QuestionSchema.methods.validateAnswer = async function(answers) {
+	const { type } = this;
+	let isCorrect = false,
+		message = 'Wrong answer';
+	if (type === 'MCQ' || type === 'TF') {
+		isCorrect = answers.length === this.answers.length;
+		isCorrect = isCorrect && parseInt(answers[0]) === parseInt(this.answers[0][0]);
+	} else if (type === 'MS') {
+		const transformed = answers.map((answer) => parseInt(answer));
+		isCorrect = answers.length === this.answers[0].length;
+		isCorrect = isCorrect && transformed.every((answer) => this.answers[0].indexOf(answer) !== -1);
+	} else if (type === 'Snippet') {
+		isCorrect = answers.length <= this.answers[0].length;
+		isCorrect = isCorrect && this.answers[0].indexOf(answers[0]) !== -1;
+	} else if (type === 'FIB') {
+		isCorrect = answers.length === this.answers.length;
+		isCorrect = isCorrect && answers.every((answer, index) => this.answers[index].indexOf(answer) !== -1);
+	}
+	if (isCorrect) message = 'Correct answer';
+	return [ isCorrect, message ];
 };
 
 QuestionSchema.post('save', async function() {
