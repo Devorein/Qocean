@@ -1,10 +1,15 @@
 .self {
   &_content {
     flex-grow: 1;
+    height: 100%;
     display: grid;
-    grid-template: 1fr 1fr / 250px 1fr;
+    grid-template: 700px / 450px 1fr;
     &_table {
       grid-area: 1/2/3/3;
+      height: 100%;
+    }
+    &_list {
+      height: 100%;
     }
   }
 }

@@ -39,17 +39,20 @@ class SelfEnvironments extends Component {
 		option.customToolbar = () => <div>123</div>;
 
 		option.onCellClick = (colData, cellMeta) => {
-			console.log(colData);
-			console.log(cellMeta);
+			// console.log(colData);
+			// console.log(cellMeta);
 		};
 		option.onTableInit = (action, tableState) => {};
 		return option;
 	};
 
-	filterData = (data) => {
-		return {
-			name: data.name
-		};
+	filterData = (item) => {
+		const obj = {};
+		const exlcude = [ '__v', 'user', '_id' ];
+		Object.entries(item).forEach(([ key, value ]) => {
+			if (!exlcude.includes(key)) obj[key] = value.toString();
+		});
+		return obj;
 	};
 
 	transformData = (data) => {
@@ -61,7 +64,7 @@ class SelfEnvironments extends Component {
 						<UpdateIcon />
 						<InfoIcon
 							onClick={(e) => {
-								this.props.getDetails(this.filterData(data));
+								this.props.getDetails(this.filterData(item));
 							}}
 						/>
 						<div>{item.name}</div>

@@ -38,7 +38,8 @@ const getMuiTheme = () =>
 			},
 			MuiPaper: {
 				root: {
-					backgroundColor: '#272727'
+					backgroundColor: '#272727',
+					height: '100%'
 				}
 			},
 			MuiToolbar: {
