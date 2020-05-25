@@ -57,7 +57,7 @@ const advancedResults = (model, populate, option = {}) =>
 			query = query.skip(startIndex).limit(limit);
 			if (shouldPopulate) {
 				let { populateFields } = req.query;
-				populateFields = populateFields.split(',').join(' ');
+				populateFields = populateFields ? populateFields.split(',').join(' ') : null;
 				query.populate({
 					path: req.query.populate.split(',')[0],
 					select: populateFields

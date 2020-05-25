@@ -11,7 +11,7 @@ class Self extends Component {
 	state = {
 		data: [],
 		type: null,
-		rowsPerPage: 15,
+		rowsPerPage: this.props.user.current_environment.default_self_rpp,
 		page: 0,
 		totalCount: 0
 	};
@@ -67,7 +67,7 @@ class Self extends Component {
 			customToolbar() {
 				return <div>Custom Toolbar</div>;
 			},
-			rowsPerPage: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15,
+			rowsPerPage,
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,

@@ -1,5 +1,5 @@
 const express = require('express');
-const { register, login,logout, forgotPassword, resetPassword } = require('../controllers/auth');
+const { register, login, logout, forgotPassword, resetPassword } = require('../controllers/auth');
 const { protect } = require('../middleware/auth');
 const cors = require('cors');
 
