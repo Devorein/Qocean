@@ -44,7 +44,7 @@ class BasicTable extends Component {
 							<TableCell />
 							{headers.splice(1).map(({ name }, index) => (
 								<TableCell key={`${name}${index}`} align="center">
-									{rows.length >= 1 ? rows.reduce((row1, row2) => row1[name] + row2[name]) : null}
+									{rows.length > 1 ? rows.reduce((row1, row2) => row1[name] + row2[name]) : ''}
 								</TableCell>
 							))}
 						</TableRow>

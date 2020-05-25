@@ -26,6 +26,7 @@ import Icon from '@material-ui/core/Icon';
 import CancelIcon from '@material-ui/icons/Cancel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Slider from '@material-ui/core/Slider';
 
 import './Form.scss';
 
@@ -61,7 +62,7 @@ class Form extends React.Component {
 
 	change = (name, e) => {
 		const { values, setValues, customHandler, handleChange, setFieldTouched } = this.props;
-		e.persist();
+		if (e.persist) e.persist();
 		handleChange(e);
 		if (customHandler) customHandler(values, setValues, e);
 		setFieldTouched(name, true, false);
@@ -114,7 +115,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched, setValues } = this.props;
+		const { values, errors, handleBlur, touched, setValues, handleChange, setFieldValue } = this.props;
 		const {
 			name,
 			label,
@@ -159,7 +160,20 @@ class Form extends React.Component {
 					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
-		else if (type === 'checkbox')
+		else if (type === 'slider') {
+			return (
+				<Slider
+					name={name}
+					value={values[name]}
+					onChange={(e) => {
+						handleChange(name);
+						// setFieldValue(name, e.target.value);
+					}}
+					key={name}
+					valueLabelDisplay="auto"
+				/>
+			);
+		} else if (type === 'checkbox')
 			return (
 				<Fragment key={name}>
 					<FormControlLabel
