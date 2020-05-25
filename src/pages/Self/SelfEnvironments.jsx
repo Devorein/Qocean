@@ -2,16 +2,20 @@ import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
 import getColoredIcons from '../../Utils/getColoredIcons';
+import DeleteIcon from '@material-ui/icons/Delete';
+import axios from 'axios';
 
 class SelfEnvironments extends Component {
 	decideLabel = (name) => {
 		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
 	};
 
-	decideColums = () => {
+	decideColumns = () => {
 		return [
 			{ name: 'icon', sort: false, filter: false },
 			{ name: 'name', sort: true, filter: false },
+			{ name: 'public', sort: true, filter: true },
+			{ name: 'favourite', sort: true, filter: true },
 			{ name: 'created_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
@@ -25,30 +29,69 @@ class SelfEnvironments extends Component {
 		});
 	};
 
+	deleteResource = (selectedRows) => {
+		const deleteBatch = [];
+		for (let i = 0; i < selectedRows.data.length; i++) {
+			const { index } = selectedRows.data[i];
+			const { _id } = this.props.data[index];
+			deleteBatch.push(
+				axios.delete(`http://localhost:5001/api/v1/environments/${_id}`, {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+			);
+		}
+		Promise.all(deleteBatch).then((values) => {
+			console.log(values);
+		});
+	};
+
 	transformOption = (option) => {
+		const { deleteResource } = this;
+		option.expandableRows = true;
+		option.renderExpandableRow = (rowData, rowMeta) => {
+			return <div>{1}</div>;
+		};
+		option.onRowsSelect = () => {};
+		option.customToolbar = () => <div>123</div>;
+		option.customToolbarSelect = (selectedRows, displayData, setSelectedRows) => {
+			return (
+				<div>
+					<DeleteIcon onClick={deleteResource.bind(null, selectedRows)} />
+				</div>
+			);
+		};
+		option.onCellClick = (colData, cellMeta) => {
+			console.log(colData);
+			console.log(cellMeta);
+		};
+		option.onTableInit = (action, tableState) => {};
 		return option;
 	};
 
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {
-				...item,
-				username: item.user.username,
+				id: item._id,
+				name: item.name,
 				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				public: item.public.toString(),
+				favourite: item.favourite.toString()
 			};
 		});
 	};
 
 	render() {
-		const { decideColums, transformData, transformOption } = this;
+		const { decideColumns, transformData, transformOption } = this;
 		const { options, data } = this.props;
 		return (
 			<div>
 				<DataTable
 					title={`Environment List`}
 					data={transformData(data)}
-					columns={decideColums()}
+					columns={decideColumns()}
 					options={transformOption(options)}
 				/>
 			</div>
