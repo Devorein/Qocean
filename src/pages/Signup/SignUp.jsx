@@ -77,7 +77,7 @@ class SignIn extends Component {
 						{ name: 'confirm_password' }
 					]}
 					responseMsg={this.state.responseMsg}
-				/>;
+				/>
 			</div>
 		);
 	}

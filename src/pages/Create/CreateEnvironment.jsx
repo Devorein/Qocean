@@ -182,22 +182,41 @@ class CreateEnvironment extends Component {
 				]
 			},
 			{
-				name: 'theme',
-				type: 'select',
-				extra: {
-					selectItems: [
-						{
-							text: 'Light'
+				name: 'color_group',
+				type: 'group',
+				extra: { treeView: true },
+				children: [
+					{
+						name: 'default_theme',
+						type: 'select',
+						extra: {
+							selectItems: [
+								{
+									text: 'Light'
+								},
+								{
+									text: 'Dark'
+								},
+								{
+									text: 'Navy'
+								}
+							]
 						},
-						{
-							text: 'Dark'
-						},
-						{
-							text: 'Navy'
-						}
-					]
-				},
-				defaultValue: 'Light'
+						defaultValue: 'Dark'
+					},
+					{
+						name: 'default_tag_color',
+						defaultValue: '#000'
+					},
+					{
+						name: 'default_primary_color',
+						defaultValue: '#3f51b5'
+					},
+					{
+						name: 'default_secondary_color',
+						defaultValue: '#f50057'
+					}
+				]
 			},
 			{
 				name: 'notification_timing',

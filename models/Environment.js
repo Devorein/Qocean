@@ -22,7 +22,8 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 	},
 	theme: {
 		type: String,
-		default: 'Light'
+		default: 'Dark',
+		enum: [ 'Light', 'Dark', 'Navy' ]
 	},
 	animation: {
 		type: Boolean,
@@ -87,6 +88,18 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		default: 2500,
 		min: 1000,
 		max: 5000
+	},
+	default_tag_color: {
+		type: String,
+		default: '#000'
+	},
+	primary_color: {
+		type: String,
+		default: '#3f51b5'
+	},
+	secondary_color: {
+		type: String,
+		default: '#f50057'
 	}
 });
 

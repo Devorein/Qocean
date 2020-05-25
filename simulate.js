@@ -31,7 +31,8 @@ casual.define('user', function() {
 		name: casual.first_name + ' ' + casual.last_name,
 		password: casual.password,
 		username: casual.password.toLowerCase(),
-		image: faker.image.imageUrl()
+		image: faker.image.imageUrl(),
+		version: [ 'Rower', 'Sailor', 'Captain' ][casual.integer(0, 2)]
 	};
 });
 
@@ -58,8 +59,8 @@ casual.define('folder', function() {
 });
 
 casual.define('question', function() {
-	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC' ];
-	const type = 'FC' /* types[casual.integer(0, types.length - 1)] */;
+	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', /* 'FIB', */ 'FC' ];
+	const type = types[casual.integer(0, types.length - 1)];
 	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
 	const time = times[casual.integer(0, times.length - 1)];
 	let options,
@@ -143,11 +144,11 @@ const users = [],
 	folders = [],
 	envs = [];
 
-const total_users = casual.integer(1, 5),
-	total_quizzes = casual.integer(1, 5),
-	total_questions = casual.integer(10, 15),
-	total_folders = casual.integer(1, 5),
-	total_envs = casual.integer(1, 5);
+const total_users = casual.integer(10, 25),
+	total_quizzes = casual.integer(30, 50),
+	total_questions = casual.integer(50, 75),
+	total_folders = casual.integer(10, 25),
+	total_envs = casual.integer(35, 50);
 
 const loginData = [];
 
