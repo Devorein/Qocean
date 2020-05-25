@@ -4,7 +4,6 @@ import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import CustomList from '../../components/List/List';
-import DeleteIcon from '@material-ui/icons/Delete';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
 function download(filename, text) {
@@ -73,13 +72,6 @@ class Export extends Component {
 		});
 	};
 
-	deleteItems = (indexes) => {
-		const filtered = this.state.data.filter((data, index) => !indexes.includes(index));
-		this.setState({
-			data: filtered
-		});
-	};
-
 	render() {
 		const { match: { params: { type } } } = this.props;
 
@@ -111,13 +103,6 @@ class Export extends Component {
 						});
 					}}
 					selectedIcons={[
-						<DeleteIcon
-							key={'delete'}
-							onClick={(e) => {
-								this.deleteItems(this.CustomList.state.checked);
-								this.CustomList.state.checked = [];
-							}}
-						/>,
 						<GetAppIcon
 							key={'publish'}
 							onClick={(e) => {

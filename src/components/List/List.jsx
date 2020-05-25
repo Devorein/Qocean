@@ -10,7 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import getIcons from '../../Utils/getIcons';
 import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
+import TextField from '@material-ui/core/TextField';
 import clsx from 'clsx';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ReplayIcon from '@material-ui/icons/Replay';
 
 const IconContainer = withStyles((theme) => ({
 	root: {
@@ -48,11 +51,14 @@ const EnhancedListItemText = withStyles((theme) => ({
 
 class CustomList extends React.Component {
 	state = {
-		checked: []
+		checked: [],
+		manipulated: false,
+		filteredItems: []
 	};
 
 	handleToggle = (index, e) => {
-		const { setChecked } = this.props;
+		const { listItems, setChecked } = this.props;
+		const { checked, manipulated, filteredItems } = this.state;
 
 		if (e.shiftKey)
 			this.setState(
@@ -64,16 +70,14 @@ class CustomList extends React.Component {
 				}
 			);
 		else if (e.altKey) {
-			const isThere = this.state.checked.includes(index);
+			const isThere = checked.includes(index);
 			if (isThere)
 				this.setState(
 					{
-						checked: new Array(this.props.listItems.length)
-							.fill(0)
-							.map((_, _index) => (_index !== index ? index : void 0))
+						checked: new Array(listItems.length).fill(0).map((_, _index) => (_index !== index ? index : void 0))
 					},
 					() => {
-						if (setChecked) setChecked(this.state.checked);
+						if (setChecked) setChecked(checked);
 					}
 				);
 			else
@@ -82,11 +86,10 @@ class CustomList extends React.Component {
 						checked: [ index ]
 					},
 					() => {
-						if (setChecked) setChecked(this.state.checked);
+						if (setChecked) setChecked(checked);
 					}
 				);
 		} else {
-			const { checked } = this.state;
 			const currentIndex = checked.indexOf(index);
 			const newChecked = [ ...checked ];
 
@@ -97,19 +100,21 @@ class CustomList extends React.Component {
 					checked: newChecked
 				},
 				() => {
-					if (setChecked) setChecked(this.state.checked);
+					if (setChecked) setChecked(checked);
 				}
 			);
 		}
 	};
 
 	handleToggleAll = () => {
-		const { setChecked } = this.props;
-		const shouldCheck = this.state.checked.length < this.props.listItems.length;
+		const { listItems, setChecked } = this.props;
+		const { checked, filteredItems, manipulated } = this.state;
+		const target = manipulated ? filteredItems : listItems;
+		const shouldCheck = checked.length < target.length;
 		if (shouldCheck)
 			this.setState(
 				{
-					checked: this.props.listItems.map((_, index) => index)
+					checked: target.map((_, index) => index)
 				},
 				() => {
 					if (setChecked) setChecked(this.state.checked);
@@ -126,37 +131,67 @@ class CustomList extends React.Component {
 			);
 	};
 
+	filterList = (e) => {
+		this.setState({
+			filteredItems: this.props.listItems.filter(({ primary }) => primary.includes(e.target.value)),
+			manipulated: true
+		});
+	};
+
+	deleteItems = (e) => {
+		const { checked, manipulated, filteredItems } = this.state;
+		const target = manipulated ? filteredItems : this.props.listItems;
+
+		this.setState({
+			filteredItems: target.filter((data, index) => !checked.includes(index)),
+			manipulated: true,
+			checked: filteredItems.map((item, index) => index)
+		});
+	};
+
+	refetchData = (e) => {
+		this.setState({
+			filteredItems: this.props.listItems,
+			manipulated: false
+		});
+	};
+
 	render() {
-		const { handleToggle, handleToggleAll } = this;
-		const { checked, lastClicked } = this.state;
+		const { handleToggle, handleToggleAll, filterList, deleteItems, refetchData } = this;
+		const { manipulated, filteredItems, checked, lastClicked } = this.state;
 		const { listItems, title, containsCheckbox, onClick, selectedIcons, classes, className } = this.props;
 		const rootClass = clsx(className, classes.listContainer);
+		const items = manipulated ? filteredItems : listItems;
 		return (
 			<Container className={rootClass}>
 				<MiniGrid>
 					<Typography variant="h6" classes={{ root: classes.listHeader }}>
 						{title}
 					</Typography>
-					<MiniGridTitle2 variant="body2">{checked.length}(s) selected</MiniGridTitle2>
+					<TextField onChange={filterList} />
 					{
 						<IconContainer>
+							{checked.length >= 1 ? selectedIcons.map((icon) => icon) : null}
+							<DeleteIcon onClick={deleteItems} />
+							<ReplayIcon onClick={refetchData} />
 							<ListItemIcon classes={{ root: classes.listItemIcon }} onClick={handleToggleAll}>
 								<Checkbox
 									edge="start"
-									checked={checked.length === listItems.length}
+									checked={checked.length === items.length && items.length !== 0}
 									tabIndex={-1}
 									disableRipple
 									color="primary"
 									inputProps={{ 'aria-labelledby': 'Select All' }}
+									className={classes.checkbox}
 								/>
 							</ListItemIcon>
-							{checked.length >= 1 ? selectedIcons.map((icon) => icon) : null}
+							<ListItemText classes={{ root: classes.listSelected }}>{checked.length}</ListItemText>
 						</IconContainer>
 					}
 				</MiniGrid>
 
 				<List dense={false} classes={{ root: classes.listBody }}>
-					{listItems.map((listItem, index) => {
+					{items.map((listItem, index) => {
 						const { primary, secondary, primaryIcon, secondaryIcon, key } = listItem;
 						return (
 							<ListItem
@@ -255,6 +290,15 @@ export default withStyles((theme) => ({
 		'&.selected': {
 			backgroundColor: theme.palette.grey['A400']
 		}
+	},
+	listSelected: {
+		fontWeight: 'bolder',
+		fontSize: 16,
+		paddingRight: 5,
+		flex: 'none'
+	},
+	checkbox: {
+		padding: 3
 	},
 	listItemIcon: {
 		minWidth: 25
