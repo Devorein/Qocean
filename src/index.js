@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 
+import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme';
@@ -208,8 +209,10 @@ ReactDOM.render(
 			return (
 				<Router>
 					<ThemeProvider theme={theme}>
-						<CssBaseline />
-						<RoutedApp session={session} refetch={refetch} />
+						<SnackbarProvider maxSnack={5}>
+							<CssBaseline />
+							<RoutedApp session={session} refetch={refetch} />
+						</SnackbarProvider>
 					</ThemeProvider>
 				</Router>
 			);

@@ -109,7 +109,7 @@ EnvironmentSchema.pre('save', async function(next) {
 });
 
 EnvironmentSchema.pre('remove', async function(next) {
-	await this.model('User').remove(this.user, 'environments', this._id);
+	// await this.model('User').remove(this.user, 'environments', this._id);
 	next();
 });
 

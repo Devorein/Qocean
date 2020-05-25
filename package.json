@@ -50,6 +50,7 @@
     "mui-datatables": "^2.14.0",
     "node-sass": "^4.14.1",
     "nodemailer": "^6.4.6",
+    "notistack": "^0.9.16",
     "pluralize": "^8.0.0",
     "randomcolor": "^0.5.4",
     "react": "^16.13.1",
