@@ -11,7 +11,7 @@ class InputForm extends Component {
 			customHandler,
 			formButtons,
 			classNames,
-			validateOnMount,
+			validateOnMount = false,
 			errorBeforeTouched = false,
 			submitMsg
 		} = this.props;
@@ -32,7 +32,7 @@ class InputForm extends Component {
 				initialValues={initialValues}
 				onSubmit={onSubmit}
 				validationSchema={validationSchema}
-				validateOnMount={validateOnMount ? validateOnMount : false}
+				validateOnMount={validateOnMount}
 				enableReinitialize={true}
 			>
 				{(props) => {

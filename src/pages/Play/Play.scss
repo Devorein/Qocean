@@ -8,6 +8,9 @@
   .MuiButton-contained.MuiButton-containedPrimary {
     grid-area: 3/1/5/2;
   }
+  &_settings {
+    grid-area: 2/2/4/4;
+  }
   &_stats {
     grid-area: 1/2/2/4;
   }

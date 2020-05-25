@@ -133,6 +133,7 @@ class Form extends React.Component {
 			component,
 			extra
 		} = input;
+
 		if (type === 'component') return component;
 		else if (type === 'select')
 			return (

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import CustomList from '../../components/List/List';
 import PlayStats from './PlayStats';
+import PlaySettings from './PlaySettings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GenericButton from '../../components/Buttons/GenericButton';
 import './Play.scss';
@@ -73,6 +74,7 @@ class Play extends Component {
 					quizzes={this.state.quizzes}
 					selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
 				/>
+				<PlaySettings />
 				<GenericButton text="Play" />
 			</div>
 		);
