@@ -7,6 +7,10 @@ import SelfQuizzes from './SelfQuizzes';
 import SelfQuestions from './SelfQuestions';
 import SelfFolders from './SelfFolders';
 import SelfEnvironments from './SelfEnvironments';
+import deleteResource from '../../operations/deleteResource';
+import { withSnackbar } from 'notistack';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 class Self extends Component {
 	state = {
 		data: [],
@@ -72,9 +76,48 @@ class Self extends Component {
 		});
 	};
 
+	deleteResource = (selectedRows) => {
+		const { type } = this.state;
+		const { enqueueSnackbar } = this.props;
+		const CLASS = this;
+		let current = 0;
+		let done = false;
+		function reductiveDownloadChain(items) {
+			return items.reduce((chain, currentItem) => {
+				return chain.then((_) => {
+					current++;
+					const { _id, name } = currentItem;
+					deleteResource(type, _id).then(({ data }) => {
+						enqueueSnackbar(`${type} ${name} has been deleted`, {
+							variant: 'success'
+						});
+						if (current === selectedRows.length && !done) {
+							CLASS.refetchData();
+							done = true;
+						}
+					});
+				});
+			}, Promise.resolve());
+		}
+		reductiveDownloadChain(selectedRows);
+	};
+
 	decideTable = () => {
-		const { page, rowsPerPage, totalCount } = this.state;
+		const { page, rowsPerPage, totalCount, type } = this.state;
+		const CLASS = this;
 		const options = {
+			customToolbarSelect(selectedRows, displayData, setSelectedRows) {
+				return (
+					<div>
+						<DeleteIcon
+							onClick={(e) => {
+								selectedRows = selectedRows.data.map(({ index }) => CLASS.state.data[index]);
+								CLASS.deleteResource(selectedRows);
+							}}
+						/>
+					</div>
+				);
+			},
 			filterType: 'checkbox',
 			count: totalCount,
 			page,
@@ -99,7 +142,7 @@ class Self extends Component {
 						page
 					},
 					() => {
-						this.refetchData(this.state.type, {
+						this.refetchData(type, {
 							limit: rowsPerPage,
 							page
 						});
@@ -112,7 +155,7 @@ class Self extends Component {
 						rowsPerPage
 					},
 					() => {
-						this.refetchData(this.state.type, {
+						this.refetchData(type, {
 							limit: rowsPerPage,
 							page
 						});
@@ -129,12 +172,10 @@ class Self extends Component {
 			page
 		};
 
-		let { type } = this.state;
-		type = type.toLowerCase();
-		if (type === 'quiz') return <SelfQuizzes {...props} />;
-		else if (type === 'question') return <SelfQuestions {...props} />;
-		else if (type === 'folder') return <SelfFolders {...props} />;
-		else if (type === 'environment') return <SelfEnvironments {...props} />;
+		if (type === 'Quiz') return <SelfQuizzes {...props} />;
+		else if (type === 'Question') return <SelfQuestions {...props} />;
+		else if (type === 'Folder') return <SelfFolders {...props} />;
+		else if (type === 'Environment') return <SelfEnvironments {...props} />;
 	};
 
 	render() {
@@ -165,4 +206,4 @@ class Self extends Component {
 	}
 }
 
-export default withRouter(Self);
+export default withRouter(withSnackbar(Self));
