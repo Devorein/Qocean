@@ -31,43 +31,28 @@ class SelfEnvironments extends Component {
 	};
 
 	deleteResource = (selectedRows) => {
-		const { enqueueSnackbar } = this.props;
+		const { enqueueSnackbar, refetchData } = this.props;
+		let current = 0;
+		let done = false;
 		function reductiveDownloadChain(items) {
 			return items.reduce((chain, currentItem) => {
 				return chain.then((_) => {
+					current++;
 					const { _id, name } = currentItem;
 					deleteResource('environment', _id).then(({ data }) => {
 						enqueueSnackbar(`Environment ${name} has been deleted`, {
 							variant: 'success'
 						});
+						if (current === selectedRows.length && !done) {
+							refetchData();
+							done = true;
+						}
 					});
 				});
 			}, Promise.resolve());
 		}
 		selectedRows = selectedRows.data.map(({ index }) => this.props.data[index]);
 		reductiveDownloadChain(selectedRows);
-
-		// selectedRows.forEach(({index})=>{
-		//   const {_id,name} = this.props.data[index];
-
-		// })
-		// for (let i = 0; i < selectedRows.data.length; i++) {
-		// 	const { index } = selectedRows.data[i];
-		// 	const { _id, name } =
-		// 	names.push(name);
-		// 	deleteBatch.push(
-		// 		axios.delete(`http://localhost:5001/api/v1/environments/${_id}`, {
-		// 			headers: {
-		// 				Authorization: `Bearer ${localStorage.getItem('token')}`
-		// 			}
-		// 		})
-		// 	);
-		// }
-		// Promise.all(deleteBatch).then((values) => {
-		// 	values.forEach((value, index) => {
-
-		// 	});
-		// });
 	};
 
 	transformOption = (option) => {

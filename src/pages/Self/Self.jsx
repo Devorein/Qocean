@@ -24,6 +24,13 @@ class Self extends Component {
 	}
 
 	refetchData = (type, queryParams) => {
+		type = type ? type : this.state.type;
+		queryParams = queryParams
+			? queryParams
+			: {
+					limit: this.state.rowsPerPage,
+					page: this.state.page
+				};
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
@@ -115,6 +122,8 @@ class Self extends Component {
 		};
 
 		const props = {
+			limit: rowsPerPage,
+			refetchData: this.refetchData,
 			data: this.state.data,
 			options,
 			page
@@ -150,7 +159,7 @@ class Self extends Component {
 					height={50}
 					headers={headers}
 				/>
-				{data.length > 0 ? this.decideTable() : <div>Loading data</div>}
+				{data.length > 0 ? this.decideTable() : <div>You've not created any {type} yet</div>}
 			</div>
 		);
 	}
