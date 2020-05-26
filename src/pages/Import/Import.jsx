@@ -97,10 +97,28 @@ class Import extends Component {
 			data: filtered
 		});
 	};
+	transformValue = (defaultInputs) => {
+		let { selectedIndex, data } = this.state;
+
+		const target = data[selectedIndex];
+		function recurse(defaultInputs) {
+			defaultInputs.forEach((defaultInput, index) => {
+				const { type } = defaultInput;
+				if (type !== 'group')
+					defaultInput.defaultValue = target[defaultInput.name]
+						? target[defaultInput.name]
+						: defaultInput.defaultValue ? defaultInput.defaultValue : typeof type === 'boolean' ? true : '';
+				else recurse(defaultInput.children);
+			});
+		}
+		recurse(defaultInputs);
+		return defaultInputs;
+	};
 
 	renderForm = () => {
+		const { transformValue } = this;
 		let { match: { params: { type } } } = this.props;
-		let { currentType, selectedIndex, data } = this.state;
+		let { currentType, data, selectedIndex } = this.state;
 
 		currentType = currentType.toLowerCase();
 		type = type.toLowerCase();
@@ -108,7 +126,8 @@ class Import extends Component {
 		const props = {
 			user: this.props.user,
 			submitMsg: 'Import',
-			onSubmit: this.context.submitForm
+			onSubmit: this.context.submitForm,
+			customInputs: transformValue
 		};
 		const cond = currentType === type && data.length > 0 && typeof selectedIndex === 'number';
 
@@ -123,34 +142,11 @@ class Import extends Component {
 							});
 					}}
 					{...props}
-					customInputs={(defaultInputs) => {
-						const props = [ 'name', 'subject', 'source', 'favourite', 'public' ];
-						const target = data[selectedIndex];
-						props.forEach(
-							(prop, index) =>
-								(defaultInputs[index].defaultValue = target[prop] ? target[prop] : defaultInputs[index].defaultValue)
-						);
-						return defaultInputs;
-					}}
 					image_link={data[selectedIndex].image_link}
 				/>
 			);
 		else if (cond && type === 'question') return <CreateQuestion {...props} />;
-		else if (cond && type === 'folder')
-			return (
-				<CreateFolder
-					{...props}
-					customInputs={(defaultInputs) => {
-						const props = [ 'name', 'icon', 'favourite', 'public' ];
-						const target = data[selectedIndex];
-						props.forEach(
-							(prop, index) =>
-								(defaultInputs[index].defaultValue = target[prop] ? target[prop] : defaultInputs[index].defaultValue)
-						);
-						return defaultInputs;
-					}}
-				/>
-			);
+		else if (cond && type === 'folder') return <CreateFolder {...props} />;
 		else if (cond && type === 'environment') return <CreateEnvironment {...props} />;
 	};
 

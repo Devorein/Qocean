@@ -1,7 +1,7 @@
 [
   {
     "name": "Env 1",
-    "theme": "Light",
+    "default_theme": "Light",
     "animation": true,
     "sound": true,
     "default_quiz_time": 30

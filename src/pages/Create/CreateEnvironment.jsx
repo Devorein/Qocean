@@ -14,9 +14,9 @@ const validationSchema = Yup.object({
 
 class CreateEnvironment extends Component {
 	render() {
-		const { onSubmit } = this.props;
+		const { onSubmit, customInputs, submitMsg } = this.props;
 
-		const inputs = [
+		let defaultInputs = [
 			{ name: 'name' },
 			{
 				name: 'icon',
@@ -229,10 +229,13 @@ class CreateEnvironment extends Component {
 				defaultValue: 2500
 			}
 		];
+		if (customInputs) defaultInputs = customInputs(defaultInputs);
+
 		return (
 			<div className="create_env create_form">
 				<InputForm
-					inputs={inputs}
+					submitMsg={submitMsg}
+					inputs={defaultInputs}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ 'environment' ])}
 				/>
