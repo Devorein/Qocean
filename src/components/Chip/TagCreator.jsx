@@ -18,14 +18,14 @@ class TagCreator extends Component {
 	static contextType = AppContext;
 
 	state = {
-		tags: this.props.tags || [],
 		tagColor: '#000',
 		displayColorPicker: false,
 		input: ''
 	};
 
 	openCP = () => {
-		let { displayColorPicker, input, tagColor, tags } = this.state;
+		let { displayColorPicker, input, tagColor } = this.state;
+		let { tags } = this.props;
 		if (displayColorPicker) {
 			tags.push((input.includes(':') ? input : input + ':') + tagColor);
 			input = '';
@@ -42,16 +42,19 @@ class TagCreator extends Component {
 	};
 
 	deleteTags = (_tag) => {
-		let { tags } = this.state;
+		let { tags } = this.props;
 		tags = tags.filter((tag) => tag.split(':')[0].toLowerCase() !== _tag.toLowerCase());
-		this.setState({
-			tags
-		});
+		this.props.setTags(tags);
+		// this.setState({
+		// 	tags
+		// },()=>{
+
+		// });
 	};
 
 	validateTags = (_tag) => {
 		const { changeResponse } = this.context;
-		const { tags } = this.state;
+		const { tags } = this.props;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
 		if (tags.length >= 5) {
@@ -87,21 +90,25 @@ class TagCreator extends Component {
 		e.persist();
 		if (e.key === 'Enter') {
 			e.preventDefault();
-			const { tags } = this.state;
+			const { tags } = this.props;
 			if (this.validateTags(e.target.value)) {
 				tags.push(e.target.value.toLowerCase());
-				this.setState({
-					tags,
-					input: ''
-				});
+				this.setState(
+					{
+						input: ''
+					},
+					() => {
+						this.props.setTags(tags);
+					}
+				);
 			}
 		}
 	};
 
 	render() {
 		const { deleteTags, createTags, openCP } = this;
-		const { classes } = this.props;
-		const { tags, displayColorPicker, input, tagColor } = this.state;
+		const { classes, tags } = this.props;
+		const { displayColorPicker, input, tagColor } = this.state;
 
 		return (
 			<div className={classes.root}>

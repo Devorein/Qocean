@@ -134,9 +134,10 @@ class Form extends React.Component {
 			component,
 			extra
 		} = input;
-
 		if (type === 'component') return component;
-		else if (type === 'select')
+		else if (type === 'component_') {
+			return React.createElement(component, { ...extra.props });
+		} else if (type === 'select')
 			return (
 				<Fragment key={name}>
 					<FormControl disabled={disabled ? disabled : false} fullWidth>

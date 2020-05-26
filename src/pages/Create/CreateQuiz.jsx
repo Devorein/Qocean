@@ -22,6 +22,7 @@ const validationSchema = Yup.object({
 
 class CreateQuiz extends Component {
 	state = {
+		tags: this.props.tags || [],
 		folders: [],
 		loading: true,
 		selected_folders: []
@@ -53,7 +54,7 @@ class CreateQuiz extends Component {
 
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
-		values.tags = this.TagCreator.state.tags;
+		values.tags = this.state.tags;
 		const [ file, src ] = this.FileInput.returnData();
 		if (file) values.link = '';
 		else values.link = src;
@@ -66,22 +67,19 @@ class CreateQuiz extends Component {
 			selected_folders = [];
 			tags = [];
 			this.FileInput.resetData();
-			this.TagCreator.setState({
-				tags: []
-			});
 		}
 		this.setState(
 			{
 				selected_folders,
 				tags
 			},
-			cb
+			cb ? cb : () => {}
 		);
 	};
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-		const [ file ] = this.refs.FileInput.returnData();
+		const [ file ] = this.FileInput.returnData();
 		if (file) {
 			fd.append('file', file, file.name);
 			axios
@@ -117,11 +115,23 @@ class CreateQuiz extends Component {
 			{ name: 'name' },
 			{ name: 'subject' },
 			{
-				name: 'source'
-			},
-			{
-				type: 'component',
-				component: <TagCreator ref={(r) => (this.TagCreator = r)} key={'tags'} />
+				name: 'source',
+				siblings: [
+					{
+						type: 'component',
+						component: (
+							<TagCreator
+								key={'tag_creator'}
+								tags={this.state.tags}
+								setTags={(tags) => {
+									this.setState({
+										tags
+									});
+								}}
+							/>
+						)
+					}
+				]
 			},
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', type: 'checkbox', defaultValue: true }

@@ -10,8 +10,7 @@ import CreateFolder from '../Create/CreateFolder';
 import CreateQuestion from '../Create/CreateQuestion';
 import CreateQuiz from '../Create/CreateQuiz';
 import CreateEnvironment from '../Create/CreateEnvironment';
-import ChipContainer from '../../components/Chip/ChipContainer';
-
+import TagCreator from '../../components/Chip/TagCreator';
 import './Import.scss';
 
 class Import extends Component {
@@ -107,18 +106,39 @@ class Import extends Component {
 		type = type.toLowerCase();
 
 		const props = {
+			user: this.props.user,
 			submitMsg: 'Import',
 			onSubmit: this.context.submitForm
 		};
 		const cond = currentType === type && data.length > 0 && typeof selectedIndex === 'number';
 
-		if (cond && type === 'quiz') return <CreateQuiz {...props} />;
+		if (cond && type === 'quiz')
+			return (
+				<CreateQuiz
+					ref={(r) => {
+						this.CreateQuiz = r;
+						if (this.CreateQuiz)
+							this.CreateQuiz.setState({
+								tags: data[selectedIndex].tags
+							});
+					}}
+					{...props}
+					customInputs={(defaultInputs) => {
+						const props = [ 'name', 'subject', 'source', 'favourite', 'public' ];
+						const target = data[selectedIndex];
+						props.forEach(
+							(prop, index) =>
+								(defaultInputs[index].defaultValue = target[prop] ? target[prop] : defaultInputs[index].defaultValue)
+						);
+						return defaultInputs;
+					}}
+				/>
+			);
 		else if (cond && type === 'question') return <CreateQuestion {...props} />;
 		else if (cond && type === 'folder')
 			return (
 				<CreateFolder
 					{...props}
-					onSubmit={this.context.submitForm}
 					customInputs={(defaultInputs) => {
 						const props = [ 'name', 'icon', 'favourite', 'public' ];
 						const target = data[selectedIndex];
