@@ -27,13 +27,23 @@ class Explore extends Component {
 		});
 	}
 
-	refetchData = (type, queryParams) => {
+	refetchData = (type, queryParams, newState = {}) => {
+		type = type ? type : this.state.type;
+		queryParams = queryParams
+			? queryParams
+			: {
+					limit: this.state.rowsPerPage,
+					page: this.state.page
+				};
+		if (this.state.sortCol && Object.keys(newState).length === 0)
+			queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
 					.map((key) => key + '=' + (key === 'page' ? parseInt(queryParams[key]) + 1 : queryParams[key]))
 					.join('&')
 			: '';
+
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -50,11 +60,8 @@ class Explore extends Component {
 					.then(({ data: { data } }) => {
 						this.setState({
 							data,
-							type,
 							totalCount,
-							page: 0,
-							sortCol: null,
-							sortOrder: null
+							...newState
 						});
 					});
 			})
@@ -65,10 +72,16 @@ class Explore extends Component {
 
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
-		this.refetchData();
+		this.refetchData(page.name, null, {
+			type: page.name,
+			page: 0,
+			sortCol: null,
+			sortOrder: null
+		});
 	};
 
 	decideTable = () => {
+		const { refetchData } = this;
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder } = this.state;
 		const options = {
 			filterType: 'checkbox',
@@ -89,10 +102,7 @@ class Explore extends Component {
 						page
 					},
 					() => {
-						this.refetchData(this.state.type, {
-							limit: rowsPerPage,
-							page
-						});
+						refetchData();
 					}
 				);
 			},
@@ -102,10 +112,18 @@ class Explore extends Component {
 						rowsPerPage
 					},
 					() => {
-						this.refetchData(this.state.type, {
-							limit: rowsPerPage,
-							page
-						});
+						refetchData();
+					}
+				);
+			},
+			onColumnSortChange: (changedColumn, order) => {
+				this.setState(
+					{
+						sortCol: changedColumn,
+						sortOrder: order === 'descending' ? 'desc' : 'asc'
+					},
+					() => {
+						refetchData();
 					}
 				);
 			}
@@ -114,7 +132,9 @@ class Explore extends Component {
 		const props = {
 			data: this.state.data,
 			options,
-			page
+			page,
+			sortCol,
+			sortOrder
 		};
 
 		const { type } = this.state;

@@ -47,7 +47,8 @@ class Self extends Component {
 					limit: this.state.rowsPerPage,
 					page: this.state.page
 				};
-		if (this.state.sortCol) queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
+		if (this.state.sortCol && Object.keys(newState).length === 0)
+			queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
@@ -213,7 +214,7 @@ class Self extends Component {
 			page,
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',
-			rowsPerPageOptions: [ 15, 20, 30, 40, 50 ],
+			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
 			serverSide: true,

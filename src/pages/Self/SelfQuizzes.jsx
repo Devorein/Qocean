@@ -26,7 +26,8 @@ class SelfQuizzes extends Component {
 				label: this.decideLabel(name),
 				options: {
 					filter,
-					sort
+					sort,
+					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
 				}
 			};
 		});
