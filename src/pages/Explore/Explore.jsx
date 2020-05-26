@@ -32,17 +32,27 @@ class Explore extends Component {
 					.map((key) => key + '=' + (key === 'page' ? parseInt(queryParams[key]) + 1 : queryParams[key]))
 					.join('&')
 			: '';
+		const headers = {
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
+		};
+		const [ count, endpoint, header ] = this.props.user
+			? [ `countOthers`, '/others/', headers ]
+			: [ 'countAll', '/', {} ];
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countAll`)
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}`, { ...header })
 			.then(({ data: { data: totalCount } }) => {
-				axios.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${queryString}`).then(({ data: { data } }) => {
-					this.setState({
-						data,
-						type,
-						totalCount,
-						page: 0
+				axios
+					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}${queryString}`, { ...header })
+					.then(({ data: { data } }) => {
+						this.setState({
+							data,
+							type,
+							totalCount,
+							page: 0
+						});
 					});
-				});
 			})
 			.catch((err) => {
 				console.log(err);
