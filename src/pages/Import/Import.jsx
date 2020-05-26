@@ -6,7 +6,7 @@ import { AppContext } from '../../context/AppContext';
 import CustomList from '../../components/List/List';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
-import CreateFolder from '../Create/CreateFolder';
+import CreateFolder from '../../resources/Folder/CreateFolder';
 import CreateQuestion from '../Create/CreateQuestion';
 import CreateQuiz from '../Create/CreateQuiz';
 import CreateEnvironment from '../Create/CreateEnvironment';
@@ -21,7 +21,7 @@ class Import extends Component {
 		data: [],
 		inputs: [],
 		currentType: '',
-		selectedIndex: 0
+		selectedIndex: null
 	};
 
 	switchPage = (page) => {
@@ -60,43 +60,23 @@ class Import extends Component {
 		});
 	};
 
-	decideInput = (inputs) => {
-		const { currentType } = this.state;
-		if (currentType === 'folder' || currentType === 'environment') {
-			return inputs.map((input) => {
-				return {
-					...input,
-					defaultValue: this.state.data[this.state.selectedIndex][input.name]
-						? this.state.data[this.state.selectedIndex][input.name]
-						: input.defaultValue
-				};
-			});
-		} else if (currentType === 'quiz') {
-			return inputs.map((input) => {
-				if (input.name === 'tags')
-					return {
-						...input
-					};
-				else
-					return {
-						...input,
-						defaultValue: this.state.data[this.state.selectedIndex][input.name]
-							? this.state.data[this.state.selectedIndex][input.name]
-							: input.defaultValue
-					};
-			});
+	initializeData = (data) => {
+		const { match: { params: { type } } } = this.props;
+		if (type === 'Folder') {
+			return {
+				name: data.name ? data.name : '',
+				favourite: data.favourite ? data.favourite : false,
+				public: data.public ? data.public : true,
+				icon: data.icon ? data.icon : 'Red_folder.svg'
+			};
 		}
 	};
-
 	renderForm = () => {
-		const { data } = this.state;
+		const { data, selectedIndex } = this.state;
 		const { match: { params: { type } } } = this.props;
-
-		return data.length !== 0 ? (
-			<div className={`${type}-import-section-form import-section-form`}>{this.decideForm()}</div>
-		) : (
-			<div>Nothing imported</div>
-		);
+		if (type === 'Folder' && data.length > 0 && typeof selectedIndex === 'number')
+			return <CreateFolder initialValues={this.initializeData(data[selectedIndex])} />;
+		else return null;
 	};
 
 	renderList = () => {
@@ -122,24 +102,7 @@ class Import extends Component {
 								this.CustomList.state.checked = [];
 							}}
 						/>,
-						<PublishIcon
-							key={'publish'}
-							onClick={(e) => {
-								let _this = this;
-								this.CustomList.state.checked.forEach((checked, index) => {
-									setTimeout(() => {
-										this.setState(
-											{
-												selectedIndex: checked
-											},
-											() => {
-												_this.Create.InputForm.Form.SubmitButton.click();
-											}
-										);
-									}, 2500 * index);
-								});
-							}}
-						/>
+						<PublishIcon key={'publish'} onClick={(e) => {}} />
 					]}
 				/>
 			</div>
@@ -164,12 +127,11 @@ class Import extends Component {
 
 		const props = {
 			submitMsg: 'Import',
-			ref: (r) => (this.Create = r),
 			onSubmit: this.context.submitForm,
 			customInputs: this.decideInput
 		};
 
-		if (currentType === type && type === 'quiz') return <CreateQuiz {...props} ref={(r) => (this.Create = r)} />;
+		if (currentType === type && type === 'quiz') return <CreateQuiz {...props} />;
 		else if (currentType === type && type === 'question') return <CreateQuestion {...props} />;
 		else if (currentType === type && type === 'folder') return <CreateFolder {...props} />;
 		else if (currentType === type && type === 'environment') return <CreateEnvironment {...props} />;

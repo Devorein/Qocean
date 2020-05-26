@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CreateQuiz from './CreateQuiz';
 import CreateQuestion from './CreateQuestion';
-import CreateFolder from './CreateFolder';
+import CreateFolder from '../../resources/Folder/CreateFolder';
 import CreateEnvironment from './CreateEnvironment';
 import { AppContext } from '../../context/AppContext';
 import CustomTabs from '../../components/Tab/Tabs';
