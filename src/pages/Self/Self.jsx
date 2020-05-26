@@ -12,9 +12,13 @@ import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
 import DeleteIcon from '@material-ui/icons/Delete';
 import StarIcon from '@material-ui/icons/Star';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import LinearList from '../../components/List/LinearList';
 import './Self.scss';
+import UpdateIcon from '@material-ui/icons/Update';
+import InfoIcon from '@material-ui/icons/Info';
+import IconRow from '../../components/Row/IconRow';
 
 class Self extends Component {
 	state = {
@@ -136,6 +140,31 @@ class Self extends Component {
 		reductiveDownloadChain(selectedRows);
 	};
 
+	genericTransformData = (data, filterData) => {
+		return data.map((item, index) => {
+			return {
+				...item,
+				name: (
+					<IconRow>
+						<UpdateIcon />
+						<InfoIcon
+							onClick={(e) => {
+								this.getDetails(filterData(item), index);
+							}}
+						/>
+						<div>{item.name}</div>
+					</IconRow>
+				),
+				public: item.public ? <PublicIcon style={{ fill: '#00a3e6' }} /> : <PublicIcon style={{ fill: '#f4423c' }} />,
+				favourite: item.favourite ? (
+					<StarIcon style={{ fill: '#f0e744' }} />
+				) : (
+					<StarBorderIcon style={{ fill: '#ead50f' }} />
+				)
+			};
+		});
+	};
+
 	getDetails = ({ exclude, primary }, index) => {
 		this.setState({
 			selectedData: {
@@ -147,7 +176,7 @@ class Self extends Component {
 	};
 
 	decideTable = () => {
-		const { getDetails } = this;
+		const { getDetails, genericTransformData } = this;
 		const { page, rowsPerPage, totalCount, type } = this.state;
 		const CLASS = this;
 		const options = {
@@ -224,7 +253,8 @@ class Self extends Component {
 			data: this.state.data,
 			options,
 			page,
-			getDetails
+			getDetails,
+			genericTransformData
 		};
 
 		if (type === 'Quiz') return <SelfQuizzes {...props} />;

@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
 import getColoredIcons from '../../Utils/getColoredIcons';
-import UpdateIcon from '@material-ui/icons/Update';
-import InfoIcon from '@material-ui/icons/Info';
-import IconRow from '../../components/Row/IconRow';
 
 class SelfEnvironments extends Component {
 	decideLabel = (name) => {
@@ -59,32 +56,22 @@ class SelfEnvironments extends Component {
 		return data.map((item, index) => {
 			return {
 				id: item._id,
-				name: (
-					<IconRow>
-						<UpdateIcon />
-						<InfoIcon
-							onClick={(e) => {
-								this.props.getDetails(this.filterData(item), index);
-							}}
-						/>
-						<div>{item.name}</div>
-					</IconRow>
-				),
+				name: item.name,
 				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow(),
-				public: item.public.toString(),
-				favourite: item.favourite.toString()
+				public: item.public,
+				favourite: item.favourite
 			};
 		});
 	};
 
 	render() {
-		const { decideColumns, transformData, transformOption } = this;
-		const { options, data } = this.props;
+		const { decideColumns, transformData, transformOption, filterData } = this;
+		const { options, data, genericTransformData } = this.props;
 		return (
 			<DataTable
 				title={`Environment List`}
-				data={transformData(data)}
+				data={transformData(genericTransformData(data, filterData))}
 				columns={decideColumns()}
 				options={transformOption(options)}
 			/>
