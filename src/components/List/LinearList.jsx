@@ -59,7 +59,7 @@ class LinearList extends Component {
 									{key.toString().split('_').map((key) => key.charAt(0).toUpperCase() + key.substr(1)).join(' ')}
 								</span>
 							</LinearListRowPrimaryKey>
-							<LinearListRowValue theme={theme}>{value.toString()}</LinearListRowValue>
+							<LinearListRowValue theme={theme}>{value ? value.toString() : 'N/A'}</LinearListRowValue>
 						</LinearListRow>
 					);
 				})}
@@ -76,7 +76,7 @@ class LinearList extends Component {
 					<LinearListRowSecondaryKey theme={theme} className={'listrowkey'}>
 						<span>{key.toString().split('_').map((key) => key.charAt(0).toUpperCase() + key.substr(1)).join(' ')}</span>
 					</LinearListRowSecondaryKey>
-					<LinearListRowValue theme={theme}>{value.toString()}</LinearListRowValue>
+					<LinearListRowValue theme={theme}>{value ? value.toString() : 'N/A'}</LinearListRowValue>
 				</LinearListRow>
 			);
 		});
@@ -92,7 +92,7 @@ class LinearList extends Component {
 		if (selectedData.data) {
 			let { data, exclude, primary, secondary = [] } = selectedData;
 			Object.entries(data).forEach(([ key, value ]) => {
-				if (!exclude.includes(key)) target[key] = value.toString();
+				if (!exclude.includes(key)) target[key] = value ? value.toString() : null;
 			});
 			primaryData = primary;
 			if (secondary.length !== 0) secondaryData = secondary;

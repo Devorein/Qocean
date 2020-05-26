@@ -152,7 +152,7 @@ class Self extends Component {
 								this.getDetails(filterData(item), index);
 							}}
 						/>
-						<div>{item.name}</div>
+						<div>{item.name || item.question}</div>
 					</IconRow>
 				),
 				public: item.public ? <PublicIcon style={{ fill: '#00a3e6' }} /> : <PublicIcon style={{ fill: '#f4423c' }} />,

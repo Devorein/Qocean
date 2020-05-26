@@ -14,6 +14,8 @@ class SelfQuestions extends Component {
 			{ name: 'type', sort: true, filter: true },
 			{ name: 'time_allocated', sort: true, filter: true },
 			{ name: 'quiz', sort: true, filter: false },
+			{ name: 'public', sort: true, filter: true },
+			{ name: 'favourite', sort: true, filter: true },
 			{ name: 'created_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
@@ -31,24 +33,38 @@ class SelfQuestions extends Component {
 		return option;
 	};
 
+	filterData = (item) => {
+		const exclude = [ '__v', 'user', '_id' ];
+		const primary = [ 'question', 'public', 'favourite' ];
+
+		return {
+			exclude,
+			primary
+		};
+	};
+
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {
-				...item,
+				question: item.name,
 				quiz: item.quiz.name,
-				creator: item.user.username,
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				difficulty: item.difficulty,
+				type: item.type,
+				time_allocated: item.time_allocated,
+				public: item.public,
+				favourite: item.favourite
 			};
 		});
 	};
 
 	render() {
-		const { decideColums, transformData, transformOption } = this;
-		const { options, data } = this.props;
+		const { decideColums, transformData, transformOption, filterData } = this;
+		const { options, data, genericTransformData } = this.props;
 		return (
 			<DataTable
 				title={`Question List`}
-				data={transformData(data)}
+				data={transformData(genericTransformData(data, filterData))}
 				columns={decideColums()}
 				options={transformOption(options)}
 			/>
