@@ -6,7 +6,7 @@ import { AppContext } from '../../context/AppContext';
 import CustomList from '../../components/List/List';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
-import CreateFolder from '../../resources/Folder/CreateFolder';
+import CreateFolder from '../Create/CreateFolder';
 import CreateQuestion from '../Create/CreateQuestion';
 import CreateQuiz from '../Create/CreateQuiz';
 import CreateEnvironment from '../Create/CreateEnvironment';
@@ -29,7 +29,7 @@ class Import extends Component {
 		this.setState({
 			inputs: [],
 			data: [],
-			selectedIndex: 0
+			selectedIndex: null
 		});
 	};
 
@@ -58,25 +58,6 @@ class Import extends Component {
 				primaryIcon: type
 			};
 		});
-	};
-
-	initializeData = (data) => {
-		const { match: { params: { type } } } = this.props;
-		if (type === 'Folder') {
-			return {
-				name: data.name ? data.name : '',
-				favourite: data.favourite ? data.favourite : false,
-				public: data.public ? data.public : true,
-				icon: data.icon ? data.icon : 'Red_folder.svg'
-			};
-		}
-	};
-	renderForm = () => {
-		const { data, selectedIndex } = this.state;
-		const { match: { params: { type } } } = this.props;
-		if (type === 'Folder' && data.length > 0 && typeof selectedIndex === 'number')
-			return <CreateFolder initialValues={this.initializeData(data[selectedIndex])} />;
-		else return null;
 	};
 
 	renderList = () => {
@@ -118,23 +99,38 @@ class Import extends Component {
 		});
 	};
 
-	decideForm = () => {
+	renderForm = () => {
 		let { match: { params: { type } } } = this.props;
-		let { currentType } = this.state;
+		let { currentType, selectedIndex, data } = this.state;
 
 		currentType = currentType.toLowerCase();
 		type = type.toLowerCase();
 
 		const props = {
 			submitMsg: 'Import',
-			onSubmit: this.context.submitForm,
-			customInputs: this.decideInput
+			onSubmit: this.context.submitForm
 		};
+		const cond = currentType === type && data.length > 0 && typeof selectedIndex === 'number';
 
-		if (currentType === type && type === 'quiz') return <CreateQuiz {...props} />;
-		else if (currentType === type && type === 'question') return <CreateQuestion {...props} />;
-		else if (currentType === type && type === 'folder') return <CreateFolder {...props} />;
-		else if (currentType === type && type === 'environment') return <CreateEnvironment {...props} />;
+		if (cond && type === 'quiz') return <CreateQuiz {...props} />;
+		else if (cond && type === 'question') return <CreateQuestion {...props} />;
+		else if (cond && type === 'folder')
+			return (
+				<CreateFolder
+					{...props}
+					onSubmit={this.context.submitForm}
+					customInputs={(defaultInputs) => {
+						const props = [ 'name', 'icon', 'favourite', 'public' ];
+						const target = data[selectedIndex];
+						props.forEach(
+							(prop, index) =>
+								(defaultInputs[index].defaultValue = target[prop] ? target[prop] : defaultInputs[index].defaultValue)
+						);
+						return defaultInputs;
+					}}
+				/>
+			);
+		else if (cond && type === 'environment') return <CreateEnvironment {...props} />;
 	};
 
 	render() {

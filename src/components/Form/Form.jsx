@@ -167,7 +167,6 @@ class Form extends React.Component {
 					value={values[name]}
 					onChange={(e) => {
 						handleChange(name);
-						// setFieldValue(name, e.target.value);
 					}}
 					key={name}
 					valueLabelDisplay="auto"

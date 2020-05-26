@@ -104,90 +104,88 @@ class CreateFolder extends Component {
 							};
 						};
 						return (
-							<div>
-								<form onSubmit={handleSubmit}>
-									<TextField type={'text'} {...formikProps('name')} fullWidth name={'name'} />
-									<FormControlLabel
-										control={
-											<Checkbox
-												color={'primary'}
-												checked={values['favourite'] === true ? true : false}
-												name={'favourite'}
-												onChange={(e) => {
-													e.persist();
-													handleChange(e);
-													setFieldTouched('favourite', true, false);
-												}}
-												onBlur={handleBlur}
-												error={touched['favourite'] && errors['favourite']}
-											/>
-										}
-										label={this.decideLabel('favourite')}
-									/>
-									<FormControlLabel
-										control={
-											<Checkbox
-												color={'primary'}
-												checked={values['public'] === true ? true : false}
-												name={'public'}
-												onChange={(e) => {
-													e.persist();
-													handleChange(e);
-													setFieldTouched('public', true, false);
-												}}
-												onBlur={handleBlur}
-												error={touched['public'] && errors['public']}
-											/>
-										}
-										label={this.decideLabel('public')}
-									/>
-									<Fragment>
-										<InputLabel id={'Icon'}>{this.decideLabel('icon')}</InputLabel>
-										<Select
-											name={'icon'}
-											value={values['icon']}
+							<form onSubmit={handleSubmit}>
+								<TextField type={'text'} {...formikProps('name')} fullWidth name={'name'} />
+								<FormControlLabel
+									control={
+										<Checkbox
+											color={'primary'}
+											checked={values['favourite'] === true ? true : false}
+											name={'favourite'}
 											onChange={(e) => {
 												e.persist();
 												handleChange(e);
-												setFieldTouched('icon', true, false);
+												setFieldTouched('favourite', true, false);
 											}}
-										>
-											{[ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ]
-												.map((color) => {
-													const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
-													return {
-														text: capitalized,
-														value: `${capitalized}_folder.svg`,
-														icon: getColoredIcons('Folder', color)
-													};
-												})
-												.map(({ value, text, icon }) => {
-													return (
-														<MenuItem key={value ? value : text} value={value ? value : text}>
-															{icon ? <Icon>{icon}</Icon> : null}
-															{text}
-														</MenuItem>
-													);
-												})}
-										</Select>
-									</Fragment>
-									{loading ? (
-										<FormHelperText>Loading your quizzes</FormHelperText>
-									) : quizzes.length < 1 ? (
-										<FormHelperText>Loading your quizzes</FormHelperText>
-									) : (
-										<MultiSelect
-											label={'Quizzes'}
-											selected={selected_quizzes}
-											handleChange={selectQuizzes}
-											items={quizzes}
+											onBlur={handleBlur}
+											error={touched['favourite'] && errors['favourite']}
 										/>
-									)}
-									<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
-										{'Submit'}
-									</Button>
-								</form>
-							</div>
+									}
+									label={this.decideLabel('favourite')}
+								/>
+								<FormControlLabel
+									control={
+										<Checkbox
+											color={'primary'}
+											checked={values['public'] === true ? true : false}
+											name={'public'}
+											onChange={(e) => {
+												e.persist();
+												handleChange(e);
+												setFieldTouched('public', true, false);
+											}}
+											onBlur={handleBlur}
+											error={touched['public'] && errors['public']}
+										/>
+									}
+									label={this.decideLabel('public')}
+								/>
+								<Fragment>
+									<InputLabel id={'Icon'}>{this.decideLabel('icon')}</InputLabel>
+									<Select
+										name={'icon'}
+										value={values['icon']}
+										onChange={(e) => {
+											e.persist();
+											handleChange(e);
+											setFieldTouched('icon', true, false);
+										}}
+									>
+										{[ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ]
+											.map((color) => {
+												const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+												return {
+													text: capitalized,
+													value: `${capitalized}_folder.svg`,
+													icon: getColoredIcons('Folder', color)
+												};
+											})
+											.map(({ value, text, icon }) => {
+												return (
+													<MenuItem key={value ? value : text} value={value ? value : text}>
+														{icon ? <Icon>{icon}</Icon> : null}
+														{text}
+													</MenuItem>
+												);
+											})}
+									</Select>
+								</Fragment>
+								{loading ? (
+									<FormHelperText>Loading your quizzes</FormHelperText>
+								) : quizzes.length < 1 ? (
+									<FormHelperText>Loading your quizzes</FormHelperText>
+								) : (
+									<MultiSelect
+										label={'Quizzes'}
+										selected={selected_quizzes}
+										handleChange={selectQuizzes}
+										items={quizzes}
+									/>
+								)}
+								<Button type="submit" variant="contained" color="primary" disabled={isSubmitting || !isValid}>
+									{'Submit'}
+								</Button>
+							</form>
 						);
 					}}
 				</Formik>

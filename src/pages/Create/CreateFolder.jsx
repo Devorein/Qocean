@@ -49,12 +49,10 @@ class CreateFolder extends Component {
 		return [ values, true ];
 	};
 
-	postSubmit = (cond) => {
-		if (cond) {
-			this.setState({
-				selected_quizzes: []
-			});
-		}
+	postSubmit = () => {
+		this.setState({
+			selected_quizzes: []
+		});
 	};
 
 	render() {
@@ -92,7 +90,6 @@ class CreateFolder extends Component {
 					inputs={defaultInputs}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ 'folder', preSubmit, postSubmit ])}
-					ref={(r) => (this.InputForm = r)}
 				>
 					{loading ? (
 						<FormHelperText>Loading your quizzes</FormHelperText>
