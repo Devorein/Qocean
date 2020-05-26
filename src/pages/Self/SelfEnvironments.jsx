@@ -14,32 +14,22 @@ class SelfEnvironments extends Component {
 			{ name: 'name', sort: true, filter: false },
 			{ name: 'public', sort: true, filter: true },
 			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: true, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
 				label: this.decideLabel(name),
 				options: {
 					filter,
-					sort
+					sort,
+					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
 				}
 			};
 		});
 	};
 
-	transformOption = (option) => {
-		option.expandableRows = true;
-		option.renderExpandableRow = (rowData, rowMeta) => {
-			return <div>{1}</div>;
-		};
-		option.onRowsSelect = () => {};
-		option.customToolbar = () => <div>123</div>;
-
-		option.onCellClick = (colData, cellMeta) => {
-			// console.log(colData);
-			// console.log(cellMeta);
-		};
-		return option;
+	transformOption = (options) => {
+		return options;
 	};
 
 	filterData = (item) => {
@@ -67,7 +57,8 @@ class SelfEnvironments extends Component {
 
 	render() {
 		const { decideColumns, transformData, transformOption, filterData } = this;
-		const { options, data, genericTransformData } = this.props;
+		const { data, options, genericTransformData } = this.props;
+
 		return (
 			<DataTable
 				title={`Environment List`}

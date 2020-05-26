@@ -27,7 +27,9 @@ class Self extends Component {
 		rowsPerPage: this.props.user.current_environment.default_self_rpp,
 		page: 0,
 		totalCount: 0,
-		selectedData: null
+		selectedData: null,
+		sortCol: null,
+		sortOrder: null
 	};
 
 	componentDidMount() {
@@ -70,7 +72,9 @@ class Self extends Component {
 							data,
 							type,
 							totalCount,
-							page: 0
+							page: 0,
+							sortCol: null,
+							sortOrder: null
 						});
 					});
 			})
@@ -176,8 +180,8 @@ class Self extends Component {
 	};
 
 	decideTable = () => {
-		const { getDetails, genericTransformData } = this;
-		const { page, rowsPerPage, totalCount, type } = this.state;
+		const { getDetails, genericTransformData, refetchData } = this;
+		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const CLASS = this;
 		const options = {
 			customToolbarSelect(selectedRows, displayData, setSelectedRows) {
@@ -207,40 +211,50 @@ class Self extends Component {
 			filterType: 'checkbox',
 			count: totalCount,
 			page,
-			customToolbar() {
-				return <div>Custom Toolbar</div>;
-			},
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',
-			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
+			rowsPerPageOptions: [ 1, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
-			onRowsDelete() {
-				return false;
-			},
 			serverSide: true,
-			onChangePage: (page) => {
-				this.setState(
+			onChangePage(page) {
+				CLASS.setState(
 					{
 						page
 					},
 					() => {
-						this.refetchData(type, {
+						CLASS.refetchData(type, {
 							limit: rowsPerPage,
 							page
 						});
 					}
 				);
 			},
-			onChangeRowsPerPage: (rowsPerPage) => {
-				this.setState(
+			onChangeRowsPerPage(rowsPerPage) {
+				CLASS.setState(
 					{
 						rowsPerPage
 					},
 					() => {
-						this.refetchData(type, {
+						CLASS.refetchData(type, {
 							limit: rowsPerPage,
 							page
+						});
+					}
+				);
+			},
+			onColumnSortChange: (changedColumn, order) => {
+				console.log(changedColumn, order);
+				this.setState(
+					{
+						sortCol: changedColumn,
+						sortOrder: order === 'descending' ? 'desc' : 'asc'
+					},
+					() => {
+						refetchData(null, {
+							page,
+							limit: rowsPerPage,
+							sort: (order === 'descending' ? '-' : '') + changedColumn
 						});
 					}
 				);
@@ -249,11 +263,13 @@ class Self extends Component {
 
 		const props = {
 			limit: rowsPerPage,
-			refetchData: this.refetchData,
+			refetchData,
 			data: this.state.data,
 			options,
 			page,
 			getDetails,
+			sortCol,
+			sortOrder,
 			genericTransformData
 		};
 
