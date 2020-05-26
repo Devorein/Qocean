@@ -39,7 +39,7 @@ class Self extends Component {
 		});
 	}
 
-	refetchData = (type, queryParams) => {
+	refetchData = (type, queryParams, newState = {}) => {
 		type = type ? type : this.state.type;
 		queryParams = queryParams
 			? queryParams
@@ -47,6 +47,7 @@ class Self extends Component {
 					limit: this.state.rowsPerPage,
 					page: this.state.page
 				};
+		if (this.state.sortCol) queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
@@ -70,11 +71,8 @@ class Self extends Component {
 					.then(({ data: { data } }) => {
 						this.setState({
 							data,
-							type,
 							totalCount,
-							page: 0,
-							sortCol: null,
-							sortOrder: null
+							...newState
 						});
 					});
 			})
@@ -85,8 +83,11 @@ class Self extends Component {
 
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
-		this.refetchData(page.name, {
-			limit: 15
+		this.refetchData(page.name, null, {
+			type: page.name,
+			page: 0,
+			sortCol: null,
+			sortOrder: null
 		});
 	};
 
@@ -180,29 +181,28 @@ class Self extends Component {
 	};
 
 	decideTable = () => {
-		const { getDetails, genericTransformData, refetchData } = this;
+		const { getDetails, genericTransformData, refetchData, deleteResource, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
-		const CLASS = this;
 		const options = {
-			customToolbarSelect(selectedRows, displayData, setSelectedRows) {
+			customToolbarSelect: (selectedRows, displayData, setSelectedRows) => {
 				return (
 					<div>
 						<DeleteIcon
 							onClick={(e) => {
-								selectedRows = selectedRows.data.map(({ index }) => CLASS.state.data[index]);
-								CLASS.deleteResource(selectedRows);
+								selectedRows = selectedRows.data.map(({ index }) => this.state.data[index]);
+								deleteResource(selectedRows);
 							}}
 						/>
 						<StarIcon
 							onClick={(e) => {
-								selectedRows = selectedRows.data.map(({ index }) => CLASS.state.data[index]);
-								CLASS.updateResource(selectedRows, 'favourite');
+								selectedRows = selectedRows.data.map(({ index }) => this.state.data[index]);
+								updateResource(selectedRows, 'favourite');
 							}}
 						/>
 						<PublicIcon
 							onClick={(e) => {
-								selectedRows = selectedRows.data.map(({ index }) => CLASS.state.data[index]);
-								CLASS.updateResource(selectedRows, 'public');
+								selectedRows = selectedRows.data.map(({ index }) => this.state.data[index]);
+								updateResource(selectedRows, 'public');
 							}}
 						/>
 					</div>
@@ -213,49 +213,38 @@ class Self extends Component {
 			page,
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',
-			rowsPerPageOptions: [ 1, 15, 20, 30, 40, 50 ],
+			rowsPerPageOptions: [ 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
 			serverSide: true,
-			onChangePage(page) {
-				CLASS.setState(
+			onChangePage: (page) => {
+				this.setState(
 					{
 						page
 					},
 					() => {
-						CLASS.refetchData(type, {
-							limit: rowsPerPage,
-							page
-						});
+						refetchData();
 					}
 				);
 			},
-			onChangeRowsPerPage(rowsPerPage) {
-				CLASS.setState(
+			onChangeRowsPerPage: (rowsPerPage) => {
+				this.setState(
 					{
 						rowsPerPage
 					},
 					() => {
-						CLASS.refetchData(type, {
-							limit: rowsPerPage,
-							page
-						});
+						refetchData();
 					}
 				);
 			},
 			onColumnSortChange: (changedColumn, order) => {
-				console.log(changedColumn, order);
 				this.setState(
 					{
 						sortCol: changedColumn,
 						sortOrder: order === 'descending' ? 'desc' : 'asc'
 					},
 					() => {
-						refetchData(null, {
-							page,
-							limit: rowsPerPage,
-							sort: (order === 'descending' ? '-' : '') + changedColumn
-						});
+						refetchData();
 					}
 				);
 			}

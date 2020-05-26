@@ -15,7 +15,9 @@ class Explore extends Component {
 		type: this.props.user ? this.props.user.current_environment.default_explore_landing.toLowerCase() : 'user',
 		rowsPerPage: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15,
 		totaCount: 0,
-		page: 0
+		page: 0,
+		sortCol: null,
+		sortOrder: null
 	};
 
 	componentDidMount() {
@@ -50,7 +52,9 @@ class Explore extends Component {
 							data,
 							type,
 							totalCount,
-							page: 0
+							page: 0,
+							sortCol: null,
+							sortOrder: null
 						});
 					});
 			})
@@ -61,13 +65,11 @@ class Explore extends Component {
 
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
-		this.refetchData(page.name, {
-			limit: 15
-		});
+		this.refetchData();
 	};
 
 	decideTable = () => {
-		const { page, rowsPerPage, totalCount } = this.state;
+		const { page, rowsPerPage, totalCount, sortCol, sortOrder } = this.state;
 		const options = {
 			filterType: 'checkbox',
 			count: totalCount,
@@ -80,12 +82,6 @@ class Explore extends Component {
 			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
-			onCellClick(colData, { colIndex }) {
-				if (colIndex === 5) console.log(colData);
-			},
-			onRowsDelete() {
-				return false;
-			},
 			serverSide: true,
 			onChangePage: (page) => {
 				this.setState(
