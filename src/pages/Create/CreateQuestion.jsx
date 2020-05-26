@@ -5,7 +5,7 @@ import axios from 'axios';
 import FileInput from '../../components/Input/FileInput';
 import QuestionForm from './QuestionForm';
 
-const inputs = [
+let defaultInputs = [
 	{ name: 'question' },
 	null,
 	{
@@ -143,7 +143,7 @@ class CreateQuestion extends Component {
 
 	render() {
 		const { typeChangeHandler, preSubmit, postSubmit } = this;
-		const { onSubmit } = this.props;
+		const { onSubmit, sumbitMsg, customInputs } = this.props;
 		const { type, quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
 			question: Yup.string('Enter the question').required('Question is required'),
@@ -164,7 +164,7 @@ class CreateQuestion extends Component {
 				.default(30)
 		});
 
-		inputs[1] = {
+		defaultInputs[1] = {
 			name: 'quiz',
 			type: 'select',
 			extra: {
@@ -178,12 +178,14 @@ class CreateQuestion extends Component {
 			disabled: quizzes.length < 1,
 			helperText: loading ? 'Loading your quizzes' : quizzes.length < 1 ? 'You have not created any quizzes yet' : null
 		};
+		if (customInputs) defaultInputs = customInputs(defaultInputs);
 
 		return (
 			<div className="create_question create_form">
 				<QuestionForm type={type} ref={(i) => (this.QuestionForm = i)} />
 				<InputForm
-					inputs={inputs}
+					sumbitMsg={sumbitMsg}
+					inputs={defaultInputs}
 					customHandler={typeChangeHandler}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ 'question', preSubmit, postSubmit ])}

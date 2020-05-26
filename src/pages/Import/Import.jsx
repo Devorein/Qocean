@@ -112,6 +112,7 @@ class Import extends Component {
 			});
 		}
 		recurse(defaultInputs);
+		debugger;
 		return defaultInputs;
 	};
 
