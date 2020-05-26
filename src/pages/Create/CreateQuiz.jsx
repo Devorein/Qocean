@@ -108,8 +108,8 @@ class CreateQuiz extends Component {
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit, customInputs, submitMsg } = this.props;
-		const { folders, loading, selected_folders, image } = this.state;
+		const { onSubmit, customInputs, submitMsg, image_link } = this.props;
+		const { folders, loading, selected_folders } = this.state;
 
 		let defaultInputs = [
 			{ name: 'name' },
@@ -155,7 +155,18 @@ class CreateQuiz extends Component {
 						<MultiSelect label={'Folders'} selected={selected_folders} handleChange={handleChange} items={folders} />
 					)}
 				</InputForm>
-				<FileInput ref={(r) => (this.FileInput = r)} />
+				<FileInput
+					ref={(r) => {
+						this.FileInput = r;
+						if (this.FileInput) {
+							if (image_link)
+								this.FileInput.setState({
+									image: 'link',
+									src: image_link
+								});
+						}
+					}}
+				/>
 			</div>
 		);
 	}

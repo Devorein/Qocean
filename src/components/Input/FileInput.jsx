@@ -3,7 +3,7 @@ import UploadButton from '../../components/Buttons/UploadButton';
 import CustomTabs from '../../components/Tab/Tabs';
 import LinkIcon from '@material-ui/icons/Link';
 import PublishIcon from '@material-ui/icons/Publish';
-import InputForm from '../../components/Form/InputForm';
+import TextField from '@material-ui/core/TextField';
 import './FileInput.scss';
 class FileInput extends Component {
 	state = {
@@ -32,10 +32,6 @@ class FileInput extends Component {
 		});
 	};
 
-	returnData = () => {
-		return [ this.state.file, this.state.src ];
-	};
-
 	resetData = () => {
 		if (this.input) this.input.value = '';
 		this.setState({
@@ -48,22 +44,19 @@ class FileInput extends Component {
 		const { setFile, switchImageHandler } = this;
 		const { image, src } = this.state;
 		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
-		const index = headers.findIndex(({ name }) => name === image);
-
 		return (
 			<div className="FileInput">
 				<CustomTabs
-					value={index === -1 ? 0 : index}
+					against={this.state.image}
 					onChange={(e, value) => {
 						switchImageHandler(headers[value]);
 					}}
 					headers={headers}
 				/>
 				{image === 'link' ? (
-					<InputForm
-						inputs={[ { name: 'link', initialValue: '' } ]}
-						formButtons={false}
-						customHandler={(_, __, e) => {
+					<TextField
+						value={this.state.src}
+						onChange={(e) => {
 							this.setState({
 								src: e.target.value
 							});

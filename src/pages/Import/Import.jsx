@@ -132,6 +132,7 @@ class Import extends Component {
 						);
 						return defaultInputs;
 					}}
+					image_link={data[selectedIndex].image_link}
 				/>
 			);
 		else if (cond && type === 'question') return <CreateQuestion {...props} />;
