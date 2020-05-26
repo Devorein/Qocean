@@ -6,8 +6,6 @@ const imageUpload = require('../middleware/imageUpload');
 const { protect } = require('../middleware/auth');
 
 const {
-	countAllQuestions,
-	countMyQuestions,
 	validateQuestion,
 	createQuestion,
 	updateQuestion,
@@ -15,10 +13,13 @@ const {
 	questionPhotoUpload
 } = require('../controllers/questions');
 
+router.route('/countAll').get(advancedResults(Question));
+router.route('/countMine').get(protect, advancedResults(Question));
+router.route('/countOthers').get(protect, advancedResults(Question));
 router.route('/me').get(protect, advancedResults(Question));
-router.route('/countAll').get(countAllQuestions);
-router.route('/countMine').get(protect, countMyQuestions);
+router.route('/others').get(protect, advancedResults(Question));
 router.route('/validation').get(validateQuestion);
+
 router
 	.route('/')
 	.get(

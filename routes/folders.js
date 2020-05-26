@@ -4,18 +4,13 @@ const router = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
 
-const {
-	countAllFolders,
-	countMyFolders,
-	createFolder,
-	updateFolder,
-	deleteFolder,
-	quizToFolder
-} = require('../controllers/folder');
+const { createFolder, updateFolder, deleteFolder, quizToFolder } = require('../controllers/folder');
 
+router.route('/countAll').get(advancedResults(Folder));
+router.route('/countMine').get(protect, advancedResults(Folder));
+router.route('/countOthers').get(protect, advancedResults(Folder));
 router.route('/me').get(protect, advancedResults(Folder, null));
-router.route('/countAll').get(countAllFolders);
-router.route('/countMine').get(protect, countMyFolders);
+router.route('/others').get(protect, advancedResults(Folder));
 
 router
 	.route('/')

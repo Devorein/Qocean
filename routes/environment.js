@@ -5,8 +5,6 @@ const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
 
 const {
-	countAllEnvironments,
-	countMyEnvironments,
 	getCurrentEnvironment,
 	createEnvironment,
 	updateEnvironment,
@@ -15,8 +13,10 @@ const {
 
 router.route('/me').get(protect, advancedResults(Environment, null));
 
-router.route('/countAll').get(countAllEnvironments);
-router.route('/countMine').get(protect, countMyEnvironments);
+router.route('/countAll').get(advancedResults(Environment));
+router.route('/countMine').get(protect, advancedResults(Environment));
+router.route('/countOthers').get(protect, advancedResults(Environment));
+router.route('/others').get(protect, advancedResults(Environment));
 
 router.route('/current').get(protect, getCurrentEnvironment);
 

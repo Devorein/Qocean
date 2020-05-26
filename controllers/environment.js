@@ -3,16 +3,6 @@ const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
-exports.countAllEnvironments = asyncHandler(async (req, res, next) => {
-	const environment = await Environment.countDocuments();
-	res.status(200).json({ success: true, data: environment });
-});
-
-exports.countMyEnvironments = asyncHandler(async (req, res, next) => {
-	const environment = await Environment.countDocuments({ user: req.user._id });
-	res.status(200).json({ success: true, data: environment });
-});
-
 // @desc: Get current environment
 // @route: GET /api/v1/environments/current
 // @access: Private

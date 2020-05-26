@@ -3,16 +3,6 @@ const Folder = require('../models/Folder');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
-exports.countAllQuizzes = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.countDocuments();
-	res.status(200).json({ success: true, data: quiz });
-});
-
-exports.countMyQuizzes = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.countDocuments({ user: req.user._id });
-	res.status(200).json({ success: true, data: quiz });
-});
-
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
 // @access: Private

@@ -19,79 +19,119 @@ const advancedResults = (model, populate, option = {}) =>
 			if (!result) return next(new ErrorResponse(`Resource not found with id of ${req.query._id}`, 404));
 			res.status(200).json({ success: true, data: result });
 		} else {
-			let query;
-			let reqQuery = { ...req.query };
-			// Fields to exclude
-			const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
-			excludeFields.forEach((param) => delete reqQuery[param]);
+			if (req.route.path.includes('count')) {
+				let match = {};
+				if (req.route.path === '/countAll') {
+					if (model.modelName !== 'User')
+						match = {
+							public: true
+						};
+				} else if (req.route.path === '/countMine')
+					match = {
+						user: req.user._id
+					};
+				else if (req.route.path === '/countOthers') {
+					if (model.modelName !== 'User')
+						match = {
+							public: true,
+							user: { $ne: req.user._id }
+						};
+					else
+						match = {
+							_id: { $ne: req.user._id }
+						};
+				}
 
-			reqQuery = JSON.stringify(reqQuery);
+				const count = await model.countDocuments(match);
+				res.status(200).json({ success: true, data: count });
+			} else {
+				let query;
+				let reqQuery = { ...req.query };
+				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
+				excludeFields.forEach((param) => delete reqQuery[param]);
 
-			// Create mongodb operators
-			reqQuery = reqQuery.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
-			reqQuery = JSON.parse(reqQuery);
-			option.match = { ...option.match };
-			if (req.route.path === '/me') option.match.user = req.user._id;
-			reqQuery = { ...reqQuery, ...option.match };
-			query = model.find(reqQuery);
-			let fields = '';
-			if (req.query.select) {
-				fields = req.query.select.split(',');
-				fields = option && option.exclude ? fields.filter((field) => !option.exclude.includes(field)) : fields;
-			} else fields = option && option.exclude ? option.exclude.map((field) => `-${field}`) : '';
-			query = query.select(fields);
+				reqQuery = JSON.stringify(reqQuery);
 
-			if (req.query.sort) {
-				const sortBy = req.query.sort.split(',').join(' ');
-				query = query.sort(sortBy);
-			} else query = query.sort('-created_at');
+				reqQuery = reqQuery.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
+				reqQuery = JSON.parse(reqQuery);
+				option.match = { ...option.match };
+				if (model.modelName === 'User') {
+					if (req.route.path === '/others') option.match._id = { $ne: req.user._id };
+				} else {
+					if (req.route.path === '/me') option.match.user = req.user._id;
+					else if (req.route.path === '/others') {
+						option.match.user = { $ne: req.user._id };
+						option.match = {
+							...option.match,
+							public: true
+						};
+					} else if (req.route.path === '/')
+						option.match = {
+							...option.match,
+							public: true
+						};
+				}
+				reqQuery = { ...reqQuery, ...option.match };
+				query = model.find(reqQuery);
+				let fields = '';
+				if (req.query.select) {
+					fields = req.query.select.split(',');
+					fields = option && option.exclude ? fields.filter((field) => !option.exclude.includes(field)) : fields;
+				} else fields = option && option.exclude ? option.exclude.map((field) => `-${field}`) : '';
+				query = query.select(fields);
 
-			// Pagination
-			const page = parseInt(req.query.page) || 1;
-			const limit = parseInt(req.query.limit) || 10;
-			const shouldPopulate = req.query.populate ? true : false;
-			const startIndex = (page - 1) * limit;
-			const endIndex = page * limit;
-			const total = await model.countDocuments();
+				if (req.query.sort) {
+					const sortBy = req.query.sort.split(',').join(' ');
+					query = query.sort(sortBy);
+				} else query = query.sort('-created_at');
 
-			query = query.skip(startIndex).limit(limit);
-			if (shouldPopulate) {
-				let { populateFields } = req.query;
-				populateFields = populateFields ? populateFields.split(',').join(' ') : null;
-				query.populate({
-					path: req.query.populate.split(',')[0],
-					select: populateFields
-				});
-			} else if (populate) {
-				if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
-				else query = query.populate(populate);
-			}
+				// Pagination
+				const page = parseInt(req.query.page) || 1;
+				const limit = parseInt(req.query.limit) || 10;
+				const shouldPopulate = req.query.populate ? true : false;
+				const startIndex = (page - 1) * limit;
+				const endIndex = page * limit;
+				const total = await model.countDocuments();
 
-			// Pagination result
-			const pagination = {};
-			if (endIndex < total) {
-				pagination.next = {
-					page: page + 1,
-					limit
+				query = query.skip(startIndex).limit(limit);
+				if (shouldPopulate) {
+					let { populateFields } = req.query;
+					populateFields = populateFields ? populateFields.split(',').join(' ') : null;
+					query.populate({
+						path: req.query.populate.split(',')[0],
+						select: populateFields
+					});
+				} else if (populate) {
+					if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
+					else query = query.populate(populate);
+				}
+
+				// Pagination result
+				const pagination = {};
+				if (endIndex < total) {
+					pagination.next = {
+						page: page + 1,
+						limit
+					};
+				}
+
+				if (startIndex > 0) {
+					pagination.prev = {
+						page: page - 1,
+						limit
+					};
+				}
+
+				const results = await query;
+
+				res.advancedResults = {
+					success: true,
+					count: results.length,
+					pagination,
+					data: results
 				};
+				res.status(200).json(res.advancedResults);
 			}
-
-			if (startIndex > 0) {
-				pagination.prev = {
-					page: page - 1,
-					limit
-				};
-			}
-
-			const results = await query;
-
-			res.advancedResults = {
-				success: true,
-				count: results.length,
-				pagination,
-				data: results
-			};
-			res.status(200).json(res.advancedResults);
 		}
 	};
 
