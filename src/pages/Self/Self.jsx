@@ -8,8 +8,11 @@ import SelfQuestions from './SelfQuestions';
 import SelfFolders from './SelfFolders';
 import SelfEnvironments from './SelfEnvironments';
 import deleteResource from '../../operations/deleteResource';
+import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
 import DeleteIcon from '@material-ui/icons/Delete';
+import StarIcon from '@material-ui/icons/Star';
+import PublicIcon from '@material-ui/icons/Public';
 import LinearList from '../../components/List/LinearList';
 import './Self.scss';
 
@@ -105,6 +108,34 @@ class Self extends Component {
 		reductiveDownloadChain(selectedRows);
 	};
 
+	updateResource = (selectedRows, field) => {
+		const { type } = this.state;
+		const { enqueueSnackbar } = this.props;
+		const CLASS = this;
+		let current = 0;
+		let done = false;
+		function reductiveDownloadChain(items) {
+			return items.reduce((chain, currentItem) => {
+				return chain.then((_) => {
+					current++;
+					const { _id, name } = currentItem;
+					updateResource(type, _id, {
+						[field]: !currentItem[field]
+					}).then(({ data }) => {
+						enqueueSnackbar(`${type} ${name} has been updated`, {
+							variant: 'success'
+						});
+						if (current === selectedRows.length && !done) {
+							CLASS.refetchData();
+							done = true;
+						}
+					});
+				});
+			}, Promise.resolve());
+		}
+		reductiveDownloadChain(selectedRows);
+	};
+
 	getDetails = ({ exclude, primary }, index) => {
 		this.setState({
 			selectedData: {
@@ -129,6 +160,18 @@ class Self extends Component {
 								CLASS.deleteResource(selectedRows);
 							}}
 						/>
+						<StarIcon
+							onClick={(e) => {
+								selectedRows = selectedRows.data.map(({ index }) => CLASS.state.data[index]);
+								CLASS.updateResource(selectedRows, 'favourite');
+							}}
+						/>
+						<PublicIcon
+							onClick={(e) => {
+								selectedRows = selectedRows.data.map(({ index }) => CLASS.state.data[index]);
+								CLASS.updateResource(selectedRows, 'public');
+							}}
+						/>
 					</div>
 				);
 			},
@@ -143,9 +186,6 @@ class Self extends Component {
 			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
-			onCellClick(colData, { colIndex }) {
-				if (colIndex === 5) console.log(colData);
-			},
 			onRowsDelete() {
 				return false;
 			},
