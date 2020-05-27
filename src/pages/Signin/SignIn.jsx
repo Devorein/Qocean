@@ -23,11 +23,11 @@ class SignIn extends Component {
 				localStorage.setItem('token', res.data.token);
 				this.props.history.push('/');
 				this.props.refetch();
-				changeResponse('Successfully signed in', 'success');
+				changeResponse('Success', 'Successfully signed in', 'success');
 			})
 			.catch((err) => {
 				setSubmitting(false);
-				changeResponse(err.response.data.error, 'error');
+				changeResponse('An error occurred', err.response.data.error, 'error');
 			});
 	};
 

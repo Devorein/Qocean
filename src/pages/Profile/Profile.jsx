@@ -9,29 +9,46 @@ import { AppContext } from '../../context/AppContext';
 class Profile extends Component {
 	static contextType = AppContext;
 
-	submitForm = ({ name, email, username, image }, { setSubmitting }) => {
+	submitForm = ({ name, email, username, image, password }, { setSubmitting }) => {
 		const { user } = this.props;
 		const payload = {};
 		payload.name = name ? name : user.name;
 		payload.email = email ? email : user.email;
 		payload.username = username ? username : user.username;
 		payload.image = image ? image : user.image;
+		const headers = {
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
+		};
+
 		axios
-			.put(`http://localhost:5001/api/v1/users/updateDetails`, payload, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+			.get(`http://localhost:5001/api/v1/auth/checkpassword/${password ? password : '_'}`, {
+				...headers
 			})
-			.then((res) => {
-				localStorage.removeItem('token');
-				this.props.history.push('/signin');
-				this.props.refetch();
+			.then(() => {
+				axios
+					.put(`http://localhost:5001/api/v1/users/updateDetails`, payload, {
+						...headers
+					})
+					.then((res) => {
+						localStorage.removeItem('token');
+						this.props.history.push('/signin');
+						this.props.refetch();
+						this.context.changeResponse('Success', 'Successfully updated profile', 'error');
+					})
+					.catch((err) => {
+						setTimeout(() => {
+							setSubmitting(false);
+						}, 2500);
+						this.context.changeResponse(err.response.data.error, 'error');
+					});
 			})
 			.catch((err) => {
+				this.context.changeResponse('An error occurred', err.response.data.error, 'error');
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
-				this.context.changeResponse(err.response.data.error, 'error');
 			});
 	};
 
@@ -46,7 +63,8 @@ class Profile extends Component {
 				name: 'image',
 				startAdornment: 'image',
 				defaultValue: user.image
-			}
+			},
+			{ name: 'password', type: 'password' }
 		];
 
 		const validationSchema = Yup.object({

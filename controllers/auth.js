@@ -47,8 +47,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 exports.checkPassword = asyncHandler(async (req, res, next) => {
 	const user = await User.findById(req.user._id).select('+password');
-	const isMatch = await user.matchPassword(req.body.password);
-	if (!isMatch) return next(new ErrorResponse(`Invalid credentials`, 401));
+	const isMatch = await user.matchPassword(req.params.password);
+	if (!isMatch) return next(new ErrorResponse(`Invalid credentials`, 400));
 	else return res.status(200).send({ success: 'true', data: 'Correct password' });
 });
 
