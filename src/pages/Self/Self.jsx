@@ -10,6 +10,7 @@ import SelfEnvironments from './SelfEnvironments';
 import deleteResource from '../../operations/deleteResource';
 import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
+import { AppContext } from '../../context/AppContext';
 import DeleteIcon from '@material-ui/icons/Delete';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
@@ -22,6 +23,7 @@ import IconRow from '../../components/Row/IconRow';
 import Update from '../Update/Update';
 
 class Self extends Component {
+	static contextType = AppContext;
 	state = {
 		data: [],
 		type: this.props.user.current_environment.default_self_landing,
@@ -95,11 +97,29 @@ class Self extends Component {
 	};
 
 	deleteResource = (selectedRows) => {
-		const { type } = this.state;
-		const { enqueueSnackbar } = this.props;
 		const CLASS = this;
+		const { enqueueSnackbar } = this.props;
+		const { type } = this.state;
 		let current = 0;
 		let done = false;
+
+		if (type === 'Environment') {
+			let containsCurrent = false;
+			const temp = [];
+			selectedRows.forEach((selectedRow) => {
+				if (selectedRow._id === this.props.user.current_environment._id) containsCurrent = true;
+				else temp.push(selectedRow);
+			});
+			if (containsCurrent) {
+				this.context.changeResponse(
+					'Cant delete',
+					'You are trying to delete a currently activated environment',
+					'error'
+				);
+			}
+			reductiveDownloadChain(temp);
+		} else reductiveDownloadChain(selectedRows);
+
 		function reductiveDownloadChain(items) {
 			return items.reduce((chain, currentItem) => {
 				return chain.then((_) => {
@@ -109,7 +129,7 @@ class Self extends Component {
 						enqueueSnackbar(`${type} ${name} has been deleted`, {
 							variant: 'success'
 						});
-						if (current === selectedRows.length && !done) {
+						if (current === items.length && !done) {
 							CLASS.refetchData();
 							done = true;
 						}
@@ -117,7 +137,6 @@ class Self extends Component {
 				});
 			}, Promise.resolve());
 		}
-		reductiveDownloadChain(selectedRows);
 	};
 
 	updateResource = (selectedRows, field) => {
