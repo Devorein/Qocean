@@ -74,6 +74,7 @@
     "react-modal": "^3.11.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
+    "shortid": "^2.2.15",
     "slugify": "^1.4.0",
     "styled-components": "^5.1.0",
     "uifx": "^2.0.7",

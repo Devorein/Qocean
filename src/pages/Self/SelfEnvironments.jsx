@@ -3,8 +3,8 @@ import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import { AppContext } from '../../context/AppContext';
-import IconRow from '../../components/Row/IconRow';
 import SettingsIcon from '@material-ui/icons/Settings';
+import shortid from 'shortid';
 
 class SelfEnvironments extends Component {
 	static contextType = AppContext;
@@ -17,7 +17,6 @@ class SelfEnvironments extends Component {
 		return [
 			{ name: 'icon', sort: false, filter: false },
 			{ name: 'name', sort: true, filter: false },
-			{ name: 'current', sort: false, filter: true },
 			{ name: 'public', sort: true, filter: true },
 			{ name: 'favourite', sort: true, filter: true },
 			{ name: 'created_at', sort: true, filter: false }
@@ -50,14 +49,27 @@ class SelfEnvironments extends Component {
 
 	transformData = (data) => {
 		return data.map((item, index) => {
+			const { children } = item.name.props;
+			const active = this.context.user.current_environment._id === item._id;
+			const elem = React.cloneElement(item.name, null, [
+				children[0],
+				children[1],
+				<SettingsIcon
+					style={{ fill: active ? '#ead50f' : '#ddd' }}
+					onClick={(e) => {
+						console.log(item._id);
+					}}
+					key={shortid.generate()}
+				/>,
+				children[2]
+			]);
 			return {
 				id: item._id,
-				name: item.name,
+				name: elem,
 				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow(),
 				public: item.public,
-				favourite: item.favourite,
-				current: this.context.user.current_environment._id === item._id ? 'Current' : 'Inactive'
+				favourite: item.favourite
 			};
 		});
 	};
