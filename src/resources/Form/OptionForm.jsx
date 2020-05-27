@@ -68,7 +68,7 @@ const INIT_MS_STATE = {
 	]
 };
 
-class QuestionForm extends Component {
+class OptionForm extends Component {
 	state = {
 		...INIT_MCQ_STATE
 	};
@@ -216,4 +216,4 @@ class QuestionForm extends Component {
 	}
 }
 
-export default QuestionForm;
+export default OptionForm;

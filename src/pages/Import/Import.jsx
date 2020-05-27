@@ -7,10 +7,10 @@ import { AppContext } from '../../context/AppContext';
 import CustomList from '../../components/List/List';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
-import CreateFolder from '../Create/CreateFolder';
-import CreateQuestion from '../Create/CreateQuestion';
-import CreateQuiz from '../Create/CreateQuiz';
-import CreateEnvironment from '../Create/CreateEnvironment';
+import FolderForm from '../../resources/Form/FolderForm';
+import QuestionForm from '../../resources/Form/QuestionForm';
+import QuizForm from '../../resources/Form/QuizForm';
+import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 
 import './Import.scss';
 
@@ -154,11 +154,11 @@ class Import extends Component {
 
 		if (cond && type === 'quiz')
 			return (
-				<CreateQuiz
+				<QuizForm
 					ref={(r) => {
-						this.CreateQuiz = r;
-						if (this.CreateQuiz)
-							this.CreateQuiz.setState({
+						this.QuizForm = r;
+						if (this.QuizForm)
+							this.QuizForm.setState({
 								tags: data[selectedIndex].tags
 							});
 					}}
@@ -166,9 +166,9 @@ class Import extends Component {
 					image_link={data[selectedIndex].image_link}
 				/>
 			);
-		else if (cond && type === 'question') return <CreateQuestion {...props} />;
-		else if (cond && type === 'folder') return <CreateFolder {...props} />;
-		else if (cond && type === 'environment') return <CreateEnvironment {...props} />;
+		else if (cond && type === 'question') return <QuestionForm {...props} />;
+		else if (cond && type === 'folder') return <FolderForm {...props} />;
+		else if (cond && type === 'environment') return <EnvironmentForm {...props} />;
 	};
 
 	render() {

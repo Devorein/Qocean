@@ -20,7 +20,7 @@ const validationSchema = Yup.object({
 	folder: Yup.string('Enter folder')
 });
 
-class CreateQuiz extends Component {
+class QuizForm extends Component {
 	state = {
 		tags: this.props.tags || [],
 		folders: [],
@@ -172,4 +172,4 @@ class CreateQuiz extends Component {
 	}
 }
 
-export default CreateQuiz;
+export default QuizForm;

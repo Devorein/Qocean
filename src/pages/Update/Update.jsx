@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import CustomModal from '../../components/Modal/CustomModal';
-import CreateFolder from '../Create/CreateFolder';
-import CreateQuestion from '../Create/CreateQuestion';
-import CreateQuiz from '../Create/CreateQuiz';
-import CreateEnvironment from '../Create/CreateEnvironment';
+import FolderForm from '../../resources/Form/FolderForm';
+import QuestionForm from '../../resources/Form/QuestionForm';
+import QuizForm from '../../resources/Form/QuizForm';
+import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
 
 class Update extends Component {
@@ -37,22 +37,22 @@ class Update extends Component {
 		};
 
 		if (data) {
-			if (type === 'Folder') return <CreateFolder {...props} />;
-			else if (type === 'Question') return <CreateQuestion {...props} />;
+			if (type === 'Folder') return <FolderForm {...props} />;
+			else if (type === 'Question') return <QuestionForm {...props} />;
 			else if (type === 'Quiz')
 				return (
-					<CreateQuiz
+					<QuizForm
 						{...props}
 						ref={(r) => {
-							this.CreateQuiz = r;
-							if (this.CreateQuiz)
-								this.CreateQuiz.setState({
+							this.QuizForm = r;
+							if (this.QuizForm)
+								this.QuizForm.setState({
 									tags: data.tags
 								});
 						}}
 					/>
 				);
-			else if (type === 'Environment') return <CreateEnvironment {...props} />;
+			else if (type === 'Environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};
 	render() {

@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import FileInput from '../../components/Input/FileInput';
-import QuestionForm from './QuestionForm';
+import OptionForm from './OptionForm';
 
 let defaultInputs = [
 	{ name: 'name' },
@@ -60,7 +60,7 @@ let defaultInputs = [
 	{ name: 'add_to_score', label: 'Add to Score', type: 'checkbox', defaultValue: true }
 ];
 
-class CreateQuestion extends Component {
+class QuestionForm extends Component {
 	state = {
 		quizzes: [],
 		loading: true,
@@ -93,17 +93,17 @@ class CreateQuestion extends Component {
 					type: value
 				},
 				() => {
-					this.QuestionForm.decideInputs(this.state.type);
+					this.OptionForm.decideInputs(this.state.type);
 				}
 			);
 		}
 	};
 
 	preSubmit = (values) => {
-		const form = this.QuestionForm.InputForm.Form.props;
+		const form = this.OptionForm.InputForm.Form.props;
 		const isValid = form.isValid;
 		if (isValid) {
-			values = this.QuestionForm.transformValue(values);
+			values = this.OptionForm.transformValue(values);
 			const [ file, src ] = this.FileInput.returnData();
 			if (file) values.link = '';
 			else values.link = src;
@@ -124,20 +124,20 @@ class CreateQuestion extends Component {
 					}
 				})
 				.then((data) => {
-					if (this.props.user.current_environment.reset_on_success) this.QuestionForm.InputForm.Form.resetForm();
+					if (this.props.user.current_environment.reset_on_success) this.OptionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
 					}, this.props.user.current_environment.notification_timing + 500);
 				})
 				.catch((err) => {
-					if (this.props.user.current_environment.reset_on_error) this.QuestionForm.InputForm.Form.resetForm();
+					if (this.props.user.current_environment.reset_on_error) this.OptionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, this.props.user.current_environment.notification_timing + 500);
 				});
 		} else {
 			const env = this.props.user.current_environment;
-			if (env.reset_on_success || env.reset_on_error) this.QuestionForm.InputForm.Form.props.resetForm();
+			if (env.reset_on_success || env.reset_on_error) this.OptionForm.InputForm.Form.props.resetForm();
 		}
 	};
 
@@ -182,7 +182,7 @@ class CreateQuestion extends Component {
 
 		return (
 			<div className="create_question create_form">
-				<QuestionForm type={type} ref={(i) => (this.QuestionForm = i)} />
+				<OptionForm type={type} ref={(i) => (this.OptionForm = i)} />
 				<InputForm
 					sumbitMsg={sumbitMsg}
 					inputs={defaultInputs}
@@ -197,4 +197,4 @@ class CreateQuestion extends Component {
 	}
 }
 
-export default CreateQuestion;
+export default QuestionForm;
