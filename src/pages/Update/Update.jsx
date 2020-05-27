@@ -57,11 +57,13 @@ class Update extends Component {
 	};
 	render() {
 		const { decideForm } = this;
-		const { isOpen } = this.props;
+		const { isOpen, handleClose } = this.props;
 
 		return (
 			<div className="update">
-				<CustomModal isOpen={isOpen}>{decideForm()}</CustomModal>
+				<CustomModal handleClose={handleClose} isOpen={isOpen}>
+					{decideForm()}
+				</CustomModal>
 			</div>
 		);
 	}

@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import DialogContent from '@material-ui/core/DialogContent';
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const useStyles = makeStyles((theme) => ({
 	modal: {
@@ -25,8 +26,13 @@ export default function CustomModal(props) {
 	const { isOpen, handleClose } = props;
 	return (
 		<div className="custom_modal">
-			<Modal className={classes.modal} open={isOpen} onClose={handleClose} closeAfterTransition>
-				<DialogContent>{props.children}</DialogContent>
+			<Modal className={classes.modal} open={isOpen} closeAfterTransition>
+				<Fade in={isOpen}>
+					<DialogContent>
+						<CancelIcon onClick={handleClose} />
+						<div className="modal_content">{props.children}</div>
+					</DialogContent>
+				</Fade>
 			</Modal>
 		</div>
 	);
