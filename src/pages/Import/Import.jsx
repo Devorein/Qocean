@@ -74,7 +74,7 @@ class Import extends Component {
 		const { match: { params: { type } } } = this.props;
 		return data.map((data) => {
 			return {
-				primary: data.name || data.question,
+				primary: data.name,
 				primaryIcon: type
 			};
 		});

@@ -71,7 +71,7 @@ casual.define('question', function() {
 		options = Array(total_options).fill(0).map((_) => casual.sentence);
 		const total_answers = casual.integer(1, total_options - 1);
 
-		while (answers.length <= total_answers) {
+		while (answers.length < total_answers) {
 			const r = casual.integer(1, total_options - 1);
 			if (answers.indexOf(r) === -1) answers.push(r);
 		}
@@ -94,7 +94,7 @@ casual.define('question', function() {
 	}
 
 	return {
-		question: casual.sentence,
+		name: casual.sentence,
 		type,
 		weight: casual.integer(1, 10),
 		add_to_score: casual.boolean,
@@ -150,6 +150,11 @@ const total_users = casual.integer(10, 25),
 	total_folders = casual.integer(10, 25),
 	total_envs = casual.integer(35, 50);
 
+/* const total_users = casual.integer(1, 5),
+	total_quizzes = casual.integer(1, 5),
+	total_questions = casual.integer(15, 30),
+	total_folders = casual.integer(1, 5),
+	total_envs = casual.integer(1, 5); */
 const loginData = [];
 
 const createUser = async () => {
@@ -224,8 +229,7 @@ const createQuestion = async () => {
 	let user = users[casual.integer(0, total_users - 1)];
 	while (user.quizzes.length === 0) user = users[casual.integer(0, total_users - 1)];
 	const quizId = user.quizzes[casual.integer(0, user.quizzes.length - 1)];
-	// const quiz = quizzes.find(({ _id }) => quizId === _id);
-	// console.log(quiz);
+	const quiz = quizzes.find(({ _id }) => quizId === _id);
 	try {
 		question.quiz = quizId;
 		const { data: { data: { _id } } } = await axios.post(
@@ -238,7 +242,7 @@ const createQuestion = async () => {
 			}
 		);
 		user.questions.push(_id);
-		// quiz.questions.push(_id);
+		quiz.questions.push(_id);
 		questions.push(_id);
 		console.log(`Created Question ${questions.length}`);
 	} catch (err) {

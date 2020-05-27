@@ -65,9 +65,9 @@ class Export extends Component {
 		const { match: { params: { type } } } = this.props;
 		return data.map((data, index) => {
 			return {
-				primary: data.name || data.question,
+				primary: data.name,
 				primaryIcon: type,
-				key: `${data.name || data.question}${index}`
+				key: `${data.name}${index}`
 			};
 		});
 	};

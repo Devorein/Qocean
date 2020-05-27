@@ -3,7 +3,7 @@ const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
 
 const QuestionSchema = extendSchema(ResourceSchema, {
-	question: {
+	name: {
 		type: String,
 		maxlength: [ 1000, 'Question cant be more than 1000 characters' ],
 		minlength: [ 3, 'Question cant be less than 3 characters' ],

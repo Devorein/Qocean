@@ -69,7 +69,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name || values.question}`, 'success');
+					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
 				})
 				.catch((err) => {

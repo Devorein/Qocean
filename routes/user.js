@@ -21,7 +21,7 @@ router.route('/').delete(protect, deleteUser).get(
 				},
 				{
 					path: 'questions',
-					select: 'question type'
+					select: 'name type'
 				},
 				{
 					path: 'folders',

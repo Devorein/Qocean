@@ -216,6 +216,4 @@ class QuestionForm extends Component {
 	}
 }
 
-// Backend question Validation
-
 export default QuestionForm;

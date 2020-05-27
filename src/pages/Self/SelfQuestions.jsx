@@ -47,7 +47,7 @@ class SelfQuestions extends Component {
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {
-				question: item.name,
+				name: item.name,
 				quiz: item.quiz.name,
 				created_at: moment(item.created_at).fromNow(),
 				difficulty: item.difficulty,

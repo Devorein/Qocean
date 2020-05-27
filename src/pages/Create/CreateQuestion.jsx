@@ -6,7 +6,7 @@ import FileInput from '../../components/Input/FileInput';
 import QuestionForm from './QuestionForm';
 
 let defaultInputs = [
-	{ name: 'question' },
+	{ name: 'name' },
 	null,
 	{
 		name: 'type',
@@ -146,7 +146,7 @@ class CreateQuestion extends Component {
 		const { onSubmit, sumbitMsg, customInputs } = this.props;
 		const { type, quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
-			question: Yup.string('Enter the question').required('Question is required'),
+			name: Yup.string('Enter the question').required('Question is required'),
 			favourite: Yup.bool().default(false),
 			public: Yup.bool().default(true),
 			add_to_score: Yup.bool().default(true),
