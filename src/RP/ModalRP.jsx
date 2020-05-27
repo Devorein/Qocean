@@ -54,7 +54,7 @@ class ModalRP extends Component {
 					setIsOpen
 				})}
 				<WarnModal onClose={handleClose} onAccept={handleAccept} onCancel={handleCancel} isOpen={isOpen}>
-					{modalMsg}
+					<div>{modalMsg}</div>
 				</WarnModal>
 			</Fragment>
 		);

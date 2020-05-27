@@ -199,6 +199,7 @@ class Self extends Component {
 	};
 
 	getDetails = ({ exclude, primary }, index, newState = {}) => {
+		console.log(newState);
 		this.setState({
 			selectedData: {
 				exclude,
@@ -209,8 +210,8 @@ class Self extends Component {
 		});
 	};
 
-	decideTable = (setIsOpen) => {
-		const { getDetails, genericTransformData, refetchData, deleteResource, updateResource } = this;
+	decideTable = (setDeleteModal) => {
+		const { getDetails, genericTransformData, refetchData, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const options = {
 			customToolbarSelect: (selectedRows, displayData, setSelectedRows) => {
@@ -223,7 +224,7 @@ class Self extends Component {
 										selectedRows: selectedRows.data.map((selectedRow) => selectedRow.index)
 									},
 									() => {
-										setIsOpen(true);
+										setDeleteModal(true);
 									}
 								);
 							}}
@@ -310,14 +311,14 @@ class Self extends Component {
 				<div>
 					Youre about to delete the following {selectedRows.length} {type.toLowerCase()}(s)
 				</div>
-				{selectedRows.map((selectedRow) => data[selectedRow].name)}
+				{selectedRows.map((selectedRow) => <div>{data[selectedRow].name}</div>)}
 			</Fragment>
 		);
 	};
 
 	render() {
 		const { deleteModalMessage } = this;
-		const { data, selectedData } = this.state;
+		const { data, selectedData, isOpen } = this.state;
 		const { match: { params: { type } } } = this.props;
 
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
@@ -364,17 +365,19 @@ class Self extends Component {
 									<LinearList selectedData={selectedData} />
 								</div>
 							</div>
-
-							{/* <Update
-              user={this.props.user}
-              type={type}
-              isOpen={isOpen}
-              data={selectedData ? selectedData.data : null}
-              handleClose={handleClose}
-            /> */}
 						</Fragment>
 					)}
 				</ModalRP>
+
+				<Update
+					isOpen={isOpen}
+					user={this.props.user}
+					handleClose={() => {
+						this.setState({ isOpen: false });
+					}}
+					type={type}
+					data={selectedData ? selectedData.data : null}
+				/>
 			</div>
 		);
 	}

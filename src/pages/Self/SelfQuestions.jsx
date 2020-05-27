@@ -9,7 +9,7 @@ class SelfQuestions extends Component {
 
 	decideColums = () => {
 		return [
-			{ name: 'question', sort: true, filter: false },
+			{ name: 'name', sort: true, filter: false },
 			{ name: 'difficulty', sort: true, filter: true },
 			{ name: 'type', sort: true, filter: true },
 			{ name: 'time_allocated', sort: true, filter: true },

@@ -216,7 +216,10 @@ ReactDOM.render(
 			return (
 				<Router>
 					<ThemeProvider theme={theme}>
-						<SnackbarProvider maxSnack={5} autoHideDuration={2500}>
+						<SnackbarProvider
+							maxSnack={session.data ? session.data.data.current_environment.max_notifications : 3}
+							autoHideDuration={2500}
+						>
 							<CssBaseline />
 							<RoutedApp session={session} refetch={refetch} />
 						</SnackbarProvider>

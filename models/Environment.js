@@ -83,6 +83,10 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: Boolean,
 		default: false
 	},
+	max_notifications: {
+		type: Number,
+		default: 3
+	},
 	notification_timing: {
 		type: Number,
 		default: 2500,

@@ -219,14 +219,31 @@ class EnvironmentForm extends Component {
 				]
 			},
 			{
-				name: 'notification_timing',
-				type: 'number',
-				inputProps: {
-					min: 1000,
-					max: 5000,
-					step: 250
-				},
-				defaultValue: 2500
+				type: 'group',
+				name: 'notification_groups',
+				extra: { treeView: true },
+				children: [
+					{
+						name: 'notification_timing',
+						type: 'number',
+						inputProps: {
+							min: 1000,
+							max: 5000,
+							step: 250
+						},
+						defaultValue: 2500
+					},
+					{
+						name: 'max_notifications',
+						type: 'number',
+						inputProps: {
+							min: 3,
+							max: 10,
+							step: 1
+						},
+						defaultValue: 5
+					}
+				]
 			}
 		];
 		if (customInputs) defaultInputs = customInputs(defaultInputs);

@@ -134,7 +134,8 @@ casual.define('environment', function() {
 		default_self_landing: resources.splice(1)[casual.integer(0, resources.length - 2)],
 		default_explore_rpp: rpp[casual.integer(0, rpp.length - 1)],
 		default_self_rpp: rpp[casual.integer(0, rpp.length - 1)],
-		notification_timing
+		notification_timing,
+		max_notifications: casual.integer(3, 10)
 	};
 });
 
