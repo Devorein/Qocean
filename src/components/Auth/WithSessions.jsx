@@ -9,7 +9,7 @@ class WithSessions extends React.Component {
 		this.refetch();
 	}
 	refetch = () => {
-		axios
+		return axios
 			.get('http://localhost:5001/api/v1/users/me', {
 				headers: {
 					Authorization: `Bearer ${window.localStorage.getItem('token')}`

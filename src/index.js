@@ -101,7 +101,14 @@ class App extends Component {
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
-					<AppContext.Provider value={{ changeResponse, submitForm, user: session.data ? session.data.data : null }}>
+					<AppContext.Provider
+						value={{
+							changeResponse,
+							submitForm,
+							user: session.data ? session.data.data : null,
+							refetchUser: this.props.refetch
+						}}
+					>
 						<Navbar session={session} refetch={refetch} />
 						<Switch location={location}>
 							<Route path="/" exact component={Home} />
