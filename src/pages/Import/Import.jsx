@@ -11,7 +11,7 @@ import CreateFolder from '../Create/CreateFolder';
 import CreateQuestion from '../Create/CreateQuestion';
 import CreateQuiz from '../Create/CreateQuiz';
 import CreateEnvironment from '../Create/CreateEnvironment';
-import TagCreator from '../../components/Chip/TagCreator';
+
 import './Import.scss';
 
 class Import extends Component {
@@ -133,7 +133,6 @@ class Import extends Component {
 			});
 		}
 		recurse(defaultInputs);
-		debugger;
 		return defaultInputs;
 	};
 
