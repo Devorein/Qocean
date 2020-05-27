@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import getColoredIcons from '../../Utils/getColoredIcons';
+import { validateHTMLColorHex } from 'validate-color';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -9,7 +10,9 @@ const validationSchema = Yup.object({
 	animation: Yup.bool().default(true),
 	sound: Yup.bool().default(true),
 	favourite: Yup.bool().default(false),
-	public: Yup.bool().default(true)
+	public: Yup.bool().default(true),
+	primary_color: Yup.string().test('isHexOnly', 'Primary color can only be hex values', validateHTMLColorHex),
+	secondary_color: Yup.string().test('isHexOnly', 'Secondary color can only be hex values', validateHTMLColorHex)
 });
 
 class EnvironmentForm extends Component {
