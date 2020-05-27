@@ -27,6 +27,7 @@ import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
 import submitForm from './operations/submitForm';
+import setEnvAsCurrent from './operations/setEnvAsCurrent';
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
@@ -71,6 +72,11 @@ class App extends Component {
 					}, 2500);
 					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
+					if (type.toLowerCase() === 'environment' && values.set_as_current) {
+						setEnvAsCurrent(data.data.data._id).then(() => {
+							this.props.refetch();
+						});
+					}
 				})
 				.catch((err) => {
 					if (reset_on_error) resetForm();
