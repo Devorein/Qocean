@@ -6,18 +6,10 @@ import { isAlphaNumericOnly } from '../../Utils/validation';
 import { withRouter } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 
-const inputs = [
-	{ name: 'name', startAdornment: 'person' },
-	{ name: 'username', startAdornment: 'person' },
-	{ name: 'email', startAdornment: 'email' },
-	{
-		name: 'image',
-		startAdornment: 'image'
-	}
-];
-
 class Profile extends Component {
-	submitForm = (changeResponse, { name, email, username, image }, { setSubmitting }) => {
+	static contextType = AppContext;
+
+	submitForm = ({ name, email, username, image }, { setSubmitting }) => {
 		const { user } = this.props;
 		const payload = {};
 		payload.name = name ? name : user.name;
@@ -32,19 +24,30 @@ class Profile extends Component {
 			})
 			.then((res) => {
 				localStorage.removeItem('token');
-				this.props.history.push('/');
+				this.props.history.push('/signin');
 				this.props.refetch();
 			})
 			.catch((err) => {
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
-				changeResponse(err.response.data.error, 'error');
+				this.context.changeResponse(err.response.data.error, 'error');
 			});
 	};
 
 	render() {
 		const { user } = this.props;
+
+		const inputs = [
+			{ name: 'name', startAdornment: 'person', defaultValue: user.name },
+			{ name: 'username', startAdornment: 'person', defaultValue: user.username },
+			{ name: 'email', startAdornment: 'email', defaultValue: user.email },
+			{
+				name: 'image',
+				startAdornment: 'image',
+				defaultValue: user.image
+			}
+		];
 
 		const validationSchema = Yup.object({
 			name: Yup.string('Enter a name').default(user.name),
@@ -58,20 +61,14 @@ class Profile extends Component {
 		});
 
 		return (
-			<AppContext.Consumer>
-				{({ changeResponse }) => {
-					return (
-						<div className="profile pages">
-							<InputForm
-								validationSchema={validationSchema}
-								inputs={inputs}
-								onSubmit={this.submitForm.bind(null, changeResponse)}
-								responseMsg={{}}
-							/>
-						</div>
-					);
-				}}
-			</AppContext.Consumer>
+			<div className="profile pages">
+				<InputForm
+					validationSchema={validationSchema}
+					inputs={inputs}
+					onSubmit={this.submitForm}
+					submitMsg={'update'}
+				/>
+			</div>
 		);
 	}
 }
