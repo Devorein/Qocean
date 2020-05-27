@@ -12,6 +12,17 @@ exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
 });
 
 // @desc: Create single environment
+// @route: POST /api/v1/environments/setcurrent
+// @access: Private
+exports.setCurrentEnvironment = asyncHandler(async (req, res, next) => {
+	const environment = await Environment.findOne({ _id: req.body.env, user: req.user._id });
+	const user = await User.findById(req.user._id);
+	user.current_environment = environment._id;
+	await user.save();
+	res.status(200).json({ success: true, data: environment });
+});
+
+// @desc: Create single environment
 // @route: POST /api/v1/environments
 // @access: Private
 exports.createEnvironment = asyncHandler(async (req, res, next) => {

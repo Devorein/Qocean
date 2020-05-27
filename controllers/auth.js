@@ -5,23 +5,24 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendEmail = require('../utils/sendEmail');
 const sendTokenResponse = require('../utils/sendTokenResponse');
-
+const { ObjectID } = require('bson');
 // @desc     Register
 // @route    POST /api/v1/auth/register
 // @access   Public
 exports.register = asyncHandler(async (req, res, next) => {
 	const { name, email, password, version, username } = req.body;
+	const env_id = new ObjectID();
+
 	const user = await User.create({
 		name,
 		email,
 		password,
 		version,
-		username
+		username,
+		current_environment: env_id.toString()
 	});
 
-	const enviroment = await Environment.create({ user: user._id, name: 'Default Environment' });
-	user.current_environment = enviroment._id;
-	await user.save();
+	await Environment.create({ user: user._id, _id: env_id, name: 'Default Environment' });
 	sendTokenResponse(user, 200, res);
 });
 

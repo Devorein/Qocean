@@ -5,6 +5,7 @@ import getColoredIcons from '../../Utils/getColoredIcons';
 import { AppContext } from '../../context/AppContext';
 import SettingsIcon from '@material-ui/icons/Settings';
 import shortid from 'shortid';
+import axios from 'axios';
 
 class SelfEnvironments extends Component {
 	static contextType = AppContext;
@@ -47,6 +48,24 @@ class SelfEnvironments extends Component {
 		};
 	};
 
+	setAsCurrent = (env) => {
+		axios
+			.post(
+				`http://localhost:5001/api/v1/environments/setcurrent`,
+				{
+					env
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then((data) => {
+				console.log(data);
+			});
+	};
+
 	transformData = (data) => {
 		return data.map((item, index) => {
 			const { children } = item.name.props;
@@ -56,9 +75,7 @@ class SelfEnvironments extends Component {
 				children[1],
 				<SettingsIcon
 					style={{ fill: active ? '#ead50f' : '#ddd' }}
-					onClick={(e) => {
-						console.log(item._id);
-					}}
+					onClick={this.setAsCurrent.bind(null, item._id)}
 					key={shortid.generate()}
 				/>,
 				children[2]

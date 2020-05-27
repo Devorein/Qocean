@@ -34,6 +34,7 @@
     "apollo-server-express": "^2.13.1",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
+    "bson": "^4.0.4",
     "casual": "^1.6.2",
     "clsx": "^1.1.0",
     "color-convert": "^2.0.1",
