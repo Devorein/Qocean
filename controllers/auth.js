@@ -45,18 +45,25 @@ exports.login = asyncHandler(async (req, res, next) => {
 	sendTokenResponse(user, 200, res);
 });
 
+exports.checkPassword = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user._id).select('+password');
+	const isMatch = await user.matchPassword(req.body.password);
+	if (!isMatch) return next(new ErrorResponse(`Invalid credentials`, 401));
+	else return res.status(200).send({ success: 'true', data: 'Correct password' });
+});
+
 // @desc     Logout user
 // @route    GET /api/v1/auth/logout
 // @access   Private
 exports.logout = asyncHandler(async (req, res, next) => {
-	res.cookie('token','none',{
-    expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true
-  })
-  res.status(200).json({
-    success: true,
-    data: {}
-  })
+	res.cookie('token', 'none', {
+		expires: new Date(Date.now() + 10 * 1000),
+		httpOnly: true
+	});
+	res.status(200).json({
+		success: true,
+		data: {}
+	});
 });
 
 // @desc     Forgot password
@@ -91,7 +98,6 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 // @route    PUT /api/v1/auth/resetpassword/:resetToken
 // @access   Public
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-	console.log(1);
 	const resetPasswordToken = crypto.createHash('sha256').update(req.params.resetToken).digest('hex');
 
 	const user = await User.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
