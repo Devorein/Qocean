@@ -19,6 +19,7 @@ import './Self.scss';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import IconRow from '../../components/Row/IconRow';
+import CustomModal from '../../components/Modal/CustomModal';
 
 class Self extends Component {
 	state = {
@@ -29,7 +30,8 @@ class Self extends Component {
 		totalCount: 0,
 		selectedData: null,
 		sortCol: null,
-		sortOrder: null
+		sortOrder: null,
+		isOpen: false
 	};
 
 	componentDidMount() {
@@ -152,7 +154,13 @@ class Self extends Component {
 				...item,
 				name: (
 					<IconRow>
-						<UpdateIcon />
+						<UpdateIcon
+							onClick={(e) => {
+								this.setState({
+									isOpen: true
+								});
+							}}
+						/>
 						<InfoIcon
 							onClick={(e) => {
 								this.getDetails(filterData(item), index);
@@ -270,7 +278,7 @@ class Self extends Component {
 	};
 
 	render() {
-		const { data, selectedData } = this.state;
+		const { data, selectedData, isOpen } = this.state;
 
 		const { match: { params: { type } } } = this.props;
 
@@ -301,6 +309,16 @@ class Self extends Component {
 						<LinearList selectedData={selectedData} />
 					</div>
 				</div>
+				<CustomModal
+					isOpen={isOpen}
+					handleClose={() => {
+						this.setState({
+							isOpen: false
+						});
+					}}
+				>
+					<div>123</div>
+				</CustomModal>
 			</div>
 		);
 	}
