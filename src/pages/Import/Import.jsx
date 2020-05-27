@@ -20,6 +20,7 @@ class Import extends Component {
 	state = {
 		data: [],
 		inputs: [],
+		currentPage: '',
 		currentType: '',
 		selectedIndex: null
 	};
@@ -29,13 +30,15 @@ class Import extends Component {
 		this.setState({
 			inputs: [],
 			data: [],
-			selectedIndex: null
+			selectedIndex: null,
+			currentPage: page.name
 		});
 	};
 
 	setFile = (type, e) => {
 		e.persist();
 		const { enqueueSnackbar } = this.props;
+		const { currentPage } = this.state;
 		const reader = new FileReader();
 		const { files: [ file ] } = e.target;
 		delete this.UploadButton.files[0];
@@ -47,7 +50,12 @@ class Import extends Component {
 				items = items.filter(({ type: type_, name }) => {
 					const isUnique = itemname.indexOf(name) === -1;
 					if (isUnique) itemname.push(name);
-					if (!isUnique) {
+					if (type_ !== currentPage.toLowerCase()) {
+						enqueueSnackbar(`${type} ${name} is not of selected type`, {
+							variant: 'error'
+						});
+						return false;
+					} else if (!isUnique) {
 						enqueueSnackbar(`${type} ${name} has already been added`, {
 							variant: 'error'
 						});

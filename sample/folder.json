@@ -7,12 +7,12 @@
     "favourite": true
   },
   {
-    "type": "folder",
+    "type": "environment",
     "name": "Collection 1",
     "icon": "Indigo_folder.svg"
   },
   {
     "type": "folder",
-    "name": "Collection 3"
+    "name": "Collection 1"
   }
 ]
