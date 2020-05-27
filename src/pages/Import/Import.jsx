@@ -124,12 +124,12 @@ class Import extends Component {
 		const target = data[selectedIndex];
 		function recurse(defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
-				const { type } = defaultInput;
-				if (type !== 'group')
+				const { type, defaultValue } = defaultInput;
+				if (type !== 'group') {
 					defaultInput.defaultValue = target[defaultInput.name]
 						? target[defaultInput.name]
-						: defaultInput.defaultValue ? defaultInput.defaultValue : typeof type === 'boolean' ? true : '';
-				else recurse(defaultInput.children);
+						: defaultValue.toString() ? defaultValue : typeof defaultValue === 'boolean' ? true : '';
+				} else recurse(defaultInput.children);
 			});
 		}
 		recurse(defaultInputs);

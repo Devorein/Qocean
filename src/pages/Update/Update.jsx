@@ -11,15 +11,14 @@ class Update extends Component {
 
 	transformValue = (defaultInputs) => {
 		let { data: target } = this.props;
-
 		function recurse(defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
-				const { type } = defaultInput;
-				if (type !== 'group')
+				const { type, defaultValue } = defaultInput;
+				if (type !== 'group') {
 					defaultInput.defaultValue = target[defaultInput.name]
 						? target[defaultInput.name]
-						: defaultInput.defaultValue ? defaultInput.defaultValue : typeof type === 'boolean' ? true : '';
-				else recurse(defaultInput.children);
+						: defaultValue.toString() ? defaultValue : typeof defaultValue === 'boolean' ? true : '';
+				} else recurse(defaultInput.children);
 			});
 		}
 		recurse(defaultInputs);
@@ -40,7 +39,19 @@ class Update extends Component {
 		if (data) {
 			if (type === 'Folder') return <CreateFolder {...props} />;
 			else if (type === 'Question') return <CreateQuestion {...props} />;
-			else if (type === 'Quiz') return <CreateQuiz {...props} />;
+			else if (type === 'Quiz')
+				return (
+					<CreateQuiz
+						{...props}
+						ref={(r) => {
+							this.CreateQuiz = r;
+							if (this.CreateQuiz)
+								this.CreateQuiz.setState({
+									tags: data.tags
+								});
+						}}
+					/>
+				);
 			else if (type === 'Environment') return <CreateEnvironment {...props} />;
 		} else return <div>N/A</div>;
 	};
