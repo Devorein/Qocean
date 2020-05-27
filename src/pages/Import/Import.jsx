@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withSnackbar } from 'notistack';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';
 import UploadButton from '../../components/Buttons/UploadButton';
@@ -34,15 +35,24 @@ class Import extends Component {
 
 	setFile = (type, e) => {
 		e.persist();
+		const { enqueueSnackbar } = this.props;
 		const reader = new FileReader();
 		const { files: [ file ] } = e.target;
 		delete this.UploadButton.files[0];
 		this.UploadButton.value = '';
 		reader.onload = (e) => {
 			file.text().then((data) => {
+				let items = JSON.parse(data);
+				items = items.filter(({ type: type_, name }) => {
+					if (type_ === 'quiz' || type_ === 'environment' || type_ === 'question' || type_ === 'folder') return true;
+					enqueueSnackbar(`${type} ${name} doesnt have a type field`, {
+						variant: 'error'
+					});
+					return false;
+				});
 				this.setState({
 					currentType: type,
-					data: JSON.parse(data)
+					data: items
 				});
 			});
 		};
@@ -187,4 +197,4 @@ class Import extends Component {
 	}
 }
 
-export default withRouter(Import);
+export default withRouter(withSnackbar(Import));
