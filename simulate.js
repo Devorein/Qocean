@@ -40,7 +40,7 @@ casual.define('quiz', function() {
 	return {
 		name: casual.title,
 		subject: casual.word,
-		tags: `${casual.array_of_words(casual.integer(0, 3))}:${randomColor()}`,
+		tags: casual.array_of_words(casual.integer(0, 5)).map((word) => `${word}:${randomColor()}`),
 		source: faker.internet.url(),
 		favourite: casual.boolean,
 		public: casual.boolean
