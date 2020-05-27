@@ -43,12 +43,23 @@ class Import extends Component {
 		reader.onload = (e) => {
 			file.text().then((data) => {
 				let items = JSON.parse(data);
+				const itemname = [];
 				items = items.filter(({ type: type_, name }) => {
-					if (type_ === 'quiz' || type_ === 'environment' || type_ === 'question' || type_ === 'folder') return true;
-					enqueueSnackbar(`${type} ${name} doesnt have a type field`, {
-						variant: 'error'
-					});
-					return false;
+					const isUnique = itemname.indexOf(name) === -1;
+					if (isUnique) itemname.push(name);
+					if (!isUnique) {
+						enqueueSnackbar(`${type} ${name} has already been added`, {
+							variant: 'error'
+						});
+						return false;
+					} else if (type_ === 'quiz' || type_ === 'environment' || type_ === 'question' || type_ === 'folder')
+						return true;
+					else {
+						enqueueSnackbar(`${type} ${name} doesnt have a type field`, {
+							variant: 'error'
+						});
+						return false;
+					}
 				});
 				this.setState({
 					currentType: type,
