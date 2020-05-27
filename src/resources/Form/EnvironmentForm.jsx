@@ -245,6 +245,10 @@ class EnvironmentForm extends Component {
 							step: 1
 						},
 						defaultValue: 5
+					},
+					{
+						name: 'display_font',
+						defaultValue: 'Quantico'
 					}
 				]
 			}

@@ -104,6 +104,10 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 	secondary_color: {
 		type: String,
 		default: '#f50057'
+	},
+	display_font: {
+		type: String,
+		default: '#Quantico'
 	}
 });
 
