@@ -13,7 +13,7 @@ const validationSchema = Yup.object({
 	public: Yup.bool().default(true)
 });
 
-class CreateFolder extends Component {
+class FolderForm extends Component {
 	state = {
 		folders: [],
 		loading: true,
@@ -104,4 +104,4 @@ class CreateFolder extends Component {
 	}
 }
 
-export default CreateFolder;
+export default FolderForm;

@@ -12,7 +12,7 @@ const validationSchema = Yup.object({
 	public: Yup.bool().default(true)
 });
 
-class CreateEnvironment extends Component {
+class EnvironmentForm extends Component {
 	render() {
 		const { onSubmit, customInputs, submitMsg } = this.props;
 
@@ -244,4 +244,4 @@ class CreateEnvironment extends Component {
 	}
 }
 
-export default CreateEnvironment;
+export default EnvironmentForm;

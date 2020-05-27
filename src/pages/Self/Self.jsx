@@ -19,6 +19,7 @@ import './Self.scss';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import IconRow from '../../components/Row/IconRow';
+import Update from '../Update/Update';
 
 class Self extends Component {
 	state = {
@@ -29,7 +30,8 @@ class Self extends Component {
 		totalCount: 0,
 		selectedData: null,
 		sortCol: null,
-		sortOrder: null
+		sortOrder: null,
+		isOpen: false
 	};
 
 	componentDidMount() {
@@ -152,13 +154,17 @@ class Self extends Component {
 				...item,
 				name: (
 					<IconRow>
-						<UpdateIcon />
+						<UpdateIcon
+							onClick={(e) => {
+								this.getDetails(filterData(item), index, { isOpen: true });
+							}}
+						/>
 						<InfoIcon
 							onClick={(e) => {
 								this.getDetails(filterData(item), index);
 							}}
 						/>
-						<div>{item.name || item.question}</div>
+						<div>{item.name}</div>
 					</IconRow>
 				),
 				public: item.public ? <PublicIcon style={{ fill: '#00a3e6' }} /> : <PublicIcon style={{ fill: '#f4423c' }} />,
@@ -171,13 +177,14 @@ class Self extends Component {
 		});
 	};
 
-	getDetails = ({ exclude, primary }, index) => {
+	getDetails = ({ exclude, primary }, index, newState = {}) => {
 		this.setState({
 			selectedData: {
 				exclude,
 				primary,
 				data: this.state.data[index]
-			}
+			},
+			...newState
 		});
 	};
 
@@ -270,7 +277,7 @@ class Self extends Component {
 	};
 
 	render() {
-		const { data, selectedData } = this.state;
+		const { data, selectedData, isOpen } = this.state;
 
 		const { match: { params: { type } } } = this.props;
 
@@ -301,6 +308,17 @@ class Self extends Component {
 						<LinearList selectedData={selectedData} />
 					</div>
 				</div>
+				<Update
+					user={this.props.user}
+					type={type}
+					isOpen={isOpen}
+					data={selectedData ? selectedData.data : null}
+					handleClose={() => {
+						this.setState({
+							isOpen: false
+						});
+					}}
+				/>
 			</div>
 		);
 	}

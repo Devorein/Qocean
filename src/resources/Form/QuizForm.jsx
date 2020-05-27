@@ -20,7 +20,7 @@ const validationSchema = Yup.object({
 	folder: Yup.string('Enter folder')
 });
 
-class CreateQuiz extends Component {
+class QuizForm extends Component {
 	state = {
 		tags: this.props.tags || [],
 		folders: [],
@@ -55,9 +55,9 @@ class CreateQuiz extends Component {
 	preSubmit = (values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = this.state.tags;
-		const [ file, src ] = this.FileInput.returnData();
-		if (file) values.link = '';
-		else values.link = src;
+		// const [ file, src ] = this.FileInput.state;
+		// if (file) values.link = '';
+		// else values.link = src;
 		return [ values, true ];
 	};
 
@@ -79,7 +79,7 @@ class CreateQuiz extends Component {
 
 	postSubmit = ({ data }) => {
 		const fd = new FormData();
-		const [ file ] = this.FileInput.returnData();
+		const [ file ] = this.FileInput.state;
 		if (file) {
 			fd.append('file', file, file.name);
 			axios
@@ -172,4 +172,4 @@ class CreateQuiz extends Component {
 	}
 }
 
-export default CreateQuiz;
+export default QuizForm;

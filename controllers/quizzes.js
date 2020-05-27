@@ -8,21 +8,24 @@ const asyncHandler = require('../middleware/async');
 // @access: Private
 exports.createQuiz = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user._id;
-	const prevQuiz = await Quiz.countDocuments({ name: req.body.name, user: req.user._id });
+	const prevQuiz = await Quiz.countDocuments({ name: req.body.name.trim(), user: req.user._id });
 	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${req.body.name}`, 400));
-	const targetQuizs = req.body.quizs;
-	delete req.body.quizs;
+	const targetquizzes = req.body.quizzes;
+	delete req.body.quizzes;
+	const [ success, message ] = await Quiz.validate(req.body);
+	if (!success) return next(new ErrorResponse(message, 400));
+
 	const quiz = await Quiz.create(req.body);
-	if (targetQuizs) {
-		const quizsPromise = [];
-		for (let i = 0; i < targetQuizs.length; i++) {
-			const quizId = targetQuizs[i];
-			quizsPromise.push(Quiz.findById(quizId));
+	if (targetquizzes) {
+		const quizzesPromise = [];
+		for (let i = 0; i < targetquizzes.length; i++) {
+			const quizId = targetquizzes[i];
+			quizzesPromise.push(Quiz.findById(quizId));
 		}
 		try {
-			const quizs = await Promise.all(quizsPromise);
-			for (let i = 0; i < quizs.length; i++) {
-				const quiz = quizs[i];
+			const quizzes = await Promise.all(quizzesPromise);
+			for (let i = 0; i < quizzes.length; i++) {
+				const quiz = quizzes[i];
 				await quiz.quiz(1, quiz._id);
 				await quiz.save();
 			}

@@ -1,6 +1,6 @@
 [
   {
-    "question": "Who created Git",
+    "name": "Who created Git",
     "type": "MCQ",
     "answers": [
       1
@@ -14,7 +14,7 @@
     "add_to_score": false
   },
   {
-    "question": "Who created ESLint",
+    "name": "Who created ESLint",
     "type": "MCQ",
     "answers": [
       1
@@ -29,19 +29,19 @@
     "time_allocated": 60
   },
   {
-    "question": "Is mongodb a No-SQL database",
+    "name": "Is mongodb a No-SQL database",
     "type": "TF",
     "answer": "True",
     "weight": 4
   },
   {
-    "question": "Was git founded in 2006",
+    "name": "Was git founded in 2006",
     "type": "TF",
     "answer": "False",
     "difficulty": "Advanced"
   },
   {
-    "question": "Which languages does ESLint supports",
+    "name": "Which languages does ESLint supports",
     "type": "MS",
     "answers": [
       1,
@@ -58,7 +58,7 @@
     "favourite": true
   },
   {
-    "question": "Which of the following are git commands",
+    "name": "Which of the following are git commands",
     "type": "MS",
     "answers": [
       1,
@@ -72,7 +72,7 @@
     ]
   },
   {
-    "question": "What is git",
+    "name": "What is git",
     "type": "FC",
     "answers": [
       [
@@ -82,7 +82,7 @@
     "add_to_score": false
   },
   {
-    "question": "What is ESLint",
+    "name": "What is ESLint",
     "type": "FC",
     "answers": [
       [
@@ -92,7 +92,7 @@
     "add_to_score": true
   },
   {
-    "question": "Git is a {_} {_} system for tracking changes in source code during software development.",
+    "name": "Git is a {_} {_} system for tracking changes in source code during software development.",
     "type": "FIB",
     "answers": [
       [
@@ -106,7 +106,7 @@
     "time_allocated": 75
   },
   {
-    "question": "ESLint is a {_} code {_} tool for identifying problematic patterns found in {_} code",
+    "name": "ESLint is a {_} code {_} tool for identifying problematic patterns found in {_} code",
     "type": "FIB",
     "answers": [
       [
@@ -123,7 +123,7 @@
     "time_allocated": 75
   },
   {
-    "question": "Write the command to use admin database",
+    "name": "Write the command to use admin database",
     "type": "Snippet",
     "answers": [
       [
@@ -132,7 +132,7 @@
     ]
   },
   {
-    "question": "Write the command to add all files in current directory to stage",
+    "name": "Write the command to add all files in current directory to stage",
     "type": "Snippet",
     "answers": [
       [

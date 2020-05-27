@@ -21,7 +21,7 @@ router
 			[
 				{
 					path: 'questions',
-					select: 'question'
+					select: 'name'
 				},
 				{
 					path: 'user',

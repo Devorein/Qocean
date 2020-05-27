@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
+const validateColor = require('validate-color');
 
 const QuizSchema = extendSchema(
 	ResourceSchema,
@@ -66,6 +67,17 @@ const QuizSchema = extendSchema(
 		toObject: { virtuals: true }
 	}
 );
+
+QuizSchema.statics.validate = async function(quiz) {
+	let message = '',
+		success = true;
+	if (quiz.tags.length > 5) return [ false, 'Tags cannot be more than 5' ];
+	else {
+		const isAllValid = quiz.tags.every((tag) => validateColor.default(tag.toString().split(':')[1]));
+		if (!isAllValid) return [ false, 'All tags are not valid' ];
+	}
+	return [ success, message ];
+};
 
 QuizSchema.statics.add = async function(quizId, field, id) {
 	const quiz = await this.findById(quizId);

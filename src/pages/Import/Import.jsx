@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withSnackbar } from 'notistack';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';
 import UploadButton from '../../components/Buttons/UploadButton';
@@ -6,11 +7,11 @@ import { AppContext } from '../../context/AppContext';
 import CustomList from '../../components/List/List';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
-import CreateFolder from '../Create/CreateFolder';
-import CreateQuestion from '../Create/CreateQuestion';
-import CreateQuiz from '../Create/CreateQuiz';
-import CreateEnvironment from '../Create/CreateEnvironment';
-import TagCreator from '../../components/Chip/TagCreator';
+import FolderForm from '../../resources/Form/FolderForm';
+import QuestionForm from '../../resources/Form/QuestionForm';
+import QuizForm from '../../resources/Form/QuizForm';
+import EnvironmentForm from '../../resources/Form/EnvironmentForm';
+
 import './Import.scss';
 
 class Import extends Component {
@@ -19,6 +20,7 @@ class Import extends Component {
 	state = {
 		data: [],
 		inputs: [],
+		currentPage: '',
 		currentType: '',
 		selectedIndex: null
 	};
@@ -28,21 +30,48 @@ class Import extends Component {
 		this.setState({
 			inputs: [],
 			data: [],
-			selectedIndex: null
+			selectedIndex: null,
+			currentPage: page.name
 		});
 	};
 
 	setFile = (type, e) => {
 		e.persist();
+		const { enqueueSnackbar } = this.props;
+		const { currentPage } = this.state;
 		const reader = new FileReader();
 		const { files: [ file ] } = e.target;
 		delete this.UploadButton.files[0];
 		this.UploadButton.value = '';
 		reader.onload = (e) => {
 			file.text().then((data) => {
+				let items = JSON.parse(data);
+				const itemname = [];
+				items = items.filter(({ type: type_, name }) => {
+					const isUnique = itemname.indexOf(name) === -1;
+					if (isUnique) itemname.push(name);
+					if (type_ !== currentPage.toLowerCase()) {
+						enqueueSnackbar(`${type} ${name} is not of selected type`, {
+							variant: 'error'
+						});
+						return false;
+					} else if (!isUnique) {
+						enqueueSnackbar(`${type} ${name} has already been added`, {
+							variant: 'error'
+						});
+						return false;
+					} else if (type_ === 'quiz' || type_ === 'environment' || type_ === 'question' || type_ === 'folder')
+						return true;
+					else {
+						enqueueSnackbar(`${type} ${name} doesnt have a type field`, {
+							variant: 'error'
+						});
+						return false;
+					}
+				});
 				this.setState({
 					currentType: type,
-					data: JSON.parse(data)
+					data: items
 				});
 			});
 		};
@@ -53,7 +82,7 @@ class Import extends Component {
 		const { match: { params: { type } } } = this.props;
 		return data.map((data) => {
 			return {
-				primary: data.name || data.question,
+				primary: data.name,
 				primaryIcon: type
 			};
 		});
@@ -103,16 +132,15 @@ class Import extends Component {
 		const target = data[selectedIndex];
 		function recurse(defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
-				const { type } = defaultInput;
-				if (type !== 'group')
+				const { type, defaultValue } = defaultInput;
+				if (type !== 'group') {
 					defaultInput.defaultValue = target[defaultInput.name]
 						? target[defaultInput.name]
-						: defaultInput.defaultValue ? defaultInput.defaultValue : typeof type === 'boolean' ? true : '';
-				else recurse(defaultInput.children);
+						: defaultValue.toString() ? defaultValue : typeof defaultValue === 'boolean' ? true : '';
+				} else recurse(defaultInput.children);
 			});
 		}
 		recurse(defaultInputs);
-		debugger;
 		return defaultInputs;
 	};
 
@@ -134,11 +162,11 @@ class Import extends Component {
 
 		if (cond && type === 'quiz')
 			return (
-				<CreateQuiz
+				<QuizForm
 					ref={(r) => {
-						this.CreateQuiz = r;
-						if (this.CreateQuiz)
-							this.CreateQuiz.setState({
+						this.QuizForm = r;
+						if (this.QuizForm)
+							this.QuizForm.setState({
 								tags: data[selectedIndex].tags
 							});
 					}}
@@ -146,9 +174,9 @@ class Import extends Component {
 					image_link={data[selectedIndex].image_link}
 				/>
 			);
-		else if (cond && type === 'question') return <CreateQuestion {...props} />;
-		else if (cond && type === 'folder') return <CreateFolder {...props} />;
-		else if (cond && type === 'environment') return <CreateEnvironment {...props} />;
+		else if (cond && type === 'question') return <QuestionForm {...props} />;
+		else if (cond && type === 'folder') return <FolderForm {...props} />;
+		else if (cond && type === 'environment') return <EnvironmentForm {...props} />;
 	};
 
 	render() {
@@ -187,4 +215,4 @@ class Import extends Component {
 	}
 }
 
-export default withRouter(Import);
+export default withRouter(withSnackbar(Import));

@@ -69,7 +69,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name || values.question}`, 'success');
+					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
 				})
 				.catch((err) => {
@@ -101,7 +101,7 @@ class App extends Component {
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
-					<AppContext.Provider value={{ changeResponse, submitForm }}>
+					<AppContext.Provider value={{ changeResponse, submitForm, user: session.data ? session.data.data : null }}>
 						<Navbar session={session} refetch={refetch} />
 						<Switch location={location}>
 							<Route path="/" exact component={Home} />
