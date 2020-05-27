@@ -69,16 +69,16 @@ casual.define('question', function() {
 	if (type === 'MCQ') {
 		const total_options = casual.integer(3, 6);
 		options = Array(total_options).fill(0).map((_) => casual.sentence);
+		answers.push(casual.integer(1, total_options - 1));
+	} else if (type === 'MS') {
+		const total_options = casual.integer(3, 6);
+		options = Array(total_options).fill(0).map((_) => casual.sentence);
 		const total_answers = casual.integer(1, total_options - 1);
 
 		while (answers.length < total_answers) {
 			const r = casual.integer(1, total_options - 1);
 			if (answers.indexOf(r) === -1) answers.push(r);
 		}
-	} else if (type === 'MS') {
-		const total_options = casual.integer(3, 6);
-		options = Array(total_options).fill(0).map((_) => casual.sentence);
-		answers.push(casual.integer(1, total_options - 1));
 	} else if (type === 'TF') {
 		options = [];
 		answers.push([ 0, 1 ][casual.integer(0, 1)]);
