@@ -94,7 +94,9 @@ class Self extends Component {
 			type: page.name,
 			page: 0,
 			sortCol: null,
-			sortOrder: null
+			sortOrder: null,
+			selectedData: null,
+			selectedRows: []
 		});
 	};
 

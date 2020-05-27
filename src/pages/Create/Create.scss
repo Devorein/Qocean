@@ -1,16 +1,4 @@
 .create {
-  // &_form {
-  //   height: calc(100% - 75px);
-  //   display: flex;
-  //   flex-direction: row;
-  //   justify-content: space-around;
-  //   align-items: center;
-  //   .form {
-  //     height: 80%;
-  //     padding: 0px;
-  //     overflow: auto;
-  //   }
-  // }
   &_question {
     display: grid;
     grid-template: 1fr 1fr / 1fr 1fr;
@@ -108,11 +96,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    .form-content {
-      max-height: 80%;
-      height: 80%;
-    }
   }
 }
 

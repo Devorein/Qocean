@@ -322,7 +322,7 @@ class Form extends React.Component {
 		} = this.props;
 
 		return (
-			<form className={`${classNames ? ' ' + classNames : ''}`} onSubmit={handleSubmit}>
+			<form className={`${classNames ? ' ' + classNames : ''} form`} onSubmit={handleSubmit}>
 				<div className={`form-content`}>
 					{inputs.map((input) => this.formComponentRenderer(input))}
 					{children}
