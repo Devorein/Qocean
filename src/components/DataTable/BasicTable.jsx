@@ -57,7 +57,7 @@ class BasicTable extends Component {
 
 export default withStyles((theme) => ({
 	tableHead: {
-		backgroundColor: theme.palette.grey[900],
+		backgroundColor: theme.palette.background.dark,
 		padding: 5
 	},
 	tableTitle: {
@@ -66,6 +66,6 @@ export default withStyles((theme) => ({
 		padding: 5
 	},
 	tableFooter: {
-		backgroundColor: theme.palette.grey[800]
+		backgroundColor: theme.palette.background.main
 	}
 }))(BasicTable);

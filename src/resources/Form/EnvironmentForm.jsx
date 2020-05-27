@@ -190,7 +190,7 @@ class EnvironmentForm extends Component {
 				extra: { treeView: true },
 				children: [
 					{
-						name: 'default_theme',
+						name: 'theme',
 						type: 'select',
 						extra: {
 							selectItems: [
@@ -245,12 +245,12 @@ class EnvironmentForm extends Component {
 							step: 1
 						},
 						defaultValue: 5
-					},
-					{
-						name: 'display_font',
-						defaultValue: 'Quantico'
 					}
 				]
+			},
+			{
+				name: 'display_font',
+				defaultValue: 'Quantico'
 			}
 		];
 		if (customInputs) defaultInputs = customInputs(defaultInputs);

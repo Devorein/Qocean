@@ -268,12 +268,12 @@ export default withStyles((theme) => ({
 		fontWeight: 'bolder',
 		gridArea: '1/1/2/3',
 		textAlign: 'center',
-		backgroundColor: theme.palette.grey[900]
+		backgroundColor: theme.palette.background.dark
 	},
 	listBody: {
 		overflowY: 'auto',
 		maxHeight: '80%',
-		background: theme.palette.grey[800]
+		background: theme.palette.background.main
 	},
 	listIndex: {
 		fontWeight: 'bolder',
