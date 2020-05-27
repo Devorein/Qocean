@@ -62,7 +62,6 @@ class SelfEnvironments extends Component {
 				}
 			)
 			.then((data) => {
-				debugger;
 				this.context.refetchUser().then(() => {
 					this.props.refetchData();
 				});

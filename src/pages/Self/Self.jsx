@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
@@ -21,6 +21,7 @@ import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import IconRow from '../../components/Row/IconRow';
 import Update from '../Update/Update';
+import ModalRP from '../../RP/ModalRP';
 
 class Self extends Component {
 	static contextType = AppContext;
@@ -33,7 +34,8 @@ class Self extends Component {
 		selectedData: null,
 		sortCol: null,
 		sortOrder: null,
-		isOpen: false
+		isOpen: false,
+		selectedRows: []
 	};
 
 	componentDidMount() {
@@ -207,7 +209,7 @@ class Self extends Component {
 		});
 	};
 
-	decideTable = () => {
+	decideTable = (setIsOpen) => {
 		const { getDetails, genericTransformData, refetchData, deleteResource, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const options = {
@@ -216,8 +218,14 @@ class Self extends Component {
 					<div>
 						<DeleteIcon
 							onClick={(e) => {
-								selectedRows = selectedRows.data.map(({ index }) => this.state.data[index]);
-								deleteResource(selectedRows);
+								this.setState(
+									{
+										selectedRows: selectedRows.data.map((selectedRow) => selectedRow.index)
+									},
+									() => {
+										setIsOpen(true);
+									}
+								);
 							}}
 						/>
 						<StarIcon
@@ -295,9 +303,21 @@ class Self extends Component {
 		else if (type === 'Environment') return <SelfEnvironments {...props} />;
 	};
 
-	render() {
-		const { data, selectedData, isOpen } = this.state;
+	deleteModalMessage = () => {
+		const { selectedRows, type, data } = this.state;
+		return (
+			<Fragment>
+				<div>
+					Youre about to delete the following {selectedRows.length} {type.toLowerCase()}(s)
+				</div>
+				{selectedRows.map((selectedRow) => data[selectedRow].name)}
+			</Fragment>
+		);
+	};
 
+	render() {
+		const { deleteModalMessage } = this;
+		const { data, selectedData } = this.state;
 		const { match: { params: { type } } } = this.props;
 
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
@@ -309,35 +329,52 @@ class Self extends Component {
 
 		return (
 			<div className="Self page">
-				<CustomTabs
-					against={type}
-					onChange={(e, value) => {
-						this.switchPage(headers[value]);
-					}}
-					height={50}
-					headers={headers}
-				/>
-				<div className={`self_${type}_content self_content`}>
-					{data.length > 0 ? (
-						<div className={`self_${type}_table self_content_table`}>{this.decideTable()}</div>
-					) : (
-						<div>You've not created any {type} yet</div>
-					)}
-					<div className={`self_${type}_list--linear self_content_list`}>
-						<LinearList selectedData={selectedData} />
-					</div>
-				</div>
-				<Update
-					user={this.props.user}
-					type={type}
-					isOpen={isOpen}
-					data={selectedData ? selectedData.data : null}
-					handleClose={() => {
+				<ModalRP
+					onClose={(e) => {
 						this.setState({
-							isOpen: false
+							selectedRows: []
 						});
 					}}
-				/>
+					onAccept={() => {
+						const selectedDatas = this.state.selectedRows.map((index) => this.state.data[index]);
+						this.deleteResource(selectedDatas);
+						this.setState({
+							selectedRows: []
+						});
+					}}
+					modalMsg={deleteModalMessage()}
+				>
+					{({ setIsOpen }) => (
+						<Fragment>
+							<CustomTabs
+								against={type}
+								onChange={(e, value) => {
+									this.switchPage(headers[value]);
+								}}
+								height={50}
+								headers={headers}
+							/>
+							<div className={`self_${type}_content self_content`}>
+								{data.length > 0 ? (
+									<div className={`self_${type}_table self_content_table`}>{this.decideTable(setIsOpen)}</div>
+								) : (
+									<div>You've not created any {type} yet</div>
+								)}
+								<div className={`self_${type}_list--linear self_content_list`}>
+									<LinearList selectedData={selectedData} />
+								</div>
+							</div>
+
+							{/* <Update
+              user={this.props.user}
+              type={type}
+              isOpen={isOpen}
+              data={selectedData ? selectedData.data : null}
+              handleClose={handleClose}
+            /> */}
+						</Fragment>
+					)}
+				</ModalRP>
 			</div>
 		);
 	}
