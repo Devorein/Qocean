@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
 import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import SelfEnvironments from './SelfEnvironments';
 import deleteResource from '../../operations/deleteResource';
 import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
+import { AppContext } from '../../context/AppContext';
 import DeleteIcon from '@material-ui/icons/Delete';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
@@ -20,8 +21,10 @@ import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import IconRow from '../../components/Row/IconRow';
 import Update from '../Update/Update';
+import ModalRP from '../../RP/ModalRP';
 
 class Self extends Component {
+	static contextType = AppContext;
 	state = {
 		data: [],
 		type: this.props.user.current_environment.default_self_landing,
@@ -31,7 +34,8 @@ class Self extends Component {
 		selectedData: null,
 		sortCol: null,
 		sortOrder: null,
-		isOpen: false
+		isOpen: false,
+		selectedRows: []
 	};
 
 	componentDidMount() {
@@ -90,16 +94,36 @@ class Self extends Component {
 			type: page.name,
 			page: 0,
 			sortCol: null,
-			sortOrder: null
+			sortOrder: null,
+			selectedData: null,
+			selectedRows: []
 		});
 	};
 
 	deleteResource = (selectedRows) => {
-		const { type } = this.state;
-		const { enqueueSnackbar } = this.props;
 		const CLASS = this;
+		const { enqueueSnackbar } = this.props;
+		const { type } = this.state;
 		let current = 0;
 		let done = false;
+
+		if (type === 'Environment') {
+			let containsCurrent = false;
+			const temp = [];
+			selectedRows.forEach((selectedRow) => {
+				if (selectedRow._id === this.props.user.current_environment._id) containsCurrent = true;
+				else temp.push(selectedRow);
+			});
+			if (containsCurrent) {
+				this.context.changeResponse(
+					'Cant delete',
+					'You are trying to delete a currently activated environment',
+					'error'
+				);
+			}
+			reductiveDownloadChain(temp);
+		} else reductiveDownloadChain(selectedRows);
+
 		function reductiveDownloadChain(items) {
 			return items.reduce((chain, currentItem) => {
 				return chain.then((_) => {
@@ -109,7 +133,7 @@ class Self extends Component {
 						enqueueSnackbar(`${type} ${name} has been deleted`, {
 							variant: 'success'
 						});
-						if (current === selectedRows.length && !done) {
+						if (current === items.length && !done) {
 							CLASS.refetchData();
 							done = true;
 						}
@@ -117,7 +141,6 @@ class Self extends Component {
 				});
 			}, Promise.resolve());
 		}
-		reductiveDownloadChain(selectedRows);
 	};
 
 	updateResource = (selectedRows, field) => {
@@ -178,6 +201,7 @@ class Self extends Component {
 	};
 
 	getDetails = ({ exclude, primary }, index, newState = {}) => {
+		console.log(newState);
 		this.setState({
 			selectedData: {
 				exclude,
@@ -188,8 +212,8 @@ class Self extends Component {
 		});
 	};
 
-	decideTable = () => {
-		const { getDetails, genericTransformData, refetchData, deleteResource, updateResource } = this;
+	decideTable = (setDeleteModal) => {
+		const { getDetails, genericTransformData, refetchData, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const options = {
 			customToolbarSelect: (selectedRows, displayData, setSelectedRows) => {
@@ -197,8 +221,14 @@ class Self extends Component {
 					<div>
 						<DeleteIcon
 							onClick={(e) => {
-								selectedRows = selectedRows.data.map(({ index }) => this.state.data[index]);
-								deleteResource(selectedRows);
+								this.setState(
+									{
+										selectedRows: selectedRows.data.map((selectedRow) => selectedRow.index)
+									},
+									() => {
+										setDeleteModal(true);
+									}
+								);
 							}}
 						/>
 						<StarIcon
@@ -276,9 +306,21 @@ class Self extends Component {
 		else if (type === 'Environment') return <SelfEnvironments {...props} />;
 	};
 
-	render() {
-		const { data, selectedData, isOpen } = this.state;
+	deleteModalMessage = () => {
+		const { selectedRows, type, data } = this.state;
+		return (
+			<Fragment>
+				<div>
+					Youre about to delete the following {selectedRows.length} {type.toLowerCase()}(s)
+				</div>
+				{selectedRows.map((selectedRow) => <div>{data[selectedRow].name}</div>)}
+			</Fragment>
+		);
+	};
 
+	render() {
+		const { deleteModalMessage } = this;
+		const { data, selectedData, isOpen } = this.state;
 		const { match: { params: { type } } } = this.props;
 
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
@@ -290,34 +332,53 @@ class Self extends Component {
 
 		return (
 			<div className="Self page">
-				<CustomTabs
-					against={type}
-					onChange={(e, value) => {
-						this.switchPage(headers[value]);
-					}}
-					height={50}
-					headers={headers}
-				/>
-				<div className={`self_${type}_content self_content`}>
-					{data.length > 0 ? (
-						<div className={`self_${type}_table self_content_table`}>{this.decideTable()}</div>
-					) : (
-						<div>You've not created any {type} yet</div>
-					)}
-					<div className={`self_${type}_list--linear self_content_list`}>
-						<LinearList selectedData={selectedData} />
-					</div>
-				</div>
-				<Update
-					user={this.props.user}
-					type={type}
-					isOpen={isOpen}
-					data={selectedData ? selectedData.data : null}
-					handleClose={() => {
+				<ModalRP
+					onClose={(e) => {
 						this.setState({
-							isOpen: false
+							selectedRows: []
 						});
 					}}
+					onAccept={() => {
+						const selectedDatas = this.state.selectedRows.map((index) => this.state.data[index]);
+						this.deleteResource(selectedDatas);
+						this.setState({
+							selectedRows: []
+						});
+					}}
+					modalMsg={deleteModalMessage()}
+				>
+					{({ setIsOpen }) => (
+						<Fragment>
+							<CustomTabs
+								against={type}
+								onChange={(e, value) => {
+									this.switchPage(headers[value]);
+								}}
+								height={50}
+								headers={headers}
+							/>
+							<div className={`self_${type}_content self_content`}>
+								{data.length > 0 ? (
+									<div className={`self_${type}_table self_content_table`}>{this.decideTable(setIsOpen)}</div>
+								) : (
+									<div>You've not created any {type} yet</div>
+								)}
+								<div className={`self_${type}_list--linear self_content_list`}>
+									<LinearList selectedData={selectedData} />
+								</div>
+							</div>
+						</Fragment>
+					)}
+				</ModalRP>
+
+				<Update
+					isOpen={isOpen}
+					user={this.props.user}
+					handleClose={() => {
+						this.setState({ isOpen: false });
+					}}
+					type={type}
+					data={selectedData ? selectedData.data : null}
 				/>
 			</div>
 		);

@@ -8,7 +8,8 @@ const {
 	getCurrentEnvironment,
 	createEnvironment,
 	updateEnvironment,
-	deleteEnvironment
+	deleteEnvironment,
+	setCurrentEnvironment
 } = require('../controllers/environment');
 
 router.route('/me').get(protect, advancedResults(Environment, null));
@@ -17,6 +18,7 @@ router.route('/countAll').get(advancedResults(Environment));
 router.route('/countMine').get(protect, advancedResults(Environment));
 router.route('/countOthers').get(protect, advancedResults(Environment));
 router.route('/others').get(protect, advancedResults(Environment));
+router.route('/setcurrent').post(protect, setCurrentEnvironment);
 
 router.route('/current').get(protect, getCurrentEnvironment);
 

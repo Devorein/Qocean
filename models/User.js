@@ -65,7 +65,8 @@ const UserSchema = new mongoose.Schema({
 	},
 	current_environment: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'Environment'
+		ref: 'Environment',
+		required: true
 	},
 	version: {
 		type: String,

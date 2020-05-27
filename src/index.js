@@ -27,6 +27,7 @@ import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
 import submitForm from './operations/submitForm';
+import setEnvAsCurrent from './operations/setEnvAsCurrent';
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
@@ -71,6 +72,11 @@ class App extends Component {
 					}, 2500);
 					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
+					if (type.toLowerCase() === 'environment' && values.set_as_current) {
+						setEnvAsCurrent(data.data.data._id).then(() => {
+							this.props.refetch();
+						});
+					}
 				})
 				.catch((err) => {
 					if (reset_on_error) resetForm();
@@ -101,7 +107,14 @@ class App extends Component {
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
-					<AppContext.Provider value={{ changeResponse, submitForm, user: session.data ? session.data.data : null }}>
+					<AppContext.Provider
+						value={{
+							changeResponse,
+							submitForm,
+							user: session.data ? session.data.data : null,
+							refetchUser: this.props.refetch
+						}}
+					>
 						<Navbar session={session} refetch={refetch} />
 						<Switch location={location}>
 							<Route path="/" exact component={Home} />
@@ -208,8 +221,11 @@ ReactDOM.render(
 		{({ session, refetch }) => {
 			return (
 				<Router>
-					<ThemeProvider theme={theme}>
-						<SnackbarProvider maxSnack={5} autoHideDuration={2500}>
+					<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
+						<SnackbarProvider
+							maxSnack={session.data ? session.data.data.current_environment.max_notifications : 3}
+							autoHideDuration={2500}
+						>
 							<CssBaseline />
 							<RoutedApp session={session} refetch={refetch} />
 						</SnackbarProvider>

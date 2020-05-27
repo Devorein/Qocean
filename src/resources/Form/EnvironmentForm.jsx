@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import getColoredIcons from '../../Utils/getColoredIcons';
+import { validateHTMLColorHex } from 'validate-color';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -9,7 +10,9 @@ const validationSchema = Yup.object({
 	animation: Yup.bool().default(true),
 	sound: Yup.bool().default(true),
 	favourite: Yup.bool().default(false),
-	public: Yup.bool().default(true)
+	public: Yup.bool().default(true),
+	primary_color: Yup.string().test('isHexOnly', 'Primary color can only be hex values', validateHTMLColorHex),
+	secondary_color: Yup.string().test('isHexOnly', 'Secondary color can only be hex values', validateHTMLColorHex)
 });
 
 class EnvironmentForm extends Component {
@@ -187,7 +190,7 @@ class EnvironmentForm extends Component {
 				extra: { treeView: true },
 				children: [
 					{
-						name: 'default_theme',
+						name: 'theme',
 						type: 'select',
 						extra: {
 							selectItems: [
@@ -209,24 +212,45 @@ class EnvironmentForm extends Component {
 						defaultValue: '#000'
 					},
 					{
-						name: 'default_primary_color',
+						name: 'primary_color',
 						defaultValue: '#3f51b5'
 					},
 					{
-						name: 'default_secondary_color',
+						name: 'secondary_color',
 						defaultValue: '#f50057'
 					}
 				]
 			},
 			{
-				name: 'notification_timing',
-				type: 'number',
-				inputProps: {
-					min: 1000,
-					max: 5000,
-					step: 250
-				},
-				defaultValue: 2500
+				type: 'group',
+				name: 'notification_groups',
+				extra: { treeView: true },
+				children: [
+					{
+						name: 'notification_timing',
+						type: 'number',
+						inputProps: {
+							min: 1000,
+							max: 5000,
+							step: 250
+						},
+						defaultValue: 2500
+					},
+					{
+						name: 'max_notifications',
+						type: 'number',
+						inputProps: {
+							min: 3,
+							max: 10,
+							step: 1
+						},
+						defaultValue: 5
+					}
+				]
+			},
+			{
+				name: 'display_font',
+				defaultValue: 'Quantico'
 			}
 		];
 		if (customInputs) defaultInputs = customInputs(defaultInputs);

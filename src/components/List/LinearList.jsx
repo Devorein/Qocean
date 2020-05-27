@@ -21,7 +21,7 @@ const LinearListRowPrimaryKey = styled.div`
 	display: flex;
 	justify-content: flex-start;
 	& span {
-		background: ${(props) => props.theme.palette.grey[900]};
+		background: ${(props) => props.theme.palette.background.dark};
 		padding: 5px;
 		width: fit-content;
 	}
@@ -32,7 +32,7 @@ const LinearListRowSecondaryKey = styled.div`
 	display: flex;
 	justify-content: flex-start;
 	& span {
-		background: ${(props) => props.theme.palette.grey[800]};
+		background: ${(props) => props.theme.palette.background.main};
 		padding: 5px;
 		width: fit-content;
 	}

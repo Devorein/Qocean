@@ -56,7 +56,7 @@ export default withStyles(
 				paddingBottom: '5px'
 			},
 			'.MuiTabs-flexContainer': {
-				background: theme.palette.grey['900']
+				background: theme.palette.background.dark
 			},
 			'.MuiTab-wrapper': {
 				flexDirection: 'row'
@@ -86,7 +86,7 @@ export default withStyles(
 			},
 			'.MuiListItem-root.Mui-selected, .MuiListItem-root.Mui-selected:hover': {},
 			'.MuiButton-contained': {
-				backgroundColor: theme.palette.grey[800],
+				backgroundColor: theme.palette.background.main,
 				'&:hover': {}
 			},
 			'.MuiButton-contained.MuiButton-containedPrimary': {

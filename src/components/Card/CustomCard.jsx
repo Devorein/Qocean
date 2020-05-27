@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 		fontSize: 18,
 		textAlign: 'center',
 		fontWeight: 'bold',
-		backgroundColor: theme.palette.grey[900],
+		backgroundColor: theme.palette.background.dark,
 		padding: 5
 	},
 	cardRowKey: {

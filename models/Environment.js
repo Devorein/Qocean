@@ -83,6 +83,10 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: Boolean,
 		default: false
 	},
+	max_notifications: {
+		type: Number,
+		default: 3
+	},
 	notification_timing: {
 		type: Number,
 		default: 2500,
@@ -100,6 +104,10 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 	secondary_color: {
 		type: String,
 		default: '#f50057'
+	},
+	display_font: {
+		type: String,
+		default: '#Quantico'
 	}
 });
 
