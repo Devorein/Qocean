@@ -221,7 +221,7 @@ ReactDOM.render(
 		{({ session, refetch }) => {
 			return (
 				<Router>
-					<ThemeProvider theme={theme}>
+					<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
 						<SnackbarProvider
 							maxSnack={session.data ? session.data.data.current_environment.max_notifications : 3}
 							autoHideDuration={2500}
