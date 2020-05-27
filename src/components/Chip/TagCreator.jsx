@@ -57,33 +57,33 @@ class TagCreator extends Component {
 		const { tags } = this.props;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
-		if (tags.length >= 5) {
-			changeResponse(`An error occurred`, `You've added the maximum number of tags`, 'error');
-			return false;
-		} else if (tagsSeparator[0].length >= 16) {
-			changeResponse(`An error occurred`, `You cant add a tag that's more than 16 characters long`, 'error');
-			return false;
-		} else if (tagsSeparator.length === 1) {
-			changeResponse(`An error occurred`, `You've entered a partial tag, using default color`, 'warning');
-			return true;
-		} else if (tagsSeparator[1] === '') {
-			changeResponse(`An error occurred`, `You've not supplied a color, using default color`, 'warning');
-			return true;
-		} else if (!validateColor(tagsSeparator[1])) {
-			changeResponse(`An error occurred`, `You've supplied an invalid color`, 'error');
-			return false;
-		} else if (tagsSeparator.length > 2) {
-			changeResponse(`An error occurred`, `Your tag is malformed, check it again`, 'error');
-			return false;
-		}
 		if (isPresent) {
 			changeResponse(
 				`An error occurred`,
 				`Tag with name ${_tag.split(':')[0].toLowerCase()} has already been added`,
 				'error'
 			);
-			return false;
-		} else return true;
+			return [ false ];
+		}
+		if (tags.length >= 5) {
+			changeResponse(`An error occurred`, `You've added the maximum number of tags`, 'error');
+			return [ false ];
+		} else if (tagsSeparator[0].length >= 16) {
+			changeResponse(`An error occurred`, `You cant add a tag that's more than 16 characters long`, 'error');
+			return [ false ];
+		} else if (tagsSeparator.length === 1) {
+			changeResponse(`An error occurred`, `You've entered a partial tag, using default color`, 'warning');
+			return [ true, 'default' ];
+		} else if (tagsSeparator[1] === '') {
+			changeResponse(`An error occurred`, `You've not supplied a color, using default color`, 'warning');
+			return [ true, 'default' ];
+		} else if (!validateColor(tagsSeparator[1])) {
+			changeResponse(`An error occurred`, `You've supplied an invalid color`, 'error');
+			return [ false ];
+		} else if (tagsSeparator.length > 2) {
+			changeResponse(`An error occurred`, `Your tag is malformed, check it again`, 'error');
+			return [ false ];
+		} else return [ true ];
 	};
 
 	createTags = (e) => {
@@ -91,8 +91,10 @@ class TagCreator extends Component {
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			const { tags } = this.props;
-			if (this.validateTags(e.target.value)) {
-				tags.push(e.target.value.toLowerCase());
+			const [ status, message ] = this.validateTags(e.target.value);
+			if (status) {
+				const tag = e.target.value.toLowerCase();
+				tags.push(message === 'default' ? `${tag}:${this.context.user.current_environment.default_tag_color}` : tag);
 				this.setState(
 					{
 						input: ''
