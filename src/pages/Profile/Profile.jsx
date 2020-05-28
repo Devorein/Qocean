@@ -8,6 +8,7 @@ import { AppContext } from '../../context/AppContext';
 import GenericButton from '../../components/Buttons/GenericButton';
 import TextField from '@material-ui/core/TextField';
 import ModalRP from '../../RP/ModalRP';
+import ExportAll from './ExportAll';
 
 class Profile extends Component {
 	state = {
@@ -142,6 +143,7 @@ class Profile extends Component {
 							submitMsg={'update'}
 						/>
 						<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
+						<ExportAll />
 					</div>
 				)}
 			</ModalRP>
