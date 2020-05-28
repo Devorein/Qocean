@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const QuizContent = styled.div``;
 
@@ -59,9 +60,34 @@ const QuestionOption = styled.div`
 `;
 
 class Quiz extends Component {
-	// renderQuestion = () => {
-	// 	const { question: { type } } = this.props;
-	// };
+	state = {
+		user_answers: []
+	};
+
+	renderQuestionBody = () => {
+		const { question: { type, options }, theme } = this.props;
+		if (type === 'MS' || type === 'MCQ')
+			return (
+				<QuestionOptions>
+					{options.map((option, index) => (
+						<QuestionOption theme={theme} key={option}>
+							<Checkbox
+								checked={this.state.user_answers.indexOf(index) !== -1}
+								onChange={(e) => {
+									let { user_answers } = this.state;
+									if (e.target.checked) user_answers.push(index);
+									else user_answers = user_answers.filter((answer) => answer !== index);
+									this.setState({ user_answers });
+								}}
+								color="primary"
+							/>
+							{option}
+						</QuestionOption>
+					))}
+				</QuestionOptions>
+			);
+		else return <div>{type}</div>;
+	};
 
 	decideLabel = (label) => {
 		return label.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ');
@@ -82,13 +108,7 @@ class Quiz extends Component {
 					))}
 				</QuestionStats>
 				<QuestionName theme={theme}>{question.name}</QuestionName>
-				<QuestionOptions>
-					{question.options.map((option) => (
-						<QuestionOption theme={theme} key={option}>
-							{option}
-						</QuestionOption>
-					))}
-				</QuestionOptions>
+				{this.renderQuestionBody()}
 			</QuizContent>
 		) : (
 			<div>Loading question</div>
