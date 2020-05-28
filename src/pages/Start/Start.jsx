@@ -4,6 +4,7 @@ import Quiz from '../../components/Quiz/Quiz';
 import axios from 'axios';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
+import Timer from '../../components/Timer/Timer';
 
 const flexCenter = `
   display: flex;
@@ -109,6 +110,14 @@ class Start extends Component {
 					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
 					onClick={setQuestion.bind(null, totalQuestion)}
 				/>
+				{question ? (
+					<Timer
+						timeout={question.time_allocated}
+						onTimerEnd={() => {
+							setQuestion(totalQuestion);
+						}}
+					/>
+				) : null}
 			</div>
 		);
 	}
