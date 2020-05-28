@@ -3,6 +3,11 @@ import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const QuizContent = styled.div``;
 
@@ -120,9 +125,32 @@ class Quiz extends Component {
 					}}
 				/>
 			));
-		else if (type === 'TF') {
-			// TF
-		} else if (type === 'Snippet')
+		else if (type === 'TF')
+			return (
+				<FormControl>
+					<FormLabel component="legend">Answer</FormLabel>
+					<RadioGroup
+						row
+						name={'Answer'}
+						value={this.state.user_answers[0]}
+						onChange={(e) =>
+							this.setState({
+								user_answers: [ e.target.value ]
+							})}
+					>
+						{[ 'True', 'False' ].map((value) => (
+							<FormControlLabel
+								key={value}
+								control={<Radio color="primary" />}
+								value={value}
+								label={value}
+								labelPlacement="end"
+							/>
+						))}
+					</RadioGroup>
+				</FormControl>
+			);
+		else if (type === 'Snippet')
 			return (
 				<TextField
 					value={this.state.user_answers[0]}
