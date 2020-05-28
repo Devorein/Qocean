@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
-function GenericButton({ text, classes }) {
+function GenericButton({ text, classes, onClick, buttonRef }) {
 	return (
 		<Button
 			variant="contained"
@@ -11,6 +11,8 @@ function GenericButton({ text, classes }) {
 			size="medium"
 			classes={{ root: classes.root }}
 			startIcon={<PlayArrowIcon />}
+			onClick={onClick}
+			ref={(r) => (buttonRef ? buttonRef(r) : null)}
 		>
 			{text}
 		</Button>

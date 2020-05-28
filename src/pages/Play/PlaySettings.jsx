@@ -50,6 +50,16 @@ const inputs = [
 				defaultValue: false
 			};
 		})
+	},
+	{
+		type: 'checkbox',
+		name: 'randomized_quiz',
+		defaultValue: false
+	},
+	{
+		type: 'checkbox',
+		name: 'randomized_question',
+		defaultValue: false
 	}
 ];
 
@@ -57,7 +67,7 @@ class PlaySettings extends Component {
 	render() {
 		return (
 			<div className="play_settings">
-				<InputForm formButtons={false} inputs={inputs} />
+				<InputForm formButtons={false} inputs={inputs} customHandler={this.props.customHandler} />
 			</div>
 		);
 	}

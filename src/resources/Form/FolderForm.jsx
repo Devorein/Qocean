@@ -59,7 +59,6 @@ class FolderForm extends Component {
 		const { preSubmit, handleChange, postSubmit } = this;
 		const { onSubmit, customInputs, submitMsg } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
-
 		let defaultInputs = [
 			{ name: 'name' },
 			{

@@ -17,7 +17,6 @@ const theme = (current_environment) => {
 	});
 
 	const [ dark, main, light ] = decideBackground(theme);
-	debugger;
 	return createMuiTheme({
 		palette: {
 			type: theme.toLowerCase(),

@@ -201,7 +201,6 @@ class Self extends Component {
 	};
 
 	getDetails = ({ exclude, primary }, index, newState = {}) => {
-		console.log(newState);
 		this.setState({
 			selectedData: {
 				exclude,
@@ -319,7 +318,7 @@ class Self extends Component {
 	};
 
 	render() {
-		const { deleteModalMessage } = this;
+		const { deleteModalMessage, refetchData } = this;
 		const { data, selectedData, isOpen } = this.state;
 		const { match: { params: { type } } } = this.props;
 
@@ -379,6 +378,7 @@ class Self extends Component {
 					}}
 					type={type}
 					data={selectedData ? selectedData.data : null}
+					refetchData={refetchData}
 				/>
 			</div>
 		);
