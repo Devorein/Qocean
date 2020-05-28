@@ -71,8 +71,10 @@ const QuizSchema = extendSchema(
 QuizSchema.statics.validate = async function(quiz) {
 	let message = '',
 		success = true;
-	if (quiz.tags.length > 5) return [ false, 'Tags cannot be more than 5' ];
-	else {
+	if (quiz.tags.length > 5) {
+		console.log(quiz.tags.length);
+		return [ false, 'Tags cannot be more than 5' ];
+	} else {
 		const isAllValid = quiz.tags.every((tag) => validateColor.default(tag.toString().split(':')[1]));
 		if (!isAllValid) return [ false, 'All tags are not valid' ];
 	}

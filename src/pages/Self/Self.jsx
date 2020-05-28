@@ -53,6 +53,10 @@ class Self extends Component {
 					limit: this.state.rowsPerPage,
 					page: this.state.page
 				};
+		if (type === 'Question') {
+			queryParams.populate = 'quiz';
+			queryParams.populateFields = 'name';
+		}
 		if (this.state.sortCol && Object.keys(newState).length === 0)
 			queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
 		const queryString = queryParams
