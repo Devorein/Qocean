@@ -66,7 +66,7 @@ class Quiz extends Component {
 	};
 
 	renderQuestionBody = () => {
-		const { question: { type, options }, theme } = this.props;
+		const { question: { type, options, name }, theme } = this.props;
 		if (type === 'MCQ')
 			return (
 				<QuestionOptions>
@@ -107,7 +107,22 @@ class Quiz extends Component {
 					))}
 				</QuestionOptions>
 			);
-		else if (type === 'Snippet')
+		else if (type === 'FIB')
+			return name.match(/\$\{\_\}/g).map((match, index) => (
+				<TextField
+					value={this.state.user_answers[index]}
+					onChange={(e) => {
+						const { user_answers } = this.state;
+						user_answers[index] = e.target.value;
+						this.setState({
+							user_answers
+						});
+					}}
+				/>
+			));
+		else if (type === 'TF') {
+			// TF
+		} else if (type === 'Snippet')
 			return (
 				<TextField
 					value={this.state.user_answers[0]}

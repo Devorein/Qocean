@@ -9,6 +9,12 @@ import TableFooter from '@material-ui/core/TableFooter';
 import Typography from '@material-ui/core/Typography';
 
 class BasicTable extends Component {
+	decideRow = (name) => {
+		let total = 0;
+		this.props.rows.forEach((row) => (total += row[name]));
+		return total;
+	};
+
 	render() {
 		const { classes, headers, rows, title } = this.props;
 		return (
@@ -44,7 +50,7 @@ class BasicTable extends Component {
 							<TableCell />
 							{headers.splice(1).map(({ name }, index) => (
 								<TableCell key={`${name}${index}`} align="center">
-									{rows.length > 1 ? rows.reduce((row1, row2) => row1[name] + row2[name]) : ''}
+									{rows.length > 1 ? this.decideRow(name) : ''}
 								</TableCell>
 							))}
 						</TableRow>
