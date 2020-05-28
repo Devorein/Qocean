@@ -36,8 +36,7 @@ router
 				}
 			],
 			{
-				exclude: [ 'favourite', 'public', '__v', 'add_to_score', 'weight' ],
-				match: { public: true }
+				exclude: [ 'favourite', 'public', '__v', 'add_to_score', 'weight' ]
 			}
 		)
 	)

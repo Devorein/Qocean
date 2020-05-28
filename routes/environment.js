@@ -29,8 +29,7 @@ router
 			Environment,
 			{ path: 'user', select: 'username' },
 			{
-				exclude: [ 'favourite', 'public' ],
-				match: { public: true }
+				exclude: [ 'favourite', 'public' ]
 			}
 		)
 	)

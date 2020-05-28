@@ -28,8 +28,7 @@ router
 				}
 			],
 			{
-				exclude: [ 'favourite', 'public' ],
-				match: { public: true }
+				exclude: [ 'favourite', 'public' ]
 			}
 		)
 	)

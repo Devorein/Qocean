@@ -57,12 +57,18 @@ class Start extends Component {
 		const { quizzes } = this.props;
 		const { currentQuizQuestion, currentQuiz } = this.state;
 		const current_id = quizzes[currentQuiz].questions[currentQuizQuestion]._id;
-		axios.get(`http://localhost:5001/api/v1/questions?_id=${current_id}`).then(({ data: { data } }) => {
-			this.setState({
-				question: data,
-				timeout: data.time_allocated
+		axios
+			.get(`http://localhost:5001/api/v1/questions/me?_id=${current_id}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data } }) => {
+				this.setState({
+					question: data,
+					timeout: data.time_allocated
+				});
 			});
-		});
 	};
 
 	setQuestion = (totalQuestion) => {
