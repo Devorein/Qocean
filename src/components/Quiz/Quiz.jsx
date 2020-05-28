@@ -131,19 +131,21 @@ class Quiz extends Component {
 				</QuestionOptions>
 			);
 		else if (type === 'FIB')
-			return name.match(/\$\{\_\}/g).map((match, index) => (
-				<TextField
-					key={shortid.generate()}
-					value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
-					onChange={(e) => {
-						const { user_answers } = this.state;
-						user_answers[index] = e.target.value;
-						this.setState({
-							user_answers
-						});
-					}}
-				/>
-			));
+			return name.match(/\$\{\_\}/g).map((match, index) => {
+				return (
+					<TextField
+						key={shortid.generate()}
+						value={this.state.user_answers[index]}
+						onChange={(e) => {
+							const { user_answers } = this.state;
+							user_answers[index] = e.target.value;
+							this.setState({
+								user_answers
+							});
+						}}
+					/>
+				);
+			});
 		else if (type === 'TF')
 			return (
 				<FormControl>
@@ -195,7 +197,10 @@ class Quiz extends Component {
 							<div>{this.state.answers.map((answer) => answer)}</div>
 							<GenericButton
 								text={'Mark as correct'}
-								// onClick={}
+								onClick={(e) =>
+									this.setState({
+										user_answers: [ true ]
+									})}
 							/>
 						</Fragment>
 					)}

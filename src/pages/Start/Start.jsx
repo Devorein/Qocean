@@ -40,7 +40,8 @@ class Start extends Component {
 		currentQuiz: 0,
 		currentQuizQuestion: 0,
 		question: null,
-		timeout: 30
+		timeout: 30,
+		stats: []
 	};
 
 	componentDidMount() {
@@ -79,13 +80,17 @@ class Start extends Component {
 			currentQuiz++;
 			currentQuizQuestion = 0;
 		}
-		if (currentQuestion < totalQuestion - 1)
+		if (currentQuestion < totalQuestion - 1) {
+			const { user_answers } = this.Quiz.state;
+			const { stats, question } = this.state;
+			stats.push({ user_answers, _id: question._id });
 			this.setState(
 				{
 					currentQuestion: currentQuestion + 1,
 					currentQuizQuestion,
 					currentQuiz,
-					timeout: 0
+					timeout: 0,
+					stats
 				},
 				() => {
 					if (this.Quiz) {
@@ -97,6 +102,7 @@ class Start extends Component {
 					this.fetchQuestion();
 				}
 			);
+		}
 	};
 
 	render() {
@@ -124,6 +130,13 @@ class Start extends Component {
 					question={question}
 					ref={(r) => {
 						this.Quiz = r;
+					}}
+					addToStat={(stat) => {
+						const { stats } = this.state;
+						stats.push(stat);
+						this.setState({
+							stats
+						});
 					}}
 				/>
 				<GenericButton
