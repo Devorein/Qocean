@@ -3,6 +3,12 @@ const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
+exports.sendAnswer = asyncHandler(async (req, res, next) => {
+	const question = await Question.findOne({ _id: req.params.id, user: req.user._id }).select('+answers');
+	if (!question) return next(new ErrorResponse(`Question doesnt exist`, 400));
+	res.status(200).json({ success: true, data: question.answers });
+});
+
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
 	const question = await Question.findById(req.body.id);
 	if (!question) return next(new ErrorResponse(`Question doesn't exist`, 404));

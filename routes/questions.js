@@ -10,10 +10,12 @@ const {
 	createQuestion,
 	updateQuestion,
 	deleteQuestion,
-	questionPhotoUpload
+	questionPhotoUpload,
+	sendAnswer
 } = require('../controllers/questions');
 
 router.route('/countAll').get(advancedResults(Question));
+router.route('/answers/:id').get(protect, sendAnswer);
 router.route('/countMine').get(protect, advancedResults(Question));
 router.route('/countOthers').get(protect, advancedResults(Question));
 router.route('/me').get(protect, advancedResults(Question));
