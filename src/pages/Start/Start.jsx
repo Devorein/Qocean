@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 
 class Start extends Component {
 	render() {
-		const { quizzes } = this.props;
+		const { quizzes, settings } = this.props;
+		debugger;
 		return (
 			<div className={`start`}>
 				{quizzes.map((quiz) => {

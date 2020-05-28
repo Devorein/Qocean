@@ -14,7 +14,8 @@ class Play extends Component {
 		quizzes: [],
 		selectedIndex: 0,
 		checked: [],
-		hasStarted: false
+		hasStarted: false,
+		playsettings: null
 	};
 
 	componentDidMount() {
@@ -80,11 +81,20 @@ class Play extends Component {
 							quizzes={this.state.quizzes}
 							selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
 						/>
-						<PlaySettings />
+						<PlaySettings
+							customHandler={(values, setValues, e) => {
+								this.setState({
+									playsettings: values
+								});
+							}}
+						/>
 						<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
 					</Fragment>
 				) : (
-					<Start quizzes={this.CustomList.state.checked.map((index) => quizzes[index])} />
+					<Start
+						settings={this.state.playsettings ? this.state.playsettings.validation : null}
+						quizzes={this.CustomList.state.checked.map((index) => quizzes[index])}
+					/>
 				)}
 			</div>
 		);
