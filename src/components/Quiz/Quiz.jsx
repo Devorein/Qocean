@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -8,6 +8,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import GenericButton from '../../components/Buttons/GenericButton';
 
 const QuizContent = styled.div``;
 
@@ -160,6 +161,27 @@ class Quiz extends Component {
 						});
 					}}
 				/>
+			);
+		else if (type === 'FC')
+			return (
+				<Fragment>
+					{!this.state.show_answer ? (
+						<GenericButton
+							text={'show'}
+							onClick={(e) => {
+								if (!this.state.show_answer)
+									this.setState({
+										show_answer: true
+									});
+							}}
+						/>
+					) : (
+						<GenericButton
+							text={'Mark as correct'}
+							// onClick={}
+						/>
+					)}
+				</Fragment>
 			);
 		else return <div>{type}</div>;
 	};

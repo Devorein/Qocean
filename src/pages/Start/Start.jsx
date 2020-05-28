@@ -88,6 +88,10 @@ class Start extends Component {
 					timeout: 0
 				},
 				() => {
+					this.Quiz.setState({
+						show_answer: false,
+						user_answers: []
+					});
 					this.fetchQuestion();
 				}
 			);
@@ -114,7 +118,12 @@ class Start extends Component {
 						</QuizStat>
 					))}
 				</QuizStats>
-				<Quiz question={question} />
+				<Quiz
+					question={question}
+					ref={(r) => {
+						this.Quiz = r;
+					}}
+				/>
 				<GenericButton
 					buttonRef={(ref) => (this.Button = ref)}
 					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}

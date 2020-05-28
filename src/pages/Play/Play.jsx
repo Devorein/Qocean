@@ -51,56 +51,52 @@ class Play extends Component {
 
 	render() {
 		const { quizzes, hasStarted, checked } = this.state;
-		return (
+		return !hasStarted ? (
 			<div className="play pages">
-				{!hasStarted ? (
-					<Fragment>
-						<CustomList
-							setChecked={this.setChecked}
-							className="play_list"
-							containsCheckbox={true}
-							ref={(r) => (this.CustomList = r)}
-							title={`Your quizzes`}
-							listItems={this.transformList(quizzes)}
-							onClick={(selectedIndex, e) => {
-								this.setState({
-									selectedIndex
-								});
-							}}
-							selectedIcons={[
-								<DeleteIcon
-									key={'delete'}
-									onClick={(e) => {
-										this.deleteItems(this.CustomList.state.checked);
-										this.CustomList.state.checked = [];
-									}}
-								/>
-							]}
-						/>
-						<PlayStats
-							quizzes={this.state.quizzes}
-							selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
-						/>
-						<PlaySettings
-							customHandler={({ validation, randomized_quiz, randomized_question }, setValues, e) => {
-								this.setState({
-									playsettings: {
-										validation,
-										randomized_quiz,
-										randomized_question
-									}
-								});
+				<CustomList
+					setChecked={this.setChecked}
+					className="play_list"
+					containsCheckbox={true}
+					ref={(r) => (this.CustomList = r)}
+					title={`Your quizzes`}
+					listItems={this.transformList(quizzes)}
+					onClick={(selectedIndex, e) => {
+						this.setState({
+							selectedIndex
+						});
+					}}
+					selectedIcons={[
+						<DeleteIcon
+							key={'delete'}
+							onClick={(e) => {
+								this.deleteItems(this.CustomList.state.checked);
+								this.CustomList.state.checked = [];
 							}}
 						/>
-						<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
-					</Fragment>
-				) : (
-					<Start
-						settings={this.state.playsettings ? this.state.playsettings : null}
-						quizzes={this.CustomList.state.checked.map((index) => quizzes[index])}
-					/>
-				)}
+					]}
+				/>
+				<PlayStats
+					quizzes={this.state.quizzes}
+					selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
+				/>
+				<PlaySettings
+					customHandler={({ validation, randomized_quiz, randomized_question }, setValues, e) => {
+						this.setState({
+							playsettings: {
+								validation,
+								randomized_quiz,
+								randomized_question
+							}
+						});
+					}}
+				/>
+				<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
 			</div>
+		) : (
+			<Start
+				settings={this.state.playsettings ? this.state.playsettings : null}
+				quizzes={this.CustomList.state.checked.map((index) => quizzes[index])}
+			/>
 		);
 	}
 }
