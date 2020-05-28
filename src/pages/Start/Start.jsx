@@ -39,7 +39,8 @@ class Start extends Component {
 		currentQuestion: 0,
 		currentQuiz: 0,
 		currentQuizQuestion: 0,
-		question: null
+		question: null,
+		timeout: 30
 	};
 
 	componentDidMount() {
@@ -56,9 +57,10 @@ class Start extends Component {
 		const { quizzes } = this.props;
 		const { currentQuizQuestion, currentQuiz } = this.state;
 		const current_id = quizzes[currentQuiz].questions[currentQuizQuestion]._id;
-		axios.get(`http://localhost:5001/api/v1/questions?_id=${current_id}`).then(({ data }) => {
+		axios.get(`http://localhost:5001/api/v1/questions?_id=${current_id}`).then(({ data: { data } }) => {
 			this.setState({
-				question: data.data
+				question: data,
+				timeout: data.time_allocated
 			});
 		});
 	};
@@ -76,7 +78,8 @@ class Start extends Component {
 				{
 					currentQuestion: currentQuestion + 1,
 					currentQuizQuestion,
-					currentQuiz
+					currentQuiz,
+					timeout: 0
 				},
 				() => {
 					this.fetchQuestion();
@@ -86,7 +89,7 @@ class Start extends Component {
 
 	render() {
 		const { getTotalQuestions, setQuestion } = this;
-		const { currentQuestion, currentQuiz, currentQuizQuestion, question } = this.state;
+		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout } = this.state;
 		const { quizzes, settings, theme } = this.props;
 		const totalQuestion = getTotalQuestions();
 		const stats = [
@@ -107,17 +110,20 @@ class Start extends Component {
 				</QuizStats>
 				<Quiz question={question} />
 				<GenericButton
+					buttonRef={(ref) => (this.Button = ref)}
 					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
 					onClick={setQuestion.bind(null, totalQuestion)}
 				/>
-				{question ? (
-					<Timer
-						timeout={question.time_allocated}
-						onTimerEnd={() => {
-							setQuestion(totalQuestion);
-						}}
-					/>
-				) : null}
+				<Timer
+					timeout={timeout}
+					onTimerChange={() => {
+						if (this.state.timeout === 0) this.Button.click();
+						else
+							this.setState({
+								timeout: this.state.timeout - 1
+							});
+					}}
+				/>
 			</div>
 		);
 	}

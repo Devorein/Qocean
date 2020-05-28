@@ -11,29 +11,24 @@ const TimerDisplay = styled.div`
 `;
 
 class Timer extends Component {
-	state = {
-		timeout: this.props.timeout
-	};
-
 	componentDidMount() {
+		const { timeout, onTimerChange } = this.props;
 		const timer = setInterval(() => {
-			if (this.state.timeout === 0) {
-				this.setState({
-					timeout: 0
-				});
+			if (timeout === 0) {
 				clearInterval(timer);
-				this.props.onTimerEnd();
-			} else {
-				this.setState({
-					timeout: this.state.timeout - 1
-				});
-			}
+			} else onTimerChange();
 		}, 1000);
 	}
 
+	displayTime = (time) => {
+		const min = Math.floor(time / 60);
+		const sec = time % 60;
+		return `0${min}:${sec < 10 ? '0' + sec : sec}`;
+	};
+
 	render() {
-		const { timeout } = this.state;
-		return <div>{timeout}</div>;
+		const { timeout } = this.props;
+		return <TimerDisplay>{this.displayTime(timeout)}</TimerDisplay>;
 	}
 }
 
