@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../../components/Quiz/Quiz';
+import axios from 'axios';
+
 class Start extends Component {
 	state = {
 		currentQuestion: 0,
 		currentQuiz: 0,
-		currentQuizQuestion: 0
+		currentQuizQuestion: 0,
+		question: null
 	};
+
+	componentDidMount() {
+		this.fetchQuestion();
+	}
 
 	getTotalQuestions = () => {
 		let totalQuiz = 0;
@@ -15,7 +22,14 @@ class Start extends Component {
 	};
 
 	fetchQuestion = () => {
-		const { currentQuestion, currentQuiz } = this.state;
+		const { quizzes } = this.props;
+		const { currentQuizQuestion, currentQuiz } = this.state;
+		const current_id = quizzes[currentQuiz].questions[currentQuizQuestion]._id;
+		axios.get(`http://localhost:5001/api/v1/questions?_id=${current_id}`).then(({ data }) => {
+			this.setState({
+				question: data.data
+			});
+		});
 	};
 
 	setQuestion = (totalQuestion) => {
@@ -27,20 +41,25 @@ class Start extends Component {
 			currentQuizQuestion = 0;
 		}
 		if (currentQuestion < totalQuestion - 1)
-			this.setState({
-				currentQuestion: currentQuestion + 1,
-				currentQuizQuestion,
-				currentQuiz
-			});
+			this.setState(
+				{
+					currentQuestion: currentQuestion + 1,
+					currentQuizQuestion,
+					currentQuiz
+				},
+				() => {
+					this.fetchQuestion();
+				}
+			);
 	};
 
 	render() {
 		const { getTotalQuestions, setQuestion } = this;
-		const { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		const { currentQuestion, currentQuiz, currentQuizQuestion, question } = this.state;
 		const { quizzes, settings } = this.props;
 		const totalQuestion = getTotalQuestions();
 		return (
-			<div className={`start`}>
+			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
 				<div>
 					Quiz {currentQuiz + 1} of {quizzes.length}
 				</div>
@@ -51,7 +70,7 @@ class Start extends Component {
 				<div>
 					Question {currentQuestion + 1} of {totalQuestion}
 				</div>
-				{/* <Quiz/> */}
+				<Quiz question={question} />
 				<GenericButton
 					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
 					onClick={setQuestion.bind(null, totalQuestion)}
