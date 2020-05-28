@@ -153,7 +153,9 @@ casual.define('environment', function() {
 		default_explore_rpp: rpp[getRandomInt(0, rpp.length - 1)],
 		default_self_rpp: rpp[getRandomInt(0, rpp.length - 1)],
 		notification_timing,
-		max_notifications: getRandomInt(3, 10)
+		max_notifications: getRandomInt(3, 10),
+		primary_color: randomColor(),
+		secondary_color: randomColor()
 	};
 });
 
