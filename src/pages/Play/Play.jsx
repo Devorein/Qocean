@@ -1,17 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import CustomList from '../../components/List/List';
 import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GenericButton from '../../components/Buttons/GenericButton';
+import Start from '../Start/Start';
+
 import './Play.scss';
 
 class Play extends Component {
 	state = {
 		quizzes: [],
 		selectedIndex: 0,
-		checked: []
+		checked: [],
+		hasStarted: false
 	};
 
 	componentDidMount() {
@@ -44,38 +47,45 @@ class Play extends Component {
 			checked
 		});
 	};
+
 	render() {
-		const { quizzes } = this.state;
+		const { quizzes, hasStarted, checked } = this.state;
 		return (
 			<div className="play pages">
-				<CustomList
-					setChecked={this.setChecked}
-					className="play_list"
-					containsCheckbox={true}
-					ref={(r) => (this.CustomList = r)}
-					title={`Your quizzes`}
-					listItems={this.transformList(quizzes)}
-					onClick={(selectedIndex, e) => {
-						this.setState({
-							selectedIndex
-						});
-					}}
-					selectedIcons={[
-						<DeleteIcon
-							key={'delete'}
-							onClick={(e) => {
-								this.deleteItems(this.CustomList.state.checked);
-								this.CustomList.state.checked = [];
+				{!hasStarted ? (
+					<Fragment>
+						<CustomList
+							setChecked={this.setChecked}
+							className="play_list"
+							containsCheckbox={true}
+							ref={(r) => (this.CustomList = r)}
+							title={`Your quizzes`}
+							listItems={this.transformList(quizzes)}
+							onClick={(selectedIndex, e) => {
+								this.setState({
+									selectedIndex
+								});
 							}}
+							selectedIcons={[
+								<DeleteIcon
+									key={'delete'}
+									onClick={(e) => {
+										this.deleteItems(this.CustomList.state.checked);
+										this.CustomList.state.checked = [];
+									}}
+								/>
+							]}
 						/>
-					]}
-				/>
-				<PlayStats
-					quizzes={this.state.quizzes}
-					selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
-				/>
-				<PlaySettings />
-				<GenericButton text="Play" />
+						<PlayStats
+							quizzes={this.state.quizzes}
+							selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
+						/>
+						<PlaySettings />
+						<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
+					</Fragment>
+				) : (
+					<Start quizzes={this.CustomList.state.checked.map((index) => quizzes[index])} />
+				)}
 			</div>
 		);
 	}
