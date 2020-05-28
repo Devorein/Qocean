@@ -25,6 +25,9 @@ const QuestionStat = styled.div`
 		font-weight: bolder;
 		font-size: 16px;
 	}
+	& .question_stat_value {
+		margin-left: 5px;
+	}
 	margin-right: 5px;
 	border-radius: 5px;
 `;
@@ -56,9 +59,9 @@ const QuestionOption = styled.div`
 `;
 
 class Quiz extends Component {
-	renderQuestion = () => {
-		const { question: { type } } = this.props;
-	};
+	// renderQuestion = () => {
+	// 	const { question: { type } } = this.props;
+	// };
 
 	decideLabel = (label) => {
 		return label.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ');

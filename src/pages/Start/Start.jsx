@@ -2,6 +2,36 @@ import React, { Component } from 'react';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../../components/Quiz/Quiz';
 import axios from 'axios';
+import styled from 'styled-components';
+import { withTheme } from '@material-ui/core';
+
+const flexCenter = `
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const QuizStats = styled.div`
+	background: ${(props) => props.theme.palette.background.dark};
+	padding: 5px;
+	${flexCenter};
+`;
+
+const QuizStat = styled.div`
+	${flexCenter};
+	padding: 5px;
+	font-size: 14px;
+	background: ${(props) => props.theme.palette.background.main};
+	& .question_stat_key {
+		font-weight: bolder;
+		font-size: 16px;
+	}
+	& .question_stat_value {
+		margin-left: 5px;
+	}
+	margin-right: 5px;
+	border-radius: 5px;
+`;
 
 class Start extends Component {
 	state = {
@@ -56,20 +86,24 @@ class Start extends Component {
 	render() {
 		const { getTotalQuestions, setQuestion } = this;
 		const { currentQuestion, currentQuiz, currentQuizQuestion, question } = this.state;
-		const { quizzes, settings } = this.props;
+		const { quizzes, settings, theme } = this.props;
 		const totalQuestion = getTotalQuestions();
+		const stats = [
+			[ 'Quiz', `${currentQuiz + 1} / ${quizzes.length}` ],
+			[ 'Name', quizzes[currentQuiz].name ],
+			[ `Question of Quiz`, currentQuizQuestion + 1 ],
+			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ]
+		];
 		return (
 			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
-				<div>
-					Quiz {currentQuiz + 1} of {quizzes.length}
-				</div>
-				<div>{quizzes[currentQuiz].name}</div>
-				<div>
-					Question {currentQuizQuestion + 1} of Quiz {currentQuiz + 1}
-				</div>
-				<div>
-					Question {currentQuestion + 1} of {totalQuestion}
-				</div>
+				<QuizStats theme={theme}>
+					{stats.map(([ key, value ]) => (
+						<QuizStat theme={theme} key={key}>
+							<span className="question_stat_key">{key}</span> :
+							<span className="question_stat_value">{value.toString()}</span>
+						</QuizStat>
+					))}
+				</QuizStats>
 				<Quiz question={question} />
 				<GenericButton
 					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
@@ -80,4 +114,4 @@ class Start extends Component {
 	}
 }
 
-export default Start;
+export default withTheme(Start);
