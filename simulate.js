@@ -66,12 +66,13 @@ casual.define('folder', function() {
 });
 
 casual.define('question', function() {
-	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', /* 'FIB', */ 'FC' ];
+	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC' ];
 	const type = types[getRandomInt(0, types.length - 1)];
 	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
 	const time = times[getRandomInt(0, times.length - 1)];
 	let options,
-		answers = [];
+		answers = [],
+		name = casual.sentence;
 
 	if (type === 'MCQ') {
 		const total_options = getRandomInt(3, 6);
@@ -91,17 +92,27 @@ casual.define('question', function() {
 		answers.push([ 0, 1 ][getRandomInt(0, 1)]);
 	} else if (type === 'FC') {
 		options = [];
-		answers = [ Array(getRandomInt(1, 3)).map((_) => casual.sentence) ];
+		answers = [ Array(getRandomInt(1, 3)).fill(0).map((_) => casual.sentence) ];
 	} else if (type === 'FIB') {
 		options = [];
-		answers = [ casual.sentence ];
+		const blanks = getRandomInt(1, 6);
+		name = name.split(' ').concat(casual.sentence.split(' '));
+		for (let i = 1; i <= blanks; i++) {
+			answers[i - 1] = [];
+			let pos = getRandomInt(0, name.length - 1);
+			while (name[pos] === '${_}') pos = getRandomInt(0, name.length - 1);
+			name[pos] = '${_}';
+			const alternates = getRandomInt(1, 3);
+			answers[i - 1].push(...casual.sentence.split(' ').slice(0, alternates));
+		}
+		name = name.join(' ');
 	} else if (type === 'Snippet') {
 		options = [];
 		answers = [ casual.array_of_words(getRandomInt(1, 3)) ];
 	}
 
 	return {
-		name: casual.sentence,
+		name,
 		type,
 		weight: getRandomInt(1, 10),
 		add_to_score: casual.boolean,
