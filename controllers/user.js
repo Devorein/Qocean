@@ -71,3 +71,14 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 		data: user
 	});
 });
+
+exports.getUserTags = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.params.id).populate({ path: 'quizzes', select: 'tags' });
+	if (!user) return next(new ErrorResponse(`User not found`, 404));
+	const tags = [];
+	user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag.split(':')[0])));
+	res.status(200).json({
+		success: true,
+		data: Array.from(new Set(tags))
+	});
+});
