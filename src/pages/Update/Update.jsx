@@ -27,12 +27,12 @@ class Update extends Component {
 
 	decideForm = () => {
 		const { transformValue } = this;
-		const { type, data, user } = this.props;
+		const { type, data, user, refetchData } = this.props;
 
 		const props = {
 			user,
 			submitMsg: 'Update',
-			onSubmit: this.context.updateResource.bind(null, data ? data._id : null),
+			onSubmit: this.context.updateResource.bind(null, data ? data._id : null, refetchData),
 			customInputs: transformValue
 		};
 		if (data) {

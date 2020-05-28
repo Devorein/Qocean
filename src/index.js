@@ -100,8 +100,7 @@ class App extends Component {
 		}
 	};
 
-	updateResource = (id, [ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
-		debugger;
+	updateResource = (id, refetchData, [ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		type = type.toLowerCase();
 		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
 		let canSubmit = true;
@@ -125,6 +124,7 @@ class App extends Component {
 							this.props.refetch();
 						});
 					}
+					refetchData();
 				})
 				.catch((err) => {
 					if (reset_on_error) resetForm();
