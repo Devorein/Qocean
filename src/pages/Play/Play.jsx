@@ -82,9 +82,13 @@ class Play extends Component {
 							selectedQuizzes={this.state.checked.map((checked) => quizzes[checked])}
 						/>
 						<PlaySettings
-							customHandler={(values, setValues, e) => {
+							customHandler={({ validation, randomized_quiz, randomized_question }, setValues, e) => {
 								this.setState({
-									playsettings: values
+									playsettings: {
+										validation,
+										randomized_quiz,
+										randomized_question
+									}
 								});
 							}}
 						/>
@@ -92,7 +96,7 @@ class Play extends Component {
 					</Fragment>
 				) : (
 					<Start
-						settings={this.state.playsettings ? this.state.playsettings.validation : null}
+						settings={this.state.playsettings ? this.state.playsettings : null}
 						quizzes={this.CustomList.state.checked.map((index) => quizzes[index])}
 					/>
 				)}
