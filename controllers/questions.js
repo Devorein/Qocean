@@ -46,6 +46,7 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update question`, 401));
+	req.body.updated_at = Date.now();
 	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 		runValidators: true

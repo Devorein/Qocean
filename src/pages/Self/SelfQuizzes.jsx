@@ -19,7 +19,8 @@ class SelfQuizzes extends Component {
 			{ name: 'total_questions', sort: true, filter: true },
 			{ name: 'public', sort: true, filter: true },
 			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: false, filter: false },
+			{ name: 'updated_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -61,7 +62,8 @@ class SelfQuizzes extends Component {
 				favourite: item.favourite,
 				tags: <ChipContainer chips={item.tags} type={'regular'} />,
 				creator: item.user.username,
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};

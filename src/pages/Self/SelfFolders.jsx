@@ -16,7 +16,8 @@ class SelfFolders extends Component {
 			{ name: 'favourite', sort: true, filter: true },
 			{ name: 'total_quizzes', sort: true, filter: true },
 			{ name: 'total_questions', sort: true, filter: true },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: false, filter: false },
+			{ name: 'updated_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -53,7 +54,8 @@ class SelfFolders extends Component {
 				favourite: item.favourite,
 				total_quizzes: item.total_quizzes,
 				total_questions: item.total_questions,
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};
