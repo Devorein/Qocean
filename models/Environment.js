@@ -107,7 +107,7 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 	},
 	display_font: {
 		type: String,
-		default: '#Quantico'
+		default: 'Quantico'
 	}
 });
 

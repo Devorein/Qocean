@@ -47,7 +47,8 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	},
 	answers: {
 		type: [ [ String ] ],
-		required: [ true, 'Please provide answers' ]
+		required: [ true, 'Please provide answers' ],
+		select: false
 	},
 	options: {
 		type: [ String ],
