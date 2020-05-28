@@ -32,10 +32,9 @@ class Update extends Component {
 		const props = {
 			user,
 			submitMsg: 'Update',
-			onSubmit: this.context.submitForm,
+			onSubmit: this.context.updateResource.bind(null, data ? data._id : null),
 			customInputs: transformValue
 		};
-
 		if (data) {
 			if (type === 'Folder') return <FolderForm {...props} />;
 			else if (type === 'Question') return <QuestionForm {...props} />;
