@@ -42,7 +42,8 @@ class Start extends Component {
 		currentQuizQuestion: 0,
 		question: null,
 		timeout: 30,
-		stats: []
+		stats: [],
+		isOnReport: false
 	};
 
 	componentDidMount() {
@@ -82,8 +83,8 @@ class Start extends Component {
 			currentQuizQuestion = 0;
 		}
 		const { user_answers } = this.Quiz.state;
-		const { stats, question } = this.state;
-		stats.push({ user_answers, _id: question._id, type: question.type });
+		const { stats, question, timeout } = this.state;
+		stats.push({ user_answers, _id: question._id, type: question.type, time_taken: question.time_allocated - timeout });
 		if (currentQuestion < totalQuestion - 1) {
 			this.setState(
 				{
@@ -110,14 +111,16 @@ class Start extends Component {
 			});
 			this.setState({
 				currentQuestion: currentQuestion + 1,
-				stats
+				stats,
+				timeout: 0,
+				isOnReport: true
 			});
 		}
 	};
 
 	render() {
 		const { getTotalQuestions, setQuestion } = this;
-		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout } = this.state;
+		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout, isOnReport } = this.state;
 		const { quizzes, settings, theme } = this.props;
 		const totalQuestion = getTotalQuestions();
 		const stats = [
@@ -149,8 +152,9 @@ class Start extends Component {
 				/>
 				<Timer
 					timeout={timeout}
-					onTimerChange={() => {
-						if (this.state.timeout === 0) this.Button.click();
+					onTimerChange={(timer) => {
+						if (this.state.timeout === 0 && !this.state.isOnReport) this.Button.click();
+						else if (this.state.timeout === 0 && this.state.isOnReport) clearInterval(timer);
 						else
 							this.setState({
 								timeout: this.state.timeout - 1
