@@ -88,10 +88,12 @@ class Start extends Component {
 					timeout: 0
 				},
 				() => {
-					this.Quiz.setState({
-						show_answer: false,
-						user_answers: []
-					});
+					if (this.Quiz) {
+						this.Quiz.setState({
+							show_answer: false,
+							user_answers: []
+						});
+					}
 					this.fetchQuestion();
 				}
 			);
