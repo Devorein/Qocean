@@ -5,6 +5,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Timer from '../../components/Timer/Timer';
+import Report from './Report';
 
 const flexCenter = `
   display: flex;
@@ -40,7 +41,9 @@ class Start extends Component {
 		currentQuiz: 0,
 		currentQuizQuestion: 0,
 		question: null,
-		timeout: 30
+		timeout: 30,
+		stats: [],
+		isOnReport: false
 	};
 
 	componentDidMount() {
@@ -57,12 +60,18 @@ class Start extends Component {
 		const { quizzes } = this.props;
 		const { currentQuizQuestion, currentQuiz } = this.state;
 		const current_id = quizzes[currentQuiz].questions[currentQuizQuestion]._id;
-		axios.get(`http://localhost:5001/api/v1/questions?_id=${current_id}`).then(({ data: { data } }) => {
-			this.setState({
-				question: data,
-				timeout: data.time_allocated
+		axios
+			.get(`http://localhost:5001/api/v1/questions/me?_id=${current_id}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data } }) => {
+				this.setState({
+					question: data,
+					timeout: data.time_allocated
+				});
 			});
-		});
 	};
 
 	setQuestion = (totalQuestion) => {
@@ -73,23 +82,45 @@ class Start extends Component {
 			currentQuiz++;
 			currentQuizQuestion = 0;
 		}
-		if (currentQuestion < totalQuestion - 1)
+		const { user_answers } = this.Quiz.state;
+		const { stats, question, timeout } = this.state;
+		stats.push({ user_answers, _id: question._id, type: question.type, time_taken: question.time_allocated - timeout });
+		if (currentQuestion < totalQuestion - 1) {
 			this.setState(
 				{
 					currentQuestion: currentQuestion + 1,
 					currentQuizQuestion,
 					currentQuiz,
-					timeout: 0
+					timeout: 0,
+					stats
 				},
 				() => {
+					if (this.Quiz) {
+						this.Quiz.setState({
+							show_answer: false,
+							user_answers: []
+						});
+					}
 					this.fetchQuestion();
 				}
 			);
+		} else {
+			this.Quiz.setState({
+				show_answer: false,
+				user_answers: []
+			});
+			this.setState({
+				currentQuestion: currentQuestion + 1,
+				stats,
+				timeout: 0,
+				isOnReport: true
+			});
+		}
 	};
 
 	render() {
 		const { getTotalQuestions, setQuestion } = this;
-		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout } = this.state;
+		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout, isOnReport } = this.state;
 		const { quizzes, settings, theme } = this.props;
 		const totalQuestion = getTotalQuestions();
 		const stats = [
@@ -98,7 +129,7 @@ class Start extends Component {
 			[ `Question of Quiz`, currentQuizQuestion + 1 ],
 			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ]
 		];
-		return (
+		return currentQuestion < totalQuestion ? (
 			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
 				<QuizStats theme={theme}>
 					{stats.map(([ key, value ]) => (
@@ -108,7 +139,12 @@ class Start extends Component {
 						</QuizStat>
 					))}
 				</QuizStats>
-				<Quiz question={question} />
+				<Quiz
+					question={question}
+					ref={(r) => {
+						this.Quiz = r;
+					}}
+				/>
 				<GenericButton
 					buttonRef={(ref) => (this.Button = ref)}
 					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
@@ -116,8 +152,9 @@ class Start extends Component {
 				/>
 				<Timer
 					timeout={timeout}
-					onTimerChange={() => {
-						if (this.state.timeout === 0) this.Button.click();
+					onTimerChange={(timer) => {
+						if (this.state.timeout === 0 && !this.state.isOnReport) this.Button.click();
+						else if (this.state.timeout === 0 && this.state.isOnReport) clearInterval(timer);
 						else
 							this.setState({
 								timeout: this.state.timeout - 1
@@ -125,6 +162,8 @@ class Start extends Component {
 					}}
 				/>
 			</div>
+		) : (
+			<Report stats={this.state.stats} />
 		);
 	}
 }

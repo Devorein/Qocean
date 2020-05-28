@@ -15,7 +15,8 @@ class ExploreFolders extends Component {
 			{ name: 'total_quizzes', sort: true, filter: true },
 			{ name: 'total_questions', sort: true, filter: true },
 			{ name: 'creator', sort: true, filter: false },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: false, filter: false },
+			{ name: 'updated_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -39,7 +40,8 @@ class ExploreFolders extends Component {
 				...item,
 				creator: item.user.username,
 				icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};

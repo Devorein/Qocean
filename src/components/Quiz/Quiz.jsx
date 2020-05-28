@@ -1,8 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 import { withTheme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import GenericButton from '../../components/Buttons/GenericButton';
+import shortid from 'shortid';
 
 const QuizContent = styled.div``;
 
@@ -62,9 +70,24 @@ const QuestionOption = styled.div`
 
 class Quiz extends Component {
 	state = {
-		user_answers: [ '' ]
+		user_answers: [ '' ],
+		show_answer: false
 	};
 
+	getFlashCardAnswer = () => {
+		axios
+			.get(`http://localhost:5001/api/v1/questions/answers/${this.props.question._id}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data: [ answer ] } }) => {
+				this.setState({
+					show_answer: true,
+					answers: answer
+				});
+			});
+	};
 	renderQuestionBody = () => {
 		const { question: { type, options, name }, theme } = this.props;
 		if (type === 'MCQ')
@@ -108,21 +131,47 @@ class Quiz extends Component {
 				</QuestionOptions>
 			);
 		else if (type === 'FIB')
-			return name.match(/\$\{\_\}/g).map((match, index) => (
-				<TextField
-					value={this.state.user_answers[index]}
-					onChange={(e) => {
-						const { user_answers } = this.state;
-						user_answers[index] = e.target.value;
-						this.setState({
-							user_answers
-						});
-					}}
-				/>
-			));
-		else if (type === 'TF') {
-			// TF
-		} else if (type === 'Snippet')
+			return name.match(/\$\{\_\}/g).map((match, index) => {
+				return (
+					<TextField
+						key={shortid.generate()}
+						value={this.state.user_answers[index]}
+						onChange={(e) => {
+							const { user_answers } = this.state;
+							user_answers[index] = e.target.value;
+							this.setState({
+								user_answers
+							});
+						}}
+					/>
+				);
+			});
+		else if (type === 'TF')
+			return (
+				<FormControl>
+					<FormLabel component="legend">Answer</FormLabel>
+					<RadioGroup
+						row
+						name={'Answer'}
+						value={this.state.user_answers[0]}
+						onChange={(e) =>
+							this.setState({
+								user_answers: [ e.target.value ]
+							})}
+					>
+						{[ 'True', 'False' ].map((value) => (
+							<FormControlLabel
+								key={value}
+								control={<Radio color="primary" />}
+								value={value}
+								label={value}
+								labelPlacement="end"
+							/>
+						))}
+					</RadioGroup>
+				</FormControl>
+			);
+		else if (type === 'Snippet')
 			return (
 				<TextField
 					value={this.state.user_answers[0]}
@@ -132,6 +181,30 @@ class Quiz extends Component {
 						});
 					}}
 				/>
+			);
+		else if (type === 'FC')
+			return (
+				<Fragment>
+					{!this.state.show_answer ? (
+						<GenericButton
+							text={'show'}
+							onClick={(e) => {
+								this.getFlashCardAnswer();
+							}}
+						/>
+					) : (
+						<Fragment>
+							<div>{this.state.answers.map((answer) => answer)}</div>
+							<GenericButton
+								text={'Mark as correct'}
+								onClick={(e) =>
+									this.setState({
+										user_answers: [ true ]
+									})}
+							/>
+						</Fragment>
+					)}
+				</Fragment>
 			);
 		else return <div>{type}</div>;
 	};

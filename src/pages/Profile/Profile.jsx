@@ -5,8 +5,15 @@ import axios from 'axios';
 import { isAlphaNumericOnly } from '../../Utils/validation';
 import { withRouter } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
+import GenericButton from '../../components/Buttons/GenericButton';
+import TextField from '@material-ui/core/TextField';
+import ModalRP from '../../RP/ModalRP';
+import ExportAll from './ExportAll';
 
 class Profile extends Component {
+	state = {
+		password: ''
+	};
 	static contextType = AppContext;
 
 	submitForm = ({ name, email, username, image, password }, { setSubmitting }) => {
@@ -35,7 +42,7 @@ class Profile extends Component {
 						localStorage.removeItem('token');
 						this.props.history.push('/signin');
 						this.props.refetch();
-						this.context.changeResponse('Success', 'Successfully updated profile', 'error');
+						this.context.changeResponse('Success', 'Successfully updated profile', 'success');
 					})
 					.catch((err) => {
 						setTimeout(() => {
@@ -52,6 +59,53 @@ class Profile extends Component {
 			});
 	};
 
+	checkPassword = (values, { setSubmitting }) => {
+		const headers = {
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem('token')}`
+			}
+		};
+
+		axios
+			.get(`http://localhost:5001/api/v1/auth/checkpassword/${this.state.password ? this.state.password : '_'}`, {
+				...headers
+			})
+			.then((data) => {
+				axios
+					.delete(`http://localhost:5001/api/v1/users`, {
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					})
+					.then(() => {
+						localStorage.removeItem('token');
+						this.props.history.push('/signup');
+						this.props.refetch();
+						this.context.changeResponse('Success', 'Successfully delete your account', 'success');
+					});
+				setSubmitting(false);
+			})
+			.catch((err) => {
+				this.context.changeResponse('Invalid credentials', 'You provided the wrong password', 'error');
+				setTimeout(() => {
+					setSubmitting(false);
+				}, 2500);
+			});
+	};
+	renderPassword = () => {
+		return (
+			<InputForm
+				submitMsg="Delete"
+				customHandler={({ password }) => {
+					this.setState({
+						password
+					});
+				}}
+				onSubmit={this.checkPassword}
+				inputs={[ { type: 'password', defaultValue: '', name: 'password' } ]}
+			/>
+		);
+	};
 	render() {
 		const { user } = this.props;
 
@@ -79,14 +133,20 @@ class Profile extends Component {
 		});
 
 		return (
-			<div className="profile pages">
-				<InputForm
-					validationSchema={validationSchema}
-					inputs={inputs}
-					onSubmit={this.submitForm}
-					submitMsg={'update'}
-				/>
-			</div>
+			<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
+				{({ setIsOpen }) => (
+					<div className="profile pages">
+						<InputForm
+							validationSchema={validationSchema}
+							inputs={inputs}
+							onSubmit={this.submitForm}
+							submitMsg={'update'}
+						/>
+						<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
+						<ExportAll />
+					</div>
+				)}
+			</ModalRP>
 		);
 	}
 }

@@ -13,7 +13,8 @@ class ExploreEnvironments extends Component {
 			{ name: 'icon', sort: false, filter: false },
 			{ name: 'name', sort: true, filter: false },
 			{ name: 'username', sort: true, filter: false },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: false, filter: false },
+			{ name: 'updated_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -37,7 +38,8 @@ class ExploreEnvironments extends Component {
 				...item,
 				username: item.user.username,
 				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};

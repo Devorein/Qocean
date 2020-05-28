@@ -26,6 +26,7 @@ exports.updateFolder = asyncHandler(async (req, res, next) => {
 	if (!folder) return next(new ErrorResponse(`Folder not found with id of ${req.params.id}`, 404));
 	if (folder.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update this folder`, 401));
+	req.body.updated_at = Date.now();
 	folder = await Folder.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 	res.status(200).json({ success: true, data: folder });
 });

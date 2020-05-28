@@ -14,7 +14,7 @@ class NavbarUnauth extends Component {
 	render() {
 		const headers = [
 			{ name: 'home', link: '', icon: <HomeIcon /> },
-			{ name: 'explore', link: 'explore', icon: <ExploreIcon /> },
+			{ name: 'explore', link: 'explore/Quiz', icon: <ExploreIcon /> },
 			{ name: 'signin', link: 'signin', icon: <VpnKeyIcon /> },
 			{ name: 'signup', link: 'signup', icon: <LockIcon /> }
 		];

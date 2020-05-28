@@ -3,6 +3,12 @@ const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
+exports.sendAnswer = asyncHandler(async (req, res, next) => {
+	const question = await Question.findOne({ _id: req.params.id, user: req.user._id }).select('+answers');
+	if (!question) return next(new ErrorResponse(`Question doesnt exist`, 400));
+	res.status(200).json({ success: true, data: question.answers });
+});
+
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
 	const question = await Question.findById(req.body.id);
 	if (!question) return next(new ErrorResponse(`Question doesn't exist`, 404));
@@ -40,6 +46,7 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update question`, 401));
+	req.body.updated_at = Date.now();
 	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
 		new: true,
 		runValidators: true

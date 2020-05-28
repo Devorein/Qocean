@@ -15,7 +15,8 @@ class ExploreQuestions extends Component {
 			{ name: 'time_allocated', sort: true, filter: true },
 			{ name: 'quiz', sort: true, filter: false },
 			{ name: 'creator', sort: true, filter: false },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: false, filter: false },
+			{ name: 'updated_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -39,7 +40,8 @@ class ExploreQuestions extends Component {
 				...item,
 				quiz: item.quiz.name,
 				creator: item.user.username,
-				created_at: moment(item.created_at).fromNow()
+				created_at: moment(item.created_at).fromNow(),
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};

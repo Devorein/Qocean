@@ -47,6 +47,7 @@ exports.updateEnvironment = asyncHandler(async (req, res, next) => {
 	if (!environment) return next(new ErrorResponse(`Environment not found with id of ${req.params.id}`, 404));
 	if (environment.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update this environment`, 401));
+	req.body.updated_at = Date.now();
 	environment = await Environment.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 	res.status(200).json({ success: true, data: environment });
 });

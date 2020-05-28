@@ -6,17 +6,18 @@ const advancedResults = (model, populate, option = {}) =>
 			option._id = { ...option._id };
 			option._id.exclude = option._id.exclude || [];
 			option._id.populate = option._id.populate || null;
+			if (!req.user) option.match = { public: true };
 			let query = model
 				.findOne({ _id: req.query._id, ...option.match })
 				.select(option._id.exclude.map((field) => `-${field}`).join(' '));
-
+			// console.log(req.user, option);
 			if (option._id.populate) {
 				if (Array.isArray(option._id.populate)) option._id.populate.forEach((pop) => (query = query.populate(pop)));
 				else query = query.populate(option._id.populate);
 			}
-
 			const result = await query;
-			if (!result) return next(new ErrorResponse(`Resource not found with id of ${req.query._id}`, 404));
+			if (!result)
+				return next(new ErrorResponse(`Resource not found with id of ${req.query._id} or is made private`, 404));
 			res.status(200).json({ success: true, data: result });
 		} else {
 			if (req.route.path.includes('count')) {
@@ -95,12 +96,19 @@ const advancedResults = (model, populate, option = {}) =>
 
 				query = query.skip(startIndex).limit(limit);
 				if (shouldPopulate) {
+					const populations = [];
+					const populates = req.query.populate.split(',');
 					let { populateFields } = req.query;
-					populateFields = populateFields ? populateFields.split(',').join(' ') : null;
-					query.populate({
-						path: req.query.populate.split(',')[0],
-						select: populateFields
-					});
+					if (populateFields) {
+						populateFields = populateFields.split('-');
+						populateFields.forEach((populateField, index) => {
+							populations.push({
+								populate: populates[index],
+								select: populateField.split(',').join(' ')
+							});
+						});
+						query.populate(populates);
+					}
 				} else if (populate) {
 					if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
 					else query = query.populate(populate);

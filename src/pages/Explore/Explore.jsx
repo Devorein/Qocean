@@ -26,15 +26,28 @@ class Explore extends Component {
 			page: this.state.page
 		});
 	}
+	getRelatedData = (type, queryParams) => {
+		if (type === 'quiz' || type === 'folder' || type === 'environment') {
+			queryParams.populate = 'user';
+			queryParams.populateFields = 'username';
+		} else if (type === 'question') {
+			queryParams.populate = 'user,quiz';
+			queryParams.populateFields = 'username-name';
+		}
+
+		return queryParams;
+	};
 
 	refetchData = (type, queryParams, newState = {}) => {
 		type = type ? type : this.state.type;
+
 		queryParams = queryParams
 			? queryParams
 			: {
 					limit: this.state.rowsPerPage,
 					page: this.state.page
 				};
+		queryParams = this.getRelatedData(type, queryParams);
 		if (this.state.sortCol && Object.keys(newState).length === 0)
 			queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
 		const queryString = queryParams

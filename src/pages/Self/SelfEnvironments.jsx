@@ -20,7 +20,8 @@ class SelfEnvironments extends Component {
 			{ name: 'name', sort: true, filter: false },
 			{ name: 'public', sort: true, filter: true },
 			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'created_at', sort: true, filter: false }
+			{ name: 'created_at', sort: true, filter: false },
+			{ name: 'updated_at', sort: true, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -88,7 +89,8 @@ class SelfEnvironments extends Component {
 				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow(),
 				public: item.public,
-				favourite: item.favourite
+				favourite: item.favourite,
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};

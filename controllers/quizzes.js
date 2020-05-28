@@ -44,6 +44,7 @@ exports.updateQuiz = asyncHandler(async (req, res, next) => {
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
+	req.body.updated_at = Date.now();
 	quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 	res.status(200).json({ success: true, data: quiz });
 });

@@ -7,6 +7,12 @@ const dotenv = require('dotenv');
 const fs = require('fs');
 const randomColor = require('randomcolor');
 
+function getRandomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 dotenv.config({ path: './config/config.env' });
 
 const Quiz = require('./models/Quiz');
@@ -32,15 +38,16 @@ casual.define('user', function() {
 		password: casual.password,
 		username: casual.password.toLowerCase(),
 		image: faker.image.imageUrl(),
-		version: [ 'Rower', 'Sailor', 'Captain' ][casual.integer(0, 2)]
+		version: [ 'Rower', 'Sailor', 'Captain' ][getRandomInt(0, 2)]
 	};
 });
 
 casual.define('quiz', function() {
+	const len = getRandomInt(0, 5);
 	return {
 		name: casual.title,
 		subject: casual.word,
-		tags: casual.array_of_words(casual.integer(0, 5)).map((word) => `${word}:${randomColor()}`),
+		tags: len === 0 ? [] : casual.array_of_words(len).map((word) => `${word}:${randomColor()}`),
 		source: faker.internet.url(),
 		favourite: casual.boolean,
 		public: casual.boolean
@@ -52,54 +59,65 @@ casual.define('folder', function() {
 	while (name.length > 20) name = casual.array_of_words(2).join('');
 	return {
 		name,
-		icon: `${icons[casual.integer(0, icons.length - 1)]}_folder.svg`,
+		icon: `${icons[getRandomInt(0, icons.length - 1)]}_folder.svg`,
 		favourite: casual.boolean,
 		public: casual.boolean
 	};
 });
 
 casual.define('question', function() {
-	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', /* 'FIB', */ 'FC' ];
-	const type = types[casual.integer(0, types.length - 1)];
+	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC' ];
+	const type = types[getRandomInt(0, types.length - 1)];
 	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
-	const time = times[casual.integer(0, times.length - 1)];
+	const time = times[getRandomInt(0, times.length - 1)];
 	let options,
-		answers = [];
+		answers = [],
+		name = casual.sentence;
 
 	if (type === 'MCQ') {
-		const total_options = casual.integer(3, 6);
+		const total_options = getRandomInt(3, 6);
 		options = Array(total_options).fill(0).map((_) => casual.sentence);
-		answers.push(casual.integer(1, total_options - 1));
+		answers.push(getRandomInt(1, total_options - 1));
 	} else if (type === 'MS') {
-		const total_options = casual.integer(3, 6);
+		const total_options = getRandomInt(3, 6);
 		options = Array(total_options).fill(0).map((_) => casual.sentence);
-		const total_answers = casual.integer(1, total_options - 1);
+		const total_answers = getRandomInt(1, total_options - 1);
 
 		while (answers.length < total_answers) {
-			const r = casual.integer(1, total_options - 1);
+			const r = getRandomInt(1, total_options - 1);
 			if (answers.indexOf(r) === -1) answers.push(r);
 		}
 	} else if (type === 'TF') {
 		options = [];
-		answers.push([ 0, 1 ][casual.integer(0, 1)]);
+		answers.push([ 0, 1 ][getRandomInt(0, 1)]);
 	} else if (type === 'FC') {
 		options = [];
-		answers = [ Array(casual.integer(1, 3)).map((_) => casual.sentence) ];
+		answers = [ Array(getRandomInt(1, 3)).fill(0).map((_) => casual.sentence) ];
 	} else if (type === 'FIB') {
 		options = [];
-		answers = [ casual.sentence ];
+		const blanks = getRandomInt(1, 6);
+		name = name.split(' ').concat(casual.sentence.split(' '));
+		for (let i = 1; i <= blanks; i++) {
+			answers[i - 1] = [];
+			let pos = getRandomInt(0, name.length - 1);
+			while (name[pos] === '${_}') pos = getRandomInt(0, name.length - 1);
+			name[pos] = '${_}';
+			const alternates = getRandomInt(1, 3);
+			answers[i - 1].push(...casual.sentence.split(' ').slice(0, alternates));
+		}
+		name = name.join(' ');
 	} else if (type === 'Snippet') {
 		options = [];
-		answers = [ casual.array_of_words(casual.integer(1, 3)) ];
+		answers = [ casual.array_of_words(getRandomInt(1, 3)) ];
 	}
 
 	return {
-		name: casual.sentence,
+		name,
 		type,
-		weight: casual.integer(1, 10),
+		weight: getRandomInt(1, 10),
 		add_to_score: casual.boolean,
 		time_allocated: time,
-		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][casual.integer(0, 2)],
+		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
 		image: faker.internet.url(),
 		options,
 		answers,
@@ -110,32 +128,34 @@ casual.define('question', function() {
 
 casual.define('environment', function() {
 	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
-	const time = times[casual.integer(0, times.length - 1)];
+	const time = times[getRandomInt(0, times.length - 1)];
 	const notification_timings = [ 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 ];
-	const notification_timing = notification_timings[casual.integer(0, notification_timings.length - 1)];
+	const notification_timing = notification_timings[getRandomInt(0, notification_timings.length - 1)];
 	const resources = [ 'User', 'Question', 'Quiz', 'Folder', 'Environment' ];
 	const rpp = [ 10, 15, 20, 25, 30, 40, 50 ];
 	return {
 		name: casual.array_of_words(2).join(''),
-		icon: `${icons[casual.integer(0, icons.length - 1)]}_env.svg`,
+		icon: `${icons[getRandomInt(0, icons.length - 1)]}_env.svg`,
 		favourite: casual.boolean,
 		public: casual.boolean,
-		theme: [ 'Light', 'Dark', 'Navy' ][casual.integer(0, 2)],
+		theme: [ 'Light', 'Dark', 'Navy' ][getRandomInt(0, 2)],
 		animation: casual.boolean,
 		sound: casual.boolean,
 		default_question_timing: time,
-		default_question_type: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ][casual.integer(0, 5)],
-		default_question_difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][casual.integer(0, 2)],
-		default_question_weight: casual.integer(1, 10),
+		default_question_type: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ][getRandomInt(0, 5)],
+		default_question_difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
+		default_question_weight: getRandomInt(1, 10),
 		reset_on_success: casual.boolean,
 		reset_on_error: casual.boolean,
-		default_explore_landing: resources[casual.integer(0, resources.length - 1)],
-		default_create_landing: resources.splice(1)[casual.integer(0, resources.length - 2)],
-		default_self_landing: resources.splice(1)[casual.integer(0, resources.length - 2)],
-		default_explore_rpp: rpp[casual.integer(0, rpp.length - 1)],
-		default_self_rpp: rpp[casual.integer(0, rpp.length - 1)],
+		default_explore_landing: resources[getRandomInt(0, resources.length - 1)],
+		default_create_landing: resources.splice(1)[getRandomInt(0, resources.length - 2)],
+		default_self_landing: resources.splice(1)[getRandomInt(0, resources.length - 2)],
+		default_explore_rpp: rpp[getRandomInt(0, rpp.length - 1)],
+		default_self_rpp: rpp[getRandomInt(0, rpp.length - 1)],
 		notification_timing,
-		max_notifications: casual.integer(3, 10)
+		max_notifications: getRandomInt(3, 10),
+		primary_color: randomColor(),
+		secondary_color: randomColor()
 	};
 });
 
@@ -145,17 +165,17 @@ const users = [],
 	folders = [],
 	envs = [];
 
-const total_users = casual.integer(10, 25),
-	total_quizzes = casual.integer(30, 50),
-	total_questions = casual.integer(50, 75),
-	total_folders = casual.integer(10, 25),
-	total_envs = casual.integer(35, 50);
+const total_users = getRandomInt(10, 25),
+	total_quizzes = getRandomInt(30, 50),
+	total_questions = getRandomInt(50, 75),
+	total_folders = getRandomInt(10, 25),
+	total_envs = getRandomInt(35, 50);
 
-/* const total_users = casual.integer(1, 5),
-	total_quizzes = casual.integer(1, 5),
-	total_questions = casual.integer(15, 30),
-	total_folders = casual.integer(1, 5),
-	total_envs = casual.integer(1, 5); */
+/* const total_users = getRandomInt(1, 5),
+	total_quizzes = getRandomInt(1, 5),
+	total_questions = getRandomInt(15, 30),
+	total_folders = getRandomInt(1, 5),
+	total_envs = getRandomInt(1, 5); */
 const loginData = [];
 
 const createUser = async () => {
@@ -184,7 +204,7 @@ const createUser = async () => {
 const createQuiz = async () => {
 	const quiz = casual.quiz;
 	try {
-		const user = users[casual.integer(0, total_users - 1)];
+		const user = users[getRandomInt(0, total_users - 1)];
 		const { data: { data: { _id } } } = await axios.post(
 			`http://localhost:5001/api/v1/quizzes`,
 			{ ...quiz },
@@ -205,8 +225,8 @@ const createQuiz = async () => {
 const createFolder = async () => {
 	const folder = casual.folder;
 	try {
-		const user = users[casual.integer(0, total_users - 1)];
-		const quiz = user.quizzes[casual.integer(0, user.quizzes.length - 1)];
+		const user = users[getRandomInt(0, total_users - 1)];
+		const quiz = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
 		folder.quizzes = quiz;
 		const { data: { data: { _id } } } = await axios.post(
 			`http://localhost:5001/api/v1/folders`,
@@ -227,9 +247,9 @@ const createFolder = async () => {
 
 const createQuestion = async () => {
 	const question = casual.question;
-	let user = users[casual.integer(0, total_users - 1)];
-	while (user.quizzes.length === 0) user = users[casual.integer(0, total_users - 1)];
-	const quizId = user.quizzes[casual.integer(0, user.quizzes.length - 1)];
+	let user = users[getRandomInt(0, total_users - 1)];
+	while (user.quizzes.length === 0) user = users[getRandomInt(0, total_users - 1)];
+	const quizId = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
 	const quiz = quizzes.find(({ _id }) => quizId === _id);
 	try {
 		question.quiz = quizId;
@@ -254,7 +274,7 @@ const createQuestion = async () => {
 const createEnvironment = async () => {
 	const environment = casual.environment;
 	try {
-		const user = users[casual.integer(0, total_users - 1)];
+		const user = users[getRandomInt(0, total_users - 1)];
 		environment.user = user._id;
 		const { data: { data: { _id } } } = await axios.post(
 			`http://localhost:5001/api/v1/environments`,

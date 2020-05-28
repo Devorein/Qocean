@@ -16,7 +16,7 @@ class Timer extends Component {
 		const timer = setInterval(() => {
 			if (timeout === 0) {
 				clearInterval(timer);
-			} else onTimerChange();
+			} else onTimerChange(timer);
 		}, 1000);
 	}
 

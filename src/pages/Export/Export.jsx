@@ -6,15 +6,7 @@ import pluralize from 'pluralize';
 import CustomList from '../../components/List/List';
 import GetAppIcon from '@material-ui/icons/GetApp';
 
-function download(filename, text) {
-	const element = document.createElement('a');
-	element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-	element.setAttribute('download', filename);
-	element.style.display = 'none';
-	document.body.appendChild(element);
-	element.click();
-	document.body.removeChild(element);
-}
+import download from '../../Utils/download';
 
 class Export extends Component {
 	state = {
@@ -110,8 +102,7 @@ class Export extends Component {
 								this.CustomList.state.checked.forEach((checked) => {
 									exports.push(this.state.data[checked]);
 								});
-								const filename = `${Date.now()}.json`;
-								download(filename, JSON.stringify(exports));
+								download(null, JSON.stringify(exports));
 							}}
 						/>
 					]}

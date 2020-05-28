@@ -16,7 +16,8 @@ class SelfQuestions extends Component {
 			{ name: 'quiz', sort: true, filter: false },
 			{ name: 'public', sort: true, filter: true },
 			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'created_at', sort: false, filter: false }
+			{ name: 'created_at', sort: false, filter: false },
+			{ name: 'updated_at', sort: false, filter: false }
 		].map(({ name, sort, filter }) => {
 			return {
 				name,
@@ -50,6 +51,7 @@ class SelfQuestions extends Component {
 				name: item.name,
 				quiz: item.quiz.name,
 				created_at: moment(item.created_at).fromNow(),
+				updated_at: moment(item.updated_at).fromNow(),
 				difficulty: item.difficulty,
 				type: item.type,
 				time_allocated: item.time_allocated,
