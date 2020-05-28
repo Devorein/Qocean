@@ -96,12 +96,19 @@ const advancedResults = (model, populate, option = {}) =>
 
 				query = query.skip(startIndex).limit(limit);
 				if (shouldPopulate) {
+					const populations = [];
+					const populates = req.query.populate.split(',');
 					let { populateFields } = req.query;
-					populateFields = populateFields ? populateFields.split(',').join(' ') : null;
-					query.populate({
-						path: req.query.populate.split(',')[0],
-						select: populateFields
-					});
+					if (populateFields) {
+						populateFields = populateFields.split('-');
+						populateFields.forEach((populateField, index) => {
+							populations.push({
+								populate: populates[index],
+								select: populateField.split(',').join(' ')
+							});
+						});
+						query.populate(populates);
+					}
 				} else if (populate) {
 					if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
 					else query = query.populate(populate);
