@@ -1,37 +1,60 @@
 import React, { Component } from 'react';
 import GenericButton from '../../components/Buttons/GenericButton';
-
+import Quiz from '../../components/Quiz/Quiz';
 class Start extends Component {
 	state = {
-		currentQuestion: 1
+		currentQuestion: 0,
+		currentQuiz: 0,
+		currentQuizQuestion: 0
 	};
+
 	getTotalQuestions = () => {
 		let totalQuiz = 0;
 		this.props.quizzes.forEach((quiz) => (totalQuiz += quiz.questions.length));
 		return totalQuiz;
 	};
 
-	render() {
-		const { getTotalQuestions } = this;
-		const { currentQuestion } = this.state;
-		const { quizzes, settings } = this.props;
+	fetchQuestion = () => {
+		const { currentQuestion, currentQuiz } = this.state;
+	};
 
+	setQuestion = (totalQuestion) => {
+		const { quizzes } = this.props;
+		let { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		if (currentQuizQuestion < quizzes[currentQuiz].questions.length - 1) currentQuizQuestion++;
+		else {
+			currentQuiz++;
+			currentQuizQuestion = 0;
+		}
+		if (currentQuestion < totalQuestion - 1)
+			this.setState({
+				currentQuestion: currentQuestion + 1,
+				currentQuizQuestion,
+				currentQuiz
+			});
+	};
+
+	render() {
+		const { getTotalQuestions, setQuestion } = this;
+		const { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		const { quizzes, settings } = this.props;
+		const totalQuestion = getTotalQuestions();
 		return (
 			<div className={`start`}>
 				<div>
-					{currentQuestion} / {getTotalQuestions()}
+					Quiz {currentQuiz + 1} of {quizzes.length}
 				</div>
-				{quizzes.map((quiz) => {
-					return <div key={quiz._id}>{quiz.name}</div>;
-				})}
+				<div>{quizzes[currentQuiz].name}</div>
+				<div>
+					Question {currentQuizQuestion + 1} of Quiz {currentQuiz + 1}
+				</div>
+				<div>
+					Question {currentQuestion + 1} of {totalQuestion}
+				</div>
+				{/* <Quiz/> */}
 				<GenericButton
-					text={'Next'}
-					onClick={(e) => {
-						if (currentQuestion < getTotalQuestions())
-							this.setState({
-								currentQuestion: currentQuestion + 1
-							});
-					}}
+					text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
+					onClick={setQuestion.bind(null, totalQuestion)}
 				/>
 			</div>
 		);
