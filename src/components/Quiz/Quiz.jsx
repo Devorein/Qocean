@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
+import TextField from '@material-ui/core/TextField';
 
 const QuizContent = styled.div``;
 
@@ -61,12 +62,12 @@ const QuestionOption = styled.div`
 
 class Quiz extends Component {
 	state = {
-		user_answers: []
+		user_answers: [ '' ]
 	};
 
 	renderQuestionBody = () => {
 		const { question: { type, options }, theme } = this.props;
-		if (type === 'MS' || type === 'MCQ')
+		if (type === 'MCQ')
 			return (
 				<QuestionOptions>
 					{options.map((option, index) => (
@@ -85,6 +86,37 @@ class Quiz extends Component {
 						</QuestionOption>
 					))}
 				</QuestionOptions>
+			);
+		else if (type === 'MS')
+			return (
+				<QuestionOptions>
+					{options.map((option, index) => (
+						<QuestionOption theme={theme} key={option}>
+							<Checkbox
+								checked={this.state.user_answers[0] === index}
+								onChange={(e) => {
+									let { user_answers } = this.state;
+									if (e.target.checked) user_answers = [ index ];
+									else user_answers = user_answers.filter((answer) => answer !== index);
+									this.setState({ user_answers });
+								}}
+								color="primary"
+							/>
+							{option}
+						</QuestionOption>
+					))}
+				</QuestionOptions>
+			);
+		else if (type === 'Snippet')
+			return (
+				<TextField
+					value={this.state.user_answers[0]}
+					onChange={(e) => {
+						this.setState({
+							user_answers: [ e.target.value ]
+						});
+					}}
+				/>
 			);
 		else return <div>{type}</div>;
 	};
