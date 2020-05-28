@@ -5,6 +5,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Timer from '../../components/Timer/Timer';
+import Report from './Report';
 
 const flexCenter = `
   display: flex;
@@ -80,10 +81,10 @@ class Start extends Component {
 			currentQuiz++;
 			currentQuizQuestion = 0;
 		}
+		const { user_answers } = this.Quiz.state;
+		const { stats, question } = this.state;
+		stats.push({ user_answers, _id: question._id, type: question.type });
 		if (currentQuestion < totalQuestion - 1) {
-			const { user_answers } = this.Quiz.state;
-			const { stats, question } = this.state;
-			stats.push({ user_answers, _id: question._id });
 			this.setState(
 				{
 					currentQuestion: currentQuestion + 1,
@@ -102,6 +103,15 @@ class Start extends Component {
 					this.fetchQuestion();
 				}
 			);
+		} else {
+			this.Quiz.setState({
+				show_answer: false,
+				user_answers: []
+			});
+			this.setState({
+				currentQuestion: currentQuestion + 1,
+				stats
+			});
 		}
 	};
 
@@ -116,7 +126,7 @@ class Start extends Component {
 			[ `Question of Quiz`, currentQuizQuestion + 1 ],
 			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ]
 		];
-		return (
+		return currentQuestion < totalQuestion ? (
 			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
 				<QuizStats theme={theme}>
 					{stats.map(([ key, value ]) => (
@@ -130,13 +140,6 @@ class Start extends Component {
 					question={question}
 					ref={(r) => {
 						this.Quiz = r;
-					}}
-					addToStat={(stat) => {
-						const { stats } = this.state;
-						stats.push(stat);
-						this.setState({
-							stats
-						});
 					}}
 				/>
 				<GenericButton
@@ -155,6 +158,8 @@ class Start extends Component {
 					}}
 				/>
 			</div>
+		) : (
+			<Report stats={this.state.stats} />
 		);
 	}
 }
