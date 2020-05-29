@@ -20,7 +20,7 @@ import './Self.scss';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import IconRow from '../../components/Row/IconRow';
-import Update from '../Update/Update';
+import FormFiller from '../FormFiller/FormFiller';
 import ModalRP from '../../RP/ModalRP';
 
 class Self extends Component {
@@ -374,7 +374,7 @@ class Self extends Component {
 					)}
 				</ModalRP>
 
-				<Update
+				<FormFiller
 					isOpen={isOpen}
 					user={this.props.user}
 					handleClose={() => {

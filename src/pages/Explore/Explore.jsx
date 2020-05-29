@@ -10,7 +10,7 @@ import ExploreQuestions from './ExploreQuestions';
 import ExploreFolders from './ExploreFolders';
 import ExploreEnvironments from './ExploreEnvironments';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
-import Update from '../Update/Update';
+import FormFiller from '../FormFiller/FormFiller';
 import { AppContext } from '../../context/AppContext';
 
 class Explore extends Component {
@@ -206,7 +206,7 @@ class Explore extends Component {
 					headers={headers}
 				/>
 				{data.length > 0 ? this.decideTable() : <div>Loading data</div>}
-				<Update
+				<FormFiller
 					isOpen={isOpen ? isOpen : false}
 					user={this.props.user}
 					handleClose={() => {

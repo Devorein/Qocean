@@ -6,7 +6,7 @@ import QuizForm from '../../resources/Form/QuizForm';
 import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
 
-class Update extends Component {
+class FormFiller extends Component {
 	static contextType = AppContext;
 
 	transformValue = (defaultInputs) => {
@@ -68,4 +68,4 @@ class Update extends Component {
 	}
 }
 
-export default Update;
+export default FormFiller;
