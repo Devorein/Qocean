@@ -380,9 +380,10 @@ class Self extends Component {
 					handleClose={() => {
 						this.setState({ isOpen: false });
 					}}
+					submitMsg={'Update'}
+					onSubmit={this.context.updateResource.bind(null, selectedData ? selectedData.data._id : null, refetchData)}
 					type={type}
 					data={selectedData ? selectedData.data : null}
-					refetchData={refetchData}
 				/>
 			</div>
 		);

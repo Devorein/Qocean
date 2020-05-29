@@ -8,29 +8,31 @@ class ExploreQuizzes extends Component {
 	};
 
 	decideColums = () => {
-		return [
-			{ name: 'rating', sort: true, filter: true },
-			{ name: 'name', sort: true, filter: false },
-			{ name: 'subject', sort: true, filter: false },
-			{ name: 'average_quiz_time', sort: true, filter: true },
-			{ name: 'average_difficulty', sort: true, filter: true },
-			{ name: 'tags', sort: false, filter: false },
-			{ name: 'source', sort: false, filter: false },
-			{ name: 'total_questions', sort: true, filter: true },
-			{ name: 'creator', sort: true, filter: false },
-			{ name: 'created_at', sort: false, filter: false },
-			{ name: 'updated_at', sort: false, filter: false }
-		].map(({ name, sort, filter }) => {
-			return {
-				name,
-				label: this.decideLabel(name),
-				options: {
-					filter,
-					sort,
-					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-				}
-			};
-		});
+		return this.props.cols.concat(
+			[
+				{ name: 'rating', sort: true, filter: true },
+				{ name: 'name', sort: true, filter: false },
+				{ name: 'subject', sort: true, filter: false },
+				{ name: 'average_quiz_time', sort: true, filter: true },
+				{ name: 'average_difficulty', sort: true, filter: true },
+				{ name: 'tags', sort: false, filter: false },
+				{ name: 'source', sort: false, filter: false },
+				{ name: 'total_questions', sort: true, filter: true },
+				{ name: 'creator', sort: true, filter: false },
+				{ name: 'created_at', sort: false, filter: false },
+				{ name: 'updated_at', sort: false, filter: false }
+			].map(({ name, sort, filter }) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					options: {
+						filter,
+						sort,
+						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
+					}
+				};
+			})
+		);
 	};
 
 	transformOption = (option) => {

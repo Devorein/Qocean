@@ -27,18 +27,18 @@ class Update extends Component {
 
 	decideForm = () => {
 		const { transformValue } = this;
-		const { type, data, user, refetchData } = this.props;
+		const { type, data, user, submitMsg, onSubmit } = this.props;
 
 		const props = {
 			user,
-			submitMsg: 'Update',
-			onSubmit: this.context.updateResource.bind(null, data ? data._id : null, refetchData),
+			submitMsg,
+			onSubmit,
 			customInputs: transformValue
 		};
 		if (data) {
-			if (type === 'Folder') return <FolderForm {...props} />;
-			else if (type === 'Question') return <QuestionForm {...props} />;
-			else if (type === 'Quiz')
+			if (type.toLowerCase() === 'folder') return <FolderForm {...props} />;
+			else if (type.toLowerCase() === 'question') return <QuestionForm {...props} />;
+			else if (type.toLowerCase() === 'quiz')
 				return (
 					<QuizForm
 						{...props}
@@ -51,7 +51,7 @@ class Update extends Component {
 						}}
 					/>
 				);
-			else if (type === 'Environment') return <EnvironmentForm {...props} />;
+			else if (type.toLowerCase() === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};
 	render() {

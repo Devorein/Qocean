@@ -9,7 +9,12 @@ import ExploreQuizzes from './ExploreQuizzes';
 import ExploreQuestions from './ExploreQuestions';
 import ExploreFolders from './ExploreFolders';
 import ExploreEnvironments from './ExploreEnvironments';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import Update from '../Update/Update';
+import { AppContext } from '../../context/AppContext';
+
 class Explore extends Component {
+	static contextType = AppContext;
 	state = {
 		data: [],
 		type: this.props.user ? this.props.user.current_environment.default_explore_landing.toLowerCase() : 'user',
@@ -17,7 +22,8 @@ class Explore extends Component {
 		totaCount: 0,
 		page: 0,
 		sortCol: null,
-		sortOrder: null
+		sortOrder: null,
+		selectedIndex: null
 	};
 
 	componentDidMount() {
@@ -93,9 +99,27 @@ class Explore extends Component {
 		});
 	};
 
+	genericTransformData = (data) => {
+		return data.map((item, index) => {
+			return {
+				...item,
+				action: (
+					<NoteAddIcon
+						onClick={(e) => {
+							this.setState({
+								isOpen: true,
+								selectedIndex: index
+							});
+						}}
+					/>
+				)
+			};
+		});
+	};
+
 	decideTable = () => {
-		const { refetchData } = this;
-		const { page, rowsPerPage, totalCount, sortCol, sortOrder } = this.state;
+		const { refetchData, genericTransformData } = this;
+		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
 		const options = {
 			filterType: 'checkbox',
 			count: totalCount,
@@ -143,14 +167,14 @@ class Explore extends Component {
 		};
 
 		const props = {
-			data: this.state.data,
+			data: genericTransformData(this.state.data),
 			options,
 			page,
 			sortCol,
-			sortOrder
+			sortOrder,
+			cols: [ { name: 'action', label: 'Action' } ]
 		};
 
-		const { type } = this.state;
 		if (type === 'user') return <ExploreUsers {...props} />;
 		else if (type === 'quiz') return <ExploreQuizzes {...props} />;
 		else if (type === 'question') return <ExploreQuestions {...props} />;
@@ -159,9 +183,10 @@ class Explore extends Component {
 	};
 
 	render() {
-		const { data } = this.state;
+		const { data, isOpen, selectedIndex } = this.state;
 
 		const { match: { params: { type } } } = this.props;
+		const { submitForm } = this.context;
 
 		const headers = [ 'user', 'quiz', 'question', 'folder', 'environment' ].map((header) => {
 			return {
@@ -181,6 +206,17 @@ class Explore extends Component {
 					headers={headers}
 				/>
 				{data.length > 0 ? this.decideTable() : <div>Loading data</div>}
+				<Update
+					isOpen={isOpen ? isOpen : false}
+					user={this.props.user}
+					handleClose={() => {
+						this.setState({ isOpen: false });
+					}}
+					submitMsg={'Create'}
+					type={type}
+					onSubmit={submitForm}
+					data={data[selectedIndex] ? data[selectedIndex] : null}
+				/>
 			</div>
 		);
 	}
