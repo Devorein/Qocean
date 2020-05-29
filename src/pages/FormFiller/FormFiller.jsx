@@ -13,11 +13,11 @@ class FormFiller extends Component {
 		let { data: target } = this.props;
 		function recurse(defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
-				const { type, defaultValue } = defaultInput;
+				const { type, defaultValue, name } = defaultInput;
 				if (type !== 'group') {
-					defaultInput.defaultValue = target[defaultInput.name]
-						? target[defaultInput.name]
-						: defaultValue.toString() ? defaultValue : typeof defaultValue === 'boolean' ? true : '';
+					defaultInput.defaultValue = target[name]
+						? target[name]
+						: defaultValue ? defaultValue.toString() : typeof defaultValue === 'boolean' ? true : '';
 				} else recurse(defaultInput.children);
 			});
 		}
@@ -38,19 +38,7 @@ class FormFiller extends Component {
 		if (data) {
 			if (type.toLowerCase() === 'folder') return <FolderForm {...props} />;
 			else if (type.toLowerCase() === 'question') return <QuestionForm {...props} />;
-			else if (type.toLowerCase() === 'quiz')
-				return (
-					<QuizForm
-						{...props}
-						ref={(r) => {
-							this.QuizForm = r;
-							if (this.QuizForm)
-								this.QuizForm.setState({
-									tags: data.tags
-								});
-						}}
-					/>
-				);
+			else if (type.toLowerCase() === 'quiz') return <QuizForm {...props} tags={data.tags} />;
 			else if (type.toLowerCase() === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};

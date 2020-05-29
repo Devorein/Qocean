@@ -6,6 +6,7 @@ import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FileInput from '../../components/Input/FileInput';
 import TagCreator from '../../components/Chip/TagCreator';
+import TagRP from '../../RP/TagRP';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -22,7 +23,6 @@ const validationSchema = Yup.object({
 
 class QuizForm extends Component {
 	state = {
-		tags: this.props.tags || [],
 		folders: [],
 		loading: true,
 		selected_folders: []
@@ -52,9 +52,9 @@ class QuizForm extends Component {
 		});
 	};
 
-	preSubmit = (values) => {
+	preSubmit = (tags, values) => {
 		values.folders = this.state.selected_folders;
-		values.tags = this.state.tags;
+		values.tags = tags;
 		// const [ file, src ] = this.FileInput.state;
 		// if (file) values.link = '';
 		// else values.link = src;
@@ -111,63 +111,64 @@ class QuizForm extends Component {
 		const { onSubmit, customInputs, submitMsg, image_link } = this.props;
 		const { folders, loading, selected_folders } = this.state;
 
-		let defaultInputs = [
-			{ name: 'name' },
-			{ name: 'subject' },
-			{
-				name: 'source',
-				siblings: [
-					{
-						type: 'component',
-						component: (
-							<TagCreator
-								key={'tag_creator'}
-								tags={this.state.tags}
-								setTags={(tags) => {
-									this.setState({
-										tags
-									});
+		return (
+			<TagRP tags={this.props.tags}>
+				{({ setTags, tags }) => {
+					let defaultInputs = [
+						{ name: 'name' },
+						{ name: 'subject' },
+						{
+							name: 'source',
+							siblings: [
+								{
+									type: 'component',
+									component: <TagCreator key={'tag_creator'} tags={tags} setTags={setTags} />
+								}
+							]
+						},
+						{ name: 'favourite', type: 'checkbox', defaultValue: false },
+						{ name: 'public', type: 'checkbox', defaultValue: true }
+					];
+
+					if (customInputs) defaultInputs = customInputs(defaultInputs);
+					return (
+						<div className="create_quiz create_form">
+							<InputForm
+								submitMsg={submitMsg}
+								inputs={defaultInputs}
+								validationSchema={validationSchema}
+								onSubmit={onSubmit.bind(null, [ 'quiz', preSubmit.bind(null, tags), postSubmit ])}
+								ref={(r) => (this.InputForm = r)}
+							>
+								{loading ? (
+									<FormHelperText>Loading your folders</FormHelperText>
+								) : folders.length < 1 ? (
+									<FormHelperText>Loading your folders</FormHelperText>
+								) : (
+									<MultiSelect
+										label={'Folders'}
+										selected={selected_folders}
+										handleChange={handleChange}
+										items={folders}
+									/>
+								)}
+							</InputForm>
+							<FileInput
+								ref={(r) => {
+									this.FileInput = r;
+									if (this.FileInput) {
+										if (image_link)
+											this.FileInput.setState({
+												image: 'link',
+												src: image_link
+											});
+									}
 								}}
 							/>
-						)
-					}
-				]
-			},
-			{ name: 'favourite', type: 'checkbox', defaultValue: false },
-			{ name: 'public', type: 'checkbox', defaultValue: true }
-		];
-
-		if (customInputs) defaultInputs = customInputs(defaultInputs);
-		return (
-			<div className="create_quiz create_form">
-				<InputForm
-					submitMsg={submitMsg}
-					inputs={defaultInputs}
-					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ 'quiz', preSubmit, postSubmit ])}
-					ref={(r) => (this.InputForm = r)}
-				>
-					{loading ? (
-						<FormHelperText>Loading your folders</FormHelperText>
-					) : folders.length < 1 ? (
-						<FormHelperText>Loading your folders</FormHelperText>
-					) : (
-						<MultiSelect label={'Folders'} selected={selected_folders} handleChange={handleChange} items={folders} />
-					)}
-				</InputForm>
-				<FileInput
-					ref={(r) => {
-						this.FileInput = r;
-						if (this.FileInput) {
-							if (image_link)
-								this.FileInput.setState({
-									image: 'link',
-									src: image_link
-								});
-						}
-					}}
-				/>
-			</div>
+						</div>
+					);
+				}}
+			</TagRP>
 		);
 	}
 }

@@ -45,11 +45,6 @@ class TagCreator extends Component {
 		let { tags } = this.props;
 		tags = tags.filter((tag) => tag.split(':')[0].toLowerCase() !== _tag.toLowerCase());
 		this.props.setTags(tags);
-		// this.setState({
-		// 	tags
-		// },()=>{
-
-		// });
 	};
 
 	validateTags = (_tag) => {

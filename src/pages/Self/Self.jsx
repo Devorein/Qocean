@@ -332,7 +332,6 @@ class Self extends Component {
 				link: `self/${header}`
 			};
 		});
-
 		return (
 			<div className="Self page">
 				<ModalRP

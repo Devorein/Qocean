@@ -7,7 +7,8 @@
     ],
     "source": "https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git",
     "favourite": false,
-    "public": true
+    "public": true,
+    "type": "quiz"
   },
   {
     "_id": "5eb78ec6ffe758058c7303ce",
@@ -17,7 +18,8 @@
       "Database:red"
     ],
     "source": "https://docs.mongodb.com/manual/tutorial/getting-started/",
-    "favourite": true
+    "favourite": true,
+    "type": "quiz"
   },
   {
     "_id": "5eb78efbffe758058c7303d0",

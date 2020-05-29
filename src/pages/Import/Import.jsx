@@ -161,19 +161,7 @@ class Import extends Component {
 		const cond = currentType === type && data.length > 0 && typeof selectedIndex === 'number';
 
 		if (cond && type === 'quiz')
-			return (
-				<QuizForm
-					ref={(r) => {
-						this.QuizForm = r;
-						if (this.QuizForm)
-							this.QuizForm.setState({
-								tags: data[selectedIndex].tags
-							});
-					}}
-					{...props}
-					image_link={data[selectedIndex].image_link}
-				/>
-			);
+			return <QuizForm tags={data[selectedIndex].tags} {...props} image_link={data[selectedIndex].image_link} />;
 		else if (cond && type === 'question') return <QuestionForm {...props} />;
 		else if (cond && type === 'folder') return <FolderForm {...props} />;
 		else if (cond && type === 'environment') return <EnvironmentForm {...props} />;
