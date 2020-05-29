@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { SketchPicker } from 'react-color';
 import Button from '@material-ui/core/Button';
-import { AppContext } from '../../context/AppContext';
+import { AppContext } from '../context/AppContext';
 import styled from 'styled-components';
-import DeletableChip from './DeletableChip';
+import DeletableChip from '../components/Chip/DeletableChip';
 import { withStyles } from '@material-ui/core/styles';
 import validateColor from 'validate-color';
 import { FormLabel, TextField } from '@material-ui/core';
@@ -14,18 +14,27 @@ const TagContainer = styled.div`
 	height: 50px;
 	width: 100%;
 `;
-class TagCreator extends Component {
+
+class TagCreatorRP extends Component {
 	static contextType = AppContext;
 
 	state = {
+		tags: this.props.tags || [],
 		tagColor: '#000',
 		displayColorPicker: false,
 		input: ''
 	};
 
+	static getDerivedStateFromProps(props, state) {
+		return props.tags.every((tag, index) => tag === state.tags[index])
+			? null
+			: {
+					tags: props.tags
+				};
+	}
+
 	openCP = () => {
-		let { displayColorPicker, input, tagColor } = this.state;
-		let { tags } = this.props;
+		let { displayColorPicker, input, tagColor, tags } = this.state;
 		if (displayColorPicker) {
 			tags.push((input.includes(':') ? input : input + ':') + tagColor);
 			input = '';
@@ -42,14 +51,14 @@ class TagCreator extends Component {
 	};
 
 	deleteTags = (_tag) => {
-		let { tags } = this.props;
+		let { tags } = this.state;
 		tags = tags.filter((tag) => tag.split(':')[0].toLowerCase() !== _tag.toLowerCase());
-		this.props.setTags(tags);
+		this.setState({ tags });
 	};
 
 	validateTags = (_tag) => {
 		const { changeResponse } = this.context;
-		const { tags } = this.props;
+		const { tags } = this.state;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
 		if (isPresent) {
@@ -81,34 +90,36 @@ class TagCreator extends Component {
 		} else return [ true ];
 	};
 
+	resetTags = () => {
+		this.setState({
+			tags: [],
+			input: ''
+		});
+	};
+
 	createTags = (e) => {
 		e.persist();
 		if (e.key === 'Enter') {
 			e.preventDefault();
-			const { tags } = this.props;
+			const { tags } = this.state;
 			const [ status, message ] = this.validateTags(e.target.value);
 			if (status) {
 				const tag = e.target.value.toLowerCase();
 				tags.push(message === 'default' ? `${tag}:${this.context.user.current_environment.default_tag_color}` : tag);
-				this.setState(
-					{
-						input: ''
-					},
-					() => {
-						this.props.setTags(tags);
-					}
-				);
+				this.setState({
+					input: '',
+					tags
+				});
 			}
 		}
 	};
 
-	render() {
+	renderTagCreator = () => {
+		const { displayColorPicker, input, tagColor, tags } = this.state;
 		const { deleteTags, createTags, openCP } = this;
-		const { classes, tags } = this.props;
-		const { displayColorPicker, input, tagColor } = this.state;
-
+		const { classes } = this.props;
 		return (
-			<div className={classes.root}>
+			<div className={classes.root} key={'tag_creator'}>
 				<FormLabel>Tags</FormLabel>
 				<TextField
 					type={'text'}
@@ -128,6 +139,16 @@ class TagCreator extends Component {
 				) : null}
 			</div>
 		);
+	};
+
+	render() {
+		const { resetTags, renderTagCreator } = this;
+
+		return this.props.children({
+			resetTags,
+			tags: this.state.tags,
+			tagCreator: renderTagCreator()
+		});
 	}
 }
 
@@ -151,4 +172,4 @@ export default withStyles((theme) => ({
 			fontFamily: 'Quantico'
 		}
 	}
-}))(TagCreator);
+}))(TagCreatorRP);

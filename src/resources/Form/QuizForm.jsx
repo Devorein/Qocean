@@ -4,8 +4,7 @@ import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TagCreator from '../../components/Chip/TagCreator';
-import TagRP from '../../RP/TagRP';
+import TagCreatorRP from '../../RP/TagCreatorRP';
 import FileInputRP from '../../RP/FileInputRP';
 
 const validationSchema = Yup.object({
@@ -121,14 +120,14 @@ class QuizForm extends Component {
 			<FileInputRP src={image_link}>
 				{({ getFileData, FileInput, resetFileInput }) => {
 					return (
-						<TagRP tags={tags}>
-							{({ setTags, tags, resetTags }) => {
+						<TagCreatorRP tags={tags}>
+							{({ tags, resetTags, tagCreator }) => {
 								defaultInputs[2] = {
 									name: 'source',
 									siblings: [
 										{
 											type: 'component',
-											component: <TagCreator key={'tag_creator'} tags={tags} setTags={setTags} />
+											component: tagCreator
 										}
 									]
 								};
@@ -163,7 +162,7 @@ class QuizForm extends Component {
 									</div>
 								);
 							}}
-						</TagRP>
+						</TagCreatorRP>
 					);
 				}}
 			</FileInputRP>
