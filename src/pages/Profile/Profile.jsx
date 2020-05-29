@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import TextField from '@material-ui/core';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import axios from 'axios';
-import { isAlphaNumericOnly } from '../../Utils/validation';
+import { isAlphaNumericOnly, isStrongPassword } from '../../Utils/validation';
 import { withRouter } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import GenericButton from '../../components/Buttons/GenericButton';
@@ -14,7 +13,8 @@ import './Profile.scss';
 
 class Profile extends Component {
 	state = {
-		password: ''
+		password: '',
+		newPassword: false
 	};
 
 	static contextType = AppContext;
@@ -169,6 +169,24 @@ class Profile extends Component {
 			email: Yup.string('Enter your email').email('Enter a valid email').default(user.email)
 		});
 
+		const changePasswordInputs = [
+			{ name: 'new_password', type: 'password', fieldHandler: (new_password) => this.setState({ new_password }) },
+			{
+				name: 'confirm_password',
+				type: 'password',
+				fieldHandler: (confirm_password) => this.setState({ confirm_password })
+			}
+		];
+		const changePasswordValidation = Yup.object({
+			new_password: Yup.string('')
+				.min(8, 'Password must contain at least 8 characters')
+				.test('strong-password-text', 'You need a stronger password', isStrongPassword)
+				.required('Enter your password'),
+			confirm_password: Yup.string('Enter your password')
+				.required('Confirm your password')
+				.oneOf([ Yup.ref('password') ], 'Password does not match')
+		});
+
 		return (
 			<FileInputRP src={decideImage()}>
 				{({ FileInput, getFileData }) => {
@@ -177,12 +195,22 @@ class Profile extends Component {
 							{({ setIsOpen }) => (
 								<div className="profile pages">
 									<InputForm
+										classNames={'profile_form'}
 										validationSchema={validationSchema}
 										inputs={inputs}
 										onSubmit={this.submitForm.bind(null, getFileData)}
 										submitMsg={'update'}
 									/>
+									{this.state.newPassword ? (
+										<InputForm
+											classNames={'password_form'}
+											formButtons={false}
+											validationSchema={changePasswordValidation}
+											inputs={changePasswordInputs}
+										/>
+									) : null}
 									<div className="profile_buttons">
+										<GenericButton text="Change pass" onClick={(e) => this.setState({ newPassword: true })} />
 										<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
 										<ExportAll />
 									</div>

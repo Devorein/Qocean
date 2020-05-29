@@ -1,11 +1,20 @@
 .profile.pages {
-  grid-template: 1fr 75px/1fr 1fr;
+  grid-template: 350px 300px 75px/1fr 1fr;
   display: grid;
+  grid-gap: 5px;
   .FileInput {
     grid-area: 1/2/3/3;
   }
-  .profile_buttons {
+  .profile_form {
+    grid-area: 1/1/2/2;
+    height: 100%;
+  }
+  .password_form {
     grid-area: 2/1/3/2;
+    height: 100%;
+  }
+  .profile_buttons {
+    grid-area: 3/1/4/2;
     display: flex;
     height: 100%;
     align-items: center;
