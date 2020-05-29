@@ -28,7 +28,35 @@ const validationSchema = Yup.object({
 class SignIn extends Component {
 	static contextType = AppContext;
 
-	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
+	postSubmit = (_id, image, file) => {
+		const fd = new FormData();
+		if (image === 'upload' && file) {
+			fd.append('file', file, file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/users/${_id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					setTimeout(() => {
+						this.context.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
+						this.props.refetch();
+					}, 500);
+				})
+				.catch((err) => {
+					setTimeout(() => {
+						this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+					}, 500);
+				});
+		} else this.props.refetch();
+	};
+
+	submitForm = (getFileData, values, { setSubmitting }) => {
+		const { name, email, username, password } = values;
+		const { file, src, image } = getFileData();
+		if (image === 'link') values.image = src;
 		axios
 			.post(`http://localhost:5001/api/v1/auth/register`, {
 				name,
@@ -36,11 +64,11 @@ class SignIn extends Component {
 				username,
 				password
 			})
-			.then((res) => {
-				localStorage.setItem('token', res.data.token);
+			.then(({ data: { _id, token } }) => {
+				localStorage.setItem('token', token);
 				this.props.history.push('/');
-				this.props.refetch();
-				this.context.changeResponse(`Success`, 'Successfully logged in', 'success');
+				this.postSubmit(_id, image, file);
+				this.context.changeResponse(`Success`, 'Successfully signed up', 'success');
 			})
 			.catch((err) => {
 				this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
@@ -53,11 +81,11 @@ class SignIn extends Component {
 	render() {
 		return (
 			<FileInput>
-				{({ FileInput }) => {
+				{({ FileInput, getFileData }) => {
 					return (
 						<div className="signup pages">
 							<InputForm
-								onSubmit={this.submitForm}
+								onSubmit={this.submitForm.bind(null, getFileData)}
 								validationSchema={validationSchema}
 								inputs={[
 									{ name: 'name', startAdornment: 'person' },

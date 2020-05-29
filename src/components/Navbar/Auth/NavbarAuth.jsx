@@ -97,7 +97,11 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 			</Tabs>
 			<div className="user-links">
 				{user.image !== 'none.png' ? (
-					<Avatar variant="square" alt="Username" src={user.image} />
+					<Avatar
+						variant="square"
+						alt="Username"
+						src={user.image.startsWith('http') ? user.image : `http://localhost:5001/uploads/${user.image}`}
+					/>
 				) : (
 					<Avatar variant="square" alt="Username">
 						<ImageIcon />

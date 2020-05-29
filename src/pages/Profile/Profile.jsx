@@ -41,6 +41,7 @@ class Profile extends Component {
 				});
 		}
 	};
+
 	submitForm = (getFileData, { name, email, username, password }, { setSubmitting }) => {
 		const { user } = this.props;
 		const payload = {};
