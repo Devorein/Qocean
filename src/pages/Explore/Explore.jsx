@@ -12,6 +12,7 @@ import ExploreEnvironments from './ExploreEnvironments';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import FormFiller from '../FormFiller/FormFiller';
 import { AppContext } from '../../context/AppContext';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
 class Explore extends Component {
 	static contextType = AppContext;
@@ -125,7 +126,15 @@ class Explore extends Component {
 			count: totalCount,
 			page,
 			customToolbar() {
-				return <div>Custom Toolbar</div>;
+				return (
+					<div>
+						<RotateLeftIcon
+							onClick={(e) => {
+								refetchData();
+							}}
+						/>
+					</div>
+				);
 			},
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',

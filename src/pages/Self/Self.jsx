@@ -16,12 +16,13 @@ import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import LinearList from '../../components/List/LinearList';
-import './Self.scss';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import IconRow from '../../components/Row/IconRow';
 import FormFiller from '../FormFiller/FormFiller';
 import ModalRP from '../../RP/ModalRP';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import './Self.scss';
 
 class Self extends Component {
 	static contextType = AppContext;
@@ -219,6 +220,17 @@ class Self extends Component {
 		const { getDetails, genericTransformData, refetchData, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const options = {
+			customToolbar() {
+				return (
+					<div>
+						<RotateLeftIcon
+							onClick={(e) => {
+								refetchData();
+							}}
+						/>
+					</div>
+				);
+			},
 			customToolbarSelect: (selectedRows, displayData, setSelectedRows) => {
 				return (
 					<div>
