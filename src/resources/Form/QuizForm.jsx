@@ -4,9 +4,9 @@ import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/MultiSelect/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FileInput from '../../components/Input/FileInput';
 import TagCreator from '../../components/Chip/TagCreator';
 import TagRP from '../../RP/TagRP';
+import FileInputRP from '../../RP/FileInputRP';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -52,35 +52,33 @@ class QuizForm extends Component {
 		});
 	};
 
-	preSubmit = (tags, values) => {
+	preSubmit = (getFileData, tags, values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = tags;
-		// const [ file, src ] = this.FileInput.state;
-		// if (file) values.link = '';
-		// else values.link = src;
+		const { src, image } = getFileData();
+		if (image === 'link') values.image = src;
 		return [ values, true ];
 	};
 
-	resetForm = (cb) => {
-		let { selected_folders, tags } = this.state;
+	resetForm = ({ resetFileInput, resetTags }, cb) => {
+		let { selected_folders } = this.state;
 		if (this.props.user.current_environment.reset_on_success) {
 			selected_folders = [];
-			tags = [];
-			this.FileInput.resetData();
+			resetTags();
+			resetFileInput();
 		}
 		this.setState(
 			{
-				selected_folders,
-				tags
+				selected_folders
 			},
 			cb ? cb : () => {}
 		);
 	};
 
-	postSubmit = ({ data }) => {
+	postSubmit = (getFileData, resetFileInput, { data }) => {
 		const fd = new FormData();
-		const [ file ] = this.FileInput.state;
-		if (file) {
+		const { file, image } = getFileData();
+		if (image === 'upload' && file) {
 			fd.append('file', file, file.name);
 			axios
 				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
@@ -103,72 +101,72 @@ class QuizForm extends Component {
 						}, this.props.user.current_environment.notification_timing + 500);
 					});
 				});
-		} else this.resetForm(null);
+		} else this.resetForm(resetFileInput, null);
 	};
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit, customInputs, submitMsg, image_link } = this.props;
+		const { onSubmit, customInputs, submitMsg, image_link, tags = [] } = this.props;
 		const { folders, loading, selected_folders } = this.state;
 
-		return (
-			<TagRP tags={this.props.tags}>
-				{({ setTags, tags }) => {
-					let defaultInputs = [
-						{ name: 'name' },
-						{ name: 'subject' },
-						{
-							name: 'source',
-							siblings: [
-								{
-									type: 'component',
-									component: <TagCreator key={'tag_creator'} tags={tags} setTags={setTags} />
-								}
-							]
-						},
-						{ name: 'favourite', type: 'checkbox', defaultValue: false },
-						{ name: 'public', type: 'checkbox', defaultValue: true }
-					];
+		let defaultInputs = [
+			{ name: 'name' },
+			{ name: 'subject' },
+			null,
+			{ name: 'favourite', type: 'checkbox', defaultValue: false },
+			{ name: 'public', type: 'checkbox', defaultValue: true }
+		];
 
-					if (customInputs) defaultInputs = customInputs(defaultInputs);
+		return (
+			<FileInputRP src={image_link}>
+				{({ getFileData, FileInput, resetFileInput }) => {
 					return (
-						<div className="create_quiz create_form">
-							<InputForm
-								submitMsg={submitMsg}
-								inputs={defaultInputs}
-								validationSchema={validationSchema}
-								onSubmit={onSubmit.bind(null, [ 'quiz', preSubmit.bind(null, tags), postSubmit ])}
-								ref={(r) => (this.InputForm = r)}
-							>
-								{loading ? (
-									<FormHelperText>Loading your folders</FormHelperText>
-								) : folders.length < 1 ? (
-									<FormHelperText>Loading your folders</FormHelperText>
-								) : (
-									<MultiSelect
-										label={'Folders'}
-										selected={selected_folders}
-										handleChange={handleChange}
-										items={folders}
-									/>
-								)}
-							</InputForm>
-							<FileInput
-								ref={(r) => {
-									this.FileInput = r;
-									if (this.FileInput) {
-										if (image_link)
-											this.FileInput.setState({
-												image: 'link',
-												src: image_link
-											});
-									}
-								}}
-							/>
-						</div>
+						<TagRP tags={tags}>
+							{({ setTags, tags, resetTags }) => {
+								defaultInputs[2] = {
+									name: 'source',
+									siblings: [
+										{
+											type: 'component',
+											component: <TagCreator key={'tag_creator'} tags={tags} setTags={setTags} />
+										}
+									]
+								};
+								if (customInputs) defaultInputs = customInputs(defaultInputs);
+								return (
+									<div className="create_quiz create_form">
+										<InputForm
+											submitMsg={submitMsg}
+											inputs={defaultInputs}
+											validationSchema={validationSchema}
+											onSubmit={onSubmit.bind(null, [
+												'quiz',
+												preSubmit.bind(null, getFileData, tags),
+												postSubmit.bind(null, getFileData, { resetFileInput, resetTags })
+											])}
+											ref={(r) => (this.InputForm = r)}
+										>
+											{loading ? (
+												<FormHelperText>Loading your folders</FormHelperText>
+											) : folders.length < 1 ? (
+												<FormHelperText>Loading your folders</FormHelperText>
+											) : (
+												<MultiSelect
+													label={'Folders'}
+													selected={selected_folders}
+													handleChange={handleChange}
+													items={folders}
+												/>
+											)}
+										</InputForm>
+										{FileInput}
+									</div>
+								);
+							}}
+						</TagRP>
 					);
 				}}
-			</TagRP>
+			</FileInputRP>
 		);
 	}
 }

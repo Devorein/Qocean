@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 
 class TagRP extends Component {
 	state = {
@@ -19,10 +19,17 @@ class TagRP extends Component {
 		});
 	};
 
+	resetTags = () => {
+		this.setState({
+			tags: []
+		});
+	};
+
 	render() {
-		const { setTags } = this;
+		const { setTags, resetTags } = this;
 		return this.props.children({
 			setTags,
+			resetTags,
 			tags: this.state.tags
 		});
 	}
