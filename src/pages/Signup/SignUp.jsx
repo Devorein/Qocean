@@ -4,6 +4,9 @@ import { withRouter } from 'react-router-dom';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import { isStrongPassword, isAlphaNumericOnly } from '../../Utils/validation';
+import FileInput from '../../RP/FileInputRP';
+import { AppContext } from '../../context/AppContext';
+import './Signup.scss';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter a name').required('Name is required'),
@@ -23,9 +26,7 @@ const validationSchema = Yup.object({
 });
 
 class SignIn extends Component {
-	state = {
-		responseMsg: {}
-	};
+	static contextType = AppContext;
 
 	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
 		axios
@@ -36,49 +37,41 @@ class SignIn extends Component {
 				password
 			})
 			.then((res) => {
-				this.setState(
-					{
-						responseMsg: {
-							state: 'success',
-							msg: 'Successfully signed up'
-						}
-					},
-					() => {
-						setTimeout(() => {
-							localStorage.setItem('token', res.data.token);
-							this.props.history.push('/');
-							this.props.refetch();
-						}, 5000);
-					}
-				);
+				localStorage.setItem('token', res.data.token);
+				this.props.history.push('/');
+				this.props.refetch();
+				this.context.changeResponse(`Success`, 'Successfully logged in', 'success');
 			})
 			.catch((err) => {
-				setSubmitting(false);
-				this.setState({
-					responseMsg: {
-						state: 'error',
-						msg: err.response.data.error
-					}
-				});
+				this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+				setTimeout(() => {
+					setSubmitting(false);
+				}, 2500);
 			});
 	};
 
 	render() {
 		return (
-			<div className="signup">
-				<InputForm
-					onSubmit={this.submitForm}
-					validationSchema={validationSchema}
-					inputs={[
-						{ name: 'name', startAdornment: 'person' },
-						{ name: 'username', startAdornment: 'person' },
-						{ name: 'email', startAdornment: 'email' },
-						{ name: 'password' },
-						{ name: 'confirm_password' }
-					]}
-					responseMsg={this.state.responseMsg}
-				/>
-			</div>
+			<FileInput>
+				{({ FileInput }) => {
+					return (
+						<div className="signup pages">
+							<InputForm
+								onSubmit={this.submitForm}
+								validationSchema={validationSchema}
+								inputs={[
+									{ name: 'name', startAdornment: 'person' },
+									{ name: 'username', startAdornment: 'person' },
+									{ name: 'email', startAdornment: 'email' },
+									{ name: 'password' },
+									{ name: 'confirm_password' }
+								]}
+							/>
+							{FileInput}
+						</div>
+					);
+				}}
+			</FileInput>
 		);
 	}
 }
