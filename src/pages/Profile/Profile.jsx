@@ -18,13 +18,39 @@ class Profile extends Component {
 
 	static contextType = AppContext;
 
-	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
+	postSubmit = (image, file) => {
+		const fd = new FormData();
+		if (image === 'upload' && file) {
+			fd.append('file', file, file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/users/${this.props.user._id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					setTimeout(() => {
+						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
+					}, this.props.user.current_environment.notification_timing + 500);
+				})
+				.catch((err) => {
+					setTimeout(() => {
+						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+					}, this.props.user.current_environment.notification_timing + 500);
+				});
+		}
+	};
+	submitForm = (getFileData, { name, email, username, password }, { setSubmitting }) => {
 		const { user } = this.props;
 		const payload = {};
+
+		const { file, src, image } = getFileData();
+		if (image === 'link') payload.image = src;
 		payload.name = name ? name : user.name;
 		payload.email = email ? email : user.email;
 		payload.username = username ? username : user.username;
-		// payload.image = image ? image : user.image;
+
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -41,16 +67,18 @@ class Profile extends Component {
 						...headers
 					})
 					.then((res) => {
-						localStorage.removeItem('token');
-						this.props.history.push('/signin');
-						this.props.refetch();
 						this.context.changeResponse('Success', 'Successfully updated profile', 'success');
-					})
-					.catch((err) => {
 						setTimeout(() => {
 							setSubmitting(false);
 						}, 2500);
-						this.context.changeResponse(err.response.data.error, 'error');
+						this.props.refetch();
+						this.postSubmit(image, file);
+					})
+					.catch((err) => {
+						this.context.changeResponse('An error occurred', err.response.data.error, 'error');
+						setTimeout(() => {
+							setSubmitting(false);
+						}, 2500);
 					});
 			})
 			.catch((err) => {
@@ -75,9 +103,7 @@ class Profile extends Component {
 			.then((data) => {
 				axios
 					.delete(`http://localhost:5001/api/v1/users`, {
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem('token')}`
-						}
+						...headers
 					})
 					.then(() => {
 						localStorage.removeItem('token');
@@ -130,7 +156,7 @@ class Profile extends Component {
 
 		return (
 			<FileInputRP>
-				{({ FileInput }) => {
+				{({ FileInput, getFileData }) => {
 					return (
 						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
 							{({ setIsOpen }) => (
@@ -138,7 +164,7 @@ class Profile extends Component {
 									<InputForm
 										validationSchema={validationSchema}
 										inputs={inputs}
-										onSubmit={this.submitForm}
+										onSubmit={this.submitForm.bind(null, getFileData)}
 										submitMsg={'update'}
 									/>
 									<div className="profile_buttons">

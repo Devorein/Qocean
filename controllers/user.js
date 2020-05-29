@@ -25,6 +25,13 @@ exports.updateUserDetails = asyncHandler(async function(req, res, next) {
 	});
 });
 
+// @desc: Upload user photo
+// @route: PUT /api/v1/users/:id/photo
+// @access: Private
+exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
+	res.status(200).json(res.imageUpload);
+});
+
 // @desc     Update current user password
 // @route    PUT /api/v1/users/updatePassword
 // @access   Private

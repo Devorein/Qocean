@@ -24,7 +24,6 @@ export default withStyles((theme) => ({
 		minWidth: '100px',
 		maxWidth: 'fit-content',
 		textAlign: 'center',
-		height: '50px',
 		'& > *': {
 			margin: 0
 		},

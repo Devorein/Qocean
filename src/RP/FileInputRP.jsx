@@ -39,21 +39,23 @@ class FileInputRP extends Component {
 			file: null
 		});
 	};
-  resetFileInput = ()=>{
-    this.setState({
-      image: 'link',
-		file: null,
-		src: this.props.src || ''
-    })
-  }
+
+	resetFileInput = () => {
+		this.setState({
+			image: 'link',
+			file: null,
+			src: this.props.src || ''
+		});
+	};
+
 	render() {
-		const { setFile, switchImageHandler,resetFileInput } = this;
+		const { setFile, switchImageHandler, resetFileInput } = this;
 		const { image, src, file } = this.state;
 		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
 		return (
 			<Fragment>
 				{this.props.children({
-          resetFileInput,
+					resetFileInput,
 					getFileData: () => {
 						return {
 							file,
