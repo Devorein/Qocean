@@ -8,26 +8,28 @@ class ExploreQuestions extends Component {
 	};
 
 	decideColums = () => {
-		return [
-			{ name: 'name', sort: true, filter: false },
-			{ name: 'difficulty', sort: true, filter: true },
-			{ name: 'type', sort: true, filter: true },
-			{ name: 'time_allocated', sort: true, filter: true },
-			{ name: 'quiz', sort: true, filter: false },
-			{ name: 'creator', sort: true, filter: false },
-			{ name: 'created_at', sort: false, filter: false },
-			{ name: 'updated_at', sort: false, filter: false }
-		].map(({ name, sort, filter }) => {
-			return {
-				name,
-				label: this.decideLabel(name),
-				options: {
-					filter,
-					sort,
-					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-				}
-			};
-		});
+		return this.props.cols.concat(
+			[
+				{ name: 'name', sort: true, filter: false },
+				{ name: 'difficulty', sort: true, filter: true },
+				{ name: 'type', sort: true, filter: true },
+				{ name: 'time_allocated', sort: true, filter: true },
+				{ name: 'quiz', sort: true, filter: false },
+				{ name: 'creator', sort: true, filter: false },
+				{ name: 'created_at', sort: false, filter: false },
+				{ name: 'updated_at', sort: false, filter: false }
+			].map(({ name, sort, filter }) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					options: {
+						filter,
+						sort,
+						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
+					}
+				};
+			})
+		);
 	};
 
 	transformOption = (option) => {
