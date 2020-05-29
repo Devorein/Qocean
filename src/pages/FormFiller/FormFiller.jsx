@@ -38,7 +38,7 @@ class FormFiller extends Component {
 		if (data) {
 			if (type.toLowerCase() === 'folder') return <FolderForm {...props} />;
 			else if (type.toLowerCase() === 'question') return <QuestionForm {...props} />;
-			else if (type.toLowerCase() === 'quiz') return <QuizForm {...props} tags={data.tags} />;
+			else if (type.toLowerCase() === 'quiz') return <QuizForm {...props} tags={data.tags} src={data.image} />;
 			else if (type.toLowerCase() === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};

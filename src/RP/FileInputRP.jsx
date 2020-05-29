@@ -7,19 +7,18 @@ import TextField from '@material-ui/core/TextField';
 
 class FileInputRP extends Component {
 	state = {
-		image: this.props.src.startsWith('http') ? 'link' : 'upload',
+		image: this.props.src.match(/^(http|data)/) ? 'link' : 'upload',
 		file: null,
 		src: this.props.src
 	};
 
-	static getDerivedStateFromProps(props, state) {
-		const image = props.src.startsWith('http') ? 'link' : 'upload';
-		return props.src === state.src
-			? null
-			: {
-					src: props.src,
-					image
-				};
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (nextProps.src !== this.state.src) {
+			this.setState({
+				src: nextProps.src,
+				image: nextProps.src.match(/^(http|data)/) ? 'link' : 'upload'
+			});
+		} else return null;
 	}
 
 	setFile = (e) => {
