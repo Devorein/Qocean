@@ -43,21 +43,22 @@ class Form extends React.Component {
 		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
 	};
 
-	change = (name, e) => {
+	change = (name, fieldHandler, e) => {
 		const { values, setValues, customHandler, handleChange, setFieldTouched } = this.props;
 		if (e.persist) e.persist();
 		handleChange(e);
+		if (fieldHandler) fieldHandler(e.target.value);
 		if (customHandler) customHandler(values, setValues, e);
 		setFieldTouched(name, true, false);
 	};
 
-	formikProps = (name, label, placeholder, controlled, onkeyPress) => {
+	formikProps = (name, label, placeholder, controlled, { onkeyPress, fieldHandler } = {}) => {
 		const { values, handleBlur, touched, errors, errorBeforeTouched } = this.props;
 		if (controlled)
 			return {
 				name,
 				value: values[name],
-				onChange: this.change.bind(null, name),
+				onChange: this.change.bind(null, name, fieldHandler),
 				onBlur: handleBlur,
 				error: errorBeforeTouched ? Boolean(errors[name]) : touched[name] && Boolean(errors[name]),
 				helperText: errorBeforeTouched ? errors[name] : touched[name] ? errors[name] : '',
@@ -114,6 +115,7 @@ class Form extends React.Component {
 			siblings,
 			controlled = true,
 			onkeyPress,
+			fieldHandler,
 			component,
 			extra
 		} = input;
@@ -127,7 +129,7 @@ class Form extends React.Component {
 						{!disabled ? (
 							<Fragment>
 								<InputLabel id={name}>{this.decideLabel(name, label)}</InputLabel>
-								<Select name={name} value={values[name]} onChange={this.change.bind(null, name)}>
+								<Select name={name} value={values[name]} onChange={this.change.bind(null, name, fieldHandler)}>
 									{extra.selectItems.map(({ value, text, icon }) => {
 										return (
 											<MenuItem key={value ? value : text} value={value ? value : text}>
@@ -165,7 +167,7 @@ class Form extends React.Component {
 								color={'primary'}
 								checked={values[name] === true ? true : false}
 								name={name}
-								onChange={this.change.bind(null, name)}
+								onChange={this.change.bind(null, name, fieldHandler)}
 								onBlur={handleBlur}
 								error={touched[name] && errors[name]}
 							/>
@@ -176,7 +178,7 @@ class Form extends React.Component {
 				</Fragment>
 			);
 		else if (type === 'radio') {
-			const props = this.formikProps(name, label, placeholder, controlled);
+			const props = this.formikProps(name, label, placeholder, controlled, { fieldHandler });
 			delete props.helperText;
 			delete props.error;
 			return (
@@ -203,7 +205,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={'number'}
-						{...this.formikProps(name, label, placeholder, controlled)}
+						{...this.formikProps(name, label, placeholder, controlled, { fieldHandler })}
 						fullWidth
 						inputProps={{ ...inputProps }}
 					/>
@@ -218,7 +220,7 @@ class Form extends React.Component {
 						multiline
 						rows={extra.row ? extra.row : 5}
 						defaultValue={defaultValue}
-						{...this.formikProps(name, label, placeholder, controlled)}
+						{...this.formikProps(name, label, placeholder, controlled, { fieldHandler })}
 						fullWidth
 					/>
 					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
@@ -229,7 +231,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={this.state.showPassword ? 'text' : 'password'}
-						{...this.formikProps(name, label, placeholder, controlled)}
+						{...this.formikProps(name, label, placeholder, controlled, { fieldHandler })}
 						fullWidth
 						InputProps={{
 							endAdornment: (
@@ -247,7 +249,7 @@ class Form extends React.Component {
 				<Fragment key={name}>
 					<TextField
 						type={'text'}
-						{...this.formikProps(name, label, placeholder, controlled, onkeyPress)}
+						{...this.formikProps(name, label, placeholder, controlled, { onkeyPress, fieldHandler })}
 						fullWidth
 						InputProps={this.decideAdornment(name, InputProps, startAdornment, endAdornment)}
 					/>

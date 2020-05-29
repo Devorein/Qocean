@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import TextField from '@material-ui/core';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -47,7 +48,7 @@ class Profile extends Component {
 		const payload = {};
 
 		const { file, src, image } = getFileData();
-		if (image === 'link') payload.image = src;
+		if (image === 'link' || (image === 'upload' && !file)) payload.image = src;
 		payload.name = name ? name : user.name;
 		payload.email = email ? email : user.email;
 		payload.username = username ? username : user.username;
@@ -126,13 +127,19 @@ class Profile extends Component {
 		return (
 			<InputForm
 				submitMsg="Delete"
-				customHandler={({ password }) => {
-					this.setState({
-						password
-					});
-				}}
 				onSubmit={this.checkPassword}
-				inputs={[ { type: 'password', defaultValue: '', name: 'password' } ]}
+				inputs={[
+					{
+						type: 'password',
+						defaultValue: '',
+						name: 'password',
+						fieldHandler: (password) => {
+							this.setState({
+								password
+							});
+						}
+					}
+				]}
 			/>
 		);
 	};
