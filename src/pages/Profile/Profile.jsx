@@ -8,20 +8,23 @@ import { AppContext } from '../../context/AppContext';
 import GenericButton from '../../components/Buttons/GenericButton';
 import ModalRP from '../../RP/ModalRP';
 import ExportAll from './ExportAll';
+import FileInputRP from '../../RP/FileInputRP';
+import './Profile.scss';
 
 class Profile extends Component {
 	state = {
 		password: ''
 	};
+
 	static contextType = AppContext;
 
-	submitForm = ({ name, email, username, image, password }, { setSubmitting }) => {
+	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
 		const { user } = this.props;
 		const payload = {};
 		payload.name = name ? name : user.name;
 		payload.email = email ? email : user.email;
 		payload.username = username ? username : user.username;
-		payload.image = image ? image : user.image;
+		// payload.image = image ? image : user.image;
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -112,11 +115,6 @@ class Profile extends Component {
 			{ name: 'name', startAdornment: 'person', defaultValue: user.name },
 			{ name: 'username', startAdornment: 'person', defaultValue: user.username },
 			{ name: 'email', startAdornment: 'email', defaultValue: user.email },
-			{
-				name: 'image',
-				startAdornment: 'image',
-				defaultValue: user.image
-			},
 			{ name: 'password', type: 'password' }
 		];
 
@@ -127,25 +125,33 @@ class Profile extends Component {
 				.max(10, 'Username cannot be more than 10 characters long')
 				.test('isAlphaNumericOnly', 'Username should be alphanumeric only', isAlphaNumericOnly)
 				.default(user.username),
-			email: Yup.string('Enter your email').email('Enter a valid email').default(user.email),
-			image: Yup.string('Enter your profile image').default(user.image)
+			email: Yup.string('Enter your email').email('Enter a valid email').default(user.email)
 		});
 
 		return (
-			<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
-				{({ setIsOpen }) => (
-					<div className="profile pages">
-						<InputForm
-							validationSchema={validationSchema}
-							inputs={inputs}
-							onSubmit={this.submitForm}
-							submitMsg={'update'}
-						/>
-						<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
-						<ExportAll />
-					</div>
-				)}
-			</ModalRP>
+			<FileInputRP>
+				{({ FileInput }) => {
+					return (
+						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
+							{({ setIsOpen }) => (
+								<div className="profile pages">
+									<InputForm
+										validationSchema={validationSchema}
+										inputs={inputs}
+										onSubmit={this.submitForm}
+										submitMsg={'update'}
+									/>
+									<div className="profile_buttons">
+										<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
+										<ExportAll />
+									</div>
+									{FileInput}
+								</div>
+							)}
+						</ModalRP>
+					);
+				}}
+			</FileInputRP>
 		);
 	}
 }
