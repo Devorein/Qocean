@@ -74,7 +74,7 @@ class QuizForm extends Component {
 		);
 	};
 
-	postSubmit = (getFileData, resetFileInput, { data }) => {
+	postSubmit = (getFileData, reset, { data }) => {
 		const fd = new FormData();
 		const { file, image } = getFileData();
 		if (image === 'upload' && file) {
@@ -87,20 +87,20 @@ class QuizForm extends Component {
 					}
 				})
 				.then((data) => {
-					this.resetForm(() => {
+					this.resetForm(reset, () => {
 						setTimeout(() => {
 							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the quiz`, 'success');
 						}, this.props.user.current_environment.notification_timing + 500);
 					});
 				})
 				.catch((err) => {
-					this.resetForm(() => {
+					this.resetForm(reset, () => {
 						setTimeout(() => {
 							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 						}, this.props.user.current_environment.notification_timing + 500);
 					});
 				});
-		} else this.resetForm(resetFileInput, null);
+		} else this.resetForm(reset, null);
 	};
 
 	render() {

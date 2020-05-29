@@ -1,6 +1,17 @@
 import React, { Component } from 'react';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
+import styled from 'styled-components';
+
+const OptionFormContainer = styled.div`
+	& .form {
+		height: 100%;
+		& .form-content {
+			max-height: 100%;
+			grid-area: 1/1/3/2;
+		}
+	}
+`;
 
 const INIT_MCQ_STATE = {
 	options: [
@@ -202,7 +213,7 @@ class OptionForm extends Component {
 		const { options, answers } = this.state;
 		const validationSchema = this.decideValidation(type);
 		return (
-			<div className="answers_form">
+			<OptionFormContainer className="answers_form">
 				<InputForm
 					validationSchema={validationSchema}
 					errorBeforeTouched={true}
@@ -211,7 +222,7 @@ class OptionForm extends Component {
 					formButtons={false}
 					ref={(i) => (this.InputForm = i)}
 				/>
-			</div>
+			</OptionFormContainer>
 		);
 	}
 }
