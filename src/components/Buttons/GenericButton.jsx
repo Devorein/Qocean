@@ -1,7 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 function GenericButton({ text, classes, onClick, buttonRef, icon, size, color, variant }) {
 	return (

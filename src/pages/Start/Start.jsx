@@ -121,7 +121,7 @@ class Start extends Component {
 	render() {
 		const { getTotalQuestions, setQuestion } = this;
 		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout, isOnReport } = this.state;
-		const { quizzes, settings, theme } = this.props;
+		const { quizzes, theme } = this.props;
 		const totalQuestion = getTotalQuestions();
 		const stats = [
 			[ 'Quiz', `${currentQuiz + 1} / ${quizzes.length}` ],
@@ -153,8 +153,8 @@ class Start extends Component {
 				<Timer
 					timeout={timeout}
 					onTimerChange={(timer) => {
-						if (this.state.timeout === 0 && !this.state.isOnReport) this.Button.click();
-						else if (this.state.timeout === 0 && this.state.isOnReport) clearInterval(timer);
+						if (this.state.timeout === 0 && !isOnReport) this.Button.click();
+						else if (this.state.timeout === 0 && isOnReport) clearInterval(timer);
 						else
 							this.setState({
 								timeout: this.state.timeout - 1

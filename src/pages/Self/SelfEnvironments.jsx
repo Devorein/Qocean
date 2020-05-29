@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
 import getColoredIcons from '../../Utils/getColoredIcons';

@@ -131,7 +131,7 @@ class Quiz extends Component {
 				</QuestionOptions>
 			);
 		else if (type === 'FIB')
-			return name.match(/\$\{\_\}/g).map((match, index) => {
+			return name.match(/\$\{_\}/g).map((match, index) => {
 				return (
 					<TextField
 						key={shortid.generate()}

@@ -12,7 +12,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import { makeStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -29,22 +28,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Slider from '@material-ui/core/Slider';
 
 import './Form.scss';
-
-const useStyles = makeStyles({
-	textField: {
-		borderRadius: 3,
-		border: 0,
-		margin: '5px',
-
-		'& .MuiSvgIcon-root': {
-			fill: '#aaa'
-		}
-	},
-	formcontrollabel: {
-		fontFamily: 'Quantico',
-		color: '#ddd'
-	}
-});
 
 class Form extends React.Component {
 	state = {
@@ -115,7 +98,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched, setValues, handleChange, setFieldValue } = this.props;
+		const { values, errors, handleBlur, touched, handleChange } = this.props;
 		const {
 			name,
 			label,
@@ -301,22 +284,14 @@ class Form extends React.Component {
 
 	render() {
 		const {
-			values,
-			errors,
-			touched,
 			handleSubmit,
-			handleChange,
-			handleBlur,
 			isValid,
-			setFieldTouched,
 			isSubmitting,
 			submitMsg,
 			inputs,
-			setValues,
 			children,
 			resetMsg,
 			resetForm,
-			customHandler,
 			formButtons = true,
 			classNames
 		} = this.props;

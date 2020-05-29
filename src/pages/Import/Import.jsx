@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withSnackbar } from 'notistack';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';

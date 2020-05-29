@@ -85,7 +85,7 @@ class LinearList extends Component {
 	render() {
 		let target = {};
 		const { renderPrimaryData, renderSecondaryData } = this;
-		const { theme, sort = true } = this.props;
+		const { sort = true } = this.props;
 		const selectedData = this.props.selectedData ? this.props.selectedData : {};
 		let secondaryData = [];
 		let primaryData = [];
