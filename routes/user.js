@@ -1,8 +1,16 @@
 const express = require('express');
 const User = require('../models/User');
-const { updateUserDetails, updateUserPassword, deleteUser, getMe, getUserTags } = require('../controllers/user');
+const {
+	updateUserDetails,
+	updateUserPassword,
+	deleteUser,
+	getMe,
+	getUserTags,
+	userPhotoUpload
+} = require('../controllers/user');
 const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
+const imageUpload = require('../middleware/imageUpload');
 
 const router = express.Router();
 
@@ -40,4 +48,5 @@ router.route('/').delete(protect, deleteUser).get(
 router.put('/updatedetails', protect, updateUserDetails);
 router.put('/updatepassword', protect, updateUserPassword);
 router.route('/me').get(protect, getMe);
+router.route('/:id/photo').put(protect, imageUpload(User, 'User'), userPhotoUpload);
 module.exports = router;

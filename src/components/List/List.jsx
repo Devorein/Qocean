@@ -1,11 +1,11 @@
 import React from 'react';
-import { makeStyles, withStyles, styled } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+// import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
+// import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import getIcons from '../../Utils/getIcons';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -32,7 +32,7 @@ const MiniGrid = withStyles((theme) => ({
 	}
 }))(Container);
 
-const MiniGridTitle2 = withStyles((theme) => ({
+/* const MiniGridTitle2 = withStyles((theme) => ({
 	root: {
 		gridArea: '2/1/3/2',
 		textAlign: 'center',
@@ -40,7 +40,7 @@ const MiniGridTitle2 = withStyles((theme) => ({
 		justifyContent: 'flex-start',
 		alignItems: 'center'
 	}
-}))(Typography);
+}))(Typography); */
 
 const EnhancedListItemText = withStyles((theme) => ({
 	root: {
@@ -58,7 +58,7 @@ class CustomList extends React.Component {
 
 	handleToggle = (index, e) => {
 		const { listItems, setChecked } = this.props;
-		const { checked, manipulated, filteredItems } = this.state;
+		const { checked } = this.state;
 
 		if (e.shiftKey)
 			this.setState(
@@ -192,7 +192,7 @@ class CustomList extends React.Component {
 
 				<List dense={false} classes={{ root: classes.listBody }}>
 					{items.map((listItem, index) => {
-						const { primary, secondary, primaryIcon, secondaryIcon, key } = listItem;
+						const { primary, secondary, primaryIcon, key } = listItem;
 						return (
 							<ListItem
 								key={key ? key : primary}

@@ -4,6 +4,9 @@ import { withRouter } from 'react-router-dom';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import { isStrongPassword, isAlphaNumericOnly } from '../../Utils/validation';
+import FileInput from '../../RP/FileInputRP';
+import { AppContext } from '../../context/AppContext';
+import './Signup.scss';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter a name').required('Name is required'),
@@ -23,11 +26,37 @@ const validationSchema = Yup.object({
 });
 
 class SignIn extends Component {
-	state = {
-		responseMsg: {}
+	static contextType = AppContext;
+
+	postSubmit = (_id, image, file) => {
+		const fd = new FormData();
+		if (image === 'upload' && file) {
+			fd.append('file', file, file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/users/${_id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					setTimeout(() => {
+						this.context.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
+						this.props.refetch();
+					}, 500);
+				})
+				.catch((err) => {
+					setTimeout(() => {
+						this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+					}, 500);
+				});
+		} else this.props.refetch();
 	};
 
-	submitForm = ({ name, email, username, password }, { setSubmitting }) => {
+	submitForm = (getFileData, values, { setSubmitting }) => {
+		const { name, email, username, password } = values;
+		const { file, src, image } = getFileData();
+		if (image === 'link') values.image = src;
 		axios
 			.post(`http://localhost:5001/api/v1/auth/register`, {
 				name,
@@ -35,50 +64,42 @@ class SignIn extends Component {
 				username,
 				password
 			})
-			.then((res) => {
-				this.setState(
-					{
-						responseMsg: {
-							state: 'success',
-							msg: 'Successfully signed up'
-						}
-					},
-					() => {
-						setTimeout(() => {
-							localStorage.setItem('token', res.data.token);
-							this.props.history.push('/');
-							this.props.refetch();
-						}, 5000);
-					}
-				);
+			.then(({ data: { _id, token } }) => {
+				localStorage.setItem('token', token);
+				this.props.history.push('/');
+				this.postSubmit(_id, image, file);
+				this.context.changeResponse(`Success`, 'Successfully signed up', 'success');
 			})
 			.catch((err) => {
-				setSubmitting(false);
-				this.setState({
-					responseMsg: {
-						state: 'error',
-						msg: err.response.data.error
-					}
-				});
+				this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+				setTimeout(() => {
+					setSubmitting(false);
+				}, 2500);
 			});
 	};
 
 	render() {
 		return (
-			<div className="signup">
-				<InputForm
-					onSubmit={this.submitForm}
-					validationSchema={validationSchema}
-					inputs={[
-						{ name: 'name', startAdornment: 'person' },
-						{ name: 'username', startAdornment: 'person' },
-						{ name: 'email', startAdornment: 'email' },
-						{ name: 'password' },
-						{ name: 'confirm_password' }
-					]}
-					responseMsg={this.state.responseMsg}
-				/>
-			</div>
+			<FileInput>
+				{({ FileInput, getFileData }) => {
+					return (
+						<div className="signup pages">
+							<InputForm
+								onSubmit={this.submitForm.bind(null, getFileData)}
+								validationSchema={validationSchema}
+								inputs={[
+									{ name: 'name', startAdornment: 'person' },
+									{ name: 'username', startAdornment: 'person' },
+									{ name: 'email', startAdornment: 'email' },
+									{ name: 'password' },
+									{ name: 'confirm_password' }
+								]}
+							/>
+							{FileInput}
+						</div>
+					);
+				}}
+			</FileInput>
 		);
 	}
 }

@@ -25,6 +25,7 @@ function ChipContainer({ type, chips, onClick, onIconClick }) {
 			{chips.map((tag) => {
 				if (type === 'delete') return <DeletableChip key={tag} tag={tag} onClick={onClick} onDelete={onIconClick} />;
 				else if (type === 'regular') return <RegularChip key={tag} tag={tag} onClick={onClick} />;
+				else return null;
 			})}
 		</div>
 	);

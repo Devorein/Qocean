@@ -114,6 +114,7 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 
 QuestionSchema.statics.validateQuestion = async function(question) {
 	const { type } = question;
+	question.options = question.options ? question.options : [];
 	if (!question.answers) return [ false, 'Provide the answers for the question' ];
 	if (!Array.isArray(question.answers)) return [ false, 'Answers must be an array' ];
 	if (question.answers.length <= 0) return [ false, 'Provide atleast one answer for the question' ];

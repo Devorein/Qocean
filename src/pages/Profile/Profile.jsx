@@ -6,57 +6,120 @@ import { isAlphaNumericOnly } from '../../Utils/validation';
 import { withRouter } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import GenericButton from '../../components/Buttons/GenericButton';
-import TextField from '@material-ui/core/TextField';
 import ModalRP from '../../RP/ModalRP';
 import ExportAll from './ExportAll';
+import FileInputRP from '../../RP/FileInputRP';
+import ChangePassword from '../../RP/ChangePassword';
+import './Profile.scss';
 
 class Profile extends Component {
 	state = {
-		password: ''
+		password: '',
+		newPassword: false
 	};
+
 	static contextType = AppContext;
 
-	submitForm = ({ name, email, username, image, password }, { setSubmitting }) => {
+	postSubmit = (image, file) => {
+		const fd = new FormData();
+		if (image === 'upload' && file) {
+			fd.append('file', file, file.name);
+			axios
+				.put(`http://localhost:5001/api/v1/users/${this.props.user._id}/photo`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					setTimeout(() => {
+						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
+					}, this.props.user.current_environment.notification_timing + 500);
+				})
+				.catch((err) => {
+					setTimeout(() => {
+						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+					}, this.props.user.current_environment.notification_timing + 500);
+				});
+		}
+	};
+
+	submitForm = (
+		getFileData,
+		{ showChangePasswordForm, values, errors, isValid },
+		{ name, email, username, password },
+		{ setSubmitting }
+	) => {
+		const updateUser = (password) => {
+			axios
+				.get(`http://localhost:5001/api/v1/auth/checkpassword/${password ? password : '_'}`, {
+					...headers
+				})
+				.then(() => {
+					axios
+						.put(`http://localhost:5001/api/v1/users/updateDetails`, payload, {
+							...headers
+						})
+						.then((res) => {
+							this.context.changeResponse('Success', 'Successfully updated profile', 'success');
+							setTimeout(() => {
+								setSubmitting(false);
+							}, 2500);
+							this.props.refetch();
+							this.postSubmit(image, file);
+						})
+						.catch((err) => {
+							this.context.changeResponse('An error occurred', err.response.data.error, 'error');
+							setTimeout(() => {
+								setSubmitting(false);
+							}, 2500);
+						});
+				})
+				.catch((err) => {
+					this.context.changeResponse('An error occurred', err.response.data.error, 'error');
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+				});
+		};
+
 		const { user } = this.props;
 		const payload = {};
+		const { file, src, image } = getFileData();
+		if (image === 'link' || (image === 'upload' && !file)) payload.image = src;
 		payload.name = name ? name : user.name;
 		payload.email = email ? email : user.email;
 		payload.username = username ? username : user.username;
-		payload.image = image ? image : user.image;
+
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
 
-		axios
-			.get(`http://localhost:5001/api/v1/auth/checkpassword/${password ? password : '_'}`, {
-				...headers
-			})
-			.then(() => {
-				axios
-					.put(`http://localhost:5001/api/v1/users/updateDetails`, payload, {
-						...headers
-					})
-					.then((res) => {
-						localStorage.removeItem('token');
-						this.props.history.push('/signin');
-						this.props.refetch();
-						this.context.changeResponse('Success', 'Successfully updated profile', 'success');
-					})
-					.catch((err) => {
-						setTimeout(() => {
-							setSubmitting(false);
-						}, 2500);
-						this.context.changeResponse(err.response.data.error, 'error');
-					});
-			})
-			.catch((err) => {
-				this.context.changeResponse('An error occurred', err.response.data.error, 'error');
-				setTimeout(() => {
-					setSubmitting(false);
-				}, 2500);
-			});
+		if (showChangePasswordForm && !isValid) {
+			this.context.changeResponse('Error', errors[Object.keys(errors)[0]], 'error');
+			setTimeout(() => {
+				setSubmitting(false);
+			}, 2500);
+		} else if (showChangePasswordForm && isValid) {
+			axios
+				.put(
+					`http://localhost:5001/api/v1/users/updatepassword`,
+					{
+						currentPassword: password,
+						newPassword: values.new_password
+					},
+					{ ...headers }
+				)
+				.then((data) => {
+					this.context.changeResponse('Success', 'Successfully updated password', 'success');
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					updateUser(values.new_password);
+				});
+		} else updateUser(password);
 	};
 
 	checkPassword = (values, { setSubmitting }) => {
@@ -73,9 +136,7 @@ class Profile extends Component {
 			.then((data) => {
 				axios
 					.delete(`http://localhost:5001/api/v1/users`, {
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem('token')}`
-						}
+						...headers
 					})
 					.then(() => {
 						localStorage.removeItem('token');
@@ -92,32 +153,40 @@ class Profile extends Component {
 				}, 2500);
 			});
 	};
+
 	renderPassword = () => {
 		return (
 			<InputForm
 				submitMsg="Delete"
-				customHandler={({ password }) => {
-					this.setState({
-						password
-					});
-				}}
 				onSubmit={this.checkPassword}
-				inputs={[ { type: 'password', defaultValue: '', name: 'password' } ]}
+				inputs={[
+					{
+						type: 'password',
+						defaultValue: '',
+						name: 'password',
+						fieldHandler: (password) => {
+							this.setState({
+								password
+							});
+						}
+					}
+				]}
 			/>
 		);
 	};
+
+	decideImage = () => {
+		const { user: { image } } = this.props;
+		return image && image.startsWith('http') ? image : `http://localhost:5001/uploads/${image}`;
+	};
 	render() {
+		const { decideImage } = this;
 		const { user } = this.props;
 
-		const inputs = [
+		const formInputs = [
 			{ name: 'name', startAdornment: 'person', defaultValue: user.name },
 			{ name: 'username', startAdornment: 'person', defaultValue: user.username },
 			{ name: 'email', startAdornment: 'email', defaultValue: user.email },
-			{
-				name: 'image',
-				startAdornment: 'image',
-				defaultValue: user.image
-			},
 			{ name: 'password', type: 'password' }
 		];
 
@@ -128,25 +197,40 @@ class Profile extends Component {
 				.max(10, 'Username cannot be more than 10 characters long')
 				.test('isAlphaNumericOnly', 'Username should be alphanumeric only', isAlphaNumericOnly)
 				.default(user.username),
-			email: Yup.string('Enter your email').email('Enter a valid email').default(user.email),
-			image: Yup.string('Enter your profile image').default(user.image)
+			email: Yup.string('Enter your email').email('Enter a valid email').default(user.email)
 		});
 
 		return (
-			<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
-				{({ setIsOpen }) => (
-					<div className="profile pages">
-						<InputForm
-							validationSchema={validationSchema}
-							inputs={inputs}
-							onSubmit={this.submitForm}
-							submitMsg={'update'}
-						/>
-						<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
-						<ExportAll />
-					</div>
-				)}
-			</ModalRP>
+			<FileInputRP src={decideImage()}>
+				{({ FileInput, getFileData }) => {
+					return (
+						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
+							{({ setIsOpen }) => (
+								<ChangePassword>
+									{({ values, inputs, button }) => (
+										<div className="profile pages">
+											<InputForm
+												classNames={'profile_form'}
+												validationSchema={validationSchema}
+												inputs={formInputs}
+												onSubmit={this.submitForm.bind(null, getFileData, values)}
+												submitMsg={'update'}
+											/>
+											{inputs}
+											<div className="profile_buttons">
+												{button}
+												<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
+												<ExportAll />
+											</div>
+											{FileInput}
+										</div>
+									)}
+								</ChangePassword>
+							)}
+						</ModalRP>
+					);
+				}}
+			</FileInputRP>
 		);
 	}
 }

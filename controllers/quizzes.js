@@ -2,6 +2,8 @@ const Quiz = require('../models/Quiz');
 const Folder = require('../models/Folder');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const fs = require('fs');
+const path = require('path');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -57,6 +59,8 @@ exports.deleteQuiz = asyncHandler(async (req, res, next) => {
 	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
 	if (quiz.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
+	if (!quiz.image.startsWith('http') || quiz.image !== 'none.png')
+		fs.unlinkSync(path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${quiz.image}`));
 	await quiz.remove();
 	res.status(200).json({ success: true, data: quiz });
 });

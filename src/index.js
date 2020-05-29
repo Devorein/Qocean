@@ -149,7 +149,7 @@ class App extends Component {
 
 	render() {
 		const { changeResponse, submitForm, updateResource } = this;
-		const { session, location, refetch, value } = this.props;
+		const { session, location, refetch } = this.props;
 		const { response: { isOpen, message, severity, title } } = this.state;
 		return (
 			<Fragment>

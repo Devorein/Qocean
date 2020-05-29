@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import CustomList from '../../components/List/List';
 import PlayStats from './PlayStats';
@@ -50,7 +50,7 @@ class Play extends Component {
 	};
 
 	render() {
-		const { quizzes, hasStarted, checked } = this.state;
+		const { quizzes, hasStarted } = this.state;
 		return !hasStarted ? (
 			<div className="play pages">
 				<CustomList

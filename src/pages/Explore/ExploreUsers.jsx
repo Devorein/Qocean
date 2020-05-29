@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
-import getColoredIcons from '../../Utils/getColoredIcons';
 import moment from 'moment';
 
 class ExploreUsers extends Component {

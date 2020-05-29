@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
-import FileInput from '../../components/Input/FileInput';
 import OptionForm from './OptionForm';
+import FileInputRP from '../../RP/FileInputRP';
 
 let defaultInputs = [
 	{ name: 'name' },
@@ -99,46 +99,43 @@ class QuestionForm extends Component {
 		}
 	};
 
-	preSubmit = (values) => {
+	preSubmit = (getFileData, values) => {
 		const form = this.OptionForm.InputForm.Form.props;
 		const isValid = form.isValid;
 		if (isValid) {
 			values = this.OptionForm.transformValue(values);
-			const [ file, src ] = this.FileInput.returnData();
-			if (file) values.link = '';
-			else values.link = src;
+			const { image, src } = getFileData();
+			if (image === 'link') values.image = src;
 			return [ values, true ];
 		} else return [ values, false ];
 	};
 
-	postSubmit = ({ data }) => {
+	postSubmit = (getFileData, { data: { data: { _id } } }) => {
 		const fd = new FormData();
-		const [ file = null ] = this.FileInput.returnData();
-		if (file) {
+		const { file, image } = getFileData();
+		const env = this.props.user.current_environment;
+		if (file && image === 'upload') {
 			fd.append('file', file, file.name);
 			axios
-				.put(`http://localhost:5001/api/v1/questions/${data.data._id}/photo`, fd, {
+				.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
 						Authorization: `Bearer ${localStorage.getItem('token')}`
 					}
 				})
 				.then((data) => {
-					if (this.props.user.current_environment.reset_on_success) this.OptionForm.InputForm.Form.resetForm();
+					if (env.reset_on_success) this.OptionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
-					}, this.props.user.current_environment.notification_timing + 500);
+					}, env.notification_timing + 500);
 				})
 				.catch((err) => {
-					if (this.props.user.current_environment.reset_on_error) this.OptionForm.InputForm.Form.resetForm();
+					if (env.reset_on_error) this.OptionForm.InputForm.Form.resetForm();
 					setTimeout(() => {
 						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-					}, this.props.user.current_environment.notification_timing + 500);
+					}, env.notification_timing + 500);
 				});
-		} else {
-			const env = this.props.user.current_environment;
-			if (env.reset_on_success || env.reset_on_error) this.OptionForm.InputForm.Form.props.resetForm();
-		}
+		} else if (env.reset_on_success || env.reset_on_error) this.OptionForm.InputForm.Form.props.resetForm();
 	};
 
 	render() {
@@ -181,18 +178,28 @@ class QuestionForm extends Component {
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
 
 		return (
-			<div className="create_question create_form">
-				<OptionForm type={type} ref={(i) => (this.OptionForm = i)} />
-				<InputForm
-					sumbitMsg={sumbitMsg}
-					inputs={defaultInputs}
-					customHandler={typeChangeHandler}
-					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ 'question', preSubmit, postSubmit ])}
-					classNames={'question_form'}
-				/>
-				<FileInput ref={(r) => (this.FileInput = r)} />
-			</div>
+			<FileInputRP>
+				{({ FileInput, resetFileInput, getFileData }) => {
+					return (
+						<div className="create_question create_form">
+							<OptionForm type={type} ref={(i) => (this.OptionForm = i)} />
+							<InputForm
+								sumbitMsg={sumbitMsg}
+								inputs={defaultInputs}
+								customHandler={typeChangeHandler}
+								validationSchema={validationSchema}
+								onSubmit={onSubmit.bind(null, [
+									'question',
+									preSubmit.bind(null, getFileData),
+									postSubmit.bind(null, getFileData)
+								])}
+								classNames={'question_form'}
+							/>
+							{FileInput}
+						</div>
+					);
+				}}
+			</FileInputRP>
 		);
 	}
 }

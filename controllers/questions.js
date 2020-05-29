@@ -2,6 +2,8 @@ const Question = require('../models/Question');
 const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const fs = require('fs');
+const path = require('path');
 
 exports.sendAnswer = asyncHandler(async (req, res, next) => {
 	const question = await Question.findOne({ _id: req.params.id, user: req.user._id }).select('+answers');
@@ -51,6 +53,9 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 		new: true,
 		runValidators: true
 	});
+	const quiz = await Quiz.findOne(question.quiz);
+	quiz.updated_at = Date.now();
+	await quiz.save();
 	res.status(200).json({ success: true, data: question });
 });
 
@@ -60,10 +65,12 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 // ! Validators for each question type needs to be done
 // ! Batch Delete questions
 exports.deleteQuestion = asyncHandler(async function(req, res, next) {
-	let question = await Question.findById(req.params.id).select('question user type');
+	let question = await Question.findById(req.params.id).select('question user type image');
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete question`, 401));
+	if (!question.image.startsWith('http') || question.image !== 'none.png')
+		fs.unlinkSync(path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`));
 	question = await question.remove();
 	res.status(200).json({ success: true, data: question });
 });

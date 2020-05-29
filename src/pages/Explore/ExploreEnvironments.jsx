@@ -9,23 +9,25 @@ class ExploreEnvironments extends Component {
 	};
 
 	decideColums = () => {
-		return [
-			{ name: 'icon', sort: false, filter: false },
-			{ name: 'name', sort: true, filter: false },
-			{ name: 'username', sort: true, filter: false },
-			{ name: 'created_at', sort: false, filter: false },
-			{ name: 'updated_at', sort: false, filter: false }
-		].map(({ name, sort, filter }) => {
-			return {
-				name,
-				label: this.decideLabel(name),
-				options: {
-					filter,
-					sort,
-					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-				}
-			};
-		});
+		return this.props.cols.concat(
+			[
+				{ name: 'icon', sort: false, filter: false },
+				{ name: 'name', sort: true, filter: false },
+				{ name: 'username', sort: true, filter: false },
+				{ name: 'created_at', sort: false, filter: false },
+				{ name: 'updated_at', sort: false, filter: false }
+			].map(({ name, sort, filter }) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					options: {
+						filter,
+						sort,
+						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
+					}
+				};
+			})
+		);
 	};
 
 	transformOption = (option) => {
