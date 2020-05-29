@@ -51,6 +51,9 @@ exports.updateQuestion = asyncHandler(async function(req, res, next) {
 		new: true,
 		runValidators: true
 	});
+	const quiz = await Quiz.findOne(question.quiz);
+	quiz.updated_at = Date.now();
+	await quiz.save();
 	res.status(200).json({ success: true, data: question });
 });
 
