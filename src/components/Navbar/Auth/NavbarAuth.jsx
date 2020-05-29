@@ -100,7 +100,9 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 					<Avatar
 						variant="square"
 						alt="Username"
-						src={user.image.startsWith('http') ? user.image : `http://localhost:5001/uploads/${user.image}`}
+						src={
+							user.image && user.image.startsWith('http') ? user.image : `http://localhost:5001/uploads/${user.image}`
+						}
 					/>
 				) : (
 					<Avatar variant="square" alt="Username">
