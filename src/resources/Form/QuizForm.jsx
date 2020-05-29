@@ -105,7 +105,7 @@ class QuizForm extends Component {
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit, customInputs, submitMsg, image_link, tags = [] } = this.props;
+		const { onSubmit, customInputs, submitMsg, src, tags = [] } = this.props;
 		const { folders, loading, selected_folders } = this.state;
 
 		let defaultInputs = [
@@ -117,7 +117,7 @@ class QuizForm extends Component {
 		];
 
 		return (
-			<FileInputRP src={image_link}>
+			<FileInputRP src={src ? src : ''}>
 				{({ getFileData, FileInput, resetFileInput }) => {
 					return (
 						<TagCreatorRP tags={tags}>

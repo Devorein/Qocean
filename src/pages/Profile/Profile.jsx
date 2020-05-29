@@ -121,6 +121,7 @@ class Profile extends Component {
 				}, 2500);
 			});
 	};
+
 	renderPassword = () => {
 		return (
 			<InputForm
@@ -135,7 +136,13 @@ class Profile extends Component {
 			/>
 		);
 	};
+
+	decideImage = () => {
+		const { user: { image } } = this.props;
+		return image && image.startsWith('http') ? image : `http://localhost:5001/uploads/${image}`;
+	};
 	render() {
+		const { decideImage } = this;
 		const { user } = this.props;
 
 		const inputs = [
@@ -156,7 +163,7 @@ class Profile extends Component {
 		});
 
 		return (
-			<FileInputRP>
+			<FileInputRP src={decideImage()}>
 				{({ FileInput, getFileData }) => {
 					return (
 						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>

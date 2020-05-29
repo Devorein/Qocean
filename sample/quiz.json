@@ -18,6 +18,7 @@
       "Database:red"
     ],
     "source": "https://docs.mongodb.com/manual/tutorial/getting-started/",
+    "image": "https://chriscourses.com/img/blog/redux/redux.jpg",
     "favourite": true,
     "type": "quiz"
   },
