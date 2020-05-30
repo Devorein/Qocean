@@ -210,30 +210,45 @@ class Question extends Component {
 		else return <div>{type}</div>;
 	};
 
+	renderQuestionStat = () => {
+		const { decideLabel } = this;
+		const { question, theme } = this.props;
+
+		const stats = [ 'difficulty', 'add_to_score', 'type', 'weight' ];
+		return stats.map((stat) => (
+			<QuestionStat theme={theme} key={stat}>
+				<span className="question_stat_key">{decideLabel(stat)}</span> :
+				<span className="question_stat_value">{question[stat].toString()}</span>
+			</QuestionStat>
+		));
+	};
+	resetAnswers = () => {
+		this.setState({
+			user_answers: [ '' ],
+			show_answer: false
+		});
+	};
 	decideLabel = (label) => {
 		return label.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ');
 	};
 
 	render() {
-		const { decideLabel } = this;
 		const { question, theme } = this.props;
-		const stats = [ 'difficulty', 'add_to_score', 'type', 'weight' ];
-		return question ? (
-			<QuizContent theme={theme}>
-				<QuestionStats theme={theme}>
-					{stats.map((stat) => (
-						<QuestionStat theme={theme} key={stat}>
-							<span className="question_stat_key">{decideLabel(stat)}</span> :
-							<span className="question_stat_value">{question[stat].toString()}</span>
-						</QuestionStat>
-					))}
-				</QuestionStats>
-				<QuestionName theme={theme}>{question.name}</QuestionName>
-				{this.renderQuestionBody()}
-			</QuizContent>
-		) : (
-			<div>Loading question</div>
-		);
+		return this.props.children({
+			question: question ? (
+				<QuizContent theme={theme}>
+					<QuestionStats theme={theme}>{this.renderQuestionStat()}</QuestionStats>
+					<QuestionName theme={theme}>{question.name}</QuestionName>
+					{this.renderQuestionBody()}
+				</QuizContent>
+			) : (
+				<div>Loading question</div>
+			),
+			questionManip: {
+				user_answer: this.state.user_answers,
+				reset_answers: this.resetAnswers
+			}
+		});
 	}
 }
 

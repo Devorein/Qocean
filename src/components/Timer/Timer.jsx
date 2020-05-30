@@ -17,7 +17,6 @@ class Timer extends Component {
 	};
 
 	clearInterval = () => {
-		clearInterval(this.state.timer);
 		this.setState({
 			timer: null,
 			timeout: 0

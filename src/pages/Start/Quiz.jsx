@@ -89,7 +89,8 @@ class Quiz extends Component {
 			});
 	};
 
-	setQuestion = (totalQuestion) => {
+	setQuestion = (timeout, { user_answers, reset_answers }) => {
+		const totalQuestion = this.getTotalQuestions();
 		const { quizzes } = this.props;
 		let { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
 		if (currentQuizQuestion < quizzes[currentQuiz].questions.length - 1) currentQuizQuestion++;
@@ -97,9 +98,9 @@ class Quiz extends Component {
 			currentQuiz++;
 			currentQuizQuestion = 0;
 		}
-		// const { user_answers } = this.Quiz.state;
 		const { stats, question } = this.state;
-		// stats.push({ user_answers, _id: question._id, type: question.type, time_taken: question.time_allocated - timeout });
+		stats.push({ user_answers, _id: question._id, type: question.type, time_taken: question.time_allocated - timeout });
+
 		if (currentQuestion < totalQuestion - 1) {
 			this.setState(
 				{
@@ -110,31 +111,26 @@ class Quiz extends Component {
 				},
 				() => {
 					this.fetchQuestion();
-
-					// if (this.Quiz) {
-					// 	this.Quiz.setState({
-					// 		show_answer: false,
-					// 		user_answers: []
-					// 	});
-					// }
+					reset_answers();
 				}
 			);
 		} else {
-			// this.Quiz.setState({
-			// 	show_answer: false,
-			// 	user_answers: []
-			// });
-			// this.setState({
-			// 	currentQuestion: currentQuestion + 1,
-			// 	stats,
-			// 	timeout: 0,
-			// 	isOnReport: true
-			// });
+			this.setState(
+				{
+					currentQuestion: currentQuestion + 1,
+					stats,
+					isOnReport: true
+				},
+				() => {
+					reset_answers();
+				}
+			);
 		}
 	};
+
 	renderQuizStats = () => {
 		const { quizzes, theme } = this.props;
-		const { currentQuestion, currentQuiz, currentQuizQuestion, question, timeout, isOnReport } = this.state;
+		const { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
 		const totalQuestion = this.getTotalQuestions();
 
 		const stats = [
@@ -155,35 +151,41 @@ class Quiz extends Component {
 			</QuizStats>
 		);
 	};
+
 	render() {
 		const { getTotalQuestions, setQuestion, renderQuizStats } = this;
-		const { currentQuestion } = this.state;
+		const { currentQuestion, question } = this.state;
 		const totalQuestion = getTotalQuestions();
 
 		return currentQuestion < totalQuestion ? (
-			<Timer
-				timeout={this.state.question ? this.state.question.time_allocated : 0}
-				onTimerEnd={() => {
-					this.Button.click();
-				}}
-			>
-				{({ currentTime, timer, clearInterval }) => {
-					return (
-						<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
-							{renderQuizStats()}
-							<GenericButton
-								buttonRef={(ref) => (this.Button = ref)}
-								text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
-								onClick={(e) => {
-									clearInterval();
-									setQuestion(totalQuestion);
-								}}
-							/>
-							{timer}
-						</div>
-					);
-				}}
-			</Timer>
+			<Question question={question}>
+				{({ question, questionManip }) => (
+					<Timer
+						timeout={this.state.question ? this.state.question.time_allocated : 0}
+						onTimerEnd={() => {
+							this.Button.click();
+						}}
+					>
+						{({ currentTime, timer, clearInterval }) => {
+							return (
+								<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
+									{renderQuizStats()}
+									{question}
+									{timer}
+									<GenericButton
+										buttonRef={(ref) => (this.Button = ref)}
+										text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
+										onClick={(e) => {
+											clearInterval();
+											setQuestion(currentTime, questionManip);
+										}}
+									/>
+								</div>
+							);
+						}}
+					</Timer>
+				)}
+			</Question>
 		) : (
 			<Report stats={this.state.stats} />
 		);
