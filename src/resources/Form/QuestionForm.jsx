@@ -140,7 +140,7 @@ class QuestionForm extends Component {
 
 	render() {
 		const { typeChangeHandler, preSubmit, postSubmit } = this;
-		const { onSubmit, sumbitMsg, customInputs } = this.props;
+		const { onSubmit, sumbitMsg, customInputs, src = '' } = this.props;
 		const { type, quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
 			name: Yup.string('Enter the question').required('Question is required'),
@@ -178,11 +178,11 @@ class QuestionForm extends Component {
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
 
 		return (
-			<FileInputRP>
+			<FileInputRP src={src}>
 				{({ FileInput, resetFileInput, getFileData }) => {
 					return (
 						<div className="create_question create_form">
-							<OptionForm type={type} ref={(i) => (this.OptionForm = i)} />
+							{/* <OptionForm type={type} ref={(i) => (this.OptionForm = i)} /> */}
 							<InputForm
 								sumbitMsg={sumbitMsg}
 								inputs={defaultInputs}

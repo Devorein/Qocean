@@ -113,7 +113,8 @@ class QuizForm extends Component {
 			{ name: 'subject' },
 			null,
 			{ name: 'favourite', type: 'checkbox', defaultValue: false },
-			{ name: 'public', type: 'checkbox', defaultValue: true }
+			{ name: 'public', type: 'checkbox', defaultValue: true },
+			null
 		];
 
 		return (
@@ -132,6 +133,23 @@ class QuizForm extends Component {
 									]
 								};
 								if (customInputs) defaultInputs = customInputs(defaultInputs);
+								defaultInputs[5] = {
+									type: 'component',
+									name: 'select_folder',
+									component: loading ? (
+										<FormHelperText key={'select_folder'}>Loading your folders</FormHelperText>
+									) : folders.length < 1 ? (
+										<FormHelperText key={'select_folder'}>Loading your folders</FormHelperText>
+									) : (
+										<MultiSelect
+											key={'select_folder'}
+											label={'Folders'}
+											selected={selected_folders}
+											handleChange={handleChange}
+											items={folders}
+										/>
+									)
+								};
 								return (
 									<div className="create_quiz create_form">
 										<InputForm
@@ -143,21 +161,7 @@ class QuizForm extends Component {
 												preSubmit.bind(null, getFileData, tags),
 												postSubmit.bind(null, getFileData, { resetFileInput, resetTags })
 											])}
-											ref={(r) => (this.InputForm = r)}
-										>
-											{loading ? (
-												<FormHelperText>Loading your folders</FormHelperText>
-											) : folders.length < 1 ? (
-												<FormHelperText>Loading your folders</FormHelperText>
-											) : (
-												<MultiSelect
-													label={'Folders'}
-													selected={selected_folders}
-													handleChange={handleChange}
-													items={folders}
-												/>
-											)}
-										</InputForm>
+										/>
 										{FileInput}
 									</div>
 								);

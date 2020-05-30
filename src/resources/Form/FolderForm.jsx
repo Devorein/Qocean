@@ -77,7 +77,24 @@ class FolderForm extends Component {
 				defaultValue: 'Red_folder.svg'
 			},
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
-			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true }
+			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },
+			{
+				type: 'component',
+				name: 'select_folder',
+				component: loading ? (
+					<FormHelperText key={'select_folder'}>Loading your quizzes</FormHelperText>
+				) : quizzes.length < 1 ? (
+					<FormHelperText key={'select_folder'}>Loading your quizzes</FormHelperText>
+				) : (
+					<MultiSelect
+						key={'select_folder'}
+						label={'Quizzes'}
+						selected={selected_quizzes}
+						handleChange={handleChange}
+						items={quizzes}
+					/>
+				)
+			}
 		];
 
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
@@ -89,15 +106,7 @@ class FolderForm extends Component {
 					inputs={defaultInputs}
 					validationSchema={validationSchema}
 					onSubmit={onSubmit.bind(null, [ 'folder', preSubmit, postSubmit ])}
-				>
-					{loading ? (
-						<FormHelperText>Loading your quizzes</FormHelperText>
-					) : quizzes.length < 1 ? (
-						<FormHelperText>Loading your quizzes</FormHelperText>
-					) : (
-						<MultiSelect label={'Quizzes'} selected={selected_quizzes} handleChange={handleChange} items={quizzes} />
-					)}
-				</InputForm>
+				/>
 			</div>
 		);
 	}

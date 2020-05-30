@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Formik } from 'formik';
 import Form from './Form';
 
@@ -13,9 +13,13 @@ class InputForm extends Component {
 			classNames,
 			validateOnMount = false,
 			errorBeforeTouched = false,
-			submitMsg
+			submitMsg,
+			children,
+			passFormAsProp = false
 		} = this.props;
+
 		const initialValues = {};
+
 		inputs.forEach((input) => {
 			if (input) {
 				const { name, defaultValue, type, children } = input;
@@ -36,9 +40,8 @@ class InputForm extends Component {
 				enableReinitialize={true}
 			>
 				{(props) => {
-					return (
+					const FORM = (
 						<Form
-							ref={(Form) => (this.Form = Form)}
 							{...props}
 							classNames={classNames}
 							inputs={inputs}
@@ -46,9 +49,23 @@ class InputForm extends Component {
 							formButtons={formButtons}
 							errorBeforeTouched={errorBeforeTouched}
 							submitMsg={submitMsg}
-						>
-							{this.props.children}
-						</Form>
+						/>
+					);
+					return (
+						<Fragment>
+							{passFormAsProp ? null : FORM}
+							{children && typeof children === 'function' ? (
+								children({
+									setValues: props.setValues,
+									values: props.values,
+									errors: props.errors,
+									isValid: props.isValid,
+									inputs: passFormAsProp ? FORM : null
+								})
+							) : (
+								children
+							)}
+						</Fragment>
 					);
 				}}
 			</Formik>
