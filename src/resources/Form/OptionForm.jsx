@@ -182,13 +182,17 @@ class OptionForm extends Component {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
 			dest.options = options;
-			dest.answers = parseInt(source.answers.split('_')[1]);
+			dest.answers = [ parseInt(source.answers.split('_')[1]) ];
 		} else if (type === 'MS') {
 			const options = [];
 			const answers = [];
+			let index = 0;
 			Object.entries(source).forEach(([ key, value ]) => {
 				if (key.startsWith('option_') && value !== '') options.push(value);
-				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
+				else if (key.startsWith('answer_')) {
+					if (dest[key]) answers.push(index);
+					index++;
+				}
 			});
 			dest.options = options;
 			dest.answers = answers.map((answer) => [ parseInt(answer) ]);

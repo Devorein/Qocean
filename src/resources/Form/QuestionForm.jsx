@@ -81,32 +81,35 @@ class QuestionForm extends Component {
 		} else return [ values, false ];
 	};
 
-	postSubmit = ({ getFileData, resetFileInput }, formData, { data: { data: { _id } } }) => {
-		const { resetOptionInput } = formData;
-		const fd = new FormData();
-		const { file, image } = getFileData();
+	postSubmit = ({ getFileData, resetFileInput }, formData, response) => {
 		const env = this.props.user.current_environment;
-		if (file && image === 'upload') {
-			fd.append('file', file, file.name);
-			axios
-				.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				})
-				.then((data) => {
-					if (env.reset_on_success) resetOptionInput();
-					setTimeout(() => {
-						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
-					}, env.notification_timing + 500);
-				})
-				.catch((err) => {
-					if (env.reset_on_error) resetOptionInput();
-					setTimeout(() => {
-						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-					}, env.notification_timing + 500);
-				});
+		const { resetOptionInput } = formData;
+		if (!response instanceof Error) {
+			const { data: { data: { _id } } } = response;
+			const fd = new FormData();
+			const { file, image } = getFileData();
+			if (file && image === 'upload') {
+				fd.append('file', file, file.name);
+				axios
+					.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
+						headers: {
+							'Content-Type': 'multipart/form-data',
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					})
+					.then((data) => {
+						if (env.reset_on_success) resetOptionInput();
+						setTimeout(() => {
+							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
+						}, env.notification_timing + 500);
+					})
+					.catch((err) => {
+						if (env.reset_on_error) resetOptionInput();
+						setTimeout(() => {
+							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						}, env.notification_timing + 500);
+					});
+			} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
 		} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
 	};
 

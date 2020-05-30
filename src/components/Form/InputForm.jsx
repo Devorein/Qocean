@@ -17,7 +17,7 @@ class InputForm extends Component {
 			children,
 			passFormAsProp = false,
 			initialTouched,
-			validateOnChange
+			validateOnChange = false
 		} = this.props;
 
 		const initialValues = {};
@@ -30,7 +30,8 @@ class InputForm extends Component {
 						children.forEach(({ name, defaultValue }) => {
 							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 							try {
-								if (validateOnChange) validationSchema.validateSyncAt(name, initialValues[name]);
+								if (validateOnChange && validationSchema._nodes.includes(name))
+									validationSchema.validateSyncAt(name, initialValues[name]);
 							} catch (err) {
 								initialErrors[name] = err.message;
 							}
