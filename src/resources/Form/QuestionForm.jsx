@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
@@ -8,21 +8,7 @@ import FileInputRP from '../../RP/FileInputRP';
 let defaultInputs = [
 	{ name: 'name' },
 	null,
-	{
-		name: 'type',
-		type: 'select',
-		extra: {
-			selectItems: [
-				{ text: 'Multiple Choice', value: 'MCQ' },
-				{ text: 'Multiple Select', value: 'MS' },
-				{ text: 'Fill In the Blanks', value: 'FIB' },
-				{ text: 'Snippet', value: 'Snippet' },
-				{ text: 'Flashcard', value: 'FC' },
-				{ text: 'True/False', value: 'TF' }
-			]
-		},
-		defaultValue: 'MCQ'
-	},
+	null,
 	{
 		name: 'difficulty',
 		type: 'radio',
@@ -85,20 +71,6 @@ class QuestionForm extends Component {
 			});
 	}
 
-	typeChangeHandler = (values, setValues, e) => {
-		const { name, value } = e.target;
-		if (name === 'type') {
-			this.setState(
-				{
-					type: value
-				},
-				() => {
-					this.OptionForm.decideInputs(this.state.type);
-				}
-			);
-		}
-	};
-
 	preSubmit = (getFileData, values) => {
 		const form = this.OptionForm.InputForm.Form.props;
 		const isValid = form.isValid;
@@ -139,9 +111,9 @@ class QuestionForm extends Component {
 	};
 
 	render() {
-		const { typeChangeHandler, preSubmit, postSubmit } = this;
+		const { preSubmit, postSubmit } = this;
 		const { onSubmit, sumbitMsg, customInputs, src = '' } = this.props;
-		const { type, quizzes, loading } = this.state;
+		const { quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
 			name: Yup.string('Enter the question').required('Question is required'),
 			favourite: Yup.bool().default(false),
@@ -182,20 +154,28 @@ class QuestionForm extends Component {
 				{({ FileInput, resetFileInput, getFileData }) => {
 					return (
 						<div className="create_question create_form">
-							{/* <OptionForm type={type} ref={(i) => (this.OptionForm = i)} /> */}
-							<InputForm
-								sumbitMsg={sumbitMsg}
-								inputs={defaultInputs}
-								customHandler={typeChangeHandler}
-								validationSchema={validationSchema}
-								onSubmit={onSubmit.bind(null, [
-									'question',
-									preSubmit.bind(null, getFileData),
-									postSubmit.bind(null, getFileData)
-								])}
-								classNames={'question_form'}
-							/>
-							{FileInput}
+							<OptionForm>
+								{({ form, formData, select }) => {
+									defaultInputs[2] = select;
+									return (
+										<Fragment>
+											<InputForm
+												sumbitMsg={sumbitMsg}
+												inputs={defaultInputs}
+												validationSchema={validationSchema}
+												onSubmit={onSubmit.bind(null, [
+													'question',
+													preSubmit.bind(null, getFileData),
+													postSubmit.bind(null, getFileData)
+												])}
+												classNames={'question_form'}
+											/>
+											{form}
+											{FileInput}
+										</Fragment>
+									);
+								}}
+							</OptionForm>
 						</div>
 					);
 				}}

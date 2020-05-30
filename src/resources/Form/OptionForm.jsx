@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import styled from 'styled-components';
+import InputSelect from '../../components/Input/InputSelect';
 
 const OptionFormContainer = styled.div`
 	& .form {
@@ -81,65 +82,58 @@ const INIT_MS_STATE = {
 
 class OptionForm extends Component {
 	state = {
-		...INIT_MCQ_STATE
+		type: 'MCQ'
 	};
 
-	decideInputs = (type) => {
-		const validateForm = () => {
-			this.InputForm.Form.props.validateForm().then((error) => {
-				this.InputForm.Form.props.setErrors(error);
-			});
-		};
-		if (type === 'MCQ') {
-			this.setState(INIT_MCQ_STATE, validateForm);
-		} else if (type === 'MS') {
-			this.setState(INIT_MS_STATE, validateForm);
-		} else if (type === 'FC') {
-			this.setState(
-				{
-					answers: [
-						{ name: 'answers', type: 'textarea', extra: { row: 4 } },
-						{ name: 'alternate', type: 'textarea', extra: { row: 4 } }
-					],
-					options: []
-				},
-				validateForm
-			);
-		} else if (type === 'Snippet') {
-			this.setState(
-				{
-					answers: [
-						{ name: 'answers', type: 'textarea', extra: { row: 2 } },
-						{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
-						{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
-					],
-					options: []
-				},
-				validateForm
-			);
-		} else if (type === 'FIB') {
-			return [];
-		} else if (type === 'TF') {
-			this.setState(
-				{
-					options: [],
-					answers: [
-						{
-							name: 'answers',
-							type: 'radio',
-							extra: {
-								radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ]
-							},
-							defaultValue: 'true'
-						}
-					]
-				},
-				validateForm
-			);
-		}
+	decideInputs = () => {
+		const { type } = this.state;
+		if (type === 'MCQ') return INIT_MCQ_STATE;
+		else if (type === 'MS') return INIT_MS_STATE;
+		else if (type === 'FC')
+			return {
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 4 } },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 } },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 } }
+				],
+				options: []
+			};
+		else if (type === 'Snippet')
+			return {
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+				],
+				options: []
+			};
+		else if (type === 'FIB')
+			return {
+				options: [],
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+				]
+			};
+		else if (type === 'TF')
+			return {
+				options: [],
+				answers: [
+					{
+						name: 'answers',
+						type: 'radio',
+						extra: {
+							radioItems: [ { value: 'answer_1', label: 'True' }, { value: 'answer_2', label: 'False' } ]
+						},
+						defaultValue: 'answer_1'
+					}
+				]
+			};
 	};
 
-	decideValidation = (type) => {
+	decideValidation = () => {
+		const { type } = this.state;
 		if (type === 'MCQ') {
 			return Yup.object({
 				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
@@ -208,21 +202,56 @@ class OptionForm extends Component {
 		return values;
 	};
 
+	typeChangeHandler = (e) => {
+		this.setState({
+			type: e.target.value
+		});
+	};
+
 	render() {
-		const { type } = this.props;
-		const { options, answers } = this.state;
-		const validationSchema = this.decideValidation(type);
+		const { typeChangeHandler, decideValidation, decideInputs } = this;
+		const validationSchema = decideValidation();
+		const { options, answers } = decideInputs();
+
 		return (
-			<OptionFormContainer className="answers_form">
-				<InputForm
-					validationSchema={validationSchema}
-					errorBeforeTouched={true}
-					validateOnMount={true}
-					inputs={[ ...options, ...answers ]}
-					formButtons={false}
-					ref={(i) => (this.InputForm = i)}
-				/>
-			</OptionFormContainer>
+			<InputForm
+				passFormAsProp={true}
+				validationSchema={validationSchema}
+				errorBeforeTouched={true}
+				validateOnMount={true}
+				inputs={[ ...options, ...answers ]}
+				formButtons={false}
+			>
+				{({ values, errors, isValid, inputs }) => {
+					return this.props.children({
+						form: <OptionFormContainer className="answers_form">{inputs}</OptionFormContainer>,
+						formData: {
+							values,
+							errors,
+							isValid
+						},
+						select: {
+							type: 'component',
+							component: (
+								<InputSelect
+									key="question_type"
+									name="type"
+									selectItems={[
+										{ text: 'Multiple Choice', value: 'MCQ' },
+										{ text: 'Multiple Select', value: 'MS' },
+										{ text: 'Fill In the Blanks', value: 'FIB' },
+										{ text: 'Snippet', value: 'Snippet' },
+										{ text: 'Flashcard', value: 'FC' },
+										{ text: 'True/False', value: 'TF' }
+									]}
+									value={this.state.type}
+									onChange={typeChangeHandler}
+								/>
+							)
+						}
+					});
+				}}
+			</InputForm>
 		);
 	}
 }

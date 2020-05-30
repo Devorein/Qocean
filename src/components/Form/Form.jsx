@@ -57,7 +57,7 @@ class Form extends React.Component {
 		if (controlled)
 			return {
 				name,
-				value: values[name],
+				value: typeof values[name] === 'undefined' ? '' : values[name],
 				onChange: this.change.bind(null, name, fieldHandler),
 				onBlur: handleBlur,
 				error: errorBeforeTouched ? Boolean(errors[name]) : touched[name] && Boolean(errors[name]),
@@ -179,6 +179,7 @@ class Form extends React.Component {
 			);
 		else if (type === 'radio') {
 			const props = this.formikProps(name, label, placeholder, controlled, { fieldHandler });
+			if (name !== 'difficulty') console.log(props);
 			delete props.helperText;
 			delete props.error;
 			return (
