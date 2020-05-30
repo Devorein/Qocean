@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { withFormik } from 'formik';
 import * as Yup from 'yup';
 import { isStrongPassword } from '../Utils/validation';
 import GenericButton from '../components/Buttons/GenericButton';
-import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
+import InputForm from '../components/Form/InputForm';
 
 const changePasswordValidation = Yup.object({
 	new_password: Yup.string('')
@@ -65,38 +64,41 @@ class ChangePassword extends Component {
 	};
 
 	render() {
-		const { values, isValid, errors, setValues } = this.props;
-		return this.props.children({
-			button: (
-				<GenericButton
-					text={!this.state.showChangePasswordForm ? 'Change Pass' : 'Revert Pass'}
-					onClick={(e) => {
-						this.setState({ showChangePasswordForm: !this.state.showChangePasswordForm });
-						setValues({
-							new_password: '',
-							confirm_password: ''
-						});
-					}}
-				/>
-			),
-			inputs: this.state.showChangePasswordForm ? (
-				<div className="password_form">
-					<TextField {...this.formikProps('new_password')} />
-					<TextField {...this.formikProps('confirm_password')} />
-				</div>
-			) : null,
-			values: {
-				values,
-				errors,
-				isValid,
-				showChangePasswordForm: this.state.showChangePasswordForm
-			}
-		});
+		return (
+			<InputForm
+				classNames={'password_form'}
+				passFormAsProp={true}
+				validationSchema={changePasswordValidation}
+				formButtons={false}
+				validateOnMount={true}
+				inputs={[ { name: 'new_password', type: 'password' }, { name: 'confirm_password', type: 'password' } ]}
+			>
+				{({ values, errors, isValid, setValues, inputs }) => {
+					return this.props.children({
+						button: (
+							<GenericButton
+								text={!this.state.showChangePasswordForm ? 'Change Pass' : 'Revert Pass'}
+								onClick={(e) => {
+									this.setState({ showChangePasswordForm: !this.state.showChangePasswordForm });
+									setValues({
+										new_password: '',
+										confirm_password: ''
+									});
+								}}
+							/>
+						),
+						formData: {
+							values,
+							errors,
+							isValid,
+							showChangePasswordForm: this.state.showChangePasswordForm
+						},
+						inputs: this.state.showChangePasswordForm ? inputs : null
+					});
+				}}
+			</InputForm>
+		);
 	}
 }
 
-export default withFormik({
-	validateOnMount: true,
-	validationSchema: changePasswordValidation,
-	mapPropsToValues: () => ({ new_password: '', confirm_password: '' })
-})(ChangePassword);
+export default ChangePassword;

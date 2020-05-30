@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import styled from 'styled-components';
+import InputSelect from '../../components/Input/InputSelect';
+import TextField from '@material-ui/core/TextField';
 
 const OptionFormContainer = styled.div`
 	& .form {
@@ -81,65 +83,84 @@ const INIT_MS_STATE = {
 
 class OptionForm extends Component {
 	state = {
-		...INIT_MCQ_STATE
+		type: 'MCQ',
+		blank_count: 1
 	};
-
-	decideInputs = (type) => {
-		const validateForm = () => {
-			this.InputForm.Form.props.validateForm().then((error) => {
-				this.InputForm.Form.props.setErrors(error);
-			});
-		};
-		if (type === 'MCQ') {
-			this.setState(INIT_MCQ_STATE, validateForm);
-		} else if (type === 'MS') {
-			this.setState(INIT_MS_STATE, validateForm);
-		} else if (type === 'FC') {
-			this.setState(
-				{
-					answers: [
-						{ name: 'answers', type: 'textarea', extra: { row: 4 } },
-						{ name: 'alternate', type: 'textarea', extra: { row: 4 } }
-					],
-					options: []
-				},
-				validateForm
-			);
-		} else if (type === 'Snippet') {
-			this.setState(
-				{
-					answers: [
-						{ name: 'answers', type: 'textarea', extra: { row: 2 } },
-						{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
-						{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
-					],
-					options: []
-				},
-				validateForm
-			);
-		} else if (type === 'FIB') {
-			return [];
-		} else if (type === 'TF') {
-			this.setState(
-				{
-					options: [],
-					answers: [
-						{
-							name: 'answers',
-							type: 'radio',
-							extra: {
-								radioItems: [ { label: 'True', value: 'true' }, { label: 'False', value: 'false' } ]
-							},
-							defaultValue: 'true'
-						}
-					]
-				},
-				validateForm
+	renderFIB = () => {
+		const options = [];
+		for (let i = 1; i <= this.state.blank_count; i++) {
+			options.push(
+				...[
+					{ name: `answers_${i}`, type: 'textarea', extra: { row: 2 } },
+					{ name: `alternate_${i}_1`, type: 'textarea', extra: { row: 1 } },
+					{ name: `alternate_${i}_2`, type: 'textarea', extra: { row: 1 } }
+				]
 			);
 		}
+		return options;
+	};
+	decideInputs = () => {
+		const { type } = this.state;
+		if (type === 'MCQ') return INIT_MCQ_STATE;
+		else if (type === 'MS') return INIT_MS_STATE;
+		else if (type === 'FC')
+			return {
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 4 } },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 } },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 } }
+				],
+				options: []
+			};
+		else if (type === 'Snippet')
+			return {
+				answers: [
+					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+				],
+				options: []
+			};
+		else if (type === 'FIB') {
+			const INIT_FIB_STATE = {
+				options: [],
+				answers: [
+					{
+						type: 'component',
+						component: (
+							<TextField
+								key="blank_count"
+								type={'number'}
+								value={this.state.blank_count}
+								onChange={(e) => this.setState({ blank_count: e.target.value })}
+								fullWidth
+								inputProps={{ max: 5, min: 1, step: 1 }}
+							/>
+						)
+					}
+				]
+			};
+			INIT_FIB_STATE.answers = INIT_FIB_STATE.answers.slice(0, 1);
+			INIT_FIB_STATE.answers.push(...this.renderFIB());
+			return INIT_FIB_STATE;
+		} else if (type === 'TF')
+			return {
+				options: [],
+				answers: [
+					{
+						name: 'answers',
+						type: 'radio',
+						extra: {
+							radioItems: [ { value: 'answer_1', label: 'True' }, { value: 'answer_2', label: 'False' } ]
+						},
+						defaultValue: 'answer_1'
+					}
+				]
+			};
 	};
 
-	decideValidation = (type) => {
+	decideValidation = () => {
+		const { type } = this.state;
 		if (type === 'MCQ') {
 			return Yup.object({
 				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
@@ -166,63 +187,134 @@ class OptionForm extends Component {
 		} else if (type === 'TF') {
 			return Yup.object({
 				answers: Yup.string('Enter answer')
-					.oneOf([ 'true', 'false' ], 'Should be either true or false')
+					.oneOf([ 'answer_1', 'answer_2' ], 'Should be either true or false')
 					.required('An answer must be given')
+					.default('answer_1')
 			});
 		} else if (type === 'FIB') {
-			return Yup.object({
-				answers: Yup.string('Enter answer')
-					.oneOf([ 'true', 'false' ], 'Should be either true or false')
-					.required('An answer must be given')
-			});
+			const obj = {};
+			for (let i = 1; i <= this.state.blank_count; i++)
+				obj[`answers_${i}`] = Yup.string(`Enter answer ${i}`).required('An answer must be given');
+			return Yup.object(obj);
 		}
 	};
 
-	transformValue = (values) => {
-		const { type } = this.props;
-		const form = this.InputForm.Form.props.values;
+	transformValues = (source, dest) => {
+		const { type } = this.state;
+		dest.type = type;
 		if (type === 'MCQ') {
 			const options = [];
-			Object.entries(form).forEach(([ key, value ]) => {
+			Object.entries(source).forEach(([ key, value ]) => {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
-			values.options = options;
-			values.answers = parseInt(form.answers.split('_')[1]);
+			dest.options = options;
+			dest.answers = [ parseInt(source.answers.split('_')[1]) ];
 		} else if (type === 'MS') {
 			const options = [];
 			const answers = [];
-			Object.entries(form).forEach(([ key, value ]) => {
+			let index = 0;
+			Object.entries(source).forEach(([ key, value ]) => {
 				if (key.startsWith('option_') && value !== '') options.push(value);
-				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
+				else if (key.startsWith('answer_')) {
+					if (dest[key]) answers.push(index);
+					index++;
+				}
 			});
-			values.options = options;
-			values.answers = answers.map((answer) => [ parseInt(answer) ]);
+			dest.options = options;
+			dest.answers = answers.map((answer) => [ parseInt(answer) ]);
 		} else if (type === 'Snippet') {
-			values.answers = [ [ form.answers ] ];
-			if (form.alternate_1) values.answers[0].push(form.alternate_1);
-			if (form.alternate_2) values.answers[0].push(form.alternate_2);
+			dest.answers = [ [ source.answers ] ];
+			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
+			if (source.alternate_2) dest.answers[0].push(source.alternate_2);
 		} else if (type === 'FC') {
-			values.answers = [ [ form.answers ] ];
-			if (form.alternate) values.answers[0].push(form.alternate);
-		} else if (type === 'TF') values.answers = [ [ values.answers ] ];
-		return values;
+			dest.answers = [ [ source.answers ] ];
+			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
+			if (source.alternate_2) dest.answers[0].push(source.alternate_2);
+		} else if (type === 'TF') dest.answers = [ [ source.answers === 'answer_1' ? 1 : 0 ] ];
+		else if (type === 'FIB') {
+			const answers = [];
+			let current_answers = 0;
+			Object.entries(source).forEach(([ key, value ]) => {
+				if (key.startsWith('answers')) {
+					if (!answers[current_answers]) answers[current_answers++] = [ value ];
+					else answers[current_answers++][0] = value;
+				} else if (key.startsWith('alternate') && value !== '') {
+					const index = key.split('_')[1];
+					if (!answers[index - 1]) answers[index - 1] = [ null ];
+					answers[index - 1].push(value);
+				}
+			});
+			dest.answers = answers;
+		}
+		return dest;
+	};
+
+	typeChangeHandler = (e) => {
+		this.setState({
+			type: e.target.value
+		});
+	};
+
+	resetOptionInput = (values, setValues) => {
+		const { type } = this.state;
+		const temp = {};
+		Object.keys(values).forEach((key) => (temp[key] = ''));
+		if (type === 'MCQ') setValues({ ...temp, answers: 'answer_1' });
+		else if (type === 'MS') setValues({ ...temp, answer_1: true });
+		else if (type === 'FC') setValues({ ...temp });
+		else if (type === 'FIB') setValues({ ...temp });
+		else if (type === 'TF') setValues({ ...temp, answers: 'answer_1' });
+		else if (type === 'Snippet') setValues({ ...temp });
 	};
 
 	render() {
-		const { type } = this.props;
-		const { options, answers } = this.state;
-		const validationSchema = this.decideValidation(type);
+		const { typeChangeHandler, decideValidation, decideInputs, transformValues, resetOptionInput } = this;
+		const validationSchema = decideValidation();
+		const { options, answers } = decideInputs();
+
 		return (
-			<OptionFormContainer className="answers_form">
-				<InputForm
-					validationSchema={validationSchema}
-					errorBeforeTouched={true}
-					validateOnMount={true}
-					inputs={[ ...options, ...answers ]}
-					formButtons={false}
-					ref={(i) => (this.InputForm = i)}
-				/>
-			</OptionFormContainer>
+			<InputForm
+				passFormAsProp={true}
+				validationSchema={validationSchema}
+				errorBeforeTouched={true}
+				validateOnMount={true}
+				inputs={[ ...options, ...answers ]}
+				formButtons={false}
+				validateOnChange={true}
+			>
+				{({ values, errors, isValid, inputs, setValues }) => {
+					return this.props.children({
+						form: <OptionFormContainer className="answers_form">{inputs}</OptionFormContainer>,
+						type: this.state.type,
+						formData: {
+							values,
+							errors,
+							isValid,
+							transformValues,
+							resetOptionInput: resetOptionInput.bind(null, values, setValues)
+						},
+						select: {
+							type: 'component',
+							component: (
+								<InputSelect
+									key="question_type"
+									name="type"
+									selectItems={[
+										{ text: 'Multiple Choice', value: 'MCQ' },
+										{ text: 'Multiple Select', value: 'MS' },
+										{ text: 'Fill In the Blanks', value: 'FIB' },
+										{ text: 'Snippet', value: 'Snippet' },
+										{ text: 'Flashcard', value: 'FC' },
+										{ text: 'True/False', value: 'TF' }
+									]}
+									value={this.state.type}
+									onChange={typeChangeHandler}
+								/>
+							)
+						}
+					});
+				}}
+			</InputForm>
 		);
 	}
 }

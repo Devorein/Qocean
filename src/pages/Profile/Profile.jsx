@@ -207,13 +207,13 @@ class Profile extends Component {
 						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
 							{({ setIsOpen }) => (
 								<ChangePassword>
-									{({ values, inputs, button }) => (
+									{({ formData, inputs, button }) => (
 										<div className="profile pages">
 											<InputForm
 												classNames={'profile_form'}
 												validationSchema={validationSchema}
 												inputs={formInputs}
-												onSubmit={this.submitForm.bind(null, getFileData, values)}
+												onSubmit={this.submitForm.bind(null, getFileData, formData)}
 												submitMsg={'update'}
 											/>
 											{inputs}

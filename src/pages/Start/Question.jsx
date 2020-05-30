@@ -9,6 +9,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import RadioInput from '../../components/Input/RadioInput';
 import GenericButton from '../../components/Buttons/GenericButton';
 import shortid from 'shortid';
 
@@ -68,9 +69,20 @@ const QuestionOption = styled.div`
 	border-radius: 5px;
 `;
 
-class Quiz extends Component {
+const QuestionImage = styled.div`
+	width: 100%;
+	height: 250px;
+	& img {
+		max-width: 100%;
+		max-height: 100%;
+		display: block;
+		object-fit: contain;
+	}
+`;
+
+class Question extends Component {
 	state = {
-		user_answers: [ '' ],
+		user_answers: [],
 		show_answer: false
 	};
 
@@ -88,38 +100,19 @@ class Quiz extends Component {
 				});
 			});
 	};
+
 	renderQuestionBody = () => {
 		const { question: { type, options, name }, theme } = this.props;
-		if (type === 'MCQ')
+		if (type === 'MS')
 			return (
 				<QuestionOptions>
 					{options.map((option, index) => (
 						<QuestionOption theme={theme} key={option}>
 							<Checkbox
-								checked={this.state.user_answers.indexOf(index) !== -1}
+								checked={this.state.user_answers.includes(index)}
 								onChange={(e) => {
 									let { user_answers } = this.state;
 									if (e.target.checked) user_answers.push(index);
-									else user_answers = user_answers.filter((answer) => answer !== index);
-									this.setState({ user_answers });
-								}}
-								color="primary"
-							/>
-							{option}
-						</QuestionOption>
-					))}
-				</QuestionOptions>
-			);
-		else if (type === 'MS')
-			return (
-				<QuestionOptions>
-					{options.map((option, index) => (
-						<QuestionOption theme={theme} key={option}>
-							<Checkbox
-								checked={this.state.user_answers[0] === index}
-								onChange={(e) => {
-									let { user_answers } = this.state;
-									if (e.target.checked) user_answers = [ index ];
 									else user_answers = user_answers.filter((answer) => answer !== index);
 									this.setState({ user_answers });
 								}}
@@ -146,32 +139,27 @@ class Quiz extends Component {
 					/>
 				);
 			});
-		else if (type === 'TF')
+		else if (type === 'TF' || type === 'MCQ') {
+			let radioItems = null;
+			if (type === 'TF')
+				radioItems = [ 'False', 'True' ].map((option, index) => ({ label: option, value: index.toString() }));
+			else if (type === 'MCQ')
+				radioItems = options.map((option, index) => ({ label: option, value: index.toString() }));
 			return (
-				<FormControl>
-					<FormLabel component="legend">Answer</FormLabel>
-					<RadioGroup
-						row
-						name={'Answer'}
-						value={this.state.user_answers[0]}
-						onChange={(e) =>
-							this.setState({
-								user_answers: [ e.target.value ]
-							})}
-					>
-						{[ 'True', 'False' ].map((value) => (
-							<FormControlLabel
-								key={value}
-								control={<Radio color="primary" />}
-								value={value}
-								label={value}
-								labelPlacement="end"
-							/>
-						))}
-					</RadioGroup>
-				</FormControl>
+				<RadioInput
+					OptionsContainer={QuestionOptions}
+					radioItems={radioItems}
+					OptionContainer={QuestionOption}
+					optionProps={{ theme }}
+					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
+					onChange={(e) => {
+						this.setState({
+							user_answers: [ e.target.value ]
+						});
+					}}
+				/>
 			);
-		else if (type === 'Snippet')
+		} else if (type === 'Snippet')
 			return (
 				<TextField
 					value={this.state.user_answers[0]}
@@ -206,7 +194,26 @@ class Quiz extends Component {
 					)}
 				</Fragment>
 			);
-		else return <div>{type}</div>;
+	};
+
+	renderQuestionStat = () => {
+		const { decideLabel } = this;
+		const { question, theme } = this.props;
+
+		const stats = [ 'difficulty', 'add_to_score', 'type', 'weight' ];
+		return stats.map((stat) => (
+			<QuestionStat theme={theme} key={stat}>
+				<span className="question_stat_key">{decideLabel(stat)}</span> :
+				<span className="question_stat_value">{question[stat].toString()}</span>
+			</QuestionStat>
+		));
+	};
+
+	resetAnswers = () => {
+		this.setState({
+			user_answers: [],
+			show_answer: false
+		});
 	};
 
 	decideLabel = (label) => {
@@ -214,26 +221,29 @@ class Quiz extends Component {
 	};
 
 	render() {
-		const { decideLabel } = this;
 		const { question, theme } = this.props;
-		const stats = [ 'difficulty', 'add_to_score', 'type', 'weight' ];
-		return question ? (
-			<QuizContent theme={theme}>
-				<QuestionStats theme={theme}>
-					{stats.map((stat) => (
-						<QuestionStat theme={theme} key={stat}>
-							<span className="question_stat_key">{decideLabel(stat)}</span> :
-							<span className="question_stat_value">{question[stat].toString()}</span>
-						</QuestionStat>
-					))}
-				</QuestionStats>
-				<QuestionName theme={theme}>{question.name}</QuestionName>
-				{this.renderQuestionBody()}
-			</QuizContent>
-		) : (
-			<div>Loading question</div>
-		);
+		return this.props.children({
+			question: question ? (
+				<QuizContent theme={theme}>
+					<QuestionStats theme={theme}>{this.renderQuestionStat()}</QuestionStats>
+					{question.image ? (
+						<QuestionImage>
+							<img src={question.image} alt="question" />
+						</QuestionImage>
+					) : null}
+					<QuestionName theme={theme}>{question.name}</QuestionName>
+
+					{this.renderQuestionBody()}
+				</QuizContent>
+			) : (
+				<div>Loading question</div>
+			),
+			questionManip: {
+				user_answers: this.state.user_answers,
+				reset_answers: this.resetAnswers
+			}
+		});
 	}
 }
 
-export default withTheme(Quiz);
+export default withTheme(Question);

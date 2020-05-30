@@ -11,14 +11,37 @@ const TimerDisplay = styled.div`
 `;
 
 class Timer extends Component {
-	componentDidMount() {
-		const { timeout, onTimerChange } = this.props;
-		const timer = setInterval(() => {
-			if (timeout === 0) {
-				clearInterval(timer);
-			} else onTimerChange(timer);
-		}, 1000);
-	}
+	state = {
+		timeout: this.props.timeout,
+		timer: null
+	};
+
+	clearInterval = () => {
+		this.setState({
+			timer: null,
+			timeout: 0
+		});
+	};
+
+	UNSAFE_componentWillReceiveProps = (nextProps) => {
+		if (nextProps.timeout !== this.state.timeout) {
+			clearInterval(this.state.timer);
+			const timer = setInterval(() => {
+				if (this.state.timeout !== 0) {
+					this.setState({
+						timeout: this.state.timeout - 1
+					});
+				} else {
+					this.props.onTimerEnd();
+					clearInterval(timer);
+				}
+			}, 1000);
+			this.setState({
+				timeout: nextProps.timeout,
+				timer
+			});
+		}
+	};
 
 	displayTime = (time) => {
 		const min = Math.floor(time / 60);
@@ -27,8 +50,12 @@ class Timer extends Component {
 	};
 
 	render() {
-		const { timeout } = this.props;
-		return <TimerDisplay>{this.displayTime(timeout)}</TimerDisplay>;
+		const { timeout } = this.state;
+		return this.props.children({
+			timer: <TimerDisplay>{this.displayTime(timeout)}</TimerDisplay>,
+			currentTime: timeout,
+			clearInterval: this.clearInterval
+		});
 	}
 }
 

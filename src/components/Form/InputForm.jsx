@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Formik } from 'formik';
 import Form from './Form';
 
@@ -13,17 +13,39 @@ class InputForm extends Component {
 			classNames,
 			validateOnMount = false,
 			errorBeforeTouched = false,
-			submitMsg
+			submitMsg,
+			children,
+			passFormAsProp = false,
+			initialTouched,
+			validateOnChange = false
 		} = this.props;
+
 		const initialValues = {};
+		let initialErrors = {};
 		inputs.forEach((input) => {
 			if (input) {
 				const { name, defaultValue, type, children } = input;
-				if (type === 'group')
-					children.forEach(
-						({ name, defaultValue }) => (initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '')
-					);
-				else initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+				if (name) {
+					if (type === 'group')
+						children.forEach(({ name, defaultValue }) => {
+							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+							try {
+								if (validateOnChange && validationSchema._nodes.includes(name))
+									validationSchema.validateSyncAt(name, initialValues[name]);
+							} catch (err) {
+								initialErrors[name] = err.message;
+							}
+						});
+					else {
+						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+						try {
+							if (validateOnChange && validationSchema._nodes.includes(name))
+								validationSchema.validateSyncAt(name, initialValues[name]);
+						} catch (err) {
+							initialErrors[name] = err.message;
+						}
+					}
+				}
 			}
 		});
 
@@ -34,11 +56,12 @@ class InputForm extends Component {
 				validationSchema={validationSchema}
 				validateOnMount={validateOnMount}
 				enableReinitialize={true}
+				initialTouched={initialTouched ? initialTouched : {}}
+				initialErrors={initialErrors}
 			>
 				{(props) => {
-					return (
+					const FORM = (
 						<Form
-							ref={(Form) => (this.Form = Form)}
 							{...props}
 							classNames={classNames}
 							inputs={inputs}
@@ -46,9 +69,23 @@ class InputForm extends Component {
 							formButtons={formButtons}
 							errorBeforeTouched={errorBeforeTouched}
 							submitMsg={submitMsg}
-						>
-							{this.props.children}
-						</Form>
+						/>
+					);
+					return (
+						<Fragment>
+							{passFormAsProp ? null : FORM}
+							{children && typeof children === 'function' ? (
+								children({
+									setValues: props.setValues,
+									values: props.values,
+									errors: props.errors,
+									isValid: props.isValid,
+									inputs: passFormAsProp ? FORM : null
+								})
+							) : (
+								children
+							)}
+						</Fragment>
 					);
 				}}
 			</Formik>

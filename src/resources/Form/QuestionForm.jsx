@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
@@ -8,21 +8,7 @@ import FileInputRP from '../../RP/FileInputRP';
 let defaultInputs = [
 	{ name: 'name' },
 	null,
-	{
-		name: 'type',
-		type: 'select',
-		extra: {
-			selectItems: [
-				{ text: 'Multiple Choice', value: 'MCQ' },
-				{ text: 'Multiple Select', value: 'MS' },
-				{ text: 'Fill In the Blanks', value: 'FIB' },
-				{ text: 'Snippet', value: 'Snippet' },
-				{ text: 'Flashcard', value: 'FC' },
-				{ text: 'True/False', value: 'TF' }
-			]
-		},
-		defaultValue: 'MCQ'
-	},
+	null,
 	{
 		name: 'difficulty',
 		type: 'radio',
@@ -85,63 +71,54 @@ class QuestionForm extends Component {
 			});
 	}
 
-	typeChangeHandler = (values, setValues, e) => {
-		const { name, value } = e.target;
-		if (name === 'type') {
-			this.setState(
-				{
-					type: value
-				},
-				() => {
-					this.OptionForm.decideInputs(this.state.type);
-				}
-			);
-		}
-	};
-
-	preSubmit = (getFileData, values) => {
-		const form = this.OptionForm.InputForm.Form.props;
-		const isValid = form.isValid;
+	preSubmit = (getFileData, formData, values) => {
+		let { values: formValues, transformValues, isValid } = formData;
 		if (isValid) {
-			values = this.OptionForm.transformValue(values);
-			const { image, src } = getFileData();
-			if (image === 'link') values.image = src;
-			return [ values, true ];
+			values = transformValues(formValues, values);
+			if (values) {
+				const { image, src } = getFileData();
+				if (image === 'link') values.image = src;
+				return [ values, true ];
+			} else return [ values, false ];
 		} else return [ values, false ];
 	};
 
-	postSubmit = (getFileData, { data: { data: { _id } } }) => {
-		const fd = new FormData();
-		const { file, image } = getFileData();
+	postSubmit = ({ getFileData, resetFileInput }, formData, response) => {
 		const env = this.props.user.current_environment;
-		if (file && image === 'upload') {
-			fd.append('file', file, file.name);
-			axios
-				.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
-					headers: {
-						'Content-Type': 'multipart/form-data',
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				})
-				.then((data) => {
-					if (env.reset_on_success) this.OptionForm.InputForm.Form.resetForm();
-					setTimeout(() => {
-						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
-					}, env.notification_timing + 500);
-				})
-				.catch((err) => {
-					if (env.reset_on_error) this.OptionForm.InputForm.Form.resetForm();
-					setTimeout(() => {
-						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-					}, env.notification_timing + 500);
-				});
-		} else if (env.reset_on_success || env.reset_on_error) this.OptionForm.InputForm.Form.props.resetForm();
+		const { resetOptionInput } = formData;
+		if (!response instanceof Error) {
+			const { data: { data: { _id } } } = response;
+			const fd = new FormData();
+			const { file, image } = getFileData();
+			if (file && image === 'upload') {
+				fd.append('file', file, file.name);
+				axios
+					.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
+						headers: {
+							'Content-Type': 'multipart/form-data',
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					})
+					.then((data) => {
+						if (env.reset_on_success) resetOptionInput();
+						setTimeout(() => {
+							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
+						}, env.notification_timing + 500);
+					})
+					.catch((err) => {
+						if (env.reset_on_error) resetOptionInput();
+						setTimeout(() => {
+							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						}, env.notification_timing + 500);
+					});
+			} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
+		} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
 	};
 
 	render() {
-		const { typeChangeHandler, preSubmit, postSubmit } = this;
-		const { onSubmit, sumbitMsg, customInputs } = this.props;
-		const { type, quizzes, loading } = this.state;
+		const { preSubmit, postSubmit } = this;
+		const { onSubmit, sumbitMsg, customInputs, src = '' } = this.props;
+		const { quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
 			name: Yup.string('Enter the question').required('Question is required'),
 			favourite: Yup.bool().default(false),
@@ -178,24 +155,34 @@ class QuestionForm extends Component {
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
 
 		return (
-			<FileInputRP>
+			<FileInputRP src={src}>
 				{({ FileInput, resetFileInput, getFileData }) => {
 					return (
 						<div className="create_question create_form">
-							<OptionForm type={type} ref={(i) => (this.OptionForm = i)} />
-							<InputForm
-								sumbitMsg={sumbitMsg}
-								inputs={defaultInputs}
-								customHandler={typeChangeHandler}
-								validationSchema={validationSchema}
-								onSubmit={onSubmit.bind(null, [
-									'question',
-									preSubmit.bind(null, getFileData),
-									postSubmit.bind(null, getFileData)
-								])}
-								classNames={'question_form'}
-							/>
-							{FileInput}
+							<OptionForm>
+								{({ form, formData, select, type }) => {
+									if (type === 'FIB') defaultInputs[0] = { name: 'name', type: 'textarea', extra: { row: 4 } };
+									else defaultInputs[0] = { name: 'name' };
+									defaultInputs[2] = select;
+									return (
+										<Fragment>
+											<InputForm
+												sumbitMsg={sumbitMsg}
+												inputs={defaultInputs}
+												validationSchema={validationSchema}
+												onSubmit={onSubmit.bind(null, [
+													'question',
+													preSubmit.bind(null, getFileData, formData),
+													postSubmit.bind(null, { getFileData, resetFileInput }, formData)
+												])}
+												classNames={'question_form'}
+											/>
+											{form}
+											{FileInput}
+										</Fragment>
+									);
+								}}
+							</OptionForm>
 						</div>
 					);
 				}}

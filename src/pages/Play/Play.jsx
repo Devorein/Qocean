@@ -5,7 +5,7 @@ import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
 import DeleteIcon from '@material-ui/icons/Delete';
 import GenericButton from '../../components/Buttons/GenericButton';
-import Start from '../Start/Start';
+import Quiz from '../Start/Quiz';
 
 import './Play.scss';
 
@@ -93,7 +93,7 @@ class Play extends Component {
 				<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
 			</div>
 		) : (
-			<Start
+			<Quiz
 				settings={this.state.playsettings ? this.state.playsettings : null}
 				quizzes={this.CustomList.state.checked.map((index) => quizzes[index])}
 			/>
