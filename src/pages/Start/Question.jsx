@@ -82,7 +82,7 @@ const QuestionImage = styled.div`
 
 class Question extends Component {
 	state = {
-		user_answers: [ '' ],
+		user_answers: [],
 		show_answer: false
 	};
 
@@ -103,25 +103,16 @@ class Question extends Component {
 
 	renderQuestionBody = () => {
 		const { question: { type, options, name }, theme } = this.props;
-		if (type === 'MCQ')
-			return (
-				<RadioInput
-					OptionsContainer={QuestionOptions}
-					radioItems={options.map((option) => ({ value: option }))}
-					OptionContainer={QuestionOption}
-					optionProps={{ theme }}
-				/>
-			);
-		else if (type === 'MS')
+		if (type === 'MS')
 			return (
 				<QuestionOptions>
 					{options.map((option, index) => (
 						<QuestionOption theme={theme} key={option}>
 							<Checkbox
-								checked={this.state.user_answers[0] === index}
+								checked={this.state.user_answers.includes(index)}
 								onChange={(e) => {
 									let { user_answers } = this.state;
-									if (e.target.checked) user_answers = [ index ];
+									if (e.target.checked) user_answers.push(index);
 									else user_answers = user_answers.filter((answer) => answer !== index);
 									this.setState({ user_answers });
 								}}
@@ -148,32 +139,27 @@ class Question extends Component {
 					/>
 				);
 			});
-		else if (type === 'TF')
+		else if (type === 'TF' || type === 'MCQ') {
+			let radioItems = null;
+			if (type === 'TF')
+				radioItems = [ 'False', 'True' ].map((option, index) => ({ label: option, value: index.toString() }));
+			else if (type === 'MCQ')
+				radioItems = options.map((option, index) => ({ label: option, value: index.toString() }));
 			return (
-				<FormControl>
-					<FormLabel component="legend">Answer</FormLabel>
-					<RadioGroup
-						row
-						name={'Answer'}
-						value={this.state.user_answers[0]}
-						onChange={(e) =>
-							this.setState({
-								user_answers: [ e.target.value ]
-							})}
-					>
-						{[ 'True', 'False' ].map((value) => (
-							<FormControlLabel
-								key={value}
-								control={<Radio color="primary" />}
-								value={value}
-								label={value}
-								labelPlacement="end"
-							/>
-						))}
-					</RadioGroup>
-				</FormControl>
+				<RadioInput
+					OptionsContainer={QuestionOptions}
+					radioItems={radioItems}
+					OptionContainer={QuestionOption}
+					optionProps={{ theme }}
+					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
+					onChange={(e) => {
+						this.setState({
+							user_answers: [ e.target.value ]
+						});
+					}}
+				/>
 			);
-		else if (type === 'Snippet')
+		} else if (type === 'Snippet')
 			return (
 				<TextField
 					value={this.state.user_answers[0]}
@@ -208,7 +194,6 @@ class Question extends Component {
 					)}
 				</Fragment>
 			);
-		else return <div>{type}</div>;
 	};
 
 	renderQuestionStat = () => {
@@ -226,7 +211,7 @@ class Question extends Component {
 
 	resetAnswers = () => {
 		this.setState({
-			user_answers: [ '' ],
+			user_answers: [],
 			show_answer: false
 		});
 	};
@@ -254,7 +239,7 @@ class Question extends Component {
 				<div>Loading question</div>
 			),
 			questionManip: {
-				user_answer: this.state.user_answers,
+				user_answers: this.state.user_answers,
 				reset_answers: this.resetAnswers
 			}
 		});
