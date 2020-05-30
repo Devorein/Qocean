@@ -68,7 +68,7 @@ const QuestionOption = styled.div`
 	border-radius: 5px;
 `;
 
-class Quiz extends Component {
+class Question extends Component {
 	state = {
 		user_answers: [ '' ],
 		show_answer: false
@@ -88,6 +88,7 @@ class Quiz extends Component {
 				});
 			});
 	};
+
 	renderQuestionBody = () => {
 		const { question: { type, options, name }, theme } = this.props;
 		if (type === 'MCQ')
@@ -236,4 +237,4 @@ class Quiz extends Component {
 	}
 }
 
-export default withTheme(Quiz);
+export default withTheme(Question);
