@@ -3,6 +3,7 @@ import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import styled from 'styled-components';
 import InputSelect from '../../components/Input/InputSelect';
+import TextField from '@material-ui/core/TextField';
 
 const OptionFormContainer = styled.div`
 	& .form {
@@ -82,9 +83,22 @@ const INIT_MS_STATE = {
 
 class OptionForm extends Component {
 	state = {
-		type: 'MCQ'
+		type: 'MCQ',
+		blank_count: 1
 	};
-
+	renderFIB = () => {
+		const options = [];
+		for (let i = 1; i <= this.state.blank_count; i++) {
+			options.push(
+				...[
+					{ name: `answers_${i}`, type: 'textarea', extra: { row: 2 } },
+					{ name: `alternate_${i}_1`, type: 'textarea', extra: { row: 1 } },
+					{ name: `alternate_${i}_2`, type: 'textarea', extra: { row: 1 } }
+				]
+			);
+		}
+		return options;
+	};
 	decideInputs = () => {
 		const { type } = this.state;
 		if (type === 'MCQ') return INIT_MCQ_STATE;
@@ -107,16 +121,29 @@ class OptionForm extends Component {
 				],
 				options: []
 			};
-		else if (type === 'FIB')
-			return {
+		else if (type === 'FIB') {
+			const INIT_FIB_STATE = {
 				options: [],
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+					{
+						type: 'component',
+						component: (
+							<TextField
+								key="blank_count"
+								type={'number'}
+								value={this.state.blank_count}
+								onChange={(e) => this.setState({ blank_count: e.target.value })}
+								fullWidth
+								inputProps={{ max: 5, min: 1, step: 1 }}
+							/>
+						)
+					}
 				]
 			};
-		else if (type === 'TF')
+			INIT_FIB_STATE.answers = INIT_FIB_STATE.answers.slice(0, 1);
+			INIT_FIB_STATE.answers.push(...this.renderFIB());
+			return INIT_FIB_STATE;
+		} else if (type === 'TF')
 			return {
 				options: [],
 				answers: [
@@ -165,11 +192,10 @@ class OptionForm extends Component {
 					.default('answer_1')
 			});
 		} else if (type === 'FIB') {
-			return Yup.object({
-				answers: Yup.string('Enter answer')
-					.oneOf([ 'true', 'false' ], 'Should be either true or false')
-					.required('An answer must be given')
-			});
+			const obj = {};
+			for (let i = 1; i <= this.state.blank_count; i++)
+				obj[`answers_${i}`] = Yup.string(`Enter answer ${i}`).required('An answer must be given');
+			return Yup.object(obj);
 		}
 	};
 
@@ -202,8 +228,8 @@ class OptionForm extends Component {
 			if (source.alternate_2) dest.answers[0].push(source.alternate_2);
 		} else if (type === 'FC') {
 			dest.answers = [ [ source.answers ] ];
-			if (source.alternate_1) dest.answers[0].push(source.alternate);
-			if (source.alternate_2) dest.answers[0].push(source.alternate);
+			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
+			if (source.alternate_2) dest.answers[0].push(source.alternate_2);
 		} else if (type === 'TF') dest.answers = [ [ source.answers === 'answer_1' ? 1 : 0 ] ];
 		return dest;
 	};
@@ -213,6 +239,7 @@ class OptionForm extends Component {
 			type: e.target.value
 		});
 	};
+
 	resetOptionInput = (values, setValues) => {
 		const { type } = this.state;
 		const temp = {};

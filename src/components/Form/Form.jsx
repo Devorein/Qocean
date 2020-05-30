@@ -69,6 +69,7 @@ class Form extends React.Component {
 			return {
 				name,
 				onKeyPress: onkeyPress,
+				onChange: fieldHandler,
 				label: this.decideLabel(name, label)
 			};
 		}
@@ -204,6 +205,7 @@ class Form extends React.Component {
 			return (
 				<Fragment key={name}>
 					<TextField
+						// defaultValue={defaultValue}
 						type={'number'}
 						{...this.formikProps(name, label, placeholder, controlled, { fieldHandler })}
 						fullWidth
