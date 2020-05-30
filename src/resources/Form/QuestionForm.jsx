@@ -71,18 +71,18 @@ class QuestionForm extends Component {
 			});
 	}
 
-	preSubmit = (getFileData, values) => {
-		const form = this.OptionForm.InputForm.Form.props;
-		const isValid = form.isValid;
+	preSubmit = (getFileData, formData, values) => {
+		let { values: formValues, transformValues, isValid } = formData;
 		if (isValid) {
-			values = this.OptionForm.transformValue(values);
+			values = transformValues(formValues, values);
 			const { image, src } = getFileData();
 			if (image === 'link') values.image = src;
 			return [ values, true ];
 		} else return [ values, false ];
 	};
 
-	postSubmit = (getFileData, { data: { data: { _id } } }) => {
+	postSubmit = ({ getFileData, resetFileInput }, formData, { data: { data: { _id } } }) => {
+		const { resetOptionInput } = formData;
 		const fd = new FormData();
 		const { file, image } = getFileData();
 		const env = this.props.user.current_environment;
@@ -96,18 +96,18 @@ class QuestionForm extends Component {
 					}
 				})
 				.then((data) => {
-					if (env.reset_on_success) this.OptionForm.InputForm.Form.resetForm();
+					if (env.reset_on_success) resetOptionInput();
 					setTimeout(() => {
 						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
 					}, env.notification_timing + 500);
 				})
 				.catch((err) => {
-					if (env.reset_on_error) this.OptionForm.InputForm.Form.resetForm();
+					if (env.reset_on_error) resetOptionInput();
 					setTimeout(() => {
 						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, env.notification_timing + 500);
 				});
-		} else if (env.reset_on_success || env.reset_on_error) this.OptionForm.InputForm.Form.props.resetForm();
+		} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
 	};
 
 	render() {
@@ -165,8 +165,8 @@ class QuestionForm extends Component {
 												validationSchema={validationSchema}
 												onSubmit={onSubmit.bind(null, [
 													'question',
-													preSubmit.bind(null, getFileData),
-													postSubmit.bind(null, getFileData)
+													preSubmit.bind(null, getFileData, formData),
+													postSubmit.bind(null, { getFileData, resetFileInput }, formData)
 												])}
 												classNames={'question_form'}
 											/>

@@ -160,8 +160,9 @@ class OptionForm extends Component {
 		} else if (type === 'TF') {
 			return Yup.object({
 				answers: Yup.string('Enter answer')
-					.oneOf([ 'true', 'false' ], 'Should be either true or false')
+					.oneOf([ 'answer_1', 'answer_2' ], 'Should be either true or false')
 					.required('An answer must be given')
+					.default('answer_1')
 			});
 		} else if (type === 'FIB') {
 			return Yup.object({
@@ -172,34 +173,35 @@ class OptionForm extends Component {
 		}
 	};
 
-	transformValue = (values) => {
-		const { type } = this.props;
-		const form = this.InputForm.Form.props.values;
+	transformValues = (source, dest) => {
+		const { type } = this.state;
+		dest.type = type;
 		if (type === 'MCQ') {
 			const options = [];
-			Object.entries(form).forEach(([ key, value ]) => {
+			Object.entries(source).forEach(([ key, value ]) => {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
-			values.options = options;
-			values.answers = parseInt(form.answers.split('_')[1]);
+			dest.options = options;
+			dest.answers = parseInt(source.answers.split('_')[1]);
 		} else if (type === 'MS') {
 			const options = [];
 			const answers = [];
-			Object.entries(form).forEach(([ key, value ]) => {
+			Object.entries(source).forEach(([ key, value ]) => {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 				else if (key.startsWith('answer_')) answers.push(answers.length + 1);
 			});
-			values.options = options;
-			values.answers = answers.map((answer) => [ parseInt(answer) ]);
+			dest.options = options;
+			dest.answers = answers.map((answer) => [ parseInt(answer) ]);
 		} else if (type === 'Snippet') {
-			values.answers = [ [ form.answers ] ];
-			if (form.alternate_1) values.answers[0].push(form.alternate_1);
-			if (form.alternate_2) values.answers[0].push(form.alternate_2);
+			dest.answers = [ [ source.answers ] ];
+			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
+			if (source.alternate_2) dest.answers[0].push(source.alternate_2);
 		} else if (type === 'FC') {
-			values.answers = [ [ form.answers ] ];
-			if (form.alternate) values.answers[0].push(form.alternate);
-		} else if (type === 'TF') values.answers = [ [ values.answers ] ];
-		return values;
+			dest.answers = [ [ source.answers ] ];
+			if (source.alternate_1) dest.answers[0].push(source.alternate);
+			if (source.alternate_2) dest.answers[0].push(source.alternate);
+		} else if (type === 'TF') dest.answers = [ [ source.answers === 'answer_1' ? 1 : 0 ] ];
+		return dest;
 	};
 
 	typeChangeHandler = (e) => {
@@ -207,9 +209,20 @@ class OptionForm extends Component {
 			type: e.target.value
 		});
 	};
+	resetOptionInput = (values, setValues) => {
+		const { type } = this.state;
+		const temp = {};
+		Object.keys(values).forEach((key) => (temp[key] = ''));
+		if (type === 'MCQ') setValues({ ...temp, answers: 'answer_1' });
+		else if (type === 'MS') setValues({ ...temp, answer_1: true });
+		else if (type === 'FC') setValues({ ...temp });
+		else if (type === 'FIB') setValues({ ...temp });
+		else if (type === 'TF') setValues({ ...temp, answers: 'answer_1' });
+		else if (type === 'Snippet') setValues({ ...temp });
+	};
 
 	render() {
-		const { typeChangeHandler, decideValidation, decideInputs } = this;
+		const { typeChangeHandler, decideValidation, decideInputs, transformValues, resetOptionInput } = this;
 		const validationSchema = decideValidation();
 		const { options, answers } = decideInputs();
 
@@ -223,13 +236,15 @@ class OptionForm extends Component {
 				formButtons={false}
 				validateOnChange={true}
 			>
-				{({ values, errors, isValid, inputs }) => {
+				{({ values, errors, isValid, inputs, setValues }) => {
 					return this.props.children({
 						form: <OptionFormContainer className="answers_form">{inputs}</OptionFormContainer>,
 						formData: {
 							values,
 							errors,
-							isValid
+							isValid,
+							transformValues,
+							resetOptionInput: resetOptionInput.bind(null, values, setValues)
 						},
 						select: {
 							type: 'component',
