@@ -48,7 +48,23 @@ class Start extends Component {
 
 	componentDidMount() {
 		this.fetchQuestion();
+		this.updatePlayedTimes();
 	}
+
+	updatePlayedTimes = () => {
+		axios
+			.put(
+				`http://localhost:5001/api/v1/quizzes/_/updatePlayedTimes`,
+				{
+					quizzes: this.props.quizzes.map((quiz) => quiz._id)
+				},
+				{
+					headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+				}
+			)
+			.then((data) => {})
+			.catch((err) => {});
+	};
 
 	getTotalQuestions = () => {
 		let totalQuiz = 0;

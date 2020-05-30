@@ -71,3 +71,16 @@ exports.deleteQuiz = asyncHandler(async (req, res, next) => {
 exports.quizPhotoUpload = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.imageUpload);
 });
+
+exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
+	const { quizzes } = req.body;
+	if (quizzes) {
+		for (let i = 0; i < quizzes.length; i++) {
+			const quizId = quizzes[i];
+			const quiz = await Quiz.findById(quizId);
+			if (quiz._id !== req.user._id) quiz.total_played = quiz.total_played + 1;
+			await quiz.save();
+		}
+	}
+	res.status(200).json({ success: true, total_updated: quizzes.length });
+});

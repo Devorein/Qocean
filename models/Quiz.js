@@ -60,7 +60,11 @@ const QuizSchema = extendSchema(
 				type: mongoose.Schema.ObjectId,
 				ref: 'Folder'
 			}
-		]
+		],
+		total_played: {
+			type: Number,
+			default: 0
+		}
 	},
 	{
 		toJSON: { virtuals: true },

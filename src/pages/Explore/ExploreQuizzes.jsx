@@ -20,6 +20,7 @@ class ExploreQuizzes extends Component {
 				{ name: 'total_questions', sort: true, filter: true },
 				{ name: 'creator', sort: true, filter: false },
 				{ name: 'created_at', sort: false, filter: false },
+				{ name: 'total_played', sort: true, filter: false },
 				{ name: 'updated_at', sort: false, filter: false }
 			].map(({ name, sort, filter }) => {
 				return {
