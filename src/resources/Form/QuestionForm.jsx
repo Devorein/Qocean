@@ -160,7 +160,9 @@ class QuestionForm extends Component {
 					return (
 						<div className="create_question create_form">
 							<OptionForm>
-								{({ form, formData, select }) => {
+								{({ form, formData, select, type }) => {
+									if (type === 'FIB') defaultInputs[0] = { name: 'name', type: 'textarea', extra: { row: 4 } };
+									else defaultInputs[0] = { name: 'name' };
 									defaultInputs[2] = select;
 									return (
 										<Fragment>

@@ -285,6 +285,7 @@ class OptionForm extends Component {
 				{({ values, errors, isValid, inputs, setValues }) => {
 					return this.props.children({
 						form: <OptionFormContainer className="answers_form">{inputs}</OptionFormContainer>,
+						type: this.state.type,
 						formData: {
 							values,
 							errors,
