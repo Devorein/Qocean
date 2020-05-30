@@ -75,9 +75,11 @@ class QuestionForm extends Component {
 		let { values: formValues, transformValues, isValid } = formData;
 		if (isValid) {
 			values = transformValues(formValues, values);
-			const { image, src } = getFileData();
-			if (image === 'link') values.image = src;
-			return [ values, true ];
+			if (values) {
+				const { image, src } = getFileData();
+				if (image === 'link') values.image = src;
+				return [ values, true ];
+			} else return [ values, false ];
 		} else return [ values, false ];
 	};
 

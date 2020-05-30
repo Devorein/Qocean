@@ -231,6 +231,21 @@ class OptionForm extends Component {
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
 			if (source.alternate_2) dest.answers[0].push(source.alternate_2);
 		} else if (type === 'TF') dest.answers = [ [ source.answers === 'answer_1' ? 1 : 0 ] ];
+		else if (type === 'FIB') {
+			const answers = [];
+			let current_answers = 0;
+			Object.entries(source).forEach(([ key, value ]) => {
+				if (key.startsWith('answers')) {
+					if (!answers[current_answers]) answers[current_answers++] = [ value ];
+					else answers[current_answers++][0] = value;
+				} else if (key.startsWith('alternate') && value !== '') {
+					const index = key.split('_')[1];
+					if (!answers[index - 1]) answers[index - 1] = [ null ];
+					answers[index - 1].push(value);
+				}
+			});
+			dest.answers = answers;
+		}
 		return dest;
 	};
 
