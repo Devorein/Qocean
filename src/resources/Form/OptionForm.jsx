@@ -221,6 +221,7 @@ class OptionForm extends Component {
 				validateOnMount={true}
 				inputs={[ ...options, ...answers ]}
 				formButtons={false}
+				validateOnChange={true}
 			>
 				{({ values, errors, isValid, inputs }) => {
 					return this.props.children({

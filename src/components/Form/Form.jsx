@@ -179,7 +179,6 @@ class Form extends React.Component {
 			);
 		else if (type === 'radio') {
 			const props = this.formikProps(name, label, placeholder, controlled, { fieldHandler });
-			if (name !== 'difficulty') console.log(props);
 			delete props.helperText;
 			delete props.error;
 			return (

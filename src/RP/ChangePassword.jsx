@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import { isStrongPassword } from '../Utils/validation';
 import GenericButton from '../components/Buttons/GenericButton';
-import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';

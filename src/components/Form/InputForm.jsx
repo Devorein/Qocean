@@ -15,19 +15,36 @@ class InputForm extends Component {
 			errorBeforeTouched = false,
 			submitMsg,
 			children,
-			passFormAsProp = false
+			passFormAsProp = false,
+			initialTouched,
+			validateOnChange
 		} = this.props;
 
 		const initialValues = {};
-
+		let initialErrors = {};
 		inputs.forEach((input) => {
 			if (input) {
 				const { name, defaultValue, type, children } = input;
-				if (type === 'group')
-					children.forEach(
-						({ name, defaultValue }) => (initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '')
-					);
-				else initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+				if (name) {
+					if (type === 'group')
+						children.forEach(({ name, defaultValue }) => {
+							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+							try {
+								if (validateOnChange) validationSchema.validateSyncAt(name, initialValues[name]);
+							} catch (err) {
+								initialErrors[name] = err.message;
+							}
+						});
+					else {
+						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+						try {
+							if (validateOnChange && validationSchema._nodes.includes(name))
+								validationSchema.validateSyncAt(name, initialValues[name]);
+						} catch (err) {
+							initialErrors[name] = err.message;
+						}
+					}
+				}
 			}
 		});
 
@@ -38,6 +55,8 @@ class InputForm extends Component {
 				validationSchema={validationSchema}
 				validateOnMount={validateOnMount}
 				enableReinitialize={true}
+				initialTouched={initialTouched ? initialTouched : {}}
+				initialErrors={initialErrors}
 			>
 				{(props) => {
 					const FORM = (
