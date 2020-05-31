@@ -49,7 +49,7 @@ class ReportBody extends Component {
 						return (
 							<ReportBodyItem className="report_body_item" theme={theme} key={stats[index]._id}>
 								<ReportBodyItemHeader stat={stats[index]} answer={answer} validations={validations} />
-								{/* <ReportBodyItemBody stat={stats[index]} response={response} /> */}
+								<ReportBodyItemBody stat={stats[index]} answer={answer} />
 							</ReportBodyItem>
 						);
 					})

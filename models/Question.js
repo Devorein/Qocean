@@ -131,7 +131,7 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 			const containsDuplicateAnswer =
 				new Set(question.answers.map((answer) => answer.toString().trim())).size !== question.answers.length;
 			if (containsDuplicateAnswer) return [ false, 'There is duplicate answer for the question' ];
-			const isValidAnswer = question.answers.every((answer) => parseInt(answer) >= 1 && parseInt(answer) <= 6);
+			const isValidAnswer = question.answers.every((answer) => parseInt(answer) >= 0 && parseInt(answer) <= 5);
 			if (!isValidAnswer) return [ false, 'Your answer is out of range' ];
 			if (type === 'MCQ') if (question.answers.length > 1) return [ false, 'You provided   more answers than needed' ];
 		} else if (type === 'TF') {

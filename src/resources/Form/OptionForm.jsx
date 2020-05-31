@@ -208,7 +208,7 @@ class OptionForm extends Component {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
 			dest.options = options;
-			dest.answers = [ parseInt(source.answers.split('_')[1]) ];
+			dest.answers = [ parseInt(source.answers.split('_')[1]) - 1 ];
 		} else if (type === 'MS') {
 			const options = [];
 			const answers = [];
@@ -221,7 +221,7 @@ class OptionForm extends Component {
 				}
 			});
 			dest.options = options;
-			dest.answers = answers.map((answer) => [ parseInt(answer) ]);
+			dest.answers = answers.map((answer) => [ parseInt(answer) - 1 ]);
 		} else if (type === 'Snippet') {
 			dest.answers = [ [ source.answers ] ];
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
