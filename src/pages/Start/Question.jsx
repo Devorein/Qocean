@@ -163,7 +163,7 @@ class Question extends Component {
 		} else if (type === 'Snippet')
 			return (
 				<TextField
-					value={this.state.user_answers[0]}
+					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
 					onChange={(e) => {
 						this.setState({
 							user_answers: [ e.target.value ]

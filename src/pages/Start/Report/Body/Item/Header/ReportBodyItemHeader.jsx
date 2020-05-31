@@ -25,9 +25,8 @@ export default withTheme(({ stat, theme, validations, answer }) => {
 		<ReportBodyItemHeader theme={theme}>
 			<FlexCenter>
 				<div
-					className={`report_body_item_header_validation report_body_item_header_validation--${validations.correct.includes(
-						stat._id
-					)
+					className={`report_body_item_header_validation report_body_item_header_validation--${validations &&
+					validations.correct.includes(stat._id)
 						? 'correct'
 						: 'incorrect'}`}
 				/>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import shortid from 'shortid';
 import { withTheme } from '@material-ui/core';
@@ -27,13 +27,15 @@ const ReportBodyItemBody = styled.div`
 class ReportBodyItemBodyClass extends Component {
 	renderBodyOptions = () => {
 		let { theme, answer: { answers }, stat } = this.props;
-		answers = answers.map((answer) => parseInt(answer));
 		let { user_answers, type, options } = stat;
-		user_answers = user_answers.map((answer) => parseInt(answer));
 		if (type === 'TF') options = [ 'False', 'True' ];
-		if (type === 'MCQ' || type === 'MS' || type === 'TF')
+		let status = null;
+
+		if (type === 'MCQ' || type === 'MS' || type === 'TF') {
+			answers = answers.map((answer) => parseInt(answer));
+			user_answers = user_answers.map((answer) => parseInt(answer));
+
 			return options.map((option, index) => {
-				let status = null;
 				if (type === 'MCQ') {
 					if (user_answers[0] === index && index === answers[0]) status = 'correct_selected';
 					else if (index === answers[0]) status = 'correct';
@@ -50,13 +52,11 @@ class ReportBodyItemBodyClass extends Component {
 					else if (index === answers[0] && index === user_answers[0]) status = 'correct_selected';
 					else status = 'none';
 				}
-
 				const props = {
 					className: `report_body_item_body_option report_body_item_body_option--${status}`,
 					theme,
 					key: shortid.generate()
 				};
-
 				return (
 					<div {...props}>
 						<span className="color" />
@@ -64,6 +64,43 @@ class ReportBodyItemBodyClass extends Component {
 					</div>
 				);
 			});
+		} else if (type === 'Snippet') {
+			let user_answer = null;
+			if (!answers[0].includes(user_answers[0])) {
+				status = 'incorrect';
+				const props = {
+					className: `report_body_item_body_option report_body_item_body_option--${status}`,
+					theme,
+					key: shortid.generate()
+				};
+				user_answer = (
+					<div {...props}>
+						<span className="color" />
+						{user_answers[0]}
+					</div>
+				);
+			}
+			return (
+				<Fragment>
+					{answers[0].map((answer) => {
+						if (answer === user_answers[0]) status = 'correct_selected';
+						else status = 'correct';
+						const props = {
+							className: `report_body_item_body_option report_body_item_body_option--${status}`,
+							theme,
+							key: shortid.generate()
+						};
+						return (
+							<div {...props}>
+								<span className="color" />
+								{answer}
+							</div>
+						);
+					})}
+					{user_answer}
+				</Fragment>
+			);
+		}
 	};
 
 	render() {
