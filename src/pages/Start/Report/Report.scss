@@ -41,6 +41,11 @@
         border-radius: 3px 3px 0px 0px;
         height: 25%;
         font-weight: 20px;
+        &_validation {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+        }
         &_item {
         }
         &_meta {
@@ -81,6 +86,10 @@
         width: 100%;
         &--validation {
         }
+      }
+      &_item {
+        padding: 5px;
+        border-radius: 3px;
       }
     }
     &_item {

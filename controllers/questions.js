@@ -11,6 +11,17 @@ exports.sendAnswer = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: question.answers });
 });
 
+exports.sendAnswers = asyncHandler(async (req, res, next) => {
+	const { questions } = req.body;
+	const responses = [];
+	for (let i = 0; i < questions.length; i++) {
+		const questionId = questions[i];
+		const { _id, answers } = await Question.findById(questionId).select('+answers');
+		responses.push({ _id, answers });
+	}
+	res.status(200).json({ success: true, data: responses });
+});
+
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
 	const question = await Question.findById(req.body.id).select('+answers');
 	if (!question) return next(new ErrorResponse(`Question doesn't exist`, 404));
@@ -21,14 +32,14 @@ exports.validateQuestion = asyncHandler(async (req, res, next) => {
 
 exports.validateQuestions = asyncHandler(async (req, res, next) => {
 	const { questions } = req.body;
-	const response = { correct: 0, incorrect: 0 };
+	const response = { correct: [], incorrect: [] };
 	for (let i = 0; i < questions.length; i++) {
 		const { id, answers } = questions[i];
 		const question = await Question.findById(id).select('+answers');
 		if (question) {
 			let [ isCorrect ] = await question.validateAnswer(answers);
-			if (isCorrect) response.correct++;
-			else response.incorrect++;
+			if (isCorrect) response.correct.push(id);
+			else response.incorrect.push(id);
 		}
 	}
 	res.status(200).json({ success: true, data: response });

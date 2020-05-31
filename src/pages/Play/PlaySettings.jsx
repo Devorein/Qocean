@@ -60,6 +60,11 @@ const inputs = [
 		type: 'checkbox',
 		name: 'randomized_question',
 		defaultValue: false
+  },
+  {
+		type: 'checkbox',
+		name: 'randomized_options',
+		defaultValue: false
 	}
 ];
 

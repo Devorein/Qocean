@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Color from 'color';
 import convert from 'color-convert';
 import styled from 'styled-components';
+import axios from 'axios';
 
 import ReportBodyItemHeader from './Item/Header/ReportBodyItemHeader';
 import ReportBodyItemBody from './Item/Body/ReportBodyItemBody';
@@ -13,18 +14,46 @@ const ReportBodyItem = styled.div`
 `;
 
 class ReportBody extends Component {
+	state = {
+		answers: null
+	};
+	componentDidMount() {
+		if (this.props.stats) {
+			const questions = this.props.stats.map(({ _id }) => _id);
+			axios
+				.put(
+					'http://localhost:5001/api/v1/questions/_/answers',
+					{
+						questions
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					}
+				)
+				.then(({ data: { data: answers } }) => {
+					this.setState({
+						answers
+					});
+				});
+		}
+	}
 	render() {
-		const { theme, stats, responses } = this.props;
+		const { theme, stats, validations } = this.props;
+		const { answers } = this.state;
 		return (
 			<ReportBodyC className={'report_body'} theme={theme}>
-				{responses.map((response, index) => {
-					return (
-						<ReportBodyItem className="report_body_item" theme={theme} key={stats[index]._id}>
-							<ReportBodyItemHeader stat={stats[index]} response={response} />
-							<ReportBodyItemBody stat={stats[index]} response={response} />
-						</ReportBodyItem>
-					);
-				})}
+				{answers ? (
+					answers.map((answer, index) => {
+						return (
+							<ReportBodyItem className="report_body_item" theme={theme} key={stats[index]._id}>
+								<ReportBodyItemHeader stat={stats[index]} answer={answer} validations={validations} />
+								{/* <ReportBodyItemBody stat={stats[index]} response={response} /> */}
+							</ReportBodyItem>
+						);
+					})
+				) : null}
 			</ReportBodyC>
 		);
 	}

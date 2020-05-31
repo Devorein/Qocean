@@ -8,42 +8,35 @@ import ReportBody from './Body/ReportBody';
 
 class Report extends Component {
 	state = {
-		responses: []
+		validations: null
 	};
 
 	componentDidMount() {
-		const reductiveDownloadChain = (items) => {
-			let responses = [];
-			return items.reduce((chain, currentItem) => {
-				return chain.then((_) => {
-					const { _id } = currentItem;
-					axios
-						.get(`http://localhost:5001/api/v1/questions/answers/${_id}`, {
-							headers: {
-								Authorization: `Bearer ${localStorage.getItem('token')}`
-							}
-						})
-						.then((res) => {
-							responses.push(res.data.data);
-							if (responses.length === items.length) {
-								this.setState({
-									responses
-								});
-							}
-						});
+		const questions = this.props.stats.map((stat) => ({ id: stat._id, answers: stat.user_answers }));
+		axios
+			.put(
+				'http://localhost:5001/api/v1/questions/_/validations',
+				{ questions },
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data: validations } }) => {
+				this.setState({
+					validations
 				});
-			}, Promise.resolve());
-		};
-
-		reductiveDownloadChain(this.props.stats);
+			});
 	}
 
 	render() {
 		const { theme, stats } = this.props;
+		const { validations } = this.state;
 		return (
 			<div className="report pages">
-				<ReportHeader stats={stats} theme={theme} />
-				<ReportBody stats={stats} theme={theme} responses={this.state.responses} />
+				<ReportHeader stats={stats} theme={theme} validations={validations} />
+				<ReportBody stats={stats} theme={theme} validations={validations} />
 			</div>
 		);
 	}
