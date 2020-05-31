@@ -1,12 +1,12 @@
 .report {
+  max-width: 750px;
+  width: 75%;
+  margin: 0 auto;
   &_body {
     display: flex;
     flex-direction: column;
-    max-width: 750px;
-    width: 75%;
     padding: 5px;
     height: calc(100% - 100px);
-    margin: 0 auto;
     overflow-y: auto;
     &_item {
       padding: 5px;
@@ -60,6 +60,18 @@
           padding: 5px;
         }
       }
+    }
+  }
+  &_header {
+    padding: 5px;
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 20px;
+    font-weight: bolder;
+    align-items: center;
+    &_item {
+      padding: 3px;
+      border-radius: 3px;
     }
   }
 }

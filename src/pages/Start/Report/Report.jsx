@@ -42,7 +42,7 @@ class Report extends Component {
 		const { theme, stats } = this.props;
 		return (
 			<div className="report pages">
-				<ReportHeader stats={stats} theme={theme} responses={this.state.responses} />
+				<ReportHeader stats={stats} theme={theme} />
 				<ReportBody stats={stats} theme={theme} responses={this.state.responses} />
 			</div>
 		);
