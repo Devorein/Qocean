@@ -5,12 +5,13 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Icon from '@material-ui/core/Icon';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import shortId from 'shortid';
 
 class InputSelect extends Component {
 	render() {
-		const { disabled, selectItems, onChange, name, helperText, value } = this.props;
+		const { className, disabled, selectItems, onChange, name = 'select', helperText, value } = this.props;
 		return (
-			<div>
+			<div className={`inputselect ${className}`}>
 				<FormControl disabled={disabled ? disabled : false} fullWidth>
 					{!disabled ? (
 						<Fragment>
@@ -20,7 +21,7 @@ class InputSelect extends Component {
 							<Select name={name} value={value} onChange={onChange}>
 								{selectItems.map(({ value, text, icon }) => {
 									return (
-										<MenuItem key={value ? value : text} value={value ? value : text}>
+										<MenuItem key={shortId.generate()} value={value ? value : text}>
 											{icon ? <Icon>{icon}</Icon> : null}
 											{text}
 										</MenuItem>
