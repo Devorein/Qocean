@@ -26,7 +26,7 @@ const ReportBodyItemBody = styled.div`
 
 class ReportBodyItemBodyClass extends Component {
 	renderBodyOptions = () => {
-		let { theme, answer: { answers }, stat } = this.props;
+		let { answer: { answers }, stat } = this.props;
 		let { user_answers, type, options } = stat;
 		if (type === 'TF') options = [ 'False', 'True' ];
 		let status = null;
@@ -54,7 +54,6 @@ class ReportBodyItemBodyClass extends Component {
 				}
 				const props = {
 					className: `report_body_item_body_option report_body_item_body_option--${status}`,
-					theme,
 					key: shortid.generate()
 				};
 				return (
@@ -70,7 +69,6 @@ class ReportBodyItemBodyClass extends Component {
 				status = 'incorrect';
 				const props = {
 					className: `report_body_item_body_option report_body_item_body_option--${status}`,
-					theme,
 					key: shortid.generate()
 				};
 				user_answer = (
@@ -87,7 +85,6 @@ class ReportBodyItemBodyClass extends Component {
 						else status = 'correct';
 						const props = {
 							className: `report_body_item_body_option report_body_item_body_option--${status}`,
-							theme,
 							key: shortid.generate()
 						};
 						return (
@@ -100,6 +97,44 @@ class ReportBodyItemBodyClass extends Component {
 					{user_answer}
 				</Fragment>
 			);
+		} else if (type === 'FIB') {
+			return answers.map((answer, index) => {
+				let user_answer = null;
+				if (!answer.includes(user_answers[index])) {
+					status = 'incorrect';
+					const props = {
+						className: `report_body_item_body_option report_body_item_body_option--${status}`,
+						key: shortid.generate()
+					};
+					user_answer = (
+						<div {...props}>
+							<span className="color" />
+							{user_answers[index]}
+						</div>
+					);
+				}
+				return (
+					<div
+						className={`report_body_item_body_row report_body_item_body_row--${answer.length + (user_answer ? 1 : 0)}`}
+					>
+						{answer.map((chunk) => {
+							if (chunk.toString() === user_answers[index]) status = 'correct_selected';
+							else status = 'correct';
+							const props = {
+								className: `report_body_item_body_option report_body_item_body_option--${status}`,
+								key: shortid.generate()
+							};
+							return (
+								<div {...props}>
+									<span className="color" />
+									{chunk}
+								</div>
+							);
+						})}
+						{user_answer}
+					</div>
+				);
+			});
 		}
 	};
 

@@ -26,6 +26,24 @@
           grid-auto-rows: 50px;
           grid-gap: 5px;
         }
+        &--FIB {
+          display: flex;
+          flex-direction: column;
+        }
+        &_row {
+          display: grid;
+          grid-gap: 5px;
+          margin: 5px;
+          &--2 {
+            grid-template: 50px/1fr 1fr;
+          }
+          &--3 {
+            grid-template: 50px/1fr 1fr 1fr;
+          }
+          &--4 {
+            grid-template: 50px/1fr 1fr 1fr 1fr;
+          }
+        }
         &_option {
           border-radius: 3px;
           width: 100%;

@@ -128,8 +128,8 @@ class Question extends Component {
 			return name.match(/\$\{_\}/g).map((match, index) => {
 				return (
 					<TextField
-						key={shortid.generate()}
-						value={this.state.user_answers[index]}
+						key={`FIB_option_${index}`}
+						value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
 						onChange={(e) => {
 							const { user_answers } = this.state;
 							user_answers[index] = e.target.value;
