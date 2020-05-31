@@ -5,7 +5,7 @@ import axios from 'axios';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Timer from '../../components/Timer/Timer';
-import Report from './Report';
+import Report from './Report/Report';
 
 const flexCenter = `
   display: flex;
