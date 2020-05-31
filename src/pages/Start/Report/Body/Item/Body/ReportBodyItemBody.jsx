@@ -30,7 +30,8 @@ class ReportBodyItemBodyClass extends Component {
 		answers = answers.map((answer) => parseInt(answer));
 		let { user_answers, type, options } = stat;
 		user_answers = user_answers.map((answer) => parseInt(answer));
-		if (type === 'MCQ' || type === 'MS')
+		if (type === 'TF') options = [ 'False', 'True' ];
+		if (type === 'MCQ' || type === 'MS' || type === 'TF')
 			return options.map((option, index) => {
 				let status = null;
 				if (type === 'MCQ') {
@@ -42,6 +43,11 @@ class ReportBodyItemBodyClass extends Component {
 					if (user_answers.includes(index) && answers.includes(index)) status = 'correct_selected';
 					else if (answers.includes(index)) status = 'correct';
 					else if (user_answers.includes(index) && !answers.includes(index)) status = 'incorrect';
+					else status = 'none';
+				} else if (type === 'TF') {
+					if (index === answers[0] && answers[0] !== user_answers[0]) status = 'correct';
+					else if (index !== answers[0] && index === user_answers[0]) status = 'incorrect';
+					else if (index === answers[0] && index === user_answers[0]) status = 'correct_selected';
 					else status = 'none';
 				}
 
