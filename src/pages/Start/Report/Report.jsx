@@ -11,16 +11,15 @@ const ReportBody = styled.div`/* background: ${(props) => props.theme.palette.ba
 const ReportBodyItem = styled.div``;
 
 class Report extends Component {
-	state = {};
+	state = {
+		responses: []
+	};
 
 	componentDidMount() {
-		let current = 0;
-		let done = false;
 		const reductiveDownloadChain = (items) => {
-			const responses = [];
+			let responses = [];
 			return items.reduce((chain, currentItem) => {
 				return chain.then((_) => {
-					current++;
 					const { _id } = currentItem;
 					axios
 						.get(`http://localhost:5001/api/v1/questions/answers/${_id}`, {
@@ -30,11 +29,10 @@ class Report extends Component {
 						})
 						.then((res) => {
 							responses.push(res.data.data);
-							if (current === items.length && !done) {
+							if (responses.length === items.length) {
 								this.setState({
 									responses
 								});
-								done = true;
 							}
 						});
 				});
@@ -44,18 +42,23 @@ class Report extends Component {
 		reductiveDownloadChain(this.props.stats);
 	}
 
+	renderReport = () => {
+		const { theme, stats } = this.props;
+		return this.state.responses.map((response, index) => {
+			return (
+				<ReportBodyItem className="report_body_item" theme={theme} key={stats[index]._id}>
+					<ReportBodyItemHeader stat={stats[index]} response={response} />
+					<ReportBodyItemBody stat={stats[index]} response={response} />
+				</ReportBodyItem>
+			);
+		});
+	};
+
 	render() {
 		const { theme, stats } = this.props;
 		return (
 			<ReportBody className={'report_body'} theme={theme}>
-				{stats.map((stat, index) => {
-					return (
-						<ReportBodyItem className="report_body_item" theme={theme} key={stat._id}>
-							<ReportBodyItemHeader stat={stat} />
-							<ReportBodyItemBody stat={stat} />
-						</ReportBodyItem>
-					);
-				})}
+				{this.renderReport()}
 			</ReportBody>
 		);
 	}
