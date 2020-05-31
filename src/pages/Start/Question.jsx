@@ -81,6 +81,12 @@ class Question extends Component {
 		show_answer: false
 	};
 
+	componentWillUnmount = () => {
+		this.setState({
+			user_answers: [],
+			show_answer: false
+		});
+	};
 	getFlashCardAnswer = () => {
 		axios
 			.get(`http://localhost:5001/api/v1/questions/answers/${this.props.question._id}`, {

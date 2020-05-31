@@ -16,7 +16,12 @@ class Timer extends Component {
 		timer: null
 	};
 
-	clearInterval = () => {
+	componentWillUnmount = () => {
+		this.clearInterval(true);
+	};
+
+	clearInterval = (shouldClearInterval = false) => {
+		if (shouldClearInterval) clearInterval(this.state.timer);
 		this.setState({
 			timer: null,
 			timeout: 0
