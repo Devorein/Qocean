@@ -90,7 +90,9 @@ class Play extends Component {
 						});
 					}}
 				/>
-				<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
+				<div className="play_button">
+					<GenericButton text="Play" onClick={(e) => this.setState({ hasStarted: true })} />{' '}
+				</div>
 			</div>
 		) : (
 			<Quiz
