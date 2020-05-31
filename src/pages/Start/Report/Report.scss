@@ -18,13 +18,16 @@
         padding: 5px;
         display: flex;
         &--MCQ,
-        &--MS {
+        &--MS,
+        &--TF,
+        &--Snippet {
           display: grid;
           grid-template: 50px/1fr 1fr;
           grid-auto-rows: 50px;
           grid-gap: 5px;
         }
         &_option {
+          border-radius: 3px;
           width: 100%;
           padding: 5px;
           display: flex;

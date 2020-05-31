@@ -35,13 +35,13 @@ export default withTheme(({ stat, theme, validations, answer }) => {
 				</div>
 			</FlexCenter>
 			<div className="report_body_item_header_meta report_body_item_header_item">
-				{[ 'type', 'time_allocated', 'time_taken', 'weight' ].map((item) => (
+				{[ 'type', 'time_allocated', 'time_taken', 'weight', 'difficulty' ].map((item) => (
 					<div
 						key={shortid.generate()}
 						className={`report_body_item_header_meta--${item} report_body_item_header_meta_item`}
 						style={{ backgroundColor: theme.palette.background.light }}
 					>
-						{stat[item]}
+						{item.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')} {stat[item]}
 					</div>
 				))}
 			</div>
