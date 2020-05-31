@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Question from './Question';
 import axios from 'axios';
 import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Timer from '../../components/Timer/Timer';
-import Report from './Report';
+import Report from './Report/Report';
 
 const flexCenter = `
   display: flex;
@@ -98,8 +98,18 @@ class Quiz extends Component {
 			currentQuiz++;
 			currentQuizQuestion = 0;
 		}
-		const { stats, question } = this.state;
-		stats.push({ user_answers, _id: question._id, type: question.type, time_taken: question.time_allocated - timeout });
+		const { stats, question: { _id, name, type, time_allocated, options, difficulty, weight } } = this.state;
+		stats.push({
+			user_answers,
+			_id,
+			name,
+			type,
+			time_taken: time_allocated - timeout,
+			options,
+			difficulty,
+			weight,
+			time_allocated
+		});
 
 		if (currentQuestion < totalQuestion - 1) {
 			this.setState(
@@ -156,36 +166,43 @@ class Quiz extends Component {
 		const { getTotalQuestions, setQuestion, renderQuizStats } = this;
 		const { currentQuestion, question } = this.state;
 		const totalQuestion = getTotalQuestions();
-
+		let questionManipRef = null;
 		return currentQuestion < totalQuestion ? (
-			<Question question={question}>
-				{({ question, questionManip }) => (
-					<Timer
-						timeout={this.state.question ? this.state.question.time_allocated : 0}
-						onTimerEnd={() => {
-							this.Button.click();
-						}}
-					>
-						{({ currentTime, timer, clearInterval }) => {
-							return (
-								<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
-									{renderQuizStats()}
-									{question}
-									{timer}
-									<GenericButton
-										buttonRef={(ref) => (this.Button = ref)}
-										text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
-										onClick={(e) => {
-											clearInterval();
-											setQuestion(currentTime, questionManip);
-										}}
-									/>
-								</div>
-							);
-						}}
-					</Timer>
-				)}
-			</Question>
+			<Fragment>
+				<Question question={question}>
+					{({ question, questionManip }) => {
+						questionManipRef = questionManip;
+						return (
+							<Fragment>
+								{renderQuizStats()}
+								{question}
+							</Fragment>
+						);
+					}}
+				</Question>
+				<Timer
+					timeout={this.state.question ? this.state.question.time_allocated : 0}
+					onTimerEnd={() => {
+						this.Button.click();
+					}}
+				>
+					{({ currentTime, timer, clearInterval }) => {
+						return (
+							<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
+								{timer}
+								<GenericButton
+									buttonRef={(ref) => (this.Button = ref)}
+									text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
+									onClick={(e) => {
+										clearInterval();
+										setQuestion(currentTime, questionManipRef);
+									}}
+								/>
+							</div>
+						);
+					}}
+				</Timer>
+			</Fragment>
 		) : (
 			<Report stats={this.state.stats} />
 		);

@@ -11,12 +11,38 @@ exports.sendAnswer = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: question.answers });
 });
 
+exports.sendAnswers = asyncHandler(async (req, res, next) => {
+	const { questions } = req.body;
+	const responses = [];
+	for (let i = 0; i < questions.length; i++) {
+		const questionId = questions[i];
+		const { _id, answers } = await Question.findById(questionId).select('+answers');
+		responses.push({ _id, answers });
+	}
+	res.status(200).json({ success: true, data: responses });
+});
+
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
-	const question = await Question.findById(req.body.id);
+	const question = await Question.findById(req.body.id).select('+answers');
 	if (!question) return next(new ErrorResponse(`Question doesn't exist`, 404));
 	if (!req.body.answers) return next(new ErrorResponse(`Provide the answers`, 400));
 	const [ isCorrect, message ] = await question.validateAnswer(req.body.answers);
 	res.status(200).json({ success: true, isCorrect, message });
+});
+
+exports.validateQuestions = asyncHandler(async (req, res, next) => {
+	const { questions } = req.body;
+	const response = { correct: [], incorrect: [] };
+	for (let i = 0; i < questions.length; i++) {
+		const { id, answers } = questions[i];
+		const question = await Question.findById(id).select('+answers');
+		if (question) {
+			let [ isCorrect ] = await question.validateAnswer(answers);
+			if (isCorrect) response.correct.push(id);
+			else response.incorrect.push(id);
+		}
+	}
+	res.status(200).json({ success: true, data: response });
 });
 
 // @desc: Create a question
@@ -69,8 +95,10 @@ exports.deleteQuestion = asyncHandler(async function(req, res, next) {
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete question`, 401));
-	if (!question.image.startsWith('http') || question.image !== 'none.png')
-		fs.unlinkSync(path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`));
+	if (question.image && (!question.image.match(/^(http|data:)/) && question.image !== 'none.png')) {
+		const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`);
+		if (fs.existsSync(location)) fs.unlinkSync(location);
+	}
 	question = await question.remove();
 	res.status(200).json({ success: true, data: question });
 });

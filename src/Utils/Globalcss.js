@@ -7,6 +7,9 @@ export default withStyles(
 	(theme) => {
 		return {
 			'@global': {
+				'.MuiPaper-root': {
+					backgroundColor: theme.palette.background.main
+				},
 				'.MuiTab-root': {
 					minWidth: 100
 				},

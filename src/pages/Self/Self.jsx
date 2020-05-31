@@ -328,7 +328,7 @@ class Self extends Component {
 				<div>
 					Youre about to delete the following {selectedRows.length} {type.toLowerCase()}(s)
 				</div>
-				{selectedRows.map((selectedRow) => <div>{data[selectedRow].name}</div>)}
+				{selectedRows.map((selectedRow) => <div key={data[selectedRow]._id}>{data[selectedRow].name}</div>)}
 			</Fragment>
 		);
 	};

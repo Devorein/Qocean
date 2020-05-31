@@ -4,11 +4,6 @@ import axios from 'axios';
 import { withTheme } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import RadioInput from '../../components/Input/RadioInput';
 import GenericButton from '../../components/Buttons/GenericButton';
 import shortid from 'shortid';
@@ -86,6 +81,12 @@ class Question extends Component {
 		show_answer: false
 	};
 
+	componentWillUnmount = () => {
+		this.setState({
+			user_answers: [],
+			show_answer: false
+		});
+	};
 	getFlashCardAnswer = () => {
 		axios
 			.get(`http://localhost:5001/api/v1/questions/answers/${this.props.question._id}`, {
@@ -127,8 +128,8 @@ class Question extends Component {
 			return name.match(/\$\{_\}/g).map((match, index) => {
 				return (
 					<TextField
-						key={shortid.generate()}
-						value={this.state.user_answers[index]}
+						key={`FIB_option_${index}`}
+						value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
 						onChange={(e) => {
 							const { user_answers } = this.state;
 							user_answers[index] = e.target.value;
@@ -162,7 +163,7 @@ class Question extends Component {
 		} else if (type === 'Snippet')
 			return (
 				<TextField
-					value={this.state.user_answers[0]}
+					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
 					onChange={(e) => {
 						this.setState({
 							user_answers: [ e.target.value ]
