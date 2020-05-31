@@ -12,11 +12,26 @@ exports.sendAnswer = asyncHandler(async (req, res, next) => {
 });
 
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
-	const question = await Question.findById(req.body.id);
+	const question = await Question.findById(req.body.id).select('+answers');
 	if (!question) return next(new ErrorResponse(`Question doesn't exist`, 404));
 	if (!req.body.answers) return next(new ErrorResponse(`Provide the answers`, 400));
 	const [ isCorrect, message ] = await question.validateAnswer(req.body.answers);
 	res.status(200).json({ success: true, isCorrect, message });
+});
+
+exports.validateQuestions = asyncHandler(async (req, res, next) => {
+	const { questions } = req.body;
+	const response = { correct: 0, incorrect: 0 };
+	for (let i = 0; i < questions.length; i++) {
+		const { id, answers } = questions[i];
+		const question = await Question.findById(id).select('+answers');
+		if (question) {
+			let [ isCorrect ] = await question.validateAnswer(answers);
+			if (isCorrect) response.correct++;
+			else response.incorrect++;
+		}
+	}
+	res.status(200).json({ success: true, data: response });
 });
 
 // @desc: Create a question
