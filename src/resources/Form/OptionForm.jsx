@@ -216,12 +216,13 @@ class OptionForm extends Component {
 			Object.entries(source).forEach(([ key, value ]) => {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 				else if (key.startsWith('answer_')) {
-					if (dest[key]) answers.push(index);
+					if (value) answers.push(index);
 					index++;
 				}
 			});
 			dest.options = options;
 			dest.answers = answers.map((answer) => [ parseInt(answer) - 1 ]);
+			debugger;
 		} else if (type === 'Snippet') {
 			dest.answers = [ [ source.answers ] ];
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);

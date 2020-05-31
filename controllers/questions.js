@@ -95,8 +95,10 @@ exports.deleteQuestion = asyncHandler(async function(req, res, next) {
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
 	if (question.user.toString() !== req.user._id.toString())
 		return next(new ErrorResponse(`User not authorized to delete question`, 401));
-	if (!question.image.startsWith('http') || question.image !== 'none.png')
-		fs.unlinkSync(path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`));
+	if (question.image && (!question.image.match(/^(http|data:)/) && question.image !== 'none.png')) {
+		const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`);
+		if (fs.existsSync(location)) fs.unlinkSync(location);
+	}
 	question = await question.remove();
 	res.status(200).json({ success: true, data: question });
 });
