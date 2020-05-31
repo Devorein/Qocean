@@ -221,8 +221,7 @@ class OptionForm extends Component {
 				}
 			});
 			dest.options = options;
-			dest.answers = answers.map((answer) => [ parseInt(answer) - 1 ]);
-			debugger;
+			dest.answers = answers.map((answer) => [ parseInt(answer) ]);
 		} else if (type === 'Snippet') {
 			dest.answers = [ [ source.answers ] ];
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);

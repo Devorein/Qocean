@@ -2,37 +2,48 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import shortid from 'shortid';
 import { withTheme } from '@material-ui/core';
+import { orange } from '@material-ui/core/colors';
 import Color from 'color';
 import convert from 'color-convert';
 
 const ReportBodyItemBody = styled.div`
 	& .report_body_item_body_option {
 		background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.dark)).lighten(0.1).hex()};
-		&--correct .color {
+		&--correct_selected .color {
 			background: ${(props) => props.theme.palette.success.main};
+		}
+		&--correct .color {
+			background: ${orange[500]};
 		}
 		&--incorrect .color {
 			background: ${(props) => props.theme.palette.error.main};
 		}
 		&--none .color {
-			background: ${(props) => props.theme.palette.grey[900]};
+			background: ${(props) => props.theme.palette.grey[800]};
 		}
 	}
 `;
 
 class ReportBodyItemBodyClass extends Component {
-	renderBodyOptions = (stat) => {
-		const { theme, answer: { answers } } = this.props;
-		if (stat.type === 'MCQ')
-			return stat.options.map((option, index) => {
+	renderBodyOptions = () => {
+		let { theme, answer: { answers }, stat } = this.props;
+		answers = answers.map((answer) => parseInt(answer));
+		let { user_answers, type, options } = stat;
+		user_answers = user_answers.map((answer) => parseInt(answer));
+		if (type === 'MCQ' || type === 'MS')
+			return options.map((option, index) => {
 				let status = null;
-				if (
-					(parseInt(stat.user_answers[0]) === index && index === parseInt(answers[0])) ||
-					index === parseInt(answers[0])
-				)
-					status = 'correct';
-				else if (parseInt(stat.user_answers[0]) === index && parseInt(answers[0]) !== index) status = 'incorrect';
-				else status = 'none';
+				if (type === 'MCQ') {
+					if (user_answers[0] === index && index === answers[0]) status = 'correct_selected';
+					else if (index === answers[0]) status = 'correct';
+					else if (user_answers[0] === index && answers[0] !== index) status = 'incorrect';
+					else status = 'none';
+				} else if (type === 'MS') {
+					if (user_answers.includes(index) && answers.includes(index)) status = 'correct_selected';
+					else if (answers.includes(index)) status = 'correct';
+					else if (user_answers.includes(index) && !answers.includes(index)) status = 'incorrect';
+					else status = 'none';
+				}
 
 				const props = {
 					className: `report_body_item_body_option report_body_item_body_option--${status}`,
@@ -54,7 +65,7 @@ class ReportBodyItemBodyClass extends Component {
 
 		return (
 			<ReportBodyItemBody theme={theme} className={`report_body_item_body report_body_item_body--${stat.type}`}>
-				{this.renderBodyOptions(stat)}
+				{this.renderBodyOptions()}
 			</ReportBodyItemBody>
 		);
 	}

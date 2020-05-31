@@ -168,8 +168,10 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 		isCorrect = isCorrect && parseInt(answers[0]) === parseInt(this.answers[0][0]);
 	} else if (type === 'MS') {
 		const transformed = answers.map((answer) => parseInt(answer));
-		isCorrect = answers.length === this.answers[0].length;
-		isCorrect = isCorrect && transformed.every((answer) => this.answers[0].indexOf(answer) !== -1);
+		const checkAgainst = this.answers.map((answer) => parseInt(answer));
+		isCorrect = answers.length === checkAgainst.length;
+		isCorrect = isCorrect && !transformed.some((answer) => checkAgainst.indexOf(answer) === -1);
+		console.log(isCorrect, checkAgainst, answers);
 	} else if (type === 'Snippet') {
 		isCorrect = answers.length <= this.answers[0].length;
 		isCorrect = isCorrect && this.answers[0].indexOf(answers[0]) !== -1;
