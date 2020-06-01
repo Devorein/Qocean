@@ -185,6 +185,10 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 						correct_answer = correct_answer.toLowerCase();
 						answers[0] = answers[0].toLowerCase();
 					}
+					if (mods.includes('IS')) {
+						correct_answer = correct_answer.replace(/\s/g, '');
+						answers[0] = answers[0].replace(/\s/g, '');
+					}
 				}
 				return correct_answer === answers[0];
 			});
