@@ -159,6 +159,26 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 	return [ true ];
 };
 
+function typedChecker(correct_answers, user_answer) {
+	let original_answer = user_answer;
+	return correct_answers.some((correct_answer) => {
+		const hasMod = correct_answer.match(/^\[(\w{1,3}[,|\]])+/);
+		if (hasMod) {
+			correct_answer = correct_answer.substr(hasMod[0].length + 1);
+			const mods = hasMod[0].replace(/\[|\]/g, '').split(',');
+			if (mods.includes('IC')) {
+				correct_answer = correct_answer.toLowerCase();
+				user_answer = user_answer.toLowerCase();
+			}
+			if (mods.includes('IS')) {
+				correct_answer = correct_answer.replace(/\s/g, '');
+				user_answer = user_answer.replace(/\s/g, '');
+			}
+		} else user_answer = original_answer;
+		return correct_answer === user_answer;
+	});
+}
+
 QuestionSchema.methods.validateAnswer = async function(answers) {
 	const { type } = this;
 	let isCorrect = false,
@@ -171,30 +191,10 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 		const checkAgainst = this.answers.map((answer) => parseInt(answer));
 		isCorrect = answers.length === checkAgainst.length;
 		isCorrect = isCorrect && !transformed.some((answer) => checkAgainst.indexOf(answer) === -1);
-		console.log(isCorrect, checkAgainst, answers);
-	} else if (type === 'Snippet') {
-		isCorrect = answers.length === 1;
-		isCorrect =
-			isCorrect &&
-			this.answers[0].some((correct_answer) => {
-				const hasMod = correct_answer.match(/^\[(\w{1,3}[,|\]])+/);
-				if (hasMod) {
-					correct_answer = correct_answer.substr(hasMod[0].length + 1);
-					const mods = hasMod[0].replace(/\[|\]/g, '').split(',');
-					if (mods.includes('IC')) {
-						correct_answer = correct_answer.toLowerCase();
-						answers[0] = answers[0].toLowerCase();
-					}
-					if (mods.includes('IS')) {
-						correct_answer = correct_answer.replace(/\s/g, '');
-						answers[0] = answers[0].replace(/\s/g, '');
-					}
-				}
-				return correct_answer === answers[0];
-			});
-	} else if (type === 'FIB') {
+	} else if (type === 'Snippet') isCorrect = answers.length === 1 && typedChecker(this.answers[0], answers);
+	else if (type === 'FIB') {
 		isCorrect = answers.length === this.answers.length;
-		isCorrect = isCorrect && answers.every((answer, index) => this.answers[index].indexOf(answer) !== -1);
+		isCorrect = isCorrect && answers.every((answer, index) => typedChecker(this.answers[index], answer));
 	} else if (type === 'FC') {
 		isCorrect = answers.length !== 0 && answers.length <= this.answers[0].length;
 		answers = answers.map((answer) => parseInt(answer));

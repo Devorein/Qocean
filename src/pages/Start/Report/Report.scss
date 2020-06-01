@@ -6,9 +6,8 @@
     display: flex;
     flex-direction: column;
     padding: 5px;
-    height: calc(100% - 350px);
     overflow-y: auto;
-    min-height: 550px;
+    max-height: 550px;
     &_item {
       padding: 5px;
       display: flex;
