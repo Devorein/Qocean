@@ -84,21 +84,31 @@ const INIT_MS_STATE = {
 class OptionForm extends Component {
 	state = {
 		type: 'MCQ',
-		blank_count: 1
+		blank_count: 1,
+		FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
 	};
+
 	renderFIB = () => {
 		const options = [];
 		for (let i = 1; i <= this.state.blank_count; i++) {
+			const FIB_DATA = this.state.FIB_data[i - 1];
 			options.push(
-				...[
-					{ name: `answers_${i}`, type: 'textarea', extra: { row: 2 } },
-					{ name: `alternate_${i}_1`, type: 'textarea', extra: { row: 1 } },
-					{ name: `alternate_${i}_2`, type: 'textarea', extra: { row: 1 } }
-				]
+				{ name: `answers_${i}`, extra: { row: 2 }, defaultValue: FIB_DATA.answers },
+				{
+					name: `alternate_${i}_1`,
+					extra: { row: 1 },
+					defaultValue: FIB_DATA.alternate1
+				},
+				{
+					name: `alternate_${i}_2`,
+					extra: { row: 1 },
+					defaultValue: FIB_DATA.alternate2
+				}
 			);
 		}
 		return options;
 	};
+
 	decideInputs = () => {
 		const { type } = this.state;
 		if (type === 'MCQ') return INIT_MCQ_STATE;
@@ -262,13 +272,29 @@ class OptionForm extends Component {
 		if (type === 'MCQ') setValues({ ...temp, answers: 'answer_1' });
 		else if (type === 'MS') setValues({ ...temp, answer_1: true });
 		else if (type === 'FC') setValues({ ...temp });
-		else if (type === 'FIB') setValues({ ...temp });
-		else if (type === 'TF') setValues({ ...temp, answers: 'answer_1' });
+		else if (type === 'FIB') {
+			setValues({ ...temp });
+			this.setState({
+				FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
+			});
+		} else if (type === 'TF') setValues({ ...temp, answers: 'answer_1' });
 		else if (type === 'Snippet') setValues({ ...temp });
 	};
 
+	FIBHandler = (values, setValues, e) => {
+		if (this.state.type === 'FIB') {
+			const [ type, index, num ] = e.target.name.split('_');
+			const { FIB_data } = this.state;
+			FIB_data[index - 1][`${type}${num ? num : ''}`] = e.target.value;
+			console.log(`${type}${num ? num : index}`);
+			this.setState({
+				FIB_data
+			});
+		}
+	};
+
 	render() {
-		const { typeChangeHandler, decideValidation, decideInputs, transformValues, resetOptionInput } = this;
+		const { typeChangeHandler, decideValidation, decideInputs, transformValues, resetOptionInput, FIBHandler } = this;
 		const validationSchema = decideValidation();
 		const { options, answers } = decideInputs();
 
@@ -281,6 +307,7 @@ class OptionForm extends Component {
 				inputs={[ ...options, ...answers ]}
 				formButtons={false}
 				validateOnChange={true}
+				customHandler={FIBHandler}
 			>
 				{({ values, errors, isValid, inputs, setValues }) => {
 					return this.props.children({
