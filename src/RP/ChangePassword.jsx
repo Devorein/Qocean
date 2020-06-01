@@ -8,7 +8,6 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
 import InputForm from '../components/Form/InputForm';
 import PasswordInput from '../components/Input/PasswordInput';
-import shortid from 'shortid';
 
 const changePasswordValidation = Yup.object({
 	new_password: Yup.string('')

@@ -7,7 +7,6 @@ import SelfQuizzes from './SelfQuizzes';
 import SelfQuestions from './SelfQuestions';
 import SelfFolders from './SelfFolders';
 import SelfEnvironments from './SelfEnvironments';
-import deleteResource from '../../operations/deleteResource';
 import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
 import { AppContext } from '../../context/AppContext';
@@ -106,17 +105,24 @@ class Self extends Component {
 	};
 
 	deleteResource = (selectedRows) => {
-		const CLASS = this;
-		const { enqueueSnackbar } = this.props;
 		const { type } = this.state;
-		let current = 0;
-		let done = false;
+		const deleteResources = (selectedRows) => {
+			const target = pluralize(type, 2).toLowerCase();
+			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				},
+				data: {
+					[target]: selectedRows
+				}
+			});
+		};
 
 		if (type === 'Environment') {
 			let containsCurrent = false;
 			const temp = [];
 			selectedRows.forEach((selectedRow) => {
-				if (selectedRow._id === this.props.user.current_environment._id) containsCurrent = true;
+				if (selectedRow === this.props.user.current_environment._id) containsCurrent = true;
 				else temp.push(selectedRow);
 			});
 			if (containsCurrent) {
@@ -126,26 +132,18 @@ class Self extends Component {
 					'error'
 				);
 			}
-			reductiveDownloadChain(temp);
-		} else reductiveDownloadChain(selectedRows);
-
-		function reductiveDownloadChain(items) {
-			return items.reduce((chain, currentItem) => {
-				return chain.then((_) => {
-					current++;
-					const { _id, name } = currentItem;
-					deleteResource(type, _id).then(({ data }) => {
-						enqueueSnackbar(`${type} ${name} has been deleted`, {
-							variant: 'success'
-						});
-						if (current === items.length && !done) {
-							CLASS.refetchData();
-							done = true;
-						}
-					});
+			if (selectedRows.length > 1)
+				deleteResources(temp).then(({ data: { data } }) => {
+					setTimeout(() => {
+						this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+					}, 2500);
+					this.refetchData();
 				});
-			}, Promise.resolve());
-		}
+		} else
+			deleteResources(selectedRows).then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+				this.refetchData();
+			});
 	};
 
 	updateResource = (selectedRows, field) => {
@@ -353,7 +351,7 @@ class Self extends Component {
 						});
 					}}
 					onAccept={() => {
-						const selectedDatas = this.state.selectedRows.map((index) => this.state.data[index]);
+						const selectedDatas = this.state.selectedRows.map((index) => this.state.data[index]._id);
 						this.deleteResource(selectedDatas);
 						this.setState({
 							selectedRows: []
