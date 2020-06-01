@@ -66,3 +66,20 @@ exports.deleteEnvironment = asyncHandler(async (req, res, next) => {
 		res.status(200).json({ success: true, data: environment });
 	} else return next(new ErrorResponse(`You must have atleast one environment`, 400));
 });
+
+exports.deleteEnvironments = asyncHandler(async (req, res, next) => {
+	const { environments } = req.body;
+	const totalDocs = await Environment.countDocuments({ user: req.user._id });
+	for (let i = 1; i <= environments.length; i++) {
+		const environmentId = environments[i - 1];
+		const environment = await Environment.findById(environmentId).select('name user');
+		if (!environment) return next(new ErrorResponse(`Environment not found with id of ${environmentId}`, 404));
+		if (environment.user.toString() !== req.user._id.toString())
+			return next(new ErrorResponse(`User not authorized to delete environment`, 401));
+		if (req.user.current_environment.toString() === environment._id.toString())
+			return next(new ErrorResponse(`You cannot delete current set environment`, 400));
+		else if (i < totalDocs) await environment.remove();
+		else return next(new ErrorResponse(`You must have atleast one environment`, 400));
+	}
+	res.status(200).json({ success: true, data: environments.length });
+});

@@ -47,9 +47,8 @@ router
 			}
 		)
 	)
-	.post(protect, createQuestion);
-
-router.route('/').delete(protect, deleteQuestions);
+	.post(protect, createQuestion)
+	.delete(protect, deleteQuestions);
 
 router.route('/:id').put(protect, updateQuestion).delete(protect, deleteQuestion);
 
