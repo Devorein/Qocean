@@ -30,6 +30,12 @@
           display: flex;
           flex-direction: column;
         }
+        &--FC {
+          display: flex;
+          .report_body_item_body_option {
+            margin-right: 5px;
+          }
+        }
         &_row {
           display: grid;
           grid-gap: 5px;
@@ -51,8 +57,8 @@
           display: flex;
           align-items: center;
           & .color {
-            height: 25px;
-            width: 25px;
+            min-height: 25px;
+            min-width: 25px;
             border-radius: 50%;
             display: inline-block;
             margin-right: 5px;
@@ -65,9 +71,10 @@
         height: 25%;
         font-weight: 20px;
         &_validation {
-          width: 20px;
-          height: 20px;
+          min-height: 20px;
+          min-width: 20px;
           border-radius: 50%;
+          margin: 5px;
         }
         &_item {
         }

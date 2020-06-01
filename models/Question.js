@@ -178,6 +178,10 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 	} else if (type === 'FIB') {
 		isCorrect = answers.length === this.answers.length;
 		isCorrect = isCorrect && answers.every((answer, index) => this.answers[index].indexOf(answer) !== -1);
+	} else if (type === 'FC') {
+		isCorrect = answers.length !== 0 && answers.length <= this.answers[0].length;
+		answers = answers.map((answer) => parseInt(answer));
+		isCorrect = isCorrect && answers.every((answer) => answer >= 0 && answer <= 2);
 	}
 	if (isCorrect) message = 'Correct answer';
 	return [ isCorrect, message ];

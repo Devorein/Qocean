@@ -6,7 +6,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
 import RadioInput from '../../components/Input/RadioInput';
 import GenericButton from '../../components/Buttons/GenericButton';
-import shortid from 'shortid';
 
 const QuizContent = styled.div``;
 
@@ -94,10 +93,10 @@ class Question extends Component {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}
 			})
-			.then(({ data: { data: [ answer ] } }) => {
+			.then(({ data: { data: [ answers ] } }) => {
 				this.setState({
 					show_answer: true,
-					answers: answer
+					answers
 				});
 			});
 	};
@@ -182,16 +181,23 @@ class Question extends Component {
 							}}
 						/>
 					) : (
-						<Fragment>
-							<div>{this.state.answers.map((answer) => answer)}</div>
-							<GenericButton
-								text={'Mark as correct'}
-								onClick={(e) =>
-									this.setState({
-										user_answers: [ true ]
-									})}
-							/>
-						</Fragment>
+						<QuestionOptions>
+							{this.state.answers.map((answer, index) => (
+								<QuestionOption theme={theme} key={answer}>
+									<Checkbox
+										checked={this.state.user_answers.includes(index)}
+										onChange={(e) => {
+											let { user_answers } = this.state;
+											if (e.target.checked) user_answers.push(index);
+											else user_answers = user_answers.filter((answer) => answer !== index);
+											this.setState({ user_answers });
+										}}
+										color="primary"
+									/>
+									{answer}
+								</QuestionOption>
+							))}
+						</QuestionOptions>
 					)}
 				</Fragment>
 			);

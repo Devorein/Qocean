@@ -42,7 +42,8 @@ class Quiz extends Component {
 		currentQuizQuestion: 0,
 		question: null,
 		stats: [],
-		isOnReport: false
+		isOnReport: false,
+		disabled: false
 	};
 
 	componentDidMount() {
@@ -117,11 +118,17 @@ class Quiz extends Component {
 					currentQuestion: currentQuestion + 1,
 					currentQuizQuestion,
 					currentQuiz,
-					stats
+					stats,
+					disabled: true
 				},
 				() => {
 					this.fetchQuestion();
 					reset_answers();
+					setTimeout(() => {
+						this.setState({
+							disabled: false
+						});
+					}, 2500);
 				}
 			);
 		} else {
@@ -197,6 +204,7 @@ class Quiz extends Component {
 										clearInterval();
 										setQuestion(currentTime, questionManipRef);
 									}}
+									disabled={this.state.disabled}
 								/>
 							</div>
 						);
