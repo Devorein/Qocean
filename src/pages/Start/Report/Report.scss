@@ -1,21 +1,19 @@
 .report {
-  max-width: 750px;
+  max-width: 1000px;
   width: 75%;
   margin: 0 auto;
   &_body {
     display: flex;
     flex-direction: column;
     padding: 5px;
-    height: calc(100% - 350px);
     overflow-y: auto;
-    min-height: 550px;
+    max-height: 550px;
     &_item {
       padding: 5px;
       display: flex;
+      margin-bottom: 5px;
       flex-direction: column;
-      height: 250px;
       &_body {
-        padding: 5px;
         display: flex;
         &--MCQ,
         &--MS,
@@ -30,10 +28,19 @@
           display: flex;
           flex-direction: column;
         }
+        &--FC {
+          display: flex;
+          .report_body_item_body_option {
+            margin-right: 5px;
+            &:last-child {
+              margin-right: 0px;
+            }
+          }
+        }
         &_row {
           display: grid;
           grid-gap: 5px;
-          margin: 5px;
+          margin: 5px 0px;
           &--2 {
             grid-template: 50px/1fr 1fr;
           }
@@ -51,8 +58,8 @@
           display: flex;
           align-items: center;
           & .color {
-            height: 25px;
-            width: 25px;
+            min-height: 25px;
+            min-width: 25px;
             border-radius: 50%;
             display: inline-block;
             margin-right: 5px;
@@ -60,15 +67,10 @@
         }
       }
       &_header {
-        padding: 5px;
+        margin-bottom: 5px;
         border-radius: 3px 3px 0px 0px;
-        height: 25%;
-        font-weight: 20px;
-        &_validation {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-        }
+        display: flex;
+        flex-direction: column;
         &_item {
         }
         &_meta {
@@ -79,13 +81,18 @@
             padding: 3px;
             margin: 3px;
             border-radius: 3px;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
           }
         }
         &--name {
           font-weight: bolder;
-          font-size: 22px;
+          font-size: 20px;
           text-align: center;
           padding: 5px;
+          height: 100%;
+          overflow-y: auto;
         }
       }
     }

@@ -7,6 +7,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import IconButton from '@material-ui/core/IconButton';
 import InputForm from '../components/Form/InputForm';
+import PasswordInput from '../components/Input/PasswordInput';
 
 const changePasswordValidation = Yup.object({
 	new_password: Yup.string('')
@@ -21,7 +22,9 @@ const changePasswordValidation = Yup.object({
 class ChangePassword extends Component {
 	state = {
 		showChangePasswordForm: false,
-		showPassword: false
+		showPassword: false,
+		password: '',
+		disable: false
 	};
 
 	handleClickShowPassword = () => {
@@ -71,7 +74,26 @@ class ChangePassword extends Component {
 				validationSchema={changePasswordValidation}
 				formButtons={false}
 				validateOnMount={true}
-				inputs={[ { name: 'new_password', type: 'password' }, { name: 'confirm_password', type: 'password' } ]}
+				inputs={[
+					{
+						name: 'new_password',
+						type: 'password',
+						helperText: this.state.message,
+						fieldHandler: (value) => {
+							let message = '',
+								disabled = false;
+							if (value === this.state.password && this.state.password !== '') {
+								message = 'You cannot set new password same as the old one';
+								disabled = true;
+							}
+							this.setState({
+								message,
+								disabled
+							});
+						}
+					},
+					{ name: 'confirm_password', type: 'password' }
+				]}
 			>
 				{({ values, errors, isValid, setValues, inputs }) => {
 					return this.props.children({
@@ -91,9 +113,37 @@ class ChangePassword extends Component {
 							values,
 							errors,
 							isValid,
-							showChangePasswordForm: this.state.showChangePasswordForm
+							showChangePasswordForm: this.state.showChangePasswordForm,
+							password: this.state.password
 						},
-						inputs: this.state.showChangePasswordForm ? inputs : null
+						inputs: this.state.showChangePasswordForm ? inputs : null,
+						disabled: this.state.disabled,
+						passwordInput: {
+							type: 'component',
+							component: (
+								<PasswordInput
+									key={'current_password'}
+									value={this.state.password}
+									onChange={(e) => {
+										e.persist();
+										let message = '',
+											disabled = false;
+										if (values.new_password === e.target.value && this.state.password !== '') {
+											message = 'You cannot set new password same as the old one';
+											disabled = true;
+										}
+
+										this.setState({
+											password: e.target.value,
+											message,
+											disabled
+										});
+									}}
+									helperText={this.state.message}
+									validation={false}
+								/>
+							)
+						}
 					});
 				}}
 			</InputForm>

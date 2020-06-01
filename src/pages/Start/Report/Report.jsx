@@ -8,7 +8,20 @@ import ReportBody from './Body/ReportBody';
 
 class Report extends Component {
 	state = {
-		validations: null
+		validations: null,
+		filters: {
+			type: 'All',
+			result: 'both'
+		}
+	};
+
+	setFilters = (target, value) => {
+		this.setState({
+			filters: {
+				...this.state.filters,
+				[target]: value
+			}
+		});
 	};
 
 	componentDidMount() {
@@ -30,13 +43,32 @@ class Report extends Component {
 			});
 	}
 
+	transformStats = () => {
+		const { stats } = this.props;
+		return stats.map((stat) => {
+			if (!stat.add_to_score) stat.points = 0;
+			else {
+				const { time_allocated, time_taken } = stat;
+				stat.points = parseFloat((time_allocated - time_taken) * 100 / time_allocated / 10).toFixed(2);
+			}
+			return stat;
+		});
+	};
+
 	render() {
-		const { theme, stats } = this.props;
+		const { theme } = this.props;
+		const stats = this.transformStats();
 		const { validations } = this.state;
 		return (
 			<div className="report pages">
-				<ReportHeader stats={stats} theme={theme} validations={validations} />
-				<ReportBody stats={stats} theme={theme} validations={validations} />
+				<ReportHeader
+					stats={stats}
+					theme={theme}
+					validations={validations}
+					setFilters={this.setFilters}
+					filters={this.state.filters}
+				/>
+				<ReportBody stats={stats} theme={theme} filters={this.state.filters} validations={validations} />
 			</div>
 		);
 	}

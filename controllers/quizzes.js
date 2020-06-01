@@ -67,6 +67,23 @@ exports.deleteQuiz = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: quiz });
 });
 
+exports.deleteQuizzes = asyncHandler(async (req, res, next) => {
+	const { quizzes } = req.body;
+	for (let i = 0; i < quizzes.length; i++) {
+		const quizId = quizzes[i];
+		const quiz = await Quiz.findById(quizId);
+		if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${quizId}`, 404));
+		if (quiz.user.toString() !== req.user._id.toString())
+			return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
+		if (quiz.image && (!quiz.image.match(/^(http|data:)/) && quiz.image !== 'none.png')) {
+			const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${quiz.image}`);
+			if (fs.existsSync(location)) fs.unlinkSync(location);
+		}
+		await quiz.remove();
+	}
+	res.status(200).json({ success: true, data: quizzes.length });
+});
+
 // @desc: Upload a single quiz photo
 // @route: PUT /api/v1/quizzes/:id/photo
 // @access: Private

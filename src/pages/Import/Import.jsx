@@ -47,7 +47,7 @@ class Import extends Component {
 			file.text().then((data) => {
 				let items = JSON.parse(data);
 				const itemname = [];
-				items = items.filter(({ type: type_, name }) => {
+				items = items.filter(({ rtype: type_, name }) => {
 					const isUnique = itemname.indexOf(name) === -1;
 					if (isUnique) itemname.push(name);
 					if (type_ !== currentPage.toLowerCase()) {

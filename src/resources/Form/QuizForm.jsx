@@ -138,8 +138,8 @@ class QuizForm extends Component {
 									name: 'select_folder',
 									component: loading ? (
 										<FormHelperText key={'select_folder'}>Loading your folders</FormHelperText>
-									) : folders.length < 1 ? (
-										<FormHelperText key={'select_folder'}>Loading your folders</FormHelperText>
+									) : folders.length === 0 ? (
+										<FormHelperText key={'select_folder'}>You have not created any folders yet</FormHelperText>
 									) : (
 										<MultiSelect
 											key={'select_folder'}

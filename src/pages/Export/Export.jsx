@@ -5,6 +5,7 @@ import axios from 'axios';
 import pluralize from 'pluralize';
 import CustomList from '../../components/List/List';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import shortid from 'shortid';
 
 import download from '../../Utils/download';
 
@@ -34,14 +35,24 @@ class Export extends Component {
 
 			const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
 			fields.forEach((field) => (temp[field] = data[field]));
+			temp.rtype = type.toLowerCase();
 			return temp;
 		});
 	};
 
+	componentDidMount() {
+		const { match: { params: { type } } } = this.props;
+		this.refetchData(type);
+	}
+
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
+		this.refetchData(page.name);
+	};
+
+	refetchData = (type) => {
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(page.name.toLowerCase(), 2)}/me`, {
+			.get(`http://localhost:5001/api/v1/${pluralize(type.toLowerCase(), 2)}/me`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}
@@ -102,7 +113,7 @@ class Export extends Component {
 								this.CustomList.state.checked.forEach((checked) => {
 									exports.push(this.state.data[checked]);
 								});
-								download(null, JSON.stringify(exports));
+								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(exports));
 							}}
 						/>
 					]}

@@ -297,7 +297,8 @@ class Form extends React.Component {
 			resetMsg,
 			resetForm,
 			formButtons = true,
-			classNames
+			classNames,
+			disabled
 		} = this.props;
 
 		return (
@@ -322,7 +323,7 @@ class Form extends React.Component {
 							type="submit"
 							variant="contained"
 							color="primary"
-							disabled={isSubmitting || !isValid}
+							disabled={isSubmitting || !isValid || disabled}
 						>
 							{submitMsg ? submitMsg : 'Submit'}
 						</Button>

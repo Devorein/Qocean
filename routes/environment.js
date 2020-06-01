@@ -9,6 +9,7 @@ const {
 	createEnvironment,
 	updateEnvironment,
 	deleteEnvironment,
+	deleteEnvironments,
 	setCurrentEnvironment
 } = require('../controllers/environment');
 
@@ -33,7 +34,8 @@ router
 			}
 		)
 	)
-	.post(protect, createEnvironment);
+	.post(protect, createEnvironment)
+	.delete(protect, deleteEnvironments);
 
 router.route('/:id').put(protect, updateEnvironment).delete(protect, deleteEnvironment);
 

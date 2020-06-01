@@ -1,0 +1,6 @@
+{
+  "ignore": [
+    "/store/*.json",
+    "/simulate.js"
+  ]
+}

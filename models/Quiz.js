@@ -39,7 +39,7 @@ const QuizSchema = extendSchema(
 		},
 		image: {
 			type: String,
-			default: null
+			default: 'none.png'
 		},
 		total_questions: {
 			type: Number,
