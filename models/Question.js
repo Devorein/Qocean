@@ -43,7 +43,7 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	},
 	image: {
 		type: String,
-		default: null
+		default: 'none.png'
 	},
 	answers: {
 		type: [ [ String ] ],

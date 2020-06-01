@@ -10,18 +10,18 @@ const { ObjectID } = require('bson');
 // @route    POST /api/v1/auth/register
 // @access   Public
 exports.register = asyncHandler(async (req, res, next) => {
-	const { name, email, password, version, username } = req.body;
+	const { name, email, password, version, username, image } = req.body;
 	const env_id = new ObjectID();
-
-	const user = await User.create({
+	const data = {
 		name,
 		email,
 		password,
 		version,
 		username,
 		current_environment: env_id.toString()
-	});
-
+	};
+	if (image) data.image = image;
+	const user = await User.create(data);
 	await Environment.create({ user: user._id, _id: env_id, name: 'Default Environment' });
 	sendTokenResponse(user, 200, res);
 });

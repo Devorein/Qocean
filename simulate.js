@@ -37,14 +37,17 @@ casual.define('user', function() {
 		name: casual.first_name + ' ' + casual.last_name,
 		password: casual.password,
 		username: casual.password.toLowerCase(),
-		image: faker.image.imageUrl(),
+		image: `https://robohash.org/${casual.array_of_words(getRandomInt(1, 3)).join('')}`,
 		version: [ 'Rower', 'Sailor', 'Captain' ][getRandomInt(0, 2)]
 	};
 });
 
 casual.define('quiz', function() {
 	const len = getRandomInt(0, 5);
+	const width = 100 * getRandomInt(3, 6);
+	const height = Math.floor(width / 1.66);
 	return {
+		image: `https://i.picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
 		name: casual.title,
 		subject: casual.word,
 		tags: len === 0 ? [] : casual.array_of_words(len).map((word) => `${word}:${randomColor()}`),
@@ -110,7 +113,8 @@ casual.define('question', function() {
 		options = [];
 		answers = [ casual.array_of_words(getRandomInt(1, 3)) ];
 	}
-
+	const width = 100 * getRandomInt(3, 6);
+	const height = Math.floor(width / 1.66);
 	return {
 		name,
 		type,
@@ -118,7 +122,7 @@ casual.define('question', function() {
 		add_to_score: casual.boolean,
 		time_allocated: time,
 		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
-		image: faker.internet.url(),
+		image: `https://i.picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
 		options,
 		answers,
 		favourite: casual.boolean,
@@ -191,6 +195,7 @@ const createUser = async () => {
 			envs: []
 		});
 		console.log(`Created User ${users.length}`);
+
 		loginData.push({
 			password: user.password,
 			email: user.email,
@@ -294,23 +299,27 @@ const createEnvironment = async () => {
 };
 
 (async function() {
-	await Quiz.deleteMany();
-	await Question.deleteMany();
-	await User.deleteMany();
-	await Environment.deleteMany();
-	await Folder.deleteMany();
-	console.log(`User destroyed ...`.red.inverse);
-	console.log(`Quizzes destroyed ...`.red.inverse);
-	console.log(`Questions destroyed ...`.red.inverse);
-	console.log(`Environments destroyed ...`.red.inverse);
-	console.log(`Folders destroyed ...`.red.inverse);
+	const deletePrev = process.argv.slice(2)[0];
+	if (deletePrev) {
+		await Quiz.deleteMany();
+		await Question.deleteMany();
+		await User.deleteMany();
+		await Environment.deleteMany();
+		await Folder.deleteMany();
+		console.log(`User destroyed ...`.red.inverse);
+		console.log(`Quizzes destroyed ...`.red.inverse);
+		console.log(`Questions destroyed ...`.red.inverse);
+		console.log(`Environments destroyed ...`.red.inverse);
+		console.log(`Folders destroyed ...`.red.inverse);
+	}
 
 	const userInterval = setInterval(async () => {
 		if (users.length < total_users) await createUser();
 		else {
 			clearInterval(userInterval);
 			const data = loginData.map(({ password, username, email }) => `${username} ${email} ${password}`).join('\n');
-			fs.writeFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
+			if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
+			else fs.appendFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
 			const quizInterval = setInterval(async () => {
 				if (quizzes.length < total_quizzes) await createQuiz();
 				else {
