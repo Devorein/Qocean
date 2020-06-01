@@ -26,13 +26,6 @@ const ReportHeaderC = styled.div`
 `;
 
 class ReportHeader extends Component {
-	state = {
-		filters: {
-			type: 'All',
-			result: 'both'
-		}
-	};
-
 	renderDataRow = () => {
 		const { theme, validations } = this.props;
 		return (
@@ -62,15 +55,10 @@ class ReportHeader extends Component {
 						{ text: 'Show only correct', value: 'correct' },
 						{ text: 'Show only incorrect', value: 'incorrect' }
 					]}
-					name="Filter By validaiton"
-					value={this.state.filters.result}
+					name="Filter By result"
+					value={this.props.filters.result}
 					onChange={(e) => {
-						this.setState({
-							filters: {
-								...this.state.filters,
-								result: e.target.value
-							}
-						});
+						this.props.setFilters('result', e.target.value);
 					}}
 				/>
 				<InputSelect
@@ -85,14 +73,9 @@ class ReportHeader extends Component {
 						{ value: 'TF', text: 'True/False' }
 					]}
 					name="Filter By type"
-					value={this.state.filters.type}
+					value={this.props.filters.type}
 					onChange={(e) => {
-						this.setState({
-							filters: {
-								...this.state.filters,
-								type: e.target.value
-							}
-						});
+						this.props.setFilters('type', e.target.value);
 					}}
 				/>
 			</div>

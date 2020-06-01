@@ -8,7 +8,20 @@ import ReportBody from './Body/ReportBody';
 
 class Report extends Component {
 	state = {
-		validations: null
+		validations: null,
+		filters: {
+			type: 'All',
+			result: 'both'
+		}
+	};
+
+	setFilters = (target, value) => {
+		this.setState({
+			filters: {
+				...this.state.filters,
+				[target]: value
+			}
+		});
 	};
 
 	componentDidMount() {
@@ -35,8 +48,14 @@ class Report extends Component {
 		const { validations } = this.state;
 		return (
 			<div className="report pages">
-				<ReportHeader stats={stats} theme={theme} validations={validations} />
-				<ReportBody stats={stats} theme={theme} validations={validations} />
+				<ReportHeader
+					stats={stats}
+					theme={theme}
+					validations={validations}
+					setFilters={this.setFilters}
+					filters={this.state.filters}
+				/>
+				<ReportBody stats={stats} theme={theme} filters={this.state.filters} validations={validations} />
 			</div>
 		);
 	}

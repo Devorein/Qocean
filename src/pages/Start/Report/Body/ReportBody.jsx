@@ -39,21 +39,32 @@ class ReportBody extends Component {
 				});
 		}
 	}
+
+	applyFilters = () => {
+		const { filters, stats, validations } = this.props;
+		const { answers } = this.state;
+
+		return stats
+			.filter((stat) => {
+				if (filters.result === 'both') return stat;
+				else return validations[filters.result].includes(stat._id);
+			})
+			.filter((stat) => filters.type === 'All' || stat.type === filters.type)
+			.map((stat, index) => {
+				return (
+					<div className="report_body_item" key={stat._id}>
+						<ReportBodyItemHeader stat={stat} answer={answers[index]} validations={validations} />
+						<ReportBodyItemBody stat={stat} answer={answers[index]} />
+					</div>
+				);
+			});
+	};
 	render() {
-		const { theme, stats, validations } = this.props;
+		const { theme } = this.props;
 		const { answers } = this.state;
 		return (
 			<ReportBodyC className={'report_body'} theme={theme}>
-				{answers ? (
-					answers.map((answer, index) => {
-						return (
-							<div className="report_body_item" key={stats[index]._id}>
-								<ReportBodyItemHeader stat={stats[index]} answer={answer} validations={validations} />
-								<ReportBodyItemBody stat={stats[index]} answer={answer} />
-							</div>
-						);
-					})
-				) : null}
+				{answers ? this.applyFilters() : null}
 			</ReportBodyC>
 		);
 	}
