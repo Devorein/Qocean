@@ -298,8 +298,74 @@ const createEnvironment = async () => {
 	}
 };
 
+async function createUsers(count) {
+	return new Promise((resolve, reject) => {
+		const userInterval = setInterval(async () => {
+			if (users.length < count) await createUser();
+			else {
+				clearInterval(userInterval);
+				resolve('Users created');
+			}
+		}, 500);
+	});
+}
+
+async function createQuizzes(count) {
+	return new Promise((resolve, reject) => {
+		const quizInterval = setInterval(async () => {
+			if (quizzes.length < count) await createQuiz();
+			else {
+				clearInterval(quizInterval);
+				resolve('Quizzes created');
+			}
+		}, 500);
+	});
+}
+
+async function createQuestions(count) {
+	return new Promise((resolve, reject) => {
+		const questionInterval = setInterval(async () => {
+			if (questions.length < count) await createQuestion();
+			else {
+				clearInterval(questionInterval);
+				resolve('Questions created');
+			}
+		}, 500);
+	});
+}
+
+async function createFolders(count) {
+	return new Promise((resolve, reject) => {
+		const folderInterval = setInterval(async () => {
+			if (folders.length < count) await createFolder();
+			else {
+				clearInterval(folderInterval);
+				resolve('Folders created');
+			}
+		}, 500);
+	});
+}
+
+async function createEnvironments(count) {
+	return new Promise((resolve, reject) => {
+		const environmentsInterval = setInterval(async () => {
+			if (envs.length < count) await createEnvironment();
+			else {
+				clearInterval(environmentsInterval);
+				resolve('Environments created');
+			}
+		}, 500);
+	});
+}
+
 (async function() {
-	const deletePrev = process.argv.slice(2)[0];
+	const args = process.argv.slice(2);
+	const deletePrev = args.includes('-d');
+	const shouldCreateQuiz = args.includes('-qz');
+	const shouldCreateQuestion = args.includes('-qs');
+	const shouldCreateFolder = args.includes('-f');
+	const shouldCreateEnv = args.includes('-e');
+
 	if (deletePrev) {
 		await Quiz.deleteMany();
 		await Question.deleteMany();
@@ -313,38 +379,18 @@ const createEnvironment = async () => {
 		console.log(`Folders destroyed ...`.red.inverse);
 	}
 
-	const userInterval = setInterval(async () => {
-		if (users.length < total_users) await createUser();
-		else {
-			clearInterval(userInterval);
-			const data = loginData.map(({ password, username, email }) => `${username} ${email} ${password}`).join('\n');
-			if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
-			else fs.appendFileSync(`${__dirname}/store/loginData.txt`, data, 'UTF-8');
-			const quizInterval = setInterval(async () => {
-				if (quizzes.length < total_quizzes) await createQuiz();
-				else {
-					clearInterval(quizInterval);
-					const environmentInterval = setInterval(async () => {
-						if (envs.length < total_envs) await createEnvironment();
-						else {
-							clearInterval(environmentInterval);
-							const folderInterval = setInterval(async () => {
-								if (folders.length < total_folders) await createFolder();
-								else {
-									clearInterval(folderInterval);
-									const questionInterval = setInterval(async () => {
-										if (questions.length < total_questions) await createQuestion();
-										else {
-											clearInterval(questionInterval);
-											process.exit();
-										}
-									}, 500);
-								}
-							}, 500);
-						}
-					}, 500);
-				}
-			}, 500);
-		}
-	}, 500);
+	await createUsers(total_users);
+	await createQuizzes(total_quizzes);
+	await createQuestions(total_questions);
+	await createFolders(total_folders);
+	await createEnvironments(total_envs);
+
+	const data = loginData.map(({ password, username, email }) => ({ password, username, email }));
+	if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(data), 'UTF-8');
+	else {
+		const new_data = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8'));
+		new_data.push(data);
+		fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(new_data), 'UTF-8');
+	}
+	process.exit();
 })();
