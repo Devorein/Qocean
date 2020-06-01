@@ -6,6 +6,7 @@ const colors = require('colors');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const randomColor = require('randomcolor');
+const { createUsers } = require('./simulate/Users');
 
 function getRandomInt(min, max) {
 	min = Math.ceil(min);
@@ -30,17 +31,6 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 const icons = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ];
-
-casual.define('user', function() {
-	return {
-		email: faker.internet.email(),
-		name: casual.first_name + ' ' + casual.last_name,
-		password: casual.password,
-		username: casual.password.toLowerCase(),
-		image: `https://robohash.org/${casual.array_of_words(getRandomInt(1, 3)).join('')}`,
-		version: [ 'Rower', 'Sailor', 'Captain' ][getRandomInt(0, 2)]
-	};
-});
 
 casual.define('quiz', function() {
 	const len = getRandomInt(0, 5);
@@ -163,154 +153,99 @@ casual.define('environment', function() {
 	};
 });
 
-const users = [],
-	quizzes = [],
-	questions = [],
-	folders = [],
-	envs = [];
+// const createQuiz = async () => {
+// 	const quiz = casual.quiz;
+// 	try {
+// 		const user = users[getRandomInt(0, total_users - 1)];
+// 		const { data: { data: { _id } } } = await axios.post(
+// 			`http://localhost:5001/api/v1/quizzes`,
+// 			{ ...quiz },
+// 			{
+// 				headers: {
+// 					Authorization: `Bearer ${user.token}`
+// 				}
+// 			}
+// 		);
+// 		user.quizzes.push(_id);
+// 		quizzes.push({ _id, questions: [] });
+// 		console.log(`Created Quiz ${quizzes.length}`);
+// 	} catch (err) {
+// 		console.log(err.message);
+// 	}
+// };
 
-const total_users = getRandomInt(10, 25),
-	total_quizzes = getRandomInt(30, 50),
-	total_questions = getRandomInt(50, 75),
-	total_folders = getRandomInt(10, 25),
-	total_envs = getRandomInt(35, 50);
+// const createFolder = async () => {
+// 	const folder = casual.folder;
+// 	try {
+// 		const user = users[getRandomInt(0, total_users - 1)];
+// 		const quiz = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
+// 		folder.quizzes = quiz;
+// 		const { data: { data: { _id } } } = await axios.post(
+// 			`http://localhost:5001/api/v1/folders`,
+// 			{ ...folder },
+// 			{
+// 				headers: {
+// 					Authorization: `Bearer ${user.token}`
+// 				}
+// 			}
+// 		);
+// 		user.folders.push(_id);
+// 		folders.push(_id);
+// 		console.log(`Created Folder ${folders.length}`);
+// 	} catch (err) {
+// 		console.log(err.message);
+// 	}
+// };
 
-/* const total_users = getRandomInt(1, 5),
-	total_quizzes = getRandomInt(1, 5),
-	total_questions = getRandomInt(15, 30),
-	total_folders = getRandomInt(1, 5),
-	total_envs = getRandomInt(1, 5); */
-const loginData = [];
+// const createQuestion = async () => {
+// 	const question = casual.question;
+// 	let user = users[getRandomInt(0, total_users - 1)];
+// 	while (user.quizzes.length === 0) user = users[getRandomInt(0, total_users - 1)];
+// 	const quizId = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
+// 	const quiz = quizzes.find(({ _id }) => quizId === _id);
+// 	try {
+// 		question.quiz = quizId;
+// 		const { data: { data: { _id } } } = await axios.post(
+// 			`http://localhost:5001/api/v1/questions`,
+// 			{ ...question },
+// 			{
+// 				headers: {
+// 					Authorization: `Bearer ${user.token}`
+// 				}
+// 			}
+// 		);
+// 		user.questions.push(_id);
+// 		quiz.questions.push(_id);
+// 		questions.push(_id);
+// 		console.log(`Created Question ${questions.length}`);
+// 	} catch (err) {
+// 		console.log(err.message);
+// 	}
+// };
 
-const createUser = async () => {
-	const user = casual.user;
-	try {
-		const { data: { token, _id } } = await axios.post(`http://localhost:5001/api/v1/auth/register`, { ...user });
-		users.push({
-			_id,
-			token,
-			quizzes: [],
-			questions: [],
-			folders: [],
-			envs: []
-		});
-		console.log(`Created User ${users.length}`);
+// const createEnvironment = async () => {
+// 	const environment = casual.environment;
+// 	try {
+// 		const user = users[getRandomInt(0, total_users - 1)];
+// 		environment.user = user._id;
+// 		const { data: { data: { _id } } } = await axios.post(
+// 			`http://localhost:5001/api/v1/environments`,
+// 			{ ...environment },
+// 			{
+// 				headers: {
+// 					Authorization: `Bearer ${user.token}`
+// 				}
+// 			}
+// 		);
+// 		user.envs.push(_id);
+// 		envs.push(_id);
+// 		console.log(`Created Environment ${envs.length}`);
+// 	} catch (err) {
+// 		console.log(err.message);
+// 	}
+// };
 
-		loginData.push({
-			password: user.password,
-			email: user.email,
-			username: user.username
-		});
-	} catch (err) {
-		console.log(err.message);
-	}
-};
-
-const createQuiz = async () => {
-	const quiz = casual.quiz;
-	try {
-		const user = users[getRandomInt(0, total_users - 1)];
-		const { data: { data: { _id } } } = await axios.post(
-			`http://localhost:5001/api/v1/quizzes`,
-			{ ...quiz },
-			{
-				headers: {
-					Authorization: `Bearer ${user.token}`
-				}
-			}
-		);
-		user.quizzes.push(_id);
-		quizzes.push({ _id, questions: [] });
-		console.log(`Created Quiz ${quizzes.length}`);
-	} catch (err) {
-		console.log(err.message);
-	}
-};
-
-const createFolder = async () => {
-	const folder = casual.folder;
-	try {
-		const user = users[getRandomInt(0, total_users - 1)];
-		const quiz = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
-		folder.quizzes = quiz;
-		const { data: { data: { _id } } } = await axios.post(
-			`http://localhost:5001/api/v1/folders`,
-			{ ...folder },
-			{
-				headers: {
-					Authorization: `Bearer ${user.token}`
-				}
-			}
-		);
-		user.folders.push(_id);
-		folders.push(_id);
-		console.log(`Created Folder ${folders.length}`);
-	} catch (err) {
-		console.log(err.message);
-	}
-};
-
-const createQuestion = async () => {
-	const question = casual.question;
-	let user = users[getRandomInt(0, total_users - 1)];
-	while (user.quizzes.length === 0) user = users[getRandomInt(0, total_users - 1)];
-	const quizId = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
-	const quiz = quizzes.find(({ _id }) => quizId === _id);
-	try {
-		question.quiz = quizId;
-		const { data: { data: { _id } } } = await axios.post(
-			`http://localhost:5001/api/v1/questions`,
-			{ ...question },
-			{
-				headers: {
-					Authorization: `Bearer ${user.token}`
-				}
-			}
-		);
-		user.questions.push(_id);
-		quiz.questions.push(_id);
-		questions.push(_id);
-		console.log(`Created Question ${questions.length}`);
-	} catch (err) {
-		console.log(err.message);
-	}
-};
-
-const createEnvironment = async () => {
-	const environment = casual.environment;
-	try {
-		const user = users[getRandomInt(0, total_users - 1)];
-		environment.user = user._id;
-		const { data: { data: { _id } } } = await axios.post(
-			`http://localhost:5001/api/v1/environments`,
-			{ ...environment },
-			{
-				headers: {
-					Authorization: `Bearer ${user.token}`
-				}
-			}
-		);
-		user.envs.push(_id);
-		envs.push(_id);
-		console.log(`Created Environment ${envs.length}`);
-	} catch (err) {
-		console.log(err.message);
-	}
-};
-
-async function createUsers(count) {
-	return new Promise((resolve, reject) => {
-		const userInterval = setInterval(async () => {
-			if (users.length < count) await createUser();
-			else {
-				clearInterval(userInterval);
-				resolve('Users created');
-			}
-		}, 500);
-	});
-}
-
-async function createQuizzes(count) {
+/* async function createQuizzes(count) {
 	return new Promise((resolve, reject) => {
 		const quizInterval = setInterval(async () => {
 			if (quizzes.length < count) await createQuiz();
@@ -320,51 +255,49 @@ async function createQuizzes(count) {
 			}
 		}, 500);
 	});
-}
+} */
 
-async function createQuestions(count) {
-	return new Promise((resolve, reject) => {
-		const questionInterval = setInterval(async () => {
-			if (questions.length < count) await createQuestion();
-			else {
-				clearInterval(questionInterval);
-				resolve('Questions created');
-			}
-		}, 500);
-	});
-}
+// async function createQuestions(count) {
+// 	return new Promise((resolve, reject) => {
+// 		const questionInterval = setInterval(async () => {
+// 			if (questions.length < count) await createQuestion();
+// 			else {
+// 				clearInterval(questionInterval);
+// 				resolve('Questions created');
+// 			}
+// 		}, 500);
+// 	});
+// }
 
-async function createFolders(count) {
-	return new Promise((resolve, reject) => {
-		const folderInterval = setInterval(async () => {
-			if (folders.length < count) await createFolder();
-			else {
-				clearInterval(folderInterval);
-				resolve('Folders created');
-			}
-		}, 500);
-	});
-}
+// async function createFolders(count) {
+// 	return new Promise((resolve, reject) => {
+// 		const folderInterval = setInterval(async () => {
+// 			if (folders.length < count) await createFolder();
+// 			else {
+// 				clearInterval(folderInterval);
+// 				resolve('Folders created');
+// 			}
+// 		}, 500);
+// 	});
+// }
 
-async function createEnvironments(count) {
-	return new Promise((resolve, reject) => {
-		const environmentsInterval = setInterval(async () => {
-			if (envs.length < count) await createEnvironment();
-			else {
-				clearInterval(environmentsInterval);
-				resolve('Environments created');
-			}
-		}, 500);
-	});
-}
+// async function createEnvironments(count) {
+// 	return new Promise((resolve, reject) => {
+// 		const environmentsInterval = setInterval(async () => {
+// 			if (envs.length < count) await createEnvironment();
+// 			else {
+// 				clearInterval(environmentsInterval);
+// 				resolve('Environments created');
+// 			}
+// 		}, 500);
+// 	});
+// }
 
 (async function() {
 	const args = process.argv.slice(2);
 	const deletePrev = args.includes('-d');
-	const shouldCreateQuiz = args.includes('-qz');
-	const shouldCreateQuestion = args.includes('-qs');
-	const shouldCreateFolder = args.includes('-f');
-	const shouldCreateEnv = args.includes('-e');
+	const userArg = args.indexOf('-u');
+	const createMode = args[userArg + 1] && !args[userArg + 1].includes('-') ? 'specified' : 'all';
 
 	if (deletePrev) {
 		await Quiz.deleteMany();
@@ -379,18 +312,63 @@ async function createEnvironments(count) {
 		console.log(`Folders destroyed ...`.red.inverse);
 	}
 
-	await createUsers(total_users);
-	await createQuizzes(total_quizzes);
-	await createQuestions(total_questions);
-	await createFolders(total_folders);
-	await createEnvironments(total_envs);
+	if (createMode === 'specified') {
+		const username = args[userArg + 1];
+		const { email, password } = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8')).find(
+			(user) => user.username === username
+		);
 
-	const data = loginData.map(({ password, username, email }) => ({ password, username, email }));
-	if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(data), 'UTF-8');
-	else {
-		const new_data = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8'));
-		new_data.push(data);
-		fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(new_data), 'UTF-8');
+		const { data: { token } } = await axios.post(`http://localhost:5001/api/v1/auth/login`, {
+			email,
+			password
+		});
+
+		const headers = {
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		};
+
+		const shouldCreateQuiz = args.includes('-qz');
+		const shouldCreateQuestion = args.includes('-qs');
+		const shouldCreateFolder = args.includes('-f');
+		const shouldCreateEnv = args.includes('-e');
+	} else if (createMode === 'all') {
+		const users = [],
+			quizzes = [],
+			questions = [],
+			folders = [],
+			envs = [],
+			loginData = [];
+
+		let counts = [];
+
+		const amounts = args[args.indexOf('-amnt') + 1];
+		if (!amounts.startsWith('-')) {
+			counts = amounts.split(',').map((count) => parseInt(count));
+			counts = counts.concat(Array(5 - counts.length).fill(counts[counts.length - 1]));
+		} else {
+			counts = [
+				getRandomInt(10, 25),
+				getRandomInt(30, 50),
+				getRandomInt(50, 75),
+				getRandomInt(10, 25),
+				getRandomInt(35, 50)
+			];
+		}
+		await createUsers(counts[0], users, loginData);
+		// await createQuizzes(total_quizzes);
+		// await createQuestions(total_questions);
+		// await createFolders(total_folders);
+		// await createEnvironments(total_envs);
+		const data = loginData.map(({ password, username, email }) => ({ password, username, email }));
+		if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(data), 'UTF-8');
+		else {
+			const new_data = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8'));
+			new_data.push(...data);
+			fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(new_data), 'UTF-8');
+		}
 	}
+
 	process.exit();
 })();
