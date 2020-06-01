@@ -99,7 +99,10 @@ class Quiz extends Component {
 			currentQuiz++;
 			currentQuizQuestion = 0;
 		}
-		const { stats, question: { _id, name, type, time_allocated, options, difficulty, weight } } = this.state;
+		const {
+			stats,
+			question: { _id, name, type, time_allocated, options, add_to_score, difficulty, weight }
+		} = this.state;
 		stats.push({
 			user_answers,
 			_id,
@@ -109,7 +112,8 @@ class Quiz extends Component {
 			options,
 			difficulty,
 			weight,
-			time_allocated
+			time_allocated,
+			add_to_score
 		});
 
 		if (currentQuestion < totalQuestion - 1) {

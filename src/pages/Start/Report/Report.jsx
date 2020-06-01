@@ -43,8 +43,21 @@ class Report extends Component {
 			});
 	}
 
+	transformStats = () => {
+		const { stats } = this.props;
+		return stats.map((stat) => {
+			if (!stat.add_to_score) stat.points = 0;
+			else {
+				const { time_allocated, time_taken } = stat;
+				stat.points = parseFloat((time_allocated - time_taken) * 100 / time_allocated / 10).toFixed(2);
+			}
+			return stat;
+		});
+	};
+
 	render() {
-		const { theme, stats } = this.props;
+		const { theme } = this.props;
+		const stats = this.transformStats();
 		const { validations } = this.state;
 		return (
 			<div className="report pages">
