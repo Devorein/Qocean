@@ -11,6 +11,7 @@ const {
 	createQuestion,
 	updateQuestion,
 	deleteQuestion,
+	deleteQuestions,
 	questionPhotoUpload,
 	sendAnswer,
 	sendAnswers
@@ -47,6 +48,9 @@ router
 		)
 	)
 	.post(protect, createQuestion);
+
+router.route('/').delete(protect, deleteQuestions);
+
 router.route('/:id').put(protect, updateQuestion).delete(protect, deleteQuestion);
 
 router.route('/:id/photo').put(protect, imageUpload(Question, 'Question'), questionPhotoUpload);

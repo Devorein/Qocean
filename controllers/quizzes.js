@@ -72,7 +72,7 @@ exports.deleteQuizzes = asyncHandler(async (req, res, next) => {
 	for (let i = 0; i < quizzes.length; i++) {
 		const quizId = quizzes[i];
 		const quiz = await Quiz.findById(quizId);
-		if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
+		if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${quizId}`, 404));
 		if (quiz.user.toString() !== req.user._id.toString())
 			return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
 		if (quiz.image && (!quiz.image.match(/^(http|data:)/) && quiz.image !== 'none.png')) {

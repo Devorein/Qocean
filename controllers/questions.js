@@ -103,6 +103,23 @@ exports.deleteQuestion = asyncHandler(async function(req, res, next) {
 	res.status(200).json({ success: true, data: question });
 });
 
+exports.deleteQuestions = asyncHandler(async function(req, res, next) {
+	const { questions } = req.body;
+	for (let i = 0; i < questions.length; i++) {
+		const questionId = questions[i];
+		let question = await Question.findById(questionId).select('question user type image');
+		if (!question) return next(new ErrorResponse(`No question with id ${questionId} exists`, 404));
+		if (question.user.toString() !== req.user._id.toString())
+			return next(new ErrorResponse(`User not authorized to delete question`, 401));
+		if (question.image && (!question.image.match(/^(http|data:)/) && question.image !== 'none.png')) {
+			const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`);
+			if (fs.existsSync(location)) fs.unlinkSync(location);
+		}
+		await question.remove();
+	}
+	res.status(200).json({ success: true, data: questions.length });
+});
+
 // @desc: Upload a single question photo
 // @route: PUT /api/v1/questions/:id/photo
 // @access: Private
