@@ -19,7 +19,7 @@ casual.define('user', function() {
 	};
 });
 
-const createUser = async (users, loginData) => {
+const createUser = async ({ users, loginData }) => {
 	const user = casual.user;
 	try {
 		const { data: { token, _id } } = await axios.post(`http://localhost:5001/api/v1/auth/register`, { ...user });
@@ -43,10 +43,10 @@ const createUser = async (users, loginData) => {
 	}
 };
 
-async function createUsers(count, users, loginData) {
+async function createUsers({ count, users, loginData }) {
 	return new Promise((resolve, reject) => {
 		const userInterval = setInterval(async () => {
-			if (users.length < count) await createUser(users, loginData);
+			if (users.length < count) await createUser({ users, loginData });
 			else {
 				clearInterval(userInterval);
 				resolve('Users created');
