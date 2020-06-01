@@ -43,6 +43,19 @@ exports.deleteFolder = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: folder });
 });
 
+exports.deleteFolders = asyncHandler(async (req, res, next) => {
+	const { folders } = req.body;
+	for (let i = 0; i < folders.length; i++) {
+		const folderId = folders[i];
+		const folder = await Folder.findById(folderId).select('name user');
+		if (!folder) return next(new ErrorResponse(`Folder not found with id of ${folderId}`, 404));
+		if (folder.user.toString() !== req.user._id.toString())
+			return next(new ErrorResponse(`User not authorized to delete folder`, 401));
+		await folder.remove();
+	}
+	res.status(200).json({ success: true, data: folders.length });
+});
+
 // @desc: Add/remove quiz from folder
 // @route: PUT /api/v1/folders/quiz
 // @access: Private
