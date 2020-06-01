@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withTheme } from '@material-ui/core';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
@@ -150,7 +151,11 @@ class QuestionForm extends Component {
 				})
 			},
 			disabled: quizzes.length < 1,
-			helperText: loading ? 'Loading your quizzes' : quizzes.length < 1 ? 'You have not created any quizzes yet' : null
+			helperText: loading ? (
+				'Loading your quizzes'
+			) : quizzes.length < 1 ? (
+				<b style={{ color: this.props.theme.palette.error.main }}>You have not created any quizzes yet</b>
+			) : null
 		};
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
 
@@ -176,6 +181,7 @@ class QuestionForm extends Component {
 													postSubmit.bind(null, { getFileData, resetFileInput }, formData)
 												])}
 												classNames={'question_form'}
+												disabled={this.state.quizzes.length === 0}
 											/>
 											{form}
 											{FileInput}
@@ -191,4 +197,4 @@ class QuestionForm extends Component {
 	}
 }
 
-export default QuestionForm;
+export default withTheme(QuestionForm);

@@ -17,7 +17,8 @@ class InputForm extends Component {
 			children,
 			passFormAsProp = false,
 			initialTouched,
-			validateOnChange = false
+			validateOnChange = false,
+			disabled
 		} = this.props;
 
 		const initialValues = {};
@@ -69,6 +70,7 @@ class InputForm extends Component {
 							formButtons={formButtons}
 							errorBeforeTouched={errorBeforeTouched}
 							submitMsg={submitMsg}
+							disabled={disabled}
 						/>
 					);
 					return (
