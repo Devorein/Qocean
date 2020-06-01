@@ -46,8 +46,8 @@ class Profile extends Component {
 
 	submitForm = (
 		getFileData,
-		{ showChangePasswordForm, values, errors, isValid },
-		{ name, email, username, password },
+		{ showChangePasswordForm, values, errors, isValid, password: current_password },
+		{ name, email, username },
 		{ setSubmitting }
 	) => {
 		const updateUser = (password) => {
@@ -107,7 +107,7 @@ class Profile extends Component {
 				.put(
 					`http://localhost:5001/api/v1/users/updatepassword`,
 					{
-						currentPassword: password,
+						currentPassword: current_password,
 						newPassword: values.new_password
 					},
 					{ ...headers }
@@ -119,7 +119,7 @@ class Profile extends Component {
 					}, 2500);
 					updateUser(values.new_password);
 				});
-		} else updateUser(password);
+		} else updateUser(current_password);
 	};
 
 	checkPassword = (values, { setSubmitting }) => {
@@ -187,7 +187,7 @@ class Profile extends Component {
 			{ name: 'name', startAdornment: 'person', defaultValue: user.name },
 			{ name: 'username', startAdornment: 'person', defaultValue: user.username },
 			{ name: 'email', startAdornment: 'email', defaultValue: user.email },
-			{ name: 'password', type: 'password' }
+			null
 		];
 
 		const validationSchema = Yup.object({
@@ -207,24 +207,28 @@ class Profile extends Component {
 						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
 							{({ setIsOpen }) => (
 								<ChangePassword>
-									{({ formData, inputs, button }) => (
-										<div className="profile pages">
-											<InputForm
-												classNames={'profile_form'}
-												validationSchema={validationSchema}
-												inputs={formInputs}
-												onSubmit={this.submitForm.bind(null, getFileData, formData)}
-												submitMsg={'update'}
-											/>
-											{inputs}
-											<div className="profile_buttons">
-												{button}
-												<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
-												<ExportAll />
+									{({ formData, inputs, button, passwordInput, disabled }) => {
+										formInputs[3] = passwordInput;
+										return (
+											<div className="profile pages">
+												<InputForm
+													classNames={'profile_form'}
+													validationSchema={validationSchema}
+													inputs={formInputs}
+													onSubmit={this.submitForm.bind(null, getFileData, formData)}
+													submitMsg={'update'}
+													disabled={disabled}
+												/>
+												{inputs}
+												<div className="profile_buttons">
+													{button}
+													<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
+													<ExportAll />
+												</div>
+												{FileInput}
 											</div>
-											{FileInput}
-										</div>
-									)}
+										);
+									}}
 								</ChangePassword>
 							)}
 						</ModalRP>
