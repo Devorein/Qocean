@@ -34,7 +34,6 @@ class ReportHeader extends Component {
 			if (statB.add_to_score) total += parseFloat(statB.points);
 			return total;
 		});
-		debugger;
 		const totalStats = stats.filter((stat) => stat.add_to_score).length;
 		return (totalPoints / totalStats).toFixed(2);
 	};
