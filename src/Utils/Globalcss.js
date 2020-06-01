@@ -32,7 +32,8 @@ export default withStyles(
 					}
 				},
 				'.MuiFormControl-root': {
-					margin: '5px'
+					margin: '5px',
+					width: '100%'
 				},
 				'.MuiFormHelperText-root': {
 					color: theme.palette.error.main,

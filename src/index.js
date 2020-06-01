@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { makeStyles } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme';
 
@@ -265,19 +266,46 @@ class App extends Component {
 
 const RoutedApp = withRouter(App);
 
+const Snackbar = ({ session, refetch }) => {
+	const userStyles = makeStyles((theme) => {
+		return {
+			variantError: {
+				background: theme.palette.error.main
+			},
+			variantSuccess: {
+				background: theme.palette.success.main
+			},
+			variantWarning: {
+				background: theme.palette.warning.main
+			}
+		};
+	});
+
+	const { variantError, variantSuccess, variantWarning } = userStyles();
+
+	return (
+		<SnackbarProvider
+			maxSnack={session.data ? session.data.data.current_environment.max_notifications : 3}
+			autoHideDuration={session.data ? session.data.data.current_environment.notification_timing : 2500}
+			classes={{
+				variantError,
+				variantSuccess,
+				variantWarning
+			}}
+		>
+			<CssBaseline />
+			<RoutedApp session={session} refetch={refetch} />
+		</SnackbarProvider>
+	);
+};
+
 ReactDOM.render(
 	<WithSessions>
 		{({ session, refetch }) => {
 			return (
 				<Router>
 					<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
-						<SnackbarProvider
-							maxSnack={session.data ? session.data.data.current_environment.max_notifications : 3}
-							autoHideDuration={2500}
-						>
-							<CssBaseline />
-							<RoutedApp session={session} refetch={refetch} />
-						</SnackbarProvider>
+						<Snackbar session={session} refetch={refetch} />
 					</ThemeProvider>
 				</Router>
 			);
