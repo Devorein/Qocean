@@ -22,7 +22,7 @@ const ReportBodyItemHeader = styled.div`
 
 export default withTheme(({ stat, theme, validations, answer }) => {
 	return (
-		<ReportBodyItemHeader theme={theme}>
+		<ReportBodyItemHeader theme={theme} className={`report_body_item_header report_body_item_header--${stat.type}`}>
 			<FlexCenter>
 				<div
 					className={`report_body_item_header_validation report_body_item_header_validation--${validations &&

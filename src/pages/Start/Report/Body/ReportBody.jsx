@@ -7,10 +7,10 @@ import axios from 'axios';
 import ReportBodyItemHeader from './Item/Header/ReportBodyItemHeader';
 import ReportBodyItemBody from './Item/Body/ReportBodyItemBody';
 
-const ReportBodyC = styled.div`/* background: ${(props) => props.theme.palette.background.main}; */`;
-const ReportBodyItem = styled.div`
-	margin: 5px;
-	background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.main)).darken(0.1).hex()};
+const ReportBodyC = styled.div`
+	& .report_body_item {
+		background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.main)).darken(0.1).hex()};
+	}
 `;
 
 class ReportBody extends Component {
@@ -47,10 +47,10 @@ class ReportBody extends Component {
 				{answers ? (
 					answers.map((answer, index) => {
 						return (
-							<ReportBodyItem className="report_body_item" theme={theme} key={stats[index]._id}>
+							<div className="report_body_item" key={stats[index]._id}>
 								<ReportBodyItemHeader stat={stats[index]} answer={answer} validations={validations} />
 								<ReportBodyItemBody stat={stats[index]} answer={answer} />
-							</ReportBodyItem>
+							</div>
 						);
 					})
 				) : null}
