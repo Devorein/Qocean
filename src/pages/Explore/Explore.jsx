@@ -13,6 +13,10 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import FormFiller from '../FormFiller/FormFiller';
 import { AppContext } from '../../context/AppContext';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import shortid from 'shortid';
+import download from '../../Utils/download';
 
 class Explore extends Component {
 	static contextType = AppContext;
@@ -25,6 +29,34 @@ class Explore extends Component {
 		sortCol: null,
 		sortOrder: null,
 		selectedIndex: null
+	};
+
+	transformData = (data) => {
+		const { type } = this.state;
+		return data.map((data) => {
+			const negate = [ 'user', '_id', '__v', 'id' ];
+			const temp = {};
+			if (type === 'quiz')
+				negate.push(
+					'average_quiz_time',
+					'average_difficulty',
+					'total_questions',
+					'total_folders',
+					'folders',
+					'rating',
+					'questions',
+					'watchers',
+					'ratings',
+					'raters'
+				);
+			else if (type === 'question') negate.push('quiz');
+			else if (type === 'folder') negate.push('quizzes', 'ratings', 'total_questions', 'total_quizzes');
+
+			const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
+			fields.forEach((field) => (temp[field] = data[field]));
+			temp.rtype = type.toLowerCase();
+			return temp;
+		});
 	};
 
 	componentDidMount() {
@@ -104,28 +136,77 @@ class Explore extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				action: (
-					<NoteAddIcon
-						onClick={(e) => {
-							this.setState({
-								isOpen: true,
-								selectedIndex: index
-							});
-						}}
-					/>
+				actions: (
+					<div stlye={{ display: 'flex' }}>
+						<NoteAddIcon
+							onClick={(e) => {
+								this.setState({
+									isOpen: true,
+									selectedIndex: index
+								});
+							}}
+						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(this.transformData([ item ])));
+							}}
+						/>
+					</div>
 				)
 			};
 		});
+	};
+
+	watchToggle = (type, _id, e) => {
+		e.persist();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}/_/watch${type.charAt(0).toUpperCase() + type.substr(1)}`,
+				{
+					[type]: _id.length === 1 ? [ _id ] : _id
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
+				this.refetchData();
+			});
 	};
 
 	decideTable = () => {
 		const { refetchData, genericTransformData } = this;
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
 		const options = {
-			filterType: 'checkbox',
-			count: totalCount,
-			page,
-			customToolbar() {
+			customToolbarSelect: (selectedRows) => {
+				return (
+					<div>
+						{this.state.type === 'quiz' || this.state.type === 'folder' ? (
+							<VisibilityIcon
+								onClick={this.watchToggle.bind(
+									null,
+									pluralize(this.state.type, 2).toLowerCase(),
+									selectedRows.data.map(({ index }) => this.state.data[index]._id)
+								)}
+							/>
+						) : null}
+						{this.state.type !== 'user' ? (
+							<GetAppIcon
+								onClick={(e) => {
+									download(
+										`${Date.now()}_${shortid.generate()}.json`,
+										JSON.stringify(this.transformData(selectedRows.data.map(({ index }) => this.state.data[index])))
+									);
+								}}
+							/>
+						) : null}
+					</div>
+				);
+			},
+			customToolbar: () => {
 				return (
 					<div>
 						<RotateLeftIcon
@@ -133,15 +214,40 @@ class Explore extends Component {
 								refetchData();
 							}}
 						/>
+						{this.state.type !== 'user' ? (
+							<GetAppIcon
+								onClick={(e) => {
+									download(
+										`${Date.now()}_${shortid.generate()}.json`,
+										JSON.stringify(this.transformData(this.state.data))
+									);
+								}}
+							/>
+						) : null}
+
+						{this.state.type === 'quiz' || this.state.type === 'folder' ? (
+							<VisibilityIcon
+								onClick={this.watchToggle.bind(
+									null,
+									pluralize(this.state.type, 2).toLowerCase(),
+									this.state.data.map((data) => data._id)
+								)}
+							/>
+						) : null}
 					</div>
 				);
 			},
+			filterType: 'checkbox',
+			count: totalCount,
+			page,
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
 			print: false,
 			download: false,
 			serverSide: true,
+			filter: false,
+			search: false,
 			onChangePage: (page) => {
 				this.setState(
 					{
@@ -181,7 +287,11 @@ class Explore extends Component {
 			page,
 			sortCol,
 			sortOrder,
-			cols: [ { name: 'action', label: 'Action' } ]
+			cols: [ { name: 'actions', label: 'Actions' } ],
+			refetchData,
+			changeResponse: this.context.changeResponse,
+			user: this.props.user,
+			watchToggle: this.watchToggle
 		};
 
 		if (type === 'user') return <ExploreUsers {...props} />;

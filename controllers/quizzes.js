@@ -1,9 +1,11 @@
 const Quiz = require('../models/Quiz');
 const Folder = require('../models/Folder');
+const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const fs = require('fs');
 const path = require('path');
+const updateResource = require('../utils/updateResource');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -41,14 +43,20 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 // @desc: Update single quiz
 // @route: PUT /api/v1/quizzes/:id
 // @access: Private
+
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
-	let quiz = await Quiz.findById(req.params.id);
-	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
-	if (quiz.user.toString() !== req.user._id.toString())
-		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
-	req.body.updated_at = Date.now();
-	quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+	const quiz = await updateResource('quiz', req.params.id, req.user, next, req.body);
 	res.status(200).json({ success: true, data: quiz });
+});
+
+exports.updateQuizzes = asyncHandler(async (req, res, next) => {
+	const { quizzes } = req.body;
+	const updated_quizzes = [];
+	for (let i = 0; i < quizzes.length; i++) {
+		const { id, body } = quizzes[i];
+		updated_quizzes.push(await updateResource('quiz', id, req.user, next, body));
+	}
+	res.status(200).json({ success: true, data: updated_quizzes });
 });
 
 // @desc: Delete single quiz
@@ -97,9 +105,95 @@ exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
 		for (let i = 0; i < quizzes.length; i++) {
 			const quizId = quizzes[i];
 			const quiz = await Quiz.findById(quizId);
-			if (quiz._id !== req.user._id) quiz.total_played = quiz.total_played + 1;
+			if (quiz.user.toString() !== req.user._id.toString()) quiz.total_played = quiz.total_played + 1;
 			await quiz.save();
 		}
 	}
 	res.status(200).json({ success: true, total_updated: quizzes.length });
+});
+
+exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
+	let { quizzes, ratings } = req.body;
+	ratings = ratings.map((rating) => parseFloat(rating));
+	const safe_ratings = ratings.every((rating) => rating >= 0 && rating <= 10);
+	if (!safe_ratings) return next(new ErrorResponse(`You cannot have a rating more than 10 or less than 0`, 400));
+	const ratingsData = [];
+	if (ratings.length !== quizzes.length) {
+		const lastRatings = ratings[ratings.length - 1];
+		for (let i = 0; i < quizzes.length - ratings.length; i++) ratings.push(lastRatings);
+	}
+
+	if (quizzes) {
+		for (let i = 0; i < quizzes.length; i++) {
+			const quizId = quizzes[i];
+			const quiz = await Quiz.findById(quizId).select('user ratings raters');
+			const prevRatings = parseFloat(quiz.ratings);
+			let newRatings = prevRatings;
+			let raters = parseInt(quiz.raters);
+			if (quiz.user.toString() !== req.user._id.toString()) {
+				raters++;
+				quiz.raters = raters;
+				newRatings = parseFloat(((prevRatings + ratings[i]) / (raters !== 1 ? 2 : 1)).toFixed(2));
+				quiz.ratings = newRatings;
+				await quiz.save();
+			}
+
+			ratingsData.push({
+				_id: quiz._id,
+				prevRatings,
+				newRatings,
+				raters
+			});
+		}
+	}
+	res.status(200).json({ success: true, total_rated: ratingsData });
+});
+
+exports.watchQuizzes = asyncHandler(async (req, res, next) => {
+	const { quizzes, op } = req.body;
+	const user = await User.findById(req.user._id);
+	let manipulated = 0;
+
+	function detectWatchStatus(quiz) {
+		if (user.watched_quizzes.indexOf(quiz._id.toString()) !== -1 && quiz.watchers.indexOf(req.user._id) !== -1)
+			return 'remove';
+		else if (
+			user.watched_quizzes.indexOf(quiz._id.toString()) === -1 &&
+			quiz.watchers.indexOf(req.user._id.toString()) === -1 &&
+			!req.user.quizzes.includes(quiz._id.toString())
+		)
+			return 'add';
+	}
+
+	function removeFromWatched(quiz) {
+		if (detectWatchStatus(quiz) === 'remove') {
+			quiz.watchers = quiz.watchers.filter((watcher) => watcher === req.user._id.toString());
+			user.watched_quizzes = user.watched_quizzes.filter(
+				(watched_quiz) => watched_quiz.toString() !== quiz._id.toString()
+			);
+			manipulated++;
+		}
+	}
+
+	function addToWatched(quiz) {
+		if (detectWatchStatus(quiz) === 'add') {
+			quiz.watchers.push(user._id.toString());
+			user.watched_quizzes.push(quiz._id.toString());
+			manipulated++;
+		}
+	}
+
+	for (let i = 0; i < quizzes.length; i++) {
+		const quizId = quizzes[i];
+		const quiz = await Quiz.findById(quizId);
+		if (op === 0) removeFromWatched(quiz);
+		else if (op === 1) addToWatched(quiz);
+		else {
+			if (detectWatchStatus(quiz) === 'remove') removeFromWatched(quiz);
+			else if (detectWatchStatus(quiz) === 'add') addToWatched(quiz);
+		}
+		await quiz.save();
+	}
+	await user.save();
+	res.status(200).json({ success: true, data: manipulated });
 });

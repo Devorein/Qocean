@@ -84,12 +84,37 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 });
 
 exports.getUserTags = asyncHandler(async (req, res, next) => {
-	const user = await User.findById(req.params.id).populate({ path: 'quizzes', select: 'tags' });
+	const user = await User.findById(req.params.id).select('_id,quizzes').populate({ path: 'quizzes', select: 'tags' });
 	if (!user) return next(new ErrorResponse(`User not found`, 404));
 	const tags = [];
-	user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag.split(':')[0])));
+	user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag)));
 	res.status(200).json({
 		success: true,
 		data: Array.from(new Set(tags))
+	});
+});
+
+exports.getMyTags = asyncHandler(async (req, res, next) => {
+	const user = await User.findById(req.user._id).select('_id,quizzes').populate({ path: 'quizzes', select: 'tags' });
+	const {
+		uniqueWithoutColor = false,
+		originalWithoutColor = false,
+		uniqueWithColor = false,
+		originalWithColor = false
+	} = req.body;
+
+	if (!user) return next(new ErrorResponse(`User not found`, 404));
+	const tags = [];
+	user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag)));
+	const noncolouredTags = tags.map((tag) => tag.split(':')[0]);
+
+	res.status(200).json({
+		success: true,
+		data: {
+			uniqueWithoutColor: uniqueWithoutColor ? Array.from(new Set(noncolouredTags)) : [],
+			uniqueWithColor: uniqueWithColor ? Array.from(new Set(tags)) : [],
+			originalWithoutColor: originalWithoutColor ? noncolouredTags : [],
+			originalWithColor: originalWithColor ? tags : []
+		}
 	});
 });

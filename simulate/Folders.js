@@ -37,17 +37,20 @@ const createFolder = async ({ folders, total_users, users }) => {
 		);
 		user.folders.push(_id);
 		folders.push(_id);
-		console.log(`Created Folder ${folders.length}`);
 	} catch (err) {
 		console.log(err.message);
 	}
 };
 
 async function createFolders({ count, folders, total_users, users }) {
+	let created = 1;
 	return new Promise((resolve, reject) => {
 		const folderInterval = setInterval(async () => {
-			if (folders.length < count) await createFolder({ folders, total_users, users });
-			else {
+			if (created <= count) {
+				await createFolder({ folders, total_users, users });
+				console.log(`Created Folder ${created}`);
+				created++;
+			} else {
 				clearInterval(folderInterval);
 				resolve('Folders created');
 			}

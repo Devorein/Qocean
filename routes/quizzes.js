@@ -11,7 +11,10 @@ const {
 	deleteQuiz,
 	deleteQuizzes,
 	quizPhotoUpload,
-	updatePlayedTimes
+	updatePlayedTimes,
+	updateQuizRatings,
+	watchQuizzes,
+	updateQuizzes
 } = require('../controllers/quizzes');
 
 router.route('/me').get(protect, advancedResults(Quiz));
@@ -41,12 +44,14 @@ router
 		)
 	)
 	.post(protect, createQuiz)
+	.put(protect, updateQuizzes)
 	.delete(protect, deleteQuizzes);
 
 router.route('/:id').put(protect, updateQuiz).delete(protect, deleteQuiz);
-
 router.route('/:id/photo').put(protect, imageUpload(Quiz, 'Quiz'), quizPhotoUpload);
+router.route('/_/watchQuizzes').put(protect, watchQuizzes);
 
+router.route('/_/ratings').put(protect, updateQuizRatings);
 router.route('/_/updatePlayedTimes').put(protect, updatePlayedTimes);
 
 module.exports = router;

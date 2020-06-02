@@ -1,86 +1,141 @@
 import React from 'react';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
+import { withTheme } from '@material-ui/core';
+import Color from 'color';
+import convert from 'color-convert';
 
-const getMuiTheme = () =>
+const getMuiTheme = (theme) =>
 	createMuiTheme({
 		overrides: {
 			MUIDataTablePagination: {
 				root: {
 					overflow: 'hidden',
 					border: 'none',
-					backgroundColor: '#131313de'
+					backgroundColor: theme.palette.background.dark
 				}
 			},
 			MuiTablePagination: {
 				actions: {
-					display: 'flex'
+					display: 'flex',
+					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+					borderRadius: 3,
+					'& svg': {
+						width: '1em',
+						color: theme.palette.text.primary
+					}
 				},
 				caption: {
-					color: '#ddd',
-					fontFamily: 'Quantico'
+					color: theme.palette.text.primary,
+					fontFamily: theme.typography.fontFamily
+				},
+				select: {
+					color: theme.palette.text.primary,
+					fontWeight: 'bolder',
+					fontFamily: theme.typography.fontFamily,
+					display: 'flex',
+					alignItems: 'center'
+				}
+			},
+			MuiSelect: {
+				icon: {
+					color: theme.palette.text.primary,
+					width: '1em'
+				}
+			},
+			MuiSvgIcon: {
+				root: {
+					width: '.75em',
+					color: theme.palette.text.primary,
+					'&:hover': {
+						cursor: 'pointer'
+					}
 				}
 			},
 			MUIDataTableToolbar: {
 				titleText: {
 					fontSize: '2em',
 					fontWeight: 'bolder',
-					color: '#ddd',
+					color: theme.palette.text.primary,
 					textTransform: 'capitalize'
 				},
 				actions: {
 					display: 'flex',
 					justifyContent: 'flex-end',
+					alignItems: 'center',
+					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+					borderRadius: 3,
+					padding: 5,
 					'& .MuiButtonBase-root': {
 						margin: '0'
+					},
+					'& svg': {
+						width: '1em',
+						color: theme.palette.text.primary
 					}
 				}
 			},
 			MuiPaper: {
 				root: {
-					backgroundColor: '#272727'
+					backgroundColor: theme.palette.background.main
 				}
 			},
 			MuiToolbar: {
 				regular: {
 					minHeight: 50,
-					height: 50
+					height: 50,
+					paddingRight: 5,
+					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.15).hex()
 				}
 			},
 			MUIDataTableHeadCell: {
 				fixedHeaderCommon: {
-					backgroundColor: '#131313de',
-					color: '#ddd',
-					fontFamily: 'Quantico'
+					backgroundColor: theme.palette.background.dark,
+					color: theme.palette.text.primary,
+					fontFamily: theme.typography.fontFamily
 				},
 				fixedHeaderYAxis: {
-					border: 'none'
+					border: 'none',
+					textAlign: 'center',
+					fontWeight: 'bolder'
+				},
+				toolButton: {
+					justifyContent: 'center'
 				}
 			},
 			MUIDataTableBodyCell: {
 				root: {
-					backgroundColor: '#272727',
-					color: '#ddd',
-					fontFamily: 'Quantico',
-					borderBottom: 'none'
+					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+					color: theme.palette.text.primary,
+					fontFamily: theme.typography.fontFamily,
+					borderBottom: 'none',
+					textAlign: 'center'
 				}
 			},
 			MUIDataTableSelectCell: {
 				headerCell: {
-					backgroundColor: '#1c1c1cde'
+					backgroundColor: theme.palette.background.dark
 				},
 				fixedHeaderCommon: {
-					backgroundColor: '#1c1c1cde',
+					backgroundColor: theme.palette.background.dark,
 					borderBottom: 'none'
+				}
+			},
+			MuiMenuItem: {
+				root: {
+					color: theme.palette.text.primary,
+					fontFamily: theme.typography.fontFamily,
+					'&:hover': {
+						backgroundColor: theme.palette.background.dark
+					}
 				}
 			}
 		}
 	});
-
-export default function DataTable({ data, columns, title, options }) {
+export default withTheme(function DataTable({ data, columns, title, options, theme }) {
 	return (
-		<MuiThemeProvider theme={getMuiTheme()}>
+		<MuiThemeProvider theme={getMuiTheme(theme)}>
 			<MUIDataTable title={title} data={data} columns={columns} options={options} />
 		</MuiThemeProvider>
 	);
-}
+});

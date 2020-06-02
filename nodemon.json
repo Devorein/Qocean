@@ -1,6 +1,7 @@
 {
   "ignore": [
     "/store/*.json",
-    "/simulate.js"
+    "/simulate.js",
+    "/simulate/*.js"
   ]
 }

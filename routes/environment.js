@@ -10,7 +10,8 @@ const {
 	updateEnvironment,
 	deleteEnvironment,
 	deleteEnvironments,
-	setCurrentEnvironment
+	setCurrentEnvironment,
+	updateEnvironments
 } = require('../controllers/environment');
 
 router.route('/me').get(protect, advancedResults(Environment, null));
@@ -35,6 +36,7 @@ router
 		)
 	)
 	.post(protect, createEnvironment)
+	.put(protect, updateEnvironments)
 	.delete(protect, deleteEnvironments);
 
 router.route('/:id').put(protect, updateEnvironment).delete(protect, deleteEnvironment);

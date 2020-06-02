@@ -8,27 +8,29 @@ class SelfQuestions extends Component {
 	};
 
 	decideColums = () => {
-		return [
-			{ name: 'name', sort: true, filter: false },
-			{ name: 'difficulty', sort: true, filter: true },
-			{ name: 'type', sort: true, filter: true },
-			{ name: 'time_allocated', sort: true, filter: true },
-			{ name: 'quiz', sort: true, filter: false },
-			{ name: 'public', sort: true, filter: true },
-			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'created_at', sort: false, filter: false },
-			{ name: 'updated_at', sort: false, filter: false }
-		].map(({ name, sort, filter }) => {
-			return {
-				name,
-				label: this.decideLabel(name),
-				options: {
-					filter,
-					sort,
-					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-				}
-			};
-		});
+		return this.props.cols
+			.concat([
+				{ name: 'name', sort: true, filter: false },
+				{ name: 'difficulty', sort: true, filter: true },
+				{ name: 'type', sort: true, filter: true },
+				{ name: 'time_allocated', sort: true, filter: true },
+				{ name: 'quiz', sort: true, filter: false },
+				{ name: 'public', sort: true, filter: true },
+				{ name: 'favourite', sort: true, filter: true },
+				{ name: 'created_at', sort: false, filter: false },
+				{ name: 'updated_at', sort: false, filter: false }
+			])
+			.map(({ name, sort, filter }) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					options: {
+						filter,
+						sort,
+						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
+					}
+				};
+			});
 	};
 
 	transformOption = (option) => {
@@ -48,15 +50,10 @@ class SelfQuestions extends Component {
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {
-				name: item.name,
+				...item,
 				quiz: item.quiz.name,
 				created_at: moment(item.created_at).fromNow(),
-				updated_at: moment(item.updated_at).fromNow(),
-				difficulty: item.difficulty,
-				type: item.type,
-				time_allocated: item.time_allocated,
-				public: item.public,
-				favourite: item.favourite
+				updated_at: moment(item.updated_at).fromNow()
 			};
 		});
 	};

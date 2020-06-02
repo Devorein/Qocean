@@ -36,7 +36,8 @@ const createUser = async ({ users, loginData }) => {
 		loginData.push({
 			password: user.password,
 			email: user.email,
-			username: user.username
+			username: user.username,
+			token
 		});
 	} catch (err) {
 		console.log(err.message);

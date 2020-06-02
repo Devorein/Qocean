@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { SketchPicker } from 'react-color';
+import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import { AppContext } from '../context/AppContext';
 import styled from 'styled-components';
@@ -7,6 +8,17 @@ import DeletableChip from '../components/Chip/DeletableChip';
 import { withStyles } from '@material-ui/core/styles';
 import validateColor from 'validate-color';
 import { FormLabel, TextField } from '@material-ui/core';
+import MultiSelect from '../components/Input/MultiSelect';
+import RegularChip from '../components/Chip/RegularChip';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import Color from 'color';
+import convert from 'color-convert';
+
+const PrevTagSelection = styled.div`
+	width: 100%;
+	display: flex;
+	align-items: center;
+`;
 
 const TagContainer = styled.div`
 	display: flex;
@@ -22,8 +34,34 @@ class TagCreatorRP extends Component {
 		tags: this.props.tags || [],
 		tagColor: '#000',
 		displayColorPicker: false,
-		input: ''
+		input: '',
+		prevTags: null,
+		selectedTags: []
 	};
+
+	refetchTags = () => {
+		axios
+			.post(
+				`http://localhost:5001/api/v1/users/tags/_/me`,
+				{
+					uniqueWithColor: true
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data: prevTags } }) => {
+				this.setState({
+					prevTags
+				});
+			});
+	};
+
+	componentDidMount() {
+		this.refetchTags();
+	}
 
 	static getDerivedStateFromProps(props, state) {
 		return props.tags.every((tag, index) => tag === state.tags[index])
@@ -35,9 +73,13 @@ class TagCreatorRP extends Component {
 
 	openCP = () => {
 		let { displayColorPicker, input, tagColor, tags } = this.state;
-		if (displayColorPicker) {
-			tags.push((input.includes(':') ? input : input + ':') + tagColor);
-			input = '';
+		if (displayColorPicker && input !== '') {
+			const tagInput = (input.includes(':') ? input : input + ':') + tagColor;
+			const [ status ] = this.validateTags(tagInput);
+			if (status) {
+				tags.push(tagInput);
+				input = '';
+			}
 		}
 		this.setState({
 			input,
@@ -128,6 +170,41 @@ class TagCreatorRP extends Component {
 					onKeyPress={createTags}
 					fullWidth
 				/>
+				<PrevTagSelection>
+					<MultiSelect
+						label={'Previous Tags'}
+						useColoredChip
+						selected={this.state.selectedTags}
+						handleChange={(e) => {
+							this.setState({
+								selectedTags: e.target.value
+							});
+						}}
+						items={
+							this.state.prevTags ? (
+								this.state.prevTags.uniqueWithColor.map((tag) => ({
+									name: tag.split(':')[0],
+									_id: tag,
+									customText: <RegularChip tag={tag} />,
+									disabled:
+										this.state.tags.includes(tag) ||
+										(this.state.tags.length + this.state.selectedTags.length >= 5 &&
+											!this.state.selectedTags.includes(tag))
+								}))
+							) : (
+								[]
+							)
+						}
+					/>
+					<AddBoxIcon
+						onClick={() => {
+							this.setState({
+								tags: Array.from(new Set(this.state.tags.concat(this.state.selectedTags))),
+								selectedTags: []
+							});
+						}}
+					/>
+				</PrevTagSelection>
 				<TagContainer>
 					{tags.map((tag) => {
 						return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
@@ -135,19 +212,26 @@ class TagCreatorRP extends Component {
 				</TagContainer>
 				<Button onClick={openCP}>{displayColorPicker ? 'Close' : 'Open'} picker</Button>
 				{displayColorPicker ? (
-					<SketchPicker disableAlpha presetColors={[]} color={tagColor} onChangeComplete={this.handleChangeComplete} />
+					<SketchPicker
+						className={classes.sketchPicker}
+						disableAlpha
+						presetColors={this.state.prevTags.uniqueWithColor.map((tag) => `${tag.split(':')[1]}`)}
+						color={tagColor}
+						onChangeComplete={this.handleChangeComplete}
+					/>
 				) : null}
 			</div>
 		);
 	};
 
 	render() {
-		const { resetTags, renderTagCreator } = this;
+		const { resetTags, renderTagCreator, refetchTags } = this;
 
 		return this.props.children({
 			resetTags,
 			tags: this.state.tags,
-			tagCreator: renderTagCreator()
+			tagCreator: renderTagCreator(),
+			refetchTags
 		});
 	}
 }
@@ -169,7 +253,22 @@ export default withStyles((theme) => ({
 		},
 		'& .MuiChip-root': {
 			borderRadius: 3,
-			fontFamily: 'Quantico'
+			fontFamily: 'Quantico',
+			margin: 3
+		}
+	},
+	sketchPicker: {
+		background: `${theme.palette.background.dark} !important`,
+		color: theme.palette.text.primary,
+		'& input': {
+			background: `${theme.palette.background.main} !important`,
+			color: theme.palette.text.primary,
+			boxShadow: 'inherit !important',
+			fontFamily: theme.typography.fontFamily
+		},
+		'& .flexbox-fix:last-child': {
+			background: `${Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()} !important`,
+			borderTop: `0px !important`
 		}
 	}
 }))(TagCreatorRP);

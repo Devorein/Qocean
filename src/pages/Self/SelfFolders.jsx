@@ -9,26 +9,29 @@ class SelfFolders extends Component {
 	};
 
 	decideColums = () => {
-		return [
-			{ name: 'icon', sort: false, filter: false },
-			{ name: 'name', sort: true, filter: false },
-			{ name: 'public', sort: true, filter: true },
-			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'total_quizzes', sort: true, filter: true },
-			{ name: 'total_questions', sort: true, filter: true },
-			{ name: 'created_at', sort: false, filter: false },
-			{ name: 'updated_at', sort: false, filter: false }
-		].map(({ name, sort, filter }) => {
-			return {
-				name,
-				label: this.decideLabel(name),
-				options: {
-					filter,
-					sort,
-					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-				}
-			};
-		});
+		return this.props.cols
+			.concat([
+				{ name: 'icon', sort: false, filter: false },
+				{ name: 'name', sort: true, filter: false },
+				{ name: 'public', sort: true, filter: true },
+				{ name: 'favourite', sort: true, filter: true },
+				{ name: 'watchers', sort: true, filter: false },
+				{ name: 'total_quizzes', sort: true, filter: true },
+				{ name: 'total_questions', sort: true, filter: true },
+				{ name: 'created_at', sort: false, filter: false },
+				{ name: 'updated_at', sort: false, filter: false }
+			])
+			.map(({ name, sort, filter }) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					options: {
+						filter,
+						sort,
+						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
+					}
+				};
+			});
 	};
 
 	transformOption = (option) => {
@@ -48,12 +51,9 @@ class SelfFolders extends Component {
 	transformData = (data) => {
 		return data.map((item, index) => {
 			return {
+				...item,
 				icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
-				name: item.name,
-				public: item.public,
-				favourite: item.favourite,
-				total_quizzes: item.total_quizzes,
-				total_questions: item.total_questions,
+				watchers: item.watchers.length,
 				created_at: moment(item.created_at).fromNow(),
 				updated_at: moment(item.updated_at).fromNow()
 			};

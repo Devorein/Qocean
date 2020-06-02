@@ -2,6 +2,7 @@ const Environment = require('../models/Environment');
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
+const updateResource = require('../utils/updateResource');
 
 // @desc: Get current environment
 // @route: GET /api/v1/environments/current
@@ -43,13 +44,18 @@ exports.createEnvironment = asyncHandler(async (req, res, next) => {
 // @route: PUT /api/v1/environments/:id
 // @access: Private
 exports.updateEnvironment = asyncHandler(async (req, res, next) => {
-	let environment = await Environment.findById(req.params.id);
-	if (!environment) return next(new ErrorResponse(`Environment not found with id of ${req.params.id}`, 404));
-	if (environment.user.toString() !== req.user._id.toString())
-		return next(new ErrorResponse(`User not authorized to update this environment`, 401));
-	req.body.updated_at = Date.now();
-	environment = await Environment.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+	const environment = await updateResource('environment', req.params.id, req.user, next, req.body);
 	res.status(200).json({ success: true, data: environment });
+});
+
+exports.updateEnvironments = asyncHandler(async (req, res, next) => {
+	const { environments } = req.body;
+	const updated_environments = [];
+	for (let i = 0; i < environments.length; i++) {
+		const { id, body } = environments[i];
+		updated_environments.push(await updateResource('environment', id, req.user, next, body));
+	}
+	res.status(200).json({ success: true, data: updated_environments });
 });
 
 // @desc: Delete single environment

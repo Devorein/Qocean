@@ -37,6 +37,12 @@ const FolderSchema = extendSchema(ResourceSchema, {
 			type: mongoose.Schema.ObjectId,
 			ref: 'Quiz'
 		}
+	],
+	watchers: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'User'
+		}
 	]
 });
 

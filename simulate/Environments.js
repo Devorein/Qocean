@@ -59,17 +59,20 @@ const createEnvironment = async ({ envs, users, total_users }) => {
 		);
 		user.envs.push(_id);
 		envs.push(_id);
-		console.log(`Created Environment ${envs.length}`);
 	} catch (err) {
 		console.log(err.message);
 	}
 };
 
 async function createEnvironments({ count, envs, users, total_users }) {
+	let created = 1;
 	return new Promise((resolve, reject) => {
 		const environmentsInterval = setInterval(async () => {
-			if (envs.length < count) await createEnvironment({ envs, users, total_users });
-			else {
+			if (created <= count) {
+				await createEnvironment({ envs, users, total_users });
+				console.log(`Created Environment ${created}`);
+				created++;
+			} else {
 				clearInterval(environmentsInterval);
 				resolve('Environments created');
 			}

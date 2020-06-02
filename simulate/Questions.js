@@ -90,17 +90,20 @@ const createQuestion = async ({ quizzes, questions, total_users, users }) => {
 		user.questions.push(_id);
 		quiz.questions.push(_id);
 		questions.push(_id);
-		console.log(`Created Question ${questions.length}`);
 	} catch (err) {
 		console.log(err.message);
 	}
 };
 
 async function createQuestions({ count, questions, quizzes, total_users, users }) {
+	let created = 1;
 	return new Promise((resolve, reject) => {
 		const questionInterval = setInterval(async () => {
-			if (questions.length < count) await createQuestion({ quizzes, questions, total_users, users });
-			else {
+			if (created <= count) {
+				await createQuestion({ quizzes, questions, total_users, users });
+				console.log(`Created Question ${created}`);
+				created++;
+			} else {
 				clearInterval(questionInterval);
 				resolve('Questions created');
 			}

@@ -13,11 +13,16 @@ const QuizSchema = extendSchema(
 			minlength: [ 3, 'Name can not be less than 3 characters' ],
 			maxlength: [ 50, 'Name can not be more than 50 characters' ]
 		},
-		rating: {
+		ratings: {
 			type: Number,
 			max: 10,
-			min: 1,
+			min: 0,
 			default: 1
+		},
+		raters: {
+			type: Number,
+			default: 0,
+			min: 0
 		},
 		average_quiz_time: {
 			type: Number,
@@ -64,7 +69,13 @@ const QuizSchema = extendSchema(
 		total_played: {
 			type: Number,
 			default: 0
-		}
+		},
+		watchers: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: 'User'
+			}
+		]
 	},
 	{
 		toJSON: { virtuals: true },

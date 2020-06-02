@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
-import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import MultiSelect from '../../components/Input/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TagCreatorRP from '../../RP/TagCreatorRP';
 import FileInputRP from '../../RP/FileInputRP';
@@ -59,13 +59,14 @@ class QuizForm extends Component {
 		return [ values, true ];
 	};
 
-	resetForm = ({ resetFileInput, resetTags }, cb) => {
+	resetForm = ({ resetFileInput, resetTags, refetchTags }, cb) => {
 		let { selected_folders } = this.state;
 		if (this.props.user.current_environment.reset_on_success) {
 			selected_folders = [];
 			resetTags();
 			resetFileInput();
 		}
+		refetchTags();
 		this.setState(
 			{
 				selected_folders
@@ -122,7 +123,7 @@ class QuizForm extends Component {
 				{({ getFileData, FileInput, resetFileInput }) => {
 					return (
 						<TagCreatorRP tags={tags}>
-							{({ tags, resetTags, tagCreator }) => {
+							{({ tags, resetTags, tagCreator, refetchTags }) => {
 								defaultInputs[2] = {
 									name: 'source',
 									siblings: [
@@ -159,7 +160,7 @@ class QuizForm extends Component {
 											onSubmit={onSubmit.bind(null, [
 												'quiz',
 												preSubmit.bind(null, getFileData, tags),
-												postSubmit.bind(null, getFileData, { resetFileInput, resetTags })
+												postSubmit.bind(null, getFileData, { resetFileInput, resetTags, refetchTags })
 											])}
 										/>
 										{FileInput}

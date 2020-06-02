@@ -15,24 +15,26 @@ class SelfEnvironments extends Component {
 	};
 
 	decideColumns = () => {
-		return [
-			{ name: 'icon', sort: false, filter: false },
-			{ name: 'name', sort: true, filter: false },
-			{ name: 'public', sort: true, filter: true },
-			{ name: 'favourite', sort: true, filter: true },
-			{ name: 'created_at', sort: true, filter: false },
-			{ name: 'updated_at', sort: true, filter: false }
-		].map(({ name, sort, filter }) => {
-			return {
-				name,
-				label: this.decideLabel(name),
-				options: {
-					filter,
-					sort,
-					sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-				}
-			};
-		});
+		return this.props.cols
+			.concat([
+				{ name: 'icon', sort: false, filter: false },
+				{ name: 'name', sort: true, filter: false },
+				{ name: 'public', sort: true, filter: true },
+				{ name: 'favourite', sort: true, filter: true },
+				{ name: 'created_at', sort: true, filter: false },
+				{ name: 'updated_at', sort: true, filter: false }
+			])
+			.map(({ name, sort, filter }) => {
+				return {
+					name,
+					label: this.decideLabel(name),
+					options: {
+						filter,
+						sort,
+						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
+					}
+				};
+			});
 	};
 
 	transformOption = (options) => {
@@ -71,25 +73,23 @@ class SelfEnvironments extends Component {
 
 	transformData = (data) => {
 		return data.map((item, index) => {
-			const { children } = item.name.props;
 			const active = this.context.user.current_environment._id === item._id;
-			const elem = React.cloneElement(item.name, null, [
-				children[0],
-				children[1],
-				<SettingsIcon
-					style={{ fill: active ? '#ead50f' : '#ddd' }}
-					onClick={this.setAsCurrent.bind(null, item._id)}
-					key={shortid.generate()}
-				/>,
-				children[2]
-			]);
+
 			return {
+				...item,
+				name: (
+					<div style={{ display: 'flex', alignItems: 'center' }}>
+						<SettingsIcon
+							style={{ fill: active ? '#ead50f' : '#ddd', marginRight: 3 }}
+							onClick={this.setAsCurrent.bind(null, item._id)}
+							key={shortid.generate()}
+						/>
+						{item.name}
+					</div>
+				),
 				id: item._id,
-				name: elem,
 				icon: getColoredIcons('Settings', item.icon.split('_')[0].toLowerCase()),
 				created_at: moment(item.created_at).fromNow(),
-				public: item.public,
-				favourite: item.favourite,
 				updated_at: moment(item.updated_at).fromNow()
 			};
 		});

@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import InputForm from '../../components/Form/InputForm';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import MultiSelect from '../../components/Input/MultiSelect';
 import getColoredIcons from '../../Utils/getColoredIcons';
 
 const validationSchema = Yup.object({

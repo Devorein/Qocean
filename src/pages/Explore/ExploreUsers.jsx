@@ -39,7 +39,7 @@ class ExploreUsers extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				image: <img src={item.image} alt={`user_${index}`} />,
+				image: <img style={{ width: '50px' }} src={item.image} alt={`user_${index}`} />,
 				joined_at: moment(item.joined_at).fromNow()
 			};
 		});

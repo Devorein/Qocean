@@ -7,7 +7,6 @@ import SelfQuizzes from './SelfQuizzes';
 import SelfQuestions from './SelfQuestions';
 import SelfFolders from './SelfFolders';
 import SelfEnvironments from './SelfEnvironments';
-import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
 import { AppContext } from '../../context/AppContext';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -17,10 +16,12 @@ import PublicIcon from '@material-ui/icons/Public';
 import LinearList from '../../components/List/LinearList';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
-import IconRow from '../../components/Row/IconRow';
 import FormFiller from '../FormFiller/FormFiller';
 import ModalRP from '../../RP/ModalRP';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import shortid from 'shortid';
+import download from '../../Utils/download';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import './Self.scss';
 
 class Self extends Component {
@@ -147,39 +148,67 @@ class Self extends Component {
 	};
 
 	updateResource = (selectedRows, field) => {
-		const { type } = this.state;
-		const { enqueueSnackbar } = this.props;
-		const CLASS = this;
-		let current = 0;
-		let done = false;
-		function reductiveDownloadChain(items) {
-			return items.reduce((chain, currentItem) => {
-				return chain.then((_) => {
-					current++;
-					const { _id, name } = currentItem;
-					updateResource(type, _id, {
-						[field]: !currentItem[field]
-					}).then(({ data }) => {
-						enqueueSnackbar(`${type} ${name} has been updated`, {
-							variant: 'success'
-						});
-						if (current === selectedRows.length && !done) {
-							CLASS.refetchData();
-							done = true;
-						}
-					});
+		selectedRows = selectedRows.map((row) => ({ id: row._id, body: { [field]: !row[field] } }));
+		let { type } = this.state;
+		type = pluralize(type, 2).toLowerCase();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}`,
+				{
+					[type]: selectedRows
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data: updatedDatas } }) => {
+				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
+				this.setState({
+					data: this.state.data.map((data) => {
+						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
+						if (updatedData) data[field] = updatedData[field];
+						return data;
+					})
 				});
-			}, Promise.resolve());
-		}
-		reductiveDownloadChain(selectedRows);
+			});
+	};
+
+	transformData = (data) => {
+		const { type } = this.state;
+		return data.map((data) => {
+			const negate = [ 'user', '_id', '__v', 'id' ];
+			const temp = {};
+			if (type === 'quiz')
+				negate.push(
+					'average_quiz_time',
+					'average_difficulty',
+					'total_questions',
+					'total_folders',
+					'folders',
+					'rating',
+					'questions',
+					'watchers',
+					'ratings',
+					'raters'
+				);
+			else if (type === 'question') negate.push('quiz');
+			else if (type === 'folder') negate.push('quizzes', 'ratings', 'total_questions', 'total_quizzes');
+
+			const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
+			fields.forEach((field) => (temp[field] = data[field]));
+			temp.rtype = type.toLowerCase();
+			return temp;
+		});
 	};
 
 	genericTransformData = (data, filterData) => {
 		return data.map((item, index) => {
 			return {
 				...item,
-				name: (
-					<IconRow>
+				actions: (
+					<Fragment>
 						<UpdateIcon
 							onClick={(e) => {
 								this.getDetails(filterData(item), index, { isOpen: true });
@@ -190,14 +219,22 @@ class Self extends Component {
 								this.getDetails(filterData(item), index);
 							}}
 						/>
-						<div>{item.name}</div>
-					</IconRow>
+						<GetAppIcon
+							onClick={(e) => {
+								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(this.transformData([ item ])));
+							}}
+						/>
+					</Fragment>
 				),
-				public: item.public ? <PublicIcon style={{ fill: '#00a3e6' }} /> : <PublicIcon style={{ fill: '#f4423c' }} />,
-				favourite: item.favourite ? (
-					<StarIcon style={{ fill: '#f0e744' }} />
+				public: item.public ? (
+					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
 				) : (
-					<StarBorderIcon style={{ fill: '#ead50f' }} />
+					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
+				),
+				favourite: item.favourite ? (
+					<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
+				) : (
+					<StarBorderIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#ead50f' }} />
 				)
 			};
 		});
@@ -218,12 +255,30 @@ class Self extends Component {
 		const { getDetails, genericTransformData, refetchData, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const options = {
-			customToolbar() {
+			customToolbar: () => {
 				return (
 					<div>
 						<RotateLeftIcon
 							onClick={(e) => {
 								refetchData();
+							}}
+						/>
+						<StarIcon
+							onClick={(e) => {
+								updateResource(this.state.data, 'favourite');
+							}}
+						/>
+						<PublicIcon
+							onClick={(e) => {
+								updateResource(this.state.data, 'public');
+							}}
+						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(
+									`${Date.now()}_${shortid.generate()}.json`,
+									JSON.stringify(this.transformData(this.state.data))
+								);
 							}}
 						/>
 					</div>
@@ -256,6 +311,14 @@ class Self extends Component {
 								updateResource(selectedRows, 'public');
 							}}
 						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(
+									`${Date.now()}_${shortid.generate()}.json`,
+									JSON.stringify(this.transformData(selectedRows.data.map(({ index }) => this.state.data[index])))
+								);
+							}}
+						/>
 					</div>
 				);
 			},
@@ -268,6 +331,8 @@ class Self extends Component {
 			print: false,
 			download: false,
 			serverSide: true,
+			filter: false,
+			search: false,
 			onChangePage: (page) => {
 				this.setState(
 					{
@@ -310,7 +375,8 @@ class Self extends Component {
 			getDetails,
 			sortCol,
 			sortOrder,
-			genericTransformData
+			genericTransformData,
+			cols: [ { name: 'actions', label: 'Actions' } ]
 		};
 
 		if (type === 'Quiz') return <SelfQuizzes {...props} />;

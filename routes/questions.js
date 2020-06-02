@@ -10,6 +10,7 @@ const {
 	validateQuestions,
 	createQuestion,
 	updateQuestion,
+	updateQuestions,
 	deleteQuestion,
 	deleteQuestions,
 	questionPhotoUpload,
@@ -48,6 +49,7 @@ router
 		)
 	)
 	.post(protect, createQuestion)
+	.put(protect, updateQuestions)
 	.delete(protect, deleteQuestions);
 
 router.route('/:id').put(protect, updateQuestion).delete(protect, deleteQuestion);
