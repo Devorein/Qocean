@@ -182,15 +182,29 @@ class Explore extends Component {
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
 		const options = {
 			customToolbarSelect: (selectedRows) => {
-				return this.state.type === 'quiz' || this.state.type === 'folder' ? (
-					<VisibilityIcon
-						onClick={this.watchToggle.bind(
-							null,
-							pluralize(this.state.type, 2).toLowerCase(),
-							selectedRows.data.map(({ index }) => this.state.data[index]._id)
-						)}
-					/>
-				) : null;
+				return (
+					<div>
+						{this.state.type === 'quiz' || this.state.type === 'folder' ? (
+							<VisibilityIcon
+								onClick={this.watchToggle.bind(
+									null,
+									pluralize(this.state.type, 2).toLowerCase(),
+									selectedRows.data.map(({ index }) => this.state.data[index]._id)
+								)}
+							/>
+						) : null}
+						{this.state.type !== 'user' ? (
+							<GetAppIcon
+								onClick={(e) => {
+									download(
+										`${Date.now()}_${shortid.generate()}.json`,
+										JSON.stringify(this.transformData(selectedRows.data.map(({ index }) => this.state.data[index])))
+									);
+								}}
+							/>
+						) : null}
+					</div>
+				);
 			},
 			customToolbar: () => {
 				return (
@@ -200,6 +214,17 @@ class Explore extends Component {
 								refetchData();
 							}}
 						/>
+						{this.state.type !== 'user' ? (
+							<GetAppIcon
+								onClick={(e) => {
+									download(
+										`${Date.now()}_${shortid.generate()}.json`,
+										JSON.stringify(this.transformData(this.state.data))
+									);
+								}}
+							/>
+						) : null}
+
 						{this.state.type === 'quiz' || this.state.type === 'folder' ? (
 							<VisibilityIcon
 								onClick={this.watchToggle.bind(
