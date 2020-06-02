@@ -1,5 +1,6 @@
 const Folder = require('../models/Folder');
 const Quiz = require('../models/Quiz');
+const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 
@@ -69,4 +70,32 @@ exports.quizToFolder = asyncHandler(async (req, res, next) => {
 	await folder.quiz(op, req.body.quiz);
 	await folder.save();
 	res.status(200).json({ success: true, data: folder });
+});
+
+exports.watchFolders = asyncHandler(async (req, res, next) => {
+	const { folders, op } = req.body;
+	const user = await User.findById(req.user._id);
+	let manipulated = 0;
+	for (let i = 0; i < folders.length; i++) {
+		const folderId = folders[i];
+		const folder = await Folder.findById(folderId);
+		if (op === 0) {
+			if (user.watched_folders.indexOf(folder._id.toString()) !== -1) {
+				--folder.watchers;
+				user.watched_folders = user.watched_folders.filter(
+					(watched_folder) => watched_folder.toString() !== folder._id.toString()
+				);
+				manipulated++;
+			}
+		} else if (op === 1) {
+			if (user.watched_folders.indexOf(folder._id.toString()) === -1) {
+				++folder.watchers;
+				user.watched_folders.push(folder._id);
+				manipulated++;
+			}
+		}
+		await folder.save();
+	}
+	await user.save();
+	res.status(200).json({ success: true, data: manipulated });
 });

@@ -4,7 +4,14 @@ const router = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
 
-const { createFolder, updateFolder, deleteFolder, deleteFolders, quizToFolder } = require('../controllers/folder');
+const {
+	createFolder,
+	updateFolder,
+	deleteFolder,
+	deleteFolders,
+	quizToFolder,
+	watchFolders
+} = require('../controllers/folder');
 
 router.route('/countAll').get(advancedResults(Folder));
 router.route('/countMine').get(protect, advancedResults(Folder));
@@ -35,7 +42,8 @@ router
 	.post(protect, createFolder)
 	.delete(protect, deleteFolders);
 
-router.route('/quiz').put(quizToFolder);
+router.route('/quiz').put(protect, quizToFolder);
+router.route('/_/watchFolders').put(protect, watchFolders);
 
 router.route('/:id').put(protect, updateFolder).delete(protect, deleteFolder);
 

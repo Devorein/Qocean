@@ -37,7 +37,11 @@ const FolderSchema = extendSchema(ResourceSchema, {
 			type: mongoose.Schema.ObjectId,
 			ref: 'Quiz'
 		}
-	]
+	],
+	watchers: {
+		type: Number,
+		default: 0
+	}
 });
 
 FolderSchema.methods.quiz = async function(op, quizId) {

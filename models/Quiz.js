@@ -69,6 +69,10 @@ const QuizSchema = extendSchema(
 		total_played: {
 			type: Number,
 			default: 0
+		},
+		watchers: {
+			type: Number,
+			default: 0
 		}
 	},
 	{
