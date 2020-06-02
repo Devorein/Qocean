@@ -215,12 +215,22 @@ class Self extends Component {
 		const { getDetails, genericTransformData, refetchData, updateResource } = this;
 		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
 		const options = {
-			customToolbar() {
+			customToolbar: () => {
 				return (
 					<div>
 						<RotateLeftIcon
 							onClick={(e) => {
 								refetchData();
+							}}
+						/>
+						<StarIcon
+							onClick={(e) => {
+								updateResource(this.state.data, 'favourite');
+							}}
+						/>
+						<PublicIcon
+							onClick={(e) => {
+								updateResource(this.state.data, 'public');
 							}}
 						/>
 					</div>
