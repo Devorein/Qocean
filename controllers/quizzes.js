@@ -97,9 +97,43 @@ exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
 		for (let i = 0; i < quizzes.length; i++) {
 			const quizId = quizzes[i];
 			const quiz = await Quiz.findById(quizId);
-			if (quiz._id !== req.user._id) quiz.total_played = quiz.total_played + 1;
+			if (quiz.user.toString() !== req.user._id.toString()) quiz.total_played = quiz.total_played + 1;
 			await quiz.save();
 		}
 	}
 	res.status(200).json({ success: true, total_updated: quizzes.length });
+});
+
+exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
+	let { quizzes, ratings } = req.body;
+	ratings = ratings.map((rating) => parseFloat(rating));
+	const safe_ratings = ratings.every((rating) => rating >= 0 && rating <= 10);
+	if (!safe_ratings) return next(new ErrorResponse(`You cannot have a rating more than 10 or less than 0`, 400));
+	const ratingsData = [];
+	if (ratings.length !== quizzes.length)
+		ratings.concat(Array(quizzes.length - ratings.length).fill(ratings[ratings.length - 1]));
+	if (quizzes) {
+		for (let i = 0; i < quizzes.length; i++) {
+			const quizId = quizzes[i];
+			const quiz = await Quiz.findById(quizId).select('user ratings raters');
+			const prevRatings = parseFloat(quiz.ratings);
+			let newRatings = prevRatings;
+			let raters = parseInt(quiz.raters);
+			if (quiz.user.toString() !== req.user._id.toString()) {
+				raters++;
+				quiz.raters = raters;
+				newRatings = parseFloat(((prevRatings + ratings[i]) / (raters !== 1 ? 2 : 1)).toFixed(2));
+				quiz.ratings = newRatings;
+				await quiz.save();
+			}
+
+			ratingsData.push({
+				_id: quiz._id,
+				prevRatings,
+				newRatings,
+				raters
+			});
+		}
+	}
+	res.status(200).json({ success: true, total_updated: ratingsData });
 });

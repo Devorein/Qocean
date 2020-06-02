@@ -11,7 +11,8 @@ const {
 	deleteQuiz,
 	deleteQuizzes,
 	quizPhotoUpload,
-	updatePlayedTimes
+	updatePlayedTimes,
+	updateQuizRatings
 } = require('../controllers/quizzes');
 
 router.route('/me').get(protect, advancedResults(Quiz));
@@ -44,9 +45,9 @@ router
 	.delete(protect, deleteQuizzes);
 
 router.route('/:id').put(protect, updateQuiz).delete(protect, deleteQuiz);
-
 router.route('/:id/photo').put(protect, imageUpload(Quiz, 'Quiz'), quizPhotoUpload);
 
+router.route('/_/ratings').put(protect, updateQuizRatings);
 router.route('/_/updatePlayedTimes').put(protect, updatePlayedTimes);
 
 module.exports = router;

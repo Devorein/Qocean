@@ -10,7 +10,7 @@ class ExploreQuizzes extends Component {
 	decideColums = () => {
 		return this.props.cols.concat(
 			[
-				{ name: 'rating', sort: true, filter: true },
+				{ name: 'ratings', sort: true, filter: true },
 				{ name: 'name', sort: true, filter: false },
 				{ name: 'subject', sort: true, filter: false },
 				{ name: 'average_quiz_time', sort: true, filter: true },
