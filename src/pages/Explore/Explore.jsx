@@ -143,6 +143,17 @@ class Explore extends Component {
 		const { refetchData, genericTransformData } = this;
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
 		const options = {
+			customToolbarSelect: (selectedRows) => {
+				return this.state.type === 'quiz' || this.state.type === 'folder' ? (
+					<VisibilityIcon
+						onClick={this.watchToggle.bind(
+							null,
+							pluralize(this.state.type, 2).toLowerCase(),
+							selectedRows.data.map(({ index }) => this.state.data[index]._id)
+						)}
+					/>
+				) : null;
+			},
 			customToolbar: () => {
 				return (
 					<div>

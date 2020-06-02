@@ -46,6 +46,7 @@ class ExploreQuizzes extends Component {
 	};
 
 	transformOption = (option) => {
+		const prevcustomToolbarSelectIcons = option.customToolbarSelect;
 		option.customToolbarSelect = (selectedRows) => {
 			return (
 				<InputForm
@@ -86,12 +87,14 @@ class ExploreQuizzes extends Component {
 							>
 								{({ setIsOpen }) => {
 									return (
-										<StarsIcon
-											onClick={(e) => {
-												setIsOpen(true);
-												// console.log(selectedRows.data.map(({ index }) => index));
-											}}
-										/>
+										<div>
+											{prevcustomToolbarSelectIcons(selectedRows)}
+											<StarsIcon
+												onClick={(e) => {
+													setIsOpen(true);
+												}}
+											/>
+										</div>
 									);
 								}}
 							</ModalRP>
