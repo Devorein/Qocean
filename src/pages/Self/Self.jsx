@@ -161,9 +161,15 @@ class Self extends Component {
 					}
 				}
 			)
-			.then(({ data: { data } }) => {
-				this.context.changeResponse('Success', `Successfully updated ${data.length} ${type}`);
-				this.refetchData();
+			.then(({ data: { data: updatedDatas } }) => {
+				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
+				this.setState({
+					data: this.state.data.map((data) => {
+						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
+						if (updatedData) data[field] = updatedData[field];
+						return data;
+					})
+				});
 			});
 	};
 
