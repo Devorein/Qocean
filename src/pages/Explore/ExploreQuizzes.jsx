@@ -111,10 +111,16 @@ class ExploreQuizzes extends Component {
 				action: (
 					<div style={{ display: 'flex' }}>
 						{item.action}
-						{this.props.user ? this.props.user.watched_quizzes.includes(item._id) ? (
-							<VisibilityIcon style={{ fill: success.main }} />
+						{this.props.user ? item.watchers.includes(this.props.user._id) ? (
+							<VisibilityIcon
+								style={{ fill: success.main }}
+								onClick={this.props.watchToggle.bind(null, 'quizzes', item._id)}
+							/>
 						) : (
-							<VisibilityOffIcon style={{ fill: error.main }} />
+							<VisibilityOffIcon
+								style={{ fill: error.main }}
+								onClick={this.props.watchToggle.bind(null, 'quizzes', item._id)}
+							/>
 						) : null}
 					</div>
 				),

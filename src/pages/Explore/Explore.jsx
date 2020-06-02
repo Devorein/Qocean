@@ -118,6 +118,26 @@ class Explore extends Component {
 		});
 	};
 
+	watchToggle = (type, _id, e) => {
+		e.persist();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}/_/watch${type.charAt(0).toUpperCase() + type.substr(1)}`,
+				{
+					[type]: [ _id ]
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
+				this.refetchData();
+			});
+	};
+
 	decideTable = () => {
 		const { refetchData, genericTransformData } = this;
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
@@ -184,7 +204,8 @@ class Explore extends Component {
 			cols: [ { name: 'action', label: 'Action' } ],
 			refetchData,
 			changeResponse: this.context.changeResponse,
-			user: this.props.user
+			user: this.props.user,
+			watchToggle: this.watchToggle
 		};
 
 		if (type === 'user') return <ExploreUsers {...props} />;
