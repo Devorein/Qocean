@@ -13,6 +13,7 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import FormFiller from '../FormFiller/FormFiller';
 import { AppContext } from '../../context/AppContext';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 class Explore extends Component {
 	static contextType = AppContext;
@@ -124,7 +125,7 @@ class Explore extends Component {
 			.put(
 				`http://localhost:5001/api/v1/${type}/_/watch${type.charAt(0).toUpperCase() + type.substr(1)}`,
 				{
-					[type]: [ _id ]
+					[type]: _id.length === 1 ? [ _id ] : _id
 				},
 				{
 					headers: {
@@ -142,7 +143,7 @@ class Explore extends Component {
 		const { refetchData, genericTransformData } = this;
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
 		const options = {
-			customToolbar() {
+			customToolbar: () => {
 				return (
 					<div>
 						<RotateLeftIcon
@@ -150,6 +151,15 @@ class Explore extends Component {
 								refetchData();
 							}}
 						/>
+						{this.state.type === 'quiz' || this.state.type === 'folder' ? (
+							<VisibilityIcon
+								onClick={this.watchToggle.bind(
+									null,
+									pluralize(this.state.type, 2).toLowerCase(),
+									this.state.data.map((data) => data._id)
+								)}
+							/>
+						) : null}
 					</div>
 				);
 			},
