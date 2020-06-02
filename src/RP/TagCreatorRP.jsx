@@ -11,6 +11,8 @@ import { FormLabel, TextField } from '@material-ui/core';
 import MultiSelect from '../components/Input/MultiSelect';
 import RegularChip from '../components/Chip/RegularChip';
 import AddBoxIcon from '@material-ui/icons/AddBox';
+import Color from 'color';
+import convert from 'color-convert';
 
 const PrevTagSelection = styled.div`
 	width: 100%;
@@ -37,7 +39,7 @@ class TagCreatorRP extends Component {
 		selectedTags: []
 	};
 
-	componentDidMount() {
+	refetchTags = () => {
 		axios
 			.post(
 				`http://localhost:5001/api/v1/users/tags/_/me`,
@@ -55,6 +57,10 @@ class TagCreatorRP extends Component {
 					prevTags
 				});
 			});
+	};
+
+	componentDidMount() {
+		this.refetchTags();
 	}
 
 	static getDerivedStateFromProps(props, state) {
@@ -206,19 +212,26 @@ class TagCreatorRP extends Component {
 				</TagContainer>
 				<Button onClick={openCP}>{displayColorPicker ? 'Close' : 'Open'} picker</Button>
 				{displayColorPicker ? (
-					<SketchPicker disableAlpha presetColors={[]} color={tagColor} onChangeComplete={this.handleChangeComplete} />
+					<SketchPicker
+						className={classes.sketchPicker}
+						disableAlpha
+						presetColors={this.state.prevTags.uniqueWithColor.map((tag) => `${tag.split(':')[1]}`)}
+						color={tagColor}
+						onChangeComplete={this.handleChangeComplete}
+					/>
 				) : null}
 			</div>
 		);
 	};
 
 	render() {
-		const { resetTags, renderTagCreator } = this;
+		const { resetTags, renderTagCreator, refetchTags } = this;
 
 		return this.props.children({
 			resetTags,
 			tags: this.state.tags,
-			tagCreator: renderTagCreator()
+			tagCreator: renderTagCreator(),
+			refetchTags
 		});
 	}
 }
@@ -242,6 +255,20 @@ export default withStyles((theme) => ({
 			borderRadius: 3,
 			fontFamily: 'Quantico',
 			margin: 3
+		}
+	},
+	sketchPicker: {
+		background: `${theme.palette.background.dark} !important`,
+		color: theme.palette.text.primary,
+		'& input': {
+			background: `${theme.palette.background.main} !important`,
+			color: theme.palette.text.primary,
+			boxShadow: 'inherit !important',
+			fontFamily: theme.typography.fontFamily
+		},
+		'& .flexbox-fix:last-child': {
+			background: `${Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()} !important`,
+			borderTop: `0px !important`
 		}
 	}
 }))(TagCreatorRP);
