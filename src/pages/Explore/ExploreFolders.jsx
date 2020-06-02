@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import moment from 'moment';
-
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import { withTheme } from '@material-ui/core';
 class ExploreFolders extends Component {
 	decideLabel = (name) => {
 		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
@@ -16,6 +18,7 @@ class ExploreFolders extends Component {
 				{ name: 'total_quizzes', sort: true, filter: true },
 				{ name: 'total_questions', sort: true, filter: true },
 				{ name: 'creator', sort: true, filter: false },
+				{ name: 'watchers', sort: true, filter: false },
 				{ name: 'created_at', sort: false, filter: false },
 				{ name: 'updated_at', sort: false, filter: false }
 			].map(({ name, sort, filter }) => {
@@ -37,11 +40,24 @@ class ExploreFolders extends Component {
 	};
 
 	transformData = (data) => {
+		const { theme: { palette: { error, success } } } = this.props;
+
 		return data.map((item, index) => {
 			return {
 				...item,
+				action: (
+					<div style={{ display: 'flex' }}>
+						{item.action}
+						{this.props.user.watched_folders.includes(item._id) ? (
+							<VisibilityIcon style={{ fill: success.main }} />
+						) : (
+							<VisibilityOffIcon style={{ fill: error.main }} />
+						)}
+					</div>
+				),
 				creator: item.user.username,
 				icon: getColoredIcons('Folder', item.icon.split('_')[0].toLowerCase()),
+				watchers: item.watchers.length,
 				created_at: moment(item.created_at).fromNow(),
 				updated_at: moment(item.updated_at).fromNow()
 			};
@@ -64,4 +80,4 @@ class ExploreFolders extends Component {
 	}
 }
 
-export default ExploreFolders;
+export default withTheme(ExploreFolders);

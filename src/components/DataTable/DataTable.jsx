@@ -21,6 +21,14 @@ const getMuiTheme = () =>
 					fontFamily: 'Quantico'
 				}
 			},
+			MuiSvgIcon: {
+				root: {
+					width: '.75em',
+					'&:hover': {
+						cursor: 'pointer'
+					}
+				}
+			},
 			MUIDataTableToolbar: {
 				titleText: {
 					fontSize: '2em',

@@ -183,7 +183,8 @@ class Explore extends Component {
 			sortOrder,
 			cols: [ { name: 'action', label: 'Action' } ],
 			refetchData,
-			changeResponse: this.context.changeResponse
+			changeResponse: this.context.changeResponse,
+			user: this.props.user
 		};
 
 		if (type === 'user') return <ExploreUsers {...props} />;

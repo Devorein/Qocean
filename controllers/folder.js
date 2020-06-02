@@ -93,11 +93,12 @@ exports.watchFolders = asyncHandler(async (req, res, next) => {
 				folder.watchers.indexOf(req.user._id.toString()) === -1 &&
 				!req.user.folders.includes(folder._id.toString())
 			) {
-				folder.watchers.push(user._id);
-				user.watched_folders.push(folder._id);
+				folder.watchers.push(user._id.toString());
+				user.watched_folders.push(folder._id.toString());
 				manipulated++;
 			}
 		}
+		console.log(folder.watchers);
 		await folder.save();
 	}
 	await user.save();
