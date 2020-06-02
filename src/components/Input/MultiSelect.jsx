@@ -8,6 +8,7 @@ import Chip from '@material-ui/core/Chip';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
+import RegularChip from '../../components/Chip/RegularChip';
 
 const useStyles = makeStyles(() => ({
 	chips: {
@@ -25,7 +26,7 @@ const useStyles = makeStyles(() => ({
 	}
 }));
 
-export default function MultiSelect({ label, selected, handleChange, items }) {
+export default function MultiSelect({ label, selected, handleChange, items, useColoredChip }) {
 	const classes = useStyles();
 	return (
 		<FormControl fullWidth>
@@ -39,17 +40,26 @@ export default function MultiSelect({ label, selected, handleChange, items }) {
 				renderValue={(selected) => {
 					return (
 						<div className={classes.chips}>
-							{selected.map((value) => (
-								<Chip className={classes.chip} key={value} label={items.find(({ _id, name }) => _id === value).name} />
-							))}
+							{selected.map(
+								(value) =>
+									useColoredChip ? (
+										<RegularChip className={classes.chip} key={value} tag={value} />
+									) : (
+										<Chip
+											className={classes.chip}
+											key={value}
+											label={items.find(({ _id, name }) => _id === value).name}
+										/>
+									)
+							)}
 						</div>
 					);
 				}}
 			>
-				{items.map(({ name, _id }, index) => (
+				{items.map(({ name, _id, customText }, index) => (
 					<MenuItem key={_id} value={_id}>
 						<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
-						<ListItemText primary={name} />
+						{customText ? customText : <ListItemText primary={name} />}
 					</MenuItem>
 				))}
 			</Select>

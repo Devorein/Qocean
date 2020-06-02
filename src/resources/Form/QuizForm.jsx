@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
-import MultiSelect from '../../components/MultiSelect/MultiSelect';
+import MultiSelect from '../../components/Input/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TagCreatorRP from '../../RP/TagCreatorRP';
 import FileInputRP from '../../RP/FileInputRP';

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { SketchPicker } from 'react-color';
+import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import { AppContext } from '../context/AppContext';
 import styled from 'styled-components';
@@ -7,6 +8,15 @@ import DeletableChip from '../components/Chip/DeletableChip';
 import { withStyles } from '@material-ui/core/styles';
 import validateColor from 'validate-color';
 import { FormLabel, TextField } from '@material-ui/core';
+import MultiSelect from '../components/Input/MultiSelect';
+import RegularChip from '../components/Chip/RegularChip';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+
+const PrevTagSelection = styled.div`
+	width: 100%;
+	display: flex;
+	align-items: center;
+`;
 
 const TagContainer = styled.div`
 	display: flex;
@@ -22,9 +32,31 @@ class TagCreatorRP extends Component {
 		tags: this.props.tags || [],
 		tagColor: '#000',
 		displayColorPicker: false,
-		input: ''
+		input: '',
+		prevTags: null,
+		selectedTags: []
 	};
-	componentDidMount() {}
+
+	componentDidMount() {
+		axios
+			.post(
+				`http://localhost:5001/api/v1/users/tags/_/me`,
+				{
+					uniqueWithColor: true
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data: prevTags } }) => {
+				this.setState({
+					prevTags
+				});
+			});
+	}
+
 	static getDerivedStateFromProps(props, state) {
 		return props.tags.every((tag, index) => tag === state.tags[index])
 			? null
@@ -128,6 +160,37 @@ class TagCreatorRP extends Component {
 					onKeyPress={createTags}
 					fullWidth
 				/>
+				<PrevTagSelection>
+					<MultiSelect
+						label={'Previous Tags'}
+						useColoredChip
+						selected={this.state.selectedTags}
+						handleChange={(e) => {
+							this.setState({
+								selectedTags: e.target.value
+							});
+						}}
+						items={
+							this.state.prevTags ? (
+								this.state.prevTags.uniqueWithColor.map((tag) => ({
+									name: tag.split(':')[0],
+									_id: tag,
+									customText: <RegularChip tag={tag} />
+								}))
+							) : (
+								[]
+							)
+						}
+					/>
+					<AddBoxIcon
+						onClick={() => {
+							this.setState({
+								tags: this.state.selectedTags,
+								selectedTags: []
+							});
+						}}
+					/>
+				</PrevTagSelection>
 				<TagContainer>
 					{tags.map((tag) => {
 						return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
@@ -169,7 +232,8 @@ export default withStyles((theme) => ({
 		},
 		'& .MuiChip-root': {
 			borderRadius: 3,
-			fontFamily: 'Quantico'
+			fontFamily: 'Quantico',
+			margin: 3
 		}
 	}
 }))(TagCreatorRP);
