@@ -56,8 +56,8 @@ export default function MultiSelect({ label, selected, handleChange, items, useC
 					);
 				}}
 			>
-				{items.map(({ name, _id, customText }, index) => (
-					<MenuItem key={_id} value={_id}>
+				{items.map(({ name, _id, customText, disabled }, index) => (
+					<MenuItem key={_id} value={_id} disabled={disabled}>
 						<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
 						{customText ? customText : <ListItemText primary={name} />}
 					</MenuItem>

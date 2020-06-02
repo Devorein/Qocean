@@ -175,7 +175,11 @@ class TagCreatorRP extends Component {
 								this.state.prevTags.uniqueWithColor.map((tag) => ({
 									name: tag.split(':')[0],
 									_id: tag,
-									customText: <RegularChip tag={tag} />
+									customText: <RegularChip tag={tag} />,
+									disabled:
+										this.state.tags.includes(tag) ||
+										(this.state.tags.length + this.state.selectedTags.length >= 5 &&
+											!this.state.selectedTags.includes(tag))
 								}))
 							) : (
 								[]
@@ -185,7 +189,7 @@ class TagCreatorRP extends Component {
 					<AddBoxIcon
 						onClick={() => {
 							this.setState({
-								tags: this.state.selectedTags,
+								tags: Array.from(new Set(this.state.tags.concat(this.state.selectedTags))),
 								selectedTags: []
 							});
 						}}
