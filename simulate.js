@@ -207,7 +207,7 @@ mongoose.connect(process.env.MONGO_URI, {
 			total_users
 		});
 
-		const data = loginData.map(({ password, username, email }) => ({ password, username, email }));
+		const data = loginData.map(({ password, username, email, token }) => ({ password, username, email, token }));
 		if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(data), 'UTF-8');
 		else {
 			const new_data = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8'));

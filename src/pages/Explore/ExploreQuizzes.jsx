@@ -111,11 +111,11 @@ class ExploreQuizzes extends Component {
 				action: (
 					<div style={{ display: 'flex' }}>
 						{item.action}
-						{this.props.user.watched_quizzes.includes(item._id) ? (
+						{this.props.user ? this.props.user.watched_quizzes.includes(item._id) ? (
 							<VisibilityIcon style={{ fill: success.main }} />
 						) : (
 							<VisibilityOffIcon style={{ fill: error.main }} />
-						)}
+						) : null}
 					</div>
 				),
 				tags: <ChipContainer chips={item.tags} type={'regular'} />,
