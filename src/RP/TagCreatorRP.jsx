@@ -67,9 +67,13 @@ class TagCreatorRP extends Component {
 
 	openCP = () => {
 		let { displayColorPicker, input, tagColor, tags } = this.state;
-		if (displayColorPicker) {
-			tags.push((input.includes(':') ? input : input + ':') + tagColor);
-			input = '';
+		if (displayColorPicker && input !== '') {
+			const tagInput = (input.includes(':') ? input : input + ':') + tagColor;
+			const [ status, message ] = this.validateTags(tagInput);
+			if (status) {
+				tags.push(tagInput);
+				input = '';
+			}
 		}
 		this.setState({
 			input,
