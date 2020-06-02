@@ -7,7 +7,6 @@ import SelfQuizzes from './SelfQuizzes';
 import SelfQuestions from './SelfQuestions';
 import SelfFolders from './SelfFolders';
 import SelfEnvironments from './SelfEnvironments';
-import updateResource from '../../operations/updateResource';
 import { withSnackbar } from 'notistack';
 import { AppContext } from '../../context/AppContext';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -147,31 +146,25 @@ class Self extends Component {
 	};
 
 	updateResource = (selectedRows, field) => {
-		const { type } = this.state;
-		const { enqueueSnackbar } = this.props;
-		const CLASS = this;
-		let current = 0;
-		let done = false;
-		function reductiveDownloadChain(items) {
-			return items.reduce((chain, currentItem) => {
-				return chain.then((_) => {
-					current++;
-					const { _id, name } = currentItem;
-					updateResource(type, _id, {
-						[field]: !currentItem[field]
-					}).then(({ data }) => {
-						enqueueSnackbar(`${type} ${name} has been updated`, {
-							variant: 'success'
-						});
-						if (current === selectedRows.length && !done) {
-							CLASS.refetchData();
-							done = true;
-						}
-					});
-				});
-			}, Promise.resolve());
-		}
-		reductiveDownloadChain(selectedRows);
+		selectedRows = selectedRows.map((row) => ({ id: row._id, body: { [field]: !row[field] } }));
+		let { type } = this.state;
+		type = pluralize(type, 2).toLowerCase();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}`,
+				{
+					[type]: selectedRows
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully updated ${data.length} ${type}`);
+				this.refetchData();
+			});
 	};
 
 	genericTransformData = (data, filterData) => {

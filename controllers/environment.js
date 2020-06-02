@@ -53,7 +53,7 @@ exports.updateEnvironments = asyncHandler(async (req, res, next) => {
 	const updated_environments = [];
 	for (let i = 0; i < environments.length; i++) {
 		const { id, body } = environments[i];
-		updated_environments.push(await updateResource('quiz', id, req.user, next, body));
+		updated_environments.push(await updateResource('environment', id, req.user, next, body));
 	}
 	res.status(200).json({ success: true, data: updated_environments });
 });
