@@ -39,6 +39,8 @@ mongoose.connect(process.env.MONGO_URI, {
 	const userArg = args.indexOf('-u');
 	const createMode = args[userArg + 1] && !args[userArg + 1].includes('-') ? 'specified' : 'all';
 
+	/* const fileArg = args.indexOf('-f'); 
+  const file = fileArg */
 	if (deletePrev) {
 		await Quiz.deleteMany();
 		await Question.deleteMany();

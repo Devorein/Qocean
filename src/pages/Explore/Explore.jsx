@@ -122,9 +122,6 @@ class Explore extends Component {
 		const { refetchData, genericTransformData } = this;
 		const { page, rowsPerPage, totalCount, sortCol, sortOrder, type } = this.state;
 		const options = {
-			filterType: 'checkbox',
-			count: totalCount,
-			page,
 			customToolbar() {
 				return (
 					<div>
@@ -136,6 +133,9 @@ class Explore extends Component {
 					</div>
 				);
 			},
+			filterType: 'checkbox',
+			count: totalCount,
+			page,
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
@@ -181,7 +181,9 @@ class Explore extends Component {
 			page,
 			sortCol,
 			sortOrder,
-			cols: [ { name: 'action', label: 'Action' } ]
+			cols: [ { name: 'action', label: 'Action' } ],
+			refetchData,
+			changeResponse: this.context.changeResponse
 		};
 
 		if (type === 'user') return <ExploreUsers {...props} />;

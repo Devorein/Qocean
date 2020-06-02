@@ -5,6 +5,7 @@ import Fade from '@material-ui/core/Fade';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
 import CancelIcon from '@material-ui/icons/Cancel';
+import clxs from 'clsx';
 
 class WarnModal extends Component {
 	render() {
@@ -20,9 +21,13 @@ class WarnModal extends Component {
 						<DialogContent>
 							<CancelIcon onClick={onClose} />
 							<div className="modal_content">{children}</div>
-							<div>
-								<Button onClick={onCancel}>{cancelMsg ? cancelMsg : 'Cancel'}</Button>
-								<Button onClick={onAccept}>{acceptMsg ? acceptMsg : 'Accept'}</Button>
+							<div className={clxs('modal_buttons', classes.buttons)}>
+								<Button className="modal_buttons--cancel" onClick={onCancel}>
+									{cancelMsg ? cancelMsg : 'Cancel'}
+								</Button>
+								<Button className="modal_buttons--accept" onClick={onAccept}>
+									{acceptMsg ? acceptMsg : 'Accept'}
+								</Button>
 							</div>
 						</DialogContent>
 					</Fade>
@@ -37,5 +42,13 @@ export default withStyles((theme) => ({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center'
+	},
+	buttons: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: theme.palette.background.main,
+		fontFamily: theme.typography.fontFamily,
+		fontWeight: 'bolder'
 	}
 }))(WarnModal);

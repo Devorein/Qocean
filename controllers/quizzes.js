@@ -110,8 +110,12 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 	const safe_ratings = ratings.every((rating) => rating >= 0 && rating <= 10);
 	if (!safe_ratings) return next(new ErrorResponse(`You cannot have a rating more than 10 or less than 0`, 400));
 	const ratingsData = [];
-	if (ratings.length !== quizzes.length)
-		ratings.concat(Array(quizzes.length - ratings.length).fill(ratings[ratings.length - 1]));
+	if (ratings.length !== quizzes.length) {
+		const lastRatings = ratings[ratings.length - 1];
+		for (let i = 0; i < quizzes.length - ratings.length; i++) ratings.push(lastRatings);
+	}
+	console.log(ratings);
+
 	if (quizzes) {
 		for (let i = 0; i < quizzes.length; i++) {
 			const quizId = quizzes[i];
@@ -135,5 +139,5 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 			});
 		}
 	}
-	res.status(200).json({ success: true, total_updated: ratingsData });
+	res.status(200).json({ success: true, total_rated: ratingsData });
 });

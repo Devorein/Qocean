@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 import DataTable from '../../components/DataTable/DataTable';
 import moment from 'moment';
 import ChipContainer from '../../components/Chip/ChipContainer';
+import StarsIcon from '@material-ui/icons/Stars';
+import ModalRP from '../../RP/ModalRP';
+import InputForm from '../../components/Form/InputForm';
+import axios from 'axios';
+
 class ExploreQuizzes extends Component {
 	decideLabel = (name) => {
 		return name.split('_').map((value) => value.charAt(0).toUpperCase() + value.substr(1)).join(' ');
@@ -37,6 +42,60 @@ class ExploreQuizzes extends Component {
 	};
 
 	transformOption = (option) => {
+		option.customToolbarSelect = (selectedRows) => {
+			return (
+				<InputForm
+					formButtons={false}
+					inputs={[ { type: 'number', name: 'ratings', defaultValue: 5, inputProps: { min: 0, max: 10, step: 0.1 } } ]}
+					passFormAsProp={true}
+				>
+					{({ inputs, values: { ratings } }) => {
+						return (
+							<ModalRP
+								modalMsg={inputs}
+								onAccept={() => {
+									selectedRows = selectedRows.data.map((selectedRow) => selectedRow.index);
+									const quizzes = selectedRows.map((selectedRow) => this.props.data[selectedRow]._id);
+									axios
+										.put(
+											`http://localhost:5001/api/v1/quizzes/_/ratings`,
+											{
+												quizzes,
+												ratings: [ ratings ]
+											},
+											{
+												headers: {
+													Authorization: `Bearer ${localStorage.getItem('token')}`
+												}
+											}
+										)
+										.then(({ data }) => {
+											console.log(data);
+											this.props.refetchData();
+											this.props.changeResponse(
+												'Success',
+												`Added ratings for ${data.total_rated.length} quizzes`,
+												'success'
+											);
+										});
+								}}
+							>
+								{({ setIsOpen }) => {
+									return (
+										<StarsIcon
+											onClick={(e) => {
+												setIsOpen(true);
+												// console.log(selectedRows.data.map(({ index }) => index));
+											}}
+										/>
+									);
+								}}
+							</ModalRP>
+						);
+					}}
+				</InputForm>
+			);
+		};
 		return option;
 	};
 
