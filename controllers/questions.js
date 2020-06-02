@@ -4,6 +4,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const fs = require('fs');
 const path = require('path');
+const updateResource = require('../utils/updateResource');
 
 exports.sendAnswer = asyncHandler(async (req, res, next) => {
 	const question = await Question.findOne({ _id: req.params.id, user: req.user._id }).select('+answers');
@@ -67,29 +68,35 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // @desc: Update a question
 // @route: PUT /api/v1/questions/:id
 // @access: Private
-// ! Validators for each question type needs to be done
-// ! Batch Update questions
-exports.updateQuestion = asyncHandler(async function(req, res, next) {
-	let question = await Question.findById(req.params.id);
-	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));
-	if (question.user.toString() !== req.user._id.toString())
-		return next(new ErrorResponse(`User not authorized to update question`, 401));
-	req.body.updated_at = Date.now();
-	question = await Question.findByIdAndUpdate(req.params.id, req.body, {
-		new: true,
-		runValidators: true
-	});
-	const quiz = await Quiz.findOne(question.quiz);
+
+async function updateQuiz(id) {
+	const quiz = await Quiz.findOne(id);
 	quiz.updated_at = Date.now();
 	await quiz.save();
-	res.status(200).json({ success: true, data: question });
+}
+
+exports.updateQuestion = asyncHandler(async function(req, res, next) {
+	const question = await updateResource('question', req.params.id, req.user, next, req.body);
+	await updateQuiz(question.quiz);
+	res.status(200).json({ success: true, data: 1 });
+});
+
+exports.updateQuestions = asyncHandler(async (req, res, next) => {
+	const { questions } = req.body;
+	const updated_questions = [];
+	for (let i = 0; i < questions.length; i++) {
+		const { id, body } = questions[i];
+		const question = await updateResource('question', id, req.user, next, body);
+		updated_questions.push(question);
+		await updateQuiz(question.quiz);
+	}
+	res.status(200).json({ success: true, data: updated_questions });
 });
 
 // @desc: Delete a question
 // @route: DELETE /api/v1/questions/:id
 // @access: Private
-// ! Validators for each question type needs to be done
-// ! Batch Delete questions
+
 exports.deleteQuestion = asyncHandler(async function(req, res, next) {
 	let question = await Question.findById(req.params.id).select('question user type image');
 	if (!question) return next(new ErrorResponse(`No question with id ${req.params.id} exists`, 404));

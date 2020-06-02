@@ -5,6 +5,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const fs = require('fs');
 const path = require('path');
+const updateResource = require('../utils/updateResource');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -42,14 +43,20 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 // @desc: Update single quiz
 // @route: PUT /api/v1/quizzes/:id
 // @access: Private
+
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
-	let quiz = await Quiz.findById(req.params.id);
-	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
-	if (quiz.user.toString() !== req.user._id.toString())
-		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
-	req.body.updated_at = Date.now();
-	quiz = await Quiz.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+	const quiz = await updateResource('quiz', req.params.id, req.user, next, req.body);
 	res.status(200).json({ success: true, data: quiz });
+});
+
+exports.updateQuizzes = asyncHandler(async (req, res, next) => {
+	const { quizzes } = req.body;
+	const updated_quizzes = [];
+	for (let i = 0; i < quizzes.length; i++) {
+		const { id, body } = quizzes[i];
+		updated_quizzes.push(await updateResource('quiz', id, req.user, next, body));
+	}
+	res.status(200).json({ success: true, data: updated_quizzes });
 });
 
 // @desc: Delete single quiz
@@ -115,7 +122,6 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 		const lastRatings = ratings[ratings.length - 1];
 		for (let i = 0; i < quizzes.length - ratings.length; i++) ratings.push(lastRatings);
 	}
-	console.log(ratings);
 
 	if (quizzes) {
 		for (let i = 0; i < quizzes.length; i++) {

@@ -10,7 +10,8 @@ const {
 	deleteFolder,
 	deleteFolders,
 	quizToFolder,
-	watchFolders
+	watchFolders,
+	updateFolders
 } = require('../controllers/folder');
 
 router.route('/countAll').get(advancedResults(Folder));
@@ -40,6 +41,7 @@ router
 		)
 	)
 	.post(protect, createFolder)
+	.put(protect, updateFolders)
 	.delete(protect, deleteFolders);
 
 router.route('/quiz').put(protect, quizToFolder);
