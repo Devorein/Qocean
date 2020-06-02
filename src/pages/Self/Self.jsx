@@ -186,11 +186,15 @@ class Self extends Component {
 						<div>{item.name}</div>
 					</IconRow>
 				),
-				public: item.public ? <PublicIcon style={{ fill: '#00a3e6' }} /> : <PublicIcon style={{ fill: '#f4423c' }} />,
-				favourite: item.favourite ? (
-					<StarIcon style={{ fill: '#f0e744' }} />
+				public: item.public ? (
+					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
 				) : (
-					<StarBorderIcon style={{ fill: '#ead50f' }} />
+					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
+				),
+				favourite: item.favourite ? (
+					<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
+				) : (
+					<StarBorderIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#ead50f' }} />
 				)
 			};
 		});
