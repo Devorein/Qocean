@@ -1,5 +1,6 @@
 const Quiz = require('../models/Quiz');
 const Folder = require('../models/Folder');
+const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const fs = require('fs');
@@ -140,4 +141,32 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 		}
 	}
 	res.status(200).json({ success: true, total_rated: ratingsData });
+});
+
+exports.watchQuizzes = asyncHandler(async (req, res, next) => {
+	const { quizzes, op } = req.body;
+	const user = await User.findById(req.user._id);
+	let manipulated = 0;
+	for (let i = 0; i < quizzes.length; i++) {
+		const folderId = quizzes[i];
+		const quiz = await Quiz.findById(folderId);
+		if (op === 0) {
+			if (user.watched_quizzes.indexOf(quiz._id.toString()) !== -1) {
+				--quiz.watchers;
+				user.watched_quizzes = user.watched_quizzes.filter(
+					(watched_quiz) => watched_quiz.toString() !== quiz._id.toString()
+				);
+				manipulated++;
+			}
+		} else if (op === 1) {
+			if (user.watched_quizzes.indexOf(quiz._id.toString()) === -1 && !req.user.quizzes.includes(quiz._id.toString())) {
+				++quiz.watchers;
+				user.watched_quizzes.push(quiz._id);
+				manipulated++;
+			}
+		}
+		await quiz.save();
+	}
+	await user.save();
+	res.status(200).json({ success: true, data: manipulated });
 });

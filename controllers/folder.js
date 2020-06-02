@@ -88,7 +88,10 @@ exports.watchFolders = asyncHandler(async (req, res, next) => {
 				manipulated++;
 			}
 		} else if (op === 1) {
-			if (user.watched_folders.indexOf(folder._id.toString()) === -1) {
+			if (
+				user.watched_folders.indexOf(folder._id.toString()) === -1 &&
+				!req.user.folders.includes(folder._id.toString())
+			) {
 				++folder.watchers;
 				user.watched_folders.push(folder._id);
 				manipulated++;
