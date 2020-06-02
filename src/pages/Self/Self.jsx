@@ -19,6 +19,9 @@ import InfoIcon from '@material-ui/icons/Info';
 import FormFiller from '../FormFiller/FormFiller';
 import ModalRP from '../../RP/ModalRP';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import shortid from 'shortid';
+import download from '../../Utils/download';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import './Self.scss';
 
 class Self extends Component {
@@ -172,11 +175,39 @@ class Self extends Component {
 			});
 	};
 
+	transformData = (data) => {
+		const { type } = this.state;
+		return data.map((data) => {
+			const negate = [ 'user', '_id', '__v', 'id' ];
+			const temp = {};
+			if (type === 'quiz')
+				negate.push(
+					'average_quiz_time',
+					'average_difficulty',
+					'total_questions',
+					'total_folders',
+					'folders',
+					'rating',
+					'questions',
+					'watchers',
+					'ratings',
+					'raters'
+				);
+			else if (type === 'question') negate.push('quiz');
+			else if (type === 'folder') negate.push('quizzes', 'ratings', 'total_questions', 'total_quizzes');
+
+			const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
+			fields.forEach((field) => (temp[field] = data[field]));
+			temp.rtype = type.toLowerCase();
+			return temp;
+		});
+	};
+
 	genericTransformData = (data, filterData) => {
 		return data.map((item, index) => {
 			return {
 				...item,
-				action: (
+				actions: (
 					<Fragment>
 						<UpdateIcon
 							onClick={(e) => {
@@ -186,6 +217,11 @@ class Self extends Component {
 						<InfoIcon
 							onClick={(e) => {
 								this.getDetails(filterData(item), index);
+							}}
+						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(this.transformData([ item ])));
 							}}
 						/>
 					</Fragment>
@@ -237,6 +273,14 @@ class Self extends Component {
 								updateResource(this.state.data, 'public');
 							}}
 						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(
+									`${Date.now()}_${shortid.generate()}.json`,
+									JSON.stringify(this.transformData(this.state.data))
+								);
+							}}
+						/>
 					</div>
 				);
 			},
@@ -265,6 +309,14 @@ class Self extends Component {
 							onClick={(e) => {
 								selectedRows = selectedRows.data.map(({ index }) => this.state.data[index]);
 								updateResource(selectedRows, 'public');
+							}}
+						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(
+									`${Date.now()}_${shortid.generate()}.json`,
+									JSON.stringify(this.transformData(selectedRows.data.map(({ index }) => this.state.data[index])))
+								);
 							}}
 						/>
 					</div>

@@ -16,8 +16,8 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import shortid from 'shortid';
-
 import download from '../../Utils/download';
+
 class Explore extends Component {
 	static contextType = AppContext;
 	state = {
