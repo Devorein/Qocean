@@ -88,9 +88,7 @@ mongoose.connect(process.env.MONGO_URI, {
 			}
 		};
 
-		const {
-			data: { data: quizzes }
-		} = await axios.get(`http://localhost:5001/api/v1/quizzes/me?select=_id,questions`, {
+		let { data: { data: quizzes } } = await axios.get(`http://localhost:5001/api/v1/quizzes/me?select=_id,questions`, {
 			...headers
 		});
 
@@ -98,15 +96,18 @@ mongoose.connect(process.env.MONGO_URI, {
 			...headers
 		});
 
-		const { data: { data: folders } } = await axios.get(`http://localhost:5001/api/v1/folders/me?select=_id`, {
+		let { data: { data: folders } } = await axios.get(`http://localhost:5001/api/v1/folders/me?select=_id`, {
 			...headers
 		});
 
-		const { data: { data: envs } } = await axios.get(`http://localhost:5001/api/v1/environments/me?select=_id`, {
+		let { data: { data: envs } } = await axios.get(`http://localhost:5001/api/v1/environments/me?select=_id`, {
 			...headers
 		});
 
+		quizzes = quizzes.map(({ _id, questions }) => ({ _id, questions }));
 		questions = questions.map(({ _id }) => _id);
+		folders = folders.map(({ _id }) => _id);
+		envs = envs.map(({ _id }) => _id);
 
 		let resources_tb_created = [];
 		const resourceType = args[args.indexOf('-rt') + 1];
@@ -122,9 +123,9 @@ mongoose.connect(process.env.MONGO_URI, {
 				_id,
 				token,
 				quizzes: quizzes.map(({ _id }) => _id),
-				questions: questions.map(({ _id }) => _id),
-				folders: folders.map(({ _id }) => _id),
-				envs: envs.map(({ _id }) => _id)
+				questions,
+				folders,
+				envs
 			}
 		];
 

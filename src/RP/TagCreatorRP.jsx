@@ -24,7 +24,7 @@ class TagCreatorRP extends Component {
 		displayColorPicker: false,
 		input: ''
 	};
-
+	componentDidMount() {}
 	static getDerivedStateFromProps(props, state) {
 		return props.tags.every((tag, index) => tag === state.tags[index])
 			? null
