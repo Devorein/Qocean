@@ -324,7 +324,7 @@ class Self extends Component {
 			sortCol,
 			sortOrder,
 			genericTransformData,
-			cols: [ { name: 'action', label: 'Action' } ]
+			cols: [ { name: 'actions', label: 'Actions' } ]
 		};
 
 		if (type === 'Quiz') return <SelfQuizzes {...props} />;

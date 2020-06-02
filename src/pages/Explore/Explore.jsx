@@ -14,7 +14,10 @@ import FormFiller from '../FormFiller/FormFiller';
 import { AppContext } from '../../context/AppContext';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import shortid from 'shortid';
 
+import download from '../../Utils/download';
 class Explore extends Component {
 	static contextType = AppContext;
 	state = {
@@ -26,6 +29,34 @@ class Explore extends Component {
 		sortCol: null,
 		sortOrder: null,
 		selectedIndex: null
+	};
+
+	transformData = (data) => {
+		const { type } = this.state;
+		return data.map((data) => {
+			const negate = [ 'user', '_id', '__v', 'id' ];
+			const temp = {};
+			if (type === 'quiz')
+				negate.push(
+					'average_quiz_time',
+					'average_difficulty',
+					'total_questions',
+					'total_folders',
+					'folders',
+					'rating',
+					'questions',
+					'watchers',
+					'ratings',
+					'raters'
+				);
+			else if (type === 'question') negate.push('quiz');
+			else if (type === 'folder') negate.push('quizzes', 'ratings', 'total_questions', 'total_quizzes');
+
+			const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
+			fields.forEach((field) => (temp[field] = data[field]));
+			temp.rtype = type.toLowerCase();
+			return temp;
+		});
 	};
 
 	componentDidMount() {
@@ -105,15 +136,22 @@ class Explore extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				action: (
-					<NoteAddIcon
-						onClick={(e) => {
-							this.setState({
-								isOpen: true,
-								selectedIndex: index
-							});
-						}}
-					/>
+				actions: (
+					<div stlye={{ display: 'flex' }}>
+						<NoteAddIcon
+							onClick={(e) => {
+								this.setState({
+									isOpen: true,
+									selectedIndex: index
+								});
+							}}
+						/>
+						<GetAppIcon
+							onClick={(e) => {
+								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(this.transformData([ item ])));
+							}}
+						/>
+					</div>
 				)
 			};
 		});
@@ -224,7 +262,7 @@ class Explore extends Component {
 			page,
 			sortCol,
 			sortOrder,
-			cols: [ { name: 'action', label: 'Action' } ],
+			cols: [ { name: 'actions', label: 'Actions' } ],
 			refetchData,
 			changeResponse: this.context.changeResponse,
 			user: this.props.user,

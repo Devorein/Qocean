@@ -111,9 +111,9 @@ class ExploreQuizzes extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				action: (
+				actions: (
 					<div style={{ display: 'flex' }}>
-						{item.action}
+						{item.actions}
 						{this.props.user ? item.watchers.includes(this.props.user._id) ? (
 							<VisibilityIcon
 								style={{ fill: success.main }}
