@@ -80,8 +80,8 @@ exports.watchFolders = asyncHandler(async (req, res, next) => {
 		const folderId = folders[i];
 		const folder = await Folder.findById(folderId);
 		if (op === 0) {
-			if (user.watched_folders.indexOf(folder._id.toString()) !== -1) {
-				--folder.watchers;
+			if (user.watched_folders.indexOf(folder._id.toString()) !== -1 && folder.watchers.indexOf(req.user._id) !== -1) {
+				folder.watchers = folder.watchers.filter((watcher) => watcher === req.user._id.toString());
 				user.watched_folders = user.watched_folders.filter(
 					(watched_folder) => watched_folder.toString() !== folder._id.toString()
 				);
@@ -90,9 +90,10 @@ exports.watchFolders = asyncHandler(async (req, res, next) => {
 		} else if (op === 1) {
 			if (
 				user.watched_folders.indexOf(folder._id.toString()) === -1 &&
+				folder.watchers.indexOf(req.user._id.toString()) === -1 &&
 				!req.user.folders.includes(folder._id.toString())
 			) {
-				++folder.watchers;
+				folder.watchers.push(user._id);
 				user.watched_folders.push(folder._id);
 				manipulated++;
 			}

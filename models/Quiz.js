@@ -70,10 +70,12 @@ const QuizSchema = extendSchema(
 			type: Number,
 			default: 0
 		},
-		watchers: {
-			type: Number,
-			default: 0
-		}
+		watchers: [
+			{
+				type: mongoose.Schema.ObjectId,
+				ref: 'User'
+			}
+		]
 	},
 	{
 		toJSON: { virtuals: true },

@@ -151,16 +151,20 @@ exports.watchQuizzes = asyncHandler(async (req, res, next) => {
 		const folderId = quizzes[i];
 		const quiz = await Quiz.findById(folderId);
 		if (op === 0) {
-			if (user.watched_quizzes.indexOf(quiz._id.toString()) !== -1) {
-				--quiz.watchers;
+			if (user.watched_quizzes.indexOf(quiz._id.toString()) !== -1 && quiz.watchers.indexOf(req.user._id) !== -1) {
+				quiz.watchers = quiz.watchers.filter((watcher) => watcher === req.user._id.toString());
 				user.watched_quizzes = user.watched_quizzes.filter(
 					(watched_quiz) => watched_quiz.toString() !== quiz._id.toString()
 				);
 				manipulated++;
 			}
 		} else if (op === 1) {
-			if (user.watched_quizzes.indexOf(quiz._id.toString()) === -1 && !req.user.quizzes.includes(quiz._id.toString())) {
-				++quiz.watchers;
+			if (
+				user.watched_quizzes.indexOf(quiz._id.toString()) === -1 &&
+				quiz.watchers.indexOf(req.user._id.toString()) === -1 &&
+				!req.user.quizzes.includes(quiz._id.toString())
+			) {
+				quiz.watchers.push(user._id.toString());
 				user.watched_quizzes.push(quiz._id);
 				manipulated++;
 			}
