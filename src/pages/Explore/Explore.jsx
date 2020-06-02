@@ -183,6 +183,8 @@ class Explore extends Component {
 			print: false,
 			download: false,
 			serverSide: true,
+			filter: false,
+			search: false,
 			onChangePage: (page) => {
 				this.setState(
 					{

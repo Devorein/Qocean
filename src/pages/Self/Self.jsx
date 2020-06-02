@@ -16,7 +16,6 @@ import PublicIcon from '@material-ui/icons/Public';
 import LinearList from '../../components/List/LinearList';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
-import IconRow from '../../components/Row/IconRow';
 import FormFiller from '../FormFiller/FormFiller';
 import ModalRP from '../../RP/ModalRP';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
@@ -177,8 +176,8 @@ class Self extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
-				name: (
-					<IconRow>
+				action: (
+					<Fragment>
 						<UpdateIcon
 							onClick={(e) => {
 								this.getDetails(filterData(item), index, { isOpen: true });
@@ -189,8 +188,7 @@ class Self extends Component {
 								this.getDetails(filterData(item), index);
 							}}
 						/>
-						<div>{item.name}</div>
-					</IconRow>
+					</Fragment>
 				),
 				public: item.public ? (
 					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
@@ -281,6 +279,8 @@ class Self extends Component {
 			print: false,
 			download: false,
 			serverSide: true,
+			filter: false,
+			search: false,
 			onChangePage: (page) => {
 				this.setState(
 					{
@@ -323,7 +323,8 @@ class Self extends Component {
 			getDetails,
 			sortCol,
 			sortOrder,
-			genericTransformData
+			genericTransformData,
+			cols: [ { name: 'action', label: 'Action' } ]
 		};
 
 		if (type === 'Quiz') return <SelfQuizzes {...props} />;
