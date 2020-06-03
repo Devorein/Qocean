@@ -128,6 +128,7 @@ class Quiz extends Component {
 				() => {
 					this.fetchQuestion();
 					reset_answers();
+					console.log(this.props.settings);
 					setTimeout(() => {
 						this.setState({
 							disabled: false

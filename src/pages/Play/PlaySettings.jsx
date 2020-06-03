@@ -52,28 +52,45 @@ const inputs = [
 		})
 	},
 	{
-		type: 'checkbox',
-		name: 'randomized_quiz',
-		defaultValue: false
-	},
-	{
-		type: 'checkbox',
-		name: 'randomized_question',
-		defaultValue: false
-  },
-  {
-		type: 'checkbox',
-		name: 'randomized_options',
-		defaultValue: false
+		name: 'randomize',
+		type: 'group',
+		extra: { treeView: true },
+		children: [
+			{
+				type: 'checkbox',
+				name: 'randomized_quiz',
+				defaultValue: false
+			},
+			{
+				type: 'checkbox',
+				name: 'randomized_question',
+				defaultValue: false
+			},
+			{
+				type: 'checkbox',
+				name: 'randomized_options',
+				defaultValue: false
+			}
+		]
 	}
 ];
 
 class PlaySettings extends Component {
 	render() {
 		return (
-			<div className="play_settings">
-				<InputForm formButtons={false} inputs={inputs} customHandler={this.props.customHandler} />
-			</div>
+			<InputForm formButtons={false} inputs={inputs} passFormAsProp>
+				{({ setValues, values, errors, isValid, inputs }) => {
+					return this.props.children({
+						formData: {
+							values,
+							errors,
+							isValid
+						},
+						inputs: <div className="play_settings">{inputs}</div>,
+						setValues
+					});
+				}}
+			</InputForm>
 		);
 	}
 }
