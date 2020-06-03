@@ -21,6 +21,10 @@ import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
 import Play from './pages/Play/Play';
+import Report from './pages/Report/Report';
+import Watchlist from './pages/Watchlist/Watchlist';
+import Inbox from './pages/Inbox/Inbox';
+import Upgrade from './pages/Upgrade/Upgrade';
 import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
@@ -234,6 +238,34 @@ class App extends Component {
 								exact
 								render={() => {
 									return session.data ? <Stats user={session.data.data} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/report"
+								exact
+								render={() => {
+									return session.data ? <Report user={session.data.data} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/inbox"
+								exact
+								render={() => {
+									return session.data ? <Inbox user={session.data.data} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/watchlist"
+								exact
+								render={() => {
+									return session.data ? <Watchlist user={session.data.data} /> : <Redirect to="/401" />;
+								}}
+							/>
+							<Route
+								path="/upgrade"
+								exact
+								render={() => {
+									return session.data ? <Upgrade user={session.data.data} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route

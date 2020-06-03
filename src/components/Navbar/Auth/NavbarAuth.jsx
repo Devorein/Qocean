@@ -17,7 +17,11 @@ import ImageIcon from '@material-ui/icons/Image';
 import FaceIcon from '@material-ui/icons/Face';
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import PublishRoundedIcon from '@material-ui/icons/PublishRounded';
-
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import InboxIcon from '@material-ui/icons/Inbox';
+import { faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const useStyles = makeStyles({
 	paper: {
 		backgroundColor: '#1a1a1a',
@@ -136,6 +140,19 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 				<MenuItem onClick={switchPage.bind(null, `self/${user.current_environment.default_self_landing}`)}>
 					<FaceIcon />
 					Self
+				</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, `report`)}>
+					<AssessmentIcon />Report
+				</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, `watchlist`)}>
+					<ListAltIcon />Watchlist
+				</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, `inbox`)}>
+					<InboxIcon />Inbox
+				</MenuItem>
+				<MenuItem onClick={switchPage.bind(null, `upgrade`)}>
+					<FontAwesomeIcon icon={faLevelUpAlt} style={{ marginRight: 3 }} />
+					Upgrade
 				</MenuItem>
 				<MenuItem onClick={logout}>
 					<CustomButtom variant="contained" size="large" startIcon={<ExitToAppIcon />}>

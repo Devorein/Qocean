@@ -37,10 +37,6 @@ class Report extends Component {
 				}
 			)
 			.then(({ data: { data: validations } }) => {
-				console.log(this.props.stats, questions, validations);
-				const incorrect = validations.incorrect.length;
-				const correct = validations.correct.length;
-				const total = incorrect + correct;
 				this.setState({
 					validations
 				});

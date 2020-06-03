@@ -83,7 +83,7 @@ class ReportHeader extends Component {
 	};
 
 	renderDataRow = () => {
-		const { theme, validations, stats } = this.props;
+		const { theme, validations } = this.props;
 		return (
 			<div className="report_header_row report_header_row--validations">
 				<div theme={theme} className="report_header_row_item report_header_row_item--correct">
@@ -99,10 +99,10 @@ class ReportHeader extends Component {
 					</span>
 				</div>
 				<div theme={theme} className="report_header_row_item report_header_row_item--points">
-					Avg. Points <span className="text-data">{this.average_points}</span>
+					Avg. Points <span className="text-data">{this.calculateAvg('points')}</span>
 				</div>
 				<div theme={theme} className="report_header_row_item report_header_row_item--time_taken">
-					Avg. Timetaken <span className="text-data">{this.average_time}</span>
+					Avg. Timetaken <span className="text-data">{this.calculateAvg('time_taken')}</span>
 				</div>
 			</div>
 		);
