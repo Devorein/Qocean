@@ -96,7 +96,7 @@ class Quiz extends Component {
 
 	setQuestion = (timeout, { user_answers, reset_answers }) => {
 		const totalQuestion = this.getTotalQuestions();
-		const { quizzes } = this.props;
+		const { quizzes, settings } = this.props;
 		let { currentQuestion, currentQuiz, currentQuizQuestion, quizResults } = this.state;
 		if (currentQuizQuestion < quizzes[currentQuiz].questions.length - 1) currentQuizQuestion++;
 		else {
@@ -120,53 +120,59 @@ class Quiz extends Component {
 			add_to_score
 		});
 
-		axios
-			.put(`http://localhost:5001/api/v1/questions/_/validation`, {
-				id: _id,
-				answers: user_answers
-			})
-			.then(({ data }) => {
-				const { isCorrect } = data;
-				if (isCorrect) quizResults.correct++;
-				else quizResults.incorrect++;
-				if (currentQuestion < totalQuestion - 1) {
-					this.setState(
-						{
-							currentQuestion: currentQuestion + 1,
-							currentQuizQuestion,
-							currentQuiz,
-							stats,
-							showTimer: false,
-							quizResults
-						},
-						() => {
-							this.fetchQuestion();
-							reset_answers();
-							setTimeout(() => {
-								this.setState({
-									showTimer: true
-								});
-							}, 1000);
-						}
-					);
-				} else {
-					this.setState(
-						{
-							currentQuestion: currentQuestion + 1,
-							stats,
-							isOnReport: true,
-							quizResults
-						},
-						() => {
-							reset_answers();
-						}
-					);
-				}
-			});
+		const getNextQuestion = () => {
+			if (currentQuestion < totalQuestion - 1) {
+				this.setState(
+					{
+						currentQuestion: currentQuestion + 1,
+						currentQuizQuestion,
+						currentQuiz,
+						stats,
+						showTimer: false,
+						quizResults
+					},
+					() => {
+						this.fetchQuestion();
+						reset_answers();
+						setTimeout(() => {
+							this.setState({
+								showTimer: true
+							});
+						}, 1000);
+					}
+				);
+			} else {
+				this.setState(
+					{
+						currentQuestion: currentQuestion + 1,
+						stats,
+						isOnReport: true,
+						quizResults
+					},
+					() => {
+						reset_answers();
+					}
+				);
+			}
+		};
+
+		if (settings.validation === 'instant') {
+			axios
+				.put(`http://localhost:5001/api/v1/questions/_/validation`, {
+					id: _id,
+					answers: user_answers
+				})
+				.then(({ data }) => {
+					const { isCorrect } = data;
+					if (isCorrect) quizResults.correct++;
+					else quizResults.incorrect++;
+					getNextQuestion();
+				});
+		} else getNextQuestion();
 	};
 
 	renderQuizStats = () => {
-		const { quizzes, theme } = this.props;
+		const { quizzes, theme, settings } = this.props;
 		const { currentQuestion, currentQuiz, currentQuizQuestion, quizResults } = this.state;
 		const totalQuestion = this.getTotalQuestions();
 
@@ -174,17 +180,23 @@ class Quiz extends Component {
 			[ 'Quiz', `${currentQuiz + 1} / ${quizzes.length}` ],
 			[ 'Name', quizzes[currentQuiz].name ],
 			[ `Question of Quiz`, currentQuizQuestion + 1 ],
-			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ],
-			[ 'Correct', `${quizResults.correct}` ],
-			[ 'Incorrect', `${quizResults.incorrect}` ]
+			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ]
 		];
+
+		if (settings.validation === 'instant')
+			stats.push(
+				[ 'Correct', `${quizResults.correct}`, { color: theme.palette.success.main } ],
+				[ 'Incorrect', `${quizResults.incorrect}`, { color: theme.palette.error.main } ]
+			);
 
 		return (
 			<QuizStats theme={theme}>
-				{stats.map(([ key, value ]) => (
+				{stats.map(([ key, value, style ]) => (
 					<QuizStat theme={theme} key={key}>
 						<span className="question_stat_key">{key}</span> :
-						<span className="question_stat_value">{value.toString()}</span>
+						<span className="question_stat_value" style={style ? style : {}}>
+							{value.toString()}
+						</span>
 					</QuizStat>
 				))}
 			</QuizStats>
