@@ -11,6 +11,14 @@ let defaultInputs = [
 	null,
 	null,
 	{
+		name: 'format',
+		type: 'select',
+		extra: {
+			selectItems: [ { text: 'Markdown', value: 'md' }, { text: 'Regular', value: 'regular' } ]
+		},
+		defaultValue: 'regular'
+	},
+	{
 		name: 'difficulty',
 		type: 'radio',
 		extra: {
