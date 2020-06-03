@@ -23,9 +23,9 @@ class Play extends Component {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}
 			})
-			.then(({ data: { data } }) => {
+			.then(({ data: { data: quizzes } }) => {
 				this.setState({
-					quizzes: data
+					quizzes: quizzes.map((quiz) => ({ ...quiz, filteredQuestions: [] }))
 				});
 			});
 	}
@@ -54,7 +54,7 @@ class Play extends Component {
 		);
 
 		quizzes = quizzes.map((quiz) => {
-			quiz.questions = quiz.questions.filter((question) => {
+			quiz.filteredQuestions = quiz.questions.filter((question) => {
 				let shouldReturn = true;
 				shouldReturn = shouldReturn && !disabled.type.includes(question.type);
 				shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
@@ -81,7 +81,9 @@ class Play extends Component {
 					return (
 						<PlaySettings>
 							{({ formData, inputs, slider }) => {
-								const filteredQuizzes = this.applySettingsFilter(checked.map((index) => quizzes[index]), {
+								const selectedQuizzes = checked.map((index) => quizzes[index]);
+
+								const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
 									...formData.values,
 									slider
 								});

@@ -72,7 +72,7 @@ const inputs = [
 
 class PlaySettings extends Component {
 	state = {
-		value: [ 15, 60 ]
+		value: [ 15, 120 ]
 	};
 	render() {
 		inputs[2] = {

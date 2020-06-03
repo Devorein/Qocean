@@ -6,9 +6,10 @@ class PlayStats extends Component {
 	calculateQuestions = () => {
 		const { selectedQuizzes: quizzes = [] } = this.props;
 		let res = 0;
-		for (let quiz of quizzes) res += quiz.total_questions;
+		for (let quiz of quizzes) res += quiz.filteredQuestions.length;
 		return `${res} Question(s)`;
 	};
+
 	calculateDifficulty = () => {
 		const { selectedQuizzes: quizzes } = this.props;
 		let res = 0;
