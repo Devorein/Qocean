@@ -255,7 +255,7 @@ class App extends Component {
 								}}
 							/>
 							<Route
-								path="/watchlist"
+								path="/watchlist/:type"
 								exact
 								render={() => {
 									return session.data ? <Watchlist user={session.data.data} /> : <Redirect to="/401" />;

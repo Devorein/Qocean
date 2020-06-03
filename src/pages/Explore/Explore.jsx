@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
 import pluralize from 'pluralize';
-import './Explore.scss';
 import CustomTabs from '../../components/Tab/Tabs';
 import ExploreUsers from './ExploreUsers';
 import ExploreQuizzes from './ExploreQuizzes';
@@ -17,9 +16,11 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import shortid from 'shortid';
 import download from '../../Utils/download';
+import './Explore.scss';
 
 class Explore extends Component {
 	static contextType = AppContext;
+
 	state = {
 		data: [],
 		type: this.props.user ? this.props.user.current_environment.default_explore_landing.toLowerCase() : 'user',
@@ -65,6 +66,7 @@ class Explore extends Component {
 			page: this.state.page
 		});
 	}
+
 	getRelatedData = (type, queryParams) => {
 		if (type === 'quiz' || type === 'folder' || type === 'environment') {
 			queryParams.populate = 'user';

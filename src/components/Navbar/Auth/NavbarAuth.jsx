@@ -22,6 +22,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import InboxIcon from '@material-ui/icons/Inbox';
 import { faLevelUpAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 const useStyles = makeStyles({
 	paper: {
 		backgroundColor: '#1a1a1a',
@@ -144,7 +145,7 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 				<MenuItem onClick={switchPage.bind(null, `report`)}>
 					<AssessmentIcon />Report
 				</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, `watchlist`)}>
+				<MenuItem onClick={switchPage.bind(null, `watchlist/quiz`)}>
 					<ListAltIcon />Watchlist
 				</MenuItem>
 				<MenuItem onClick={switchPage.bind(null, `inbox`)}>
