@@ -70,7 +70,7 @@ class Explore extends Component {
 	}
 
 	getRelatedData = (type, queryParams) => {
-		if (type === 'quiz' || type === 'folder' || type === 'environment') {
+		if (type === 'quiz' || type === 'folder' || type === 'environment' || type.startsWith('w_')) {
 			queryParams.populate = 'user';
 			queryParams.populateFields = 'username';
 		} else if (type === 'question') {
@@ -98,7 +98,6 @@ class Explore extends Component {
 					.map((key) => key + '=' + (key === 'page' ? parseInt(queryParams[key]) + 1 : queryParams[key]))
 					.join('&')
 			: '';
-
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -129,13 +128,15 @@ class Explore extends Component {
 			axios
 				.get(`http://localhost:5001/api/v1/watchlist/${type}/count`, { ...headers })
 				.then(({ data: { data: totalCount } }) => {
-					axios.get(`http://localhost:5001/api/v1/watchlist/${type}`, { ...headers }).then(({ data: { data } }) => {
-						this.setState({
-							data,
-							totalCount,
-							...newState
+					axios
+						.get(`http://localhost:5001/api/v1/watchlist/${type}${queryString}`, { ...headers })
+						.then(({ data: { data } }) => {
+							this.setState({
+								data,
+								totalCount,
+								...newState
+							});
 						});
-					});
 				})
 				.catch((err) => {
 					console.log(err);
