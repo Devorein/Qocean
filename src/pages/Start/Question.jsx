@@ -236,7 +236,6 @@ class Question extends Component {
 
 	render() {
 		const { question, theme } = this.props;
-		console.log('rendered question');
 		return this.props.children({
 			question: question ? (
 				<QuizContent theme={theme}>

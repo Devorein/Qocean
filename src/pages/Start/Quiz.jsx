@@ -43,7 +43,11 @@ class Quiz extends Component {
 		question: null,
 		stats: [],
 		isOnReport: false,
-		disabled: false
+		showTimer: true,
+		quizResults: {
+			correct: 0,
+			incorrect: 0
+		}
 	};
 
 	componentDidMount() {
@@ -93,7 +97,7 @@ class Quiz extends Component {
 	setQuestion = (timeout, { user_answers, reset_answers }) => {
 		const totalQuestion = this.getTotalQuestions();
 		const { quizzes } = this.props;
-		let { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		let { currentQuestion, currentQuiz, currentQuizQuestion, quizResults } = this.state;
 		if (currentQuizQuestion < quizzes[currentQuiz].questions.length - 1) currentQuizQuestion++;
 		else {
 			currentQuiz++;
@@ -116,49 +120,63 @@ class Quiz extends Component {
 			add_to_score
 		});
 
-		if (currentQuestion < totalQuestion - 1) {
-			this.setState(
-				{
-					currentQuestion: currentQuestion + 1,
-					currentQuizQuestion,
-					currentQuiz,
-					stats,
-					disabled: true
-				},
-				() => {
-					this.fetchQuestion();
-					reset_answers();
-					setTimeout(() => {
-						this.setState({
-							disabled: false
-						});
-					}, 2500);
+		axios
+			.put(`http://localhost:5001/api/v1/questions/_/validation`, {
+				id: _id,
+				answers: user_answers
+			})
+			.then(({ data }) => {
+				const { isCorrect } = data;
+				if (isCorrect) quizResults.correct++;
+				else quizResults.incorrect++;
+				if (currentQuestion < totalQuestion - 1) {
+					this.setState(
+						{
+							currentQuestion: currentQuestion + 1,
+							currentQuizQuestion,
+							currentQuiz,
+							stats,
+							showTimer: false,
+							quizResults
+						},
+						() => {
+							this.fetchQuestion();
+							reset_answers();
+							setTimeout(() => {
+								this.setState({
+									showTimer: true
+								});
+							}, 1000);
+						}
+					);
+				} else {
+					this.setState(
+						{
+							currentQuestion: currentQuestion + 1,
+							stats,
+							isOnReport: true,
+							quizResults
+						},
+						() => {
+							reset_answers();
+						}
+					);
 				}
-			);
-		} else {
-			this.setState(
-				{
-					currentQuestion: currentQuestion + 1,
-					stats,
-					isOnReport: true
-				},
-				() => {
-					reset_answers();
-				}
-			);
-		}
+			});
 	};
 
 	renderQuizStats = () => {
 		const { quizzes, theme } = this.props;
-		const { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		const { currentQuestion, currentQuiz, currentQuizQuestion, quizResults } = this.state;
 		const totalQuestion = this.getTotalQuestions();
 
 		const stats = [
 			[ 'Quiz', `${currentQuiz + 1} / ${quizzes.length}` ],
 			[ 'Name', quizzes[currentQuiz].name ],
 			[ `Question of Quiz`, currentQuizQuestion + 1 ],
-			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ]
+			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ],
+			[ 'Correct', `${quizResults.correct}` ],
+			[ 'Incorrect', `${quizResults.incorrect}` ]
 		];
 
 		return (
@@ -178,7 +196,6 @@ class Quiz extends Component {
 		const { currentQuestion, question } = this.state;
 		const totalQuestion = getTotalQuestions();
 		let questionManipRef = null;
-		console.log(currentQuestion < totalQuestion);
 		return currentQuestion < totalQuestion ? (
 			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
 				<Question question={question}>
@@ -192,29 +209,30 @@ class Quiz extends Component {
 						);
 					}}
 				</Question>
-				<Timer
-					timeout={this.state.question ? this.state.question.time_allocated : 0}
-					onTimerEnd={() => {
-						this.Button.click();
-					}}
-				>
-					{({ currentTime, timer, clearInterval }) => {
-						return (
-							<Fragment>
-								{timer}
-								<GenericButton
-									buttonRef={(ref) => (this.Button = ref)}
-									text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
-									onClick={(e) => {
-										clearInterval();
-										setQuestion(currentTime, questionManipRef);
-									}}
-									disabled={this.state.disabled}
-								/>
-							</Fragment>
-						);
-					}}
-				</Timer>
+				{this.state.showTimer && this.state.question ? (
+					<Timer
+						timeout={this.state.question.time_allocated}
+						onTimerEnd={() => {
+							if (this.Button) this.Button.click();
+						}}
+					>
+						{({ currentTime, timer, clearInterval }) => {
+							return (
+								<Fragment>
+									{timer}
+									<GenericButton
+										buttonRef={(ref) => (this.Button = ref)}
+										text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
+										onClick={(e) => {
+											clearInterval();
+											setQuestion(currentTime, questionManipRef);
+										}}
+									/>
+								</Fragment>
+							);
+						}}
+					</Timer>
+				) : null}
 			</div>
 		) : (
 			<Report stats={this.state.stats} />
