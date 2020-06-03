@@ -45,33 +45,31 @@ class Play extends Component {
 		const { quizzes, hasStarted } = this.state;
 
 		return (
-			<div className="play pages">
-				<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList(quizzes)}>
-					{({ list, checked }) => {
-						return (
-							<PlaySettings>
-								{({ formData, inputs }) => {
-									return !hasStarted ? (
-										<Fragment>
-											{list}
-											<PlayStats quizzes={quizzes} selectedQuizzes={checked.map((checked) => quizzes[checked])} />
-											<div className="play_button">
-												<GenericButton
-													text="Play"
-													onClick={(e) => (checked.length !== 0 ? this.setState({ hasStarted: true }) : void 0)}
-												/>
-											</div>
-											{inputs}
-										</Fragment>
-									) : (
-										<Quiz settings={formData.values} quizzes={checked.map((index) => quizzes[index])} />
-									);
-								}}
-							</PlaySettings>
-						);
-					}}
-				</CustomList>
-			</div>
+			<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList(quizzes)}>
+				{({ list, checked }) => {
+					return (
+						<PlaySettings>
+							{({ formData, inputs }) => {
+								return !hasStarted ? (
+									<div className="play pages">
+										{list}
+										<PlayStats quizzes={quizzes} selectedQuizzes={checked.map((checked) => quizzes[checked])} />
+										<div className="play_button">
+											<GenericButton
+												text="Play"
+												onClick={(e) => (checked.length !== 0 ? this.setState({ hasStarted: true }) : void 0)}
+											/>
+										</div>
+										{inputs}
+									</div>
+								) : (
+									<Quiz settings={formData.values} quizzes={checked.map((index) => quizzes[index])} />
+								);
+							}}
+						</PlaySettings>
+					);
+				}}
+			</CustomList>
 		);
 	}
 }

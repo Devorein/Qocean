@@ -128,7 +128,6 @@ class Quiz extends Component {
 				() => {
 					this.fetchQuestion();
 					reset_answers();
-					console.log(this.props.settings);
 					setTimeout(() => {
 						this.setState({
 							disabled: false
@@ -179,8 +178,9 @@ class Quiz extends Component {
 		const { currentQuestion, question } = this.state;
 		const totalQuestion = getTotalQuestions();
 		let questionManipRef = null;
+		console.log(currentQuestion < totalQuestion);
 		return currentQuestion < totalQuestion ? (
-			<Fragment>
+			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
 				<Question question={question}>
 					{({ question, questionManip }) => {
 						questionManipRef = questionManip;
@@ -200,7 +200,7 @@ class Quiz extends Component {
 				>
 					{({ currentTime, timer, clearInterval }) => {
 						return (
-							<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
+							<Fragment>
 								{timer}
 								<GenericButton
 									buttonRef={(ref) => (this.Button = ref)}
@@ -211,11 +211,11 @@ class Quiz extends Component {
 									}}
 									disabled={this.state.disabled}
 								/>
-							</div>
+							</Fragment>
 						);
 					}}
 				</Timer>
-			</Fragment>
+			</div>
 		) : (
 			<Report stats={this.state.stats} />
 		);
