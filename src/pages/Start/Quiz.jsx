@@ -247,7 +247,7 @@ class Quiz extends Component {
 				) : null}
 			</div>
 		) : (
-			<Report stats={this.state.stats} />
+			<Report stats={this.state.stats} settings={this.props.settings} />
 		);
 	}
 }

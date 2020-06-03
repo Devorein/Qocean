@@ -23,6 +23,7 @@ const auth = require('./routes/auth');
 const user = require('./routes/user');
 const folder = require('./routes/folders');
 const environment = require('./routes/environment');
+const report = require('./routes/report');
 
 connectDB();
 
@@ -58,6 +59,7 @@ app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', user);
 app.use('/api/v1/folders', folder);
 app.use('/api/v1/environments', environment);
+app.use('/api/v1/report', report);
 app.use(cookieParser);
 app.use(errorHandler);
 

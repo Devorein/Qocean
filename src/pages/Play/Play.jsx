@@ -1,9 +1,8 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import CustomList from '../../components/List/List';
 import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
-import DeleteIcon from '@material-ui/icons/Delete';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../Start/Quiz';
 

@@ -29,7 +29,7 @@ const ReportSchema = new mongoose.Schema({
 		{
 			question: {
 				type: mongoose.Schema.ObjectId,
-				ref: 'Quiz'
+				ref: 'Question'
 			},
 			user_answers: [ String ],
 			result: { type: String, required: true }
