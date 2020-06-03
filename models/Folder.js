@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
-const Quiz = require('./Quiz');
 
 const FolderSchema = extendSchema(ResourceSchema, {
 	name: {

@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const Environment = require('../models/Environment');
 const Inbox = require('../models/Inbox');
+const Watchlist = require('../models/Watchlist');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendEmail = require('../utils/sendEmail');
@@ -14,18 +15,22 @@ exports.register = asyncHandler(async (req, res, next) => {
 	const { name, email, password, version, username, image } = req.body;
 	const env_id = new ObjectID();
 	const inbox_id = new ObjectID();
+	const watchlist_id = new ObjectID();
 	const data = {
 		name,
 		email,
 		password,
 		version,
 		username,
-		current_environment: env_id.toString()
+		current_environment: env_id.toString(),
+		inbox: inbox_id.toString(),
+		watchlist: watchlist_id.toString()
 	};
 	if (image) data.image = image;
 	const user = await User.create(data);
 	await Environment.create({ user: user._id, _id: env_id, name: 'Default Environment' });
 	await Inbox.create({ user: user._id, _id: inbox_id });
+	await Watchlist.create({ user: user._id, _id: watchlist_id });
 	sendTokenResponse(user, 200, res);
 });
 

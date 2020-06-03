@@ -49,23 +49,6 @@ class Watchlist extends Component {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
-
-		// axios
-		// 	.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}`, { ...headers })
-		// 	.then(({ data: { data: totalCount } }) => {
-		// 		axios
-		// 			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}${queryString}`, { ...header })
-		// 			.then(({ data: { data } }) => {
-		// 				this.setState({
-		// 					data,
-		// 					totalCount,
-		// 					...newState
-		// 				});
-		// 			});
-		// 	})
-		// 	.catch((err) => {
-		// 		console.log(err);
-		// 	});
 	};
 
 	switchPage = (page) => {

@@ -165,7 +165,7 @@ class Explore extends Component {
 			.put(
 				`http://localhost:5001/api/v1/${type}/_/watch${type.charAt(0).toUpperCase() + type.substr(1)}`,
 				{
-					[type]: _id.length === 1 ? [ _id ] : _id
+					[type]: _id
 				},
 				{
 					headers: {

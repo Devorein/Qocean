@@ -1,11 +1,10 @@
 const Quiz = require('../models/Quiz');
-const Folder = require('../models/Folder');
-const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const fs = require('fs');
 const path = require('path');
 const updateResource = require('../utils/updateResource');
+const watchAction = require('../utils/watchAction');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -150,50 +149,6 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 });
 
 exports.watchQuizzes = asyncHandler(async (req, res, next) => {
-	const { quizzes, op } = req.body;
-	const user = await User.findById(req.user._id);
-	let manipulated = 0;
-
-	function detectWatchStatus(quiz) {
-		if (user.watched_quizzes.indexOf(quiz._id.toString()) !== -1 && quiz.watchers.indexOf(req.user._id) !== -1)
-			return 'remove';
-		else if (
-			user.watched_quizzes.indexOf(quiz._id.toString()) === -1 &&
-			quiz.watchers.indexOf(req.user._id.toString()) === -1 &&
-			!req.user.quizzes.includes(quiz._id.toString())
-		)
-			return 'add';
-	}
-
-	function removeFromWatched(quiz) {
-		if (detectWatchStatus(quiz) === 'remove') {
-			quiz.watchers = quiz.watchers.filter((watcher) => watcher === req.user._id.toString());
-			user.watched_quizzes = user.watched_quizzes.filter(
-				(watched_quiz) => watched_quiz.toString() !== quiz._id.toString()
-			);
-			manipulated++;
-		}
-	}
-
-	function addToWatched(quiz) {
-		if (detectWatchStatus(quiz) === 'add') {
-			quiz.watchers.push(user._id.toString());
-			user.watched_quizzes.push(quiz._id.toString());
-			manipulated++;
-		}
-	}
-
-	for (let i = 0; i < quizzes.length; i++) {
-		const quizId = quizzes[i];
-		const quiz = await Quiz.findById(quizId);
-		if (op === 0) removeFromWatched(quiz);
-		else if (op === 1) addToWatched(quiz);
-		else {
-			if (detectWatchStatus(quiz) === 'remove') removeFromWatched(quiz);
-			else if (detectWatchStatus(quiz) === 'add') addToWatched(quiz);
-		}
-		await quiz.save();
-	}
-	await user.save();
+	const manipulated = await watchAction('quizzes', req.body, req.user);
 	res.status(200).json({ success: true, data: manipulated });
 });

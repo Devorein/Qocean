@@ -93,18 +93,10 @@ const UserSchema = new mongoose.Schema({
 			ref: 'Report'
 		}
 	],
-	watched_folders: [
-		{
-			type: mongoose.Schema.ObjectId,
-			ref: 'Folder'
-		}
-	],
-	watched_quizzes: [
-		{
-			type: mongoose.Schema.ObjectId,
-			ref: 'Quiz'
-		}
-	]
+	watchlist: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Watchlist'
+	}
 });
 
 UserSchema.methods.getSignedJwtToken = function() {
