@@ -39,6 +39,29 @@ class Play extends Component {
 			};
 		});
 	};
+	applySettingsFilter = (quizzes, settings) => {
+		const disabled = {
+			type: [],
+			difficulty: []
+		};
+		[ 'MCQ', 'TF', 'MS', 'FC', 'FIB', 'Snippet' ].forEach(
+			(type) => (settings[type] ? disabled.type.push(type) : void 0)
+		);
+		[ 'Beginner', 'Intermediate', 'Advanced' ].forEach(
+			(type) => (settings[type] ? disabled.difficulty.push(type) : void 0)
+		);
+
+		quizzes = quizzes.map((quiz) => {
+			quiz.questions = quiz.questions.filter((question) => {
+				let shouldReturn = true;
+				shouldReturn = shouldReturn && !disabled.type.includes(question.type);
+				shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
+				return shouldReturn;
+			});
+			return quiz;
+		});
+		return quizzes;
+	};
 
 	render() {
 		const { quizzes, hasStarted } = this.state;
@@ -49,10 +72,14 @@ class Play extends Component {
 					return (
 						<PlaySettings>
 							{({ formData, inputs }) => {
+								const filteredQuizzes = this.applySettingsFilter(
+									checked.map((index) => quizzes[index]),
+									formData.values
+								);
 								return !hasStarted ? (
 									<div className="play pages">
 										{list}
-										<PlayStats quizzes={quizzes} selectedQuizzes={checked.map((checked) => quizzes[checked])} />
+										<PlayStats quizzes={quizzes} selectedQuizzes={filteredQuizzes} />
 										<div className="play_button">
 											<GenericButton
 												text="Play"
@@ -62,7 +89,7 @@ class Play extends Component {
 										{inputs}
 									</div>
 								) : (
-									<Quiz settings={formData.values} quizzes={checked.map((index) => quizzes[index])} />
+									<Quiz settings={formData.values} quizzes={filteredQuizzes} />
 								);
 							}}
 						</PlaySettings>
