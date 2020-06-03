@@ -5,6 +5,7 @@ import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../Start/Quiz';
+import arrayShuffler from '../../Utils/arrayShuffler';
 
 import './Play.scss';
 
@@ -39,6 +40,7 @@ class Play extends Component {
 			};
 		});
 	};
+
 	applySettingsFilter = (quizzes, settings) => {
 		const disabled = {
 			type: [],
@@ -56,10 +58,17 @@ class Play extends Component {
 				let shouldReturn = true;
 				shouldReturn = shouldReturn && !disabled.type.includes(question.type);
 				shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
+				shouldReturn =
+					shouldReturn &&
+					question.time_allocated <= settings.slider[1] &&
+					question.time_allocated >= settings.slider[0];
 				return shouldReturn;
 			});
 			return quiz;
 		});
+		if (settings.randomized_quiz) quizzes = arrayShuffler(quizzes);
+		if (settings.randomized_question)
+			quizzes = quizzes.map((quiz) => ({ ...quiz, questions: arrayShuffler(quiz.questions) }));
 		return quizzes;
 	};
 
@@ -71,11 +80,11 @@ class Play extends Component {
 				{({ list, checked }) => {
 					return (
 						<PlaySettings>
-							{({ formData, inputs }) => {
-								const filteredQuizzes = this.applySettingsFilter(
-									checked.map((index) => quizzes[index]),
-									formData.values
-								);
+							{({ formData, inputs, slider }) => {
+								const filteredQuizzes = this.applySettingsFilter(checked.map((index) => quizzes[index]), {
+									...formData.values,
+									slider
+								});
 								return !hasStarted ? (
 									<div className="play pages">
 										{list}

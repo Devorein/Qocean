@@ -19,14 +19,9 @@ const inputs = [
 				}
 			]
 		},
-		defaultValue: 'end',
-		siblings: [
-			{
-				type: 'component',
-				component: <CustomSlider min={15} max={120} key="time_slider" slider={[ 15, 60 ]} />
-			}
-		]
+		defaultValue: 'end'
 	},
+	null,
 	{
 		name: 'disable_by_difficulty',
 		type: 'group',
@@ -76,7 +71,24 @@ const inputs = [
 ];
 
 class PlaySettings extends Component {
+	state = {
+		value: [ 15, 60 ]
+	};
 	render() {
+		inputs[2] = {
+			type: 'component',
+			component: (
+				<CustomSlider
+					min={15}
+					max={120}
+					key="time_slider"
+					value={this.state.value}
+					onChange={(e, value) => {
+						this.setState({ value });
+					}}
+				/>
+			)
+		};
 		return (
 			<InputForm formButtons={false} inputs={inputs} passFormAsProp>
 				{({ setValues, values, errors, isValid, inputs }) => {
@@ -87,7 +99,8 @@ class PlaySettings extends Component {
 							isValid
 						},
 						inputs: <div className="play_settings">{inputs}</div>,
-						setValues
+						setValues,
+						slider: this.state.value
 					});
 				}}
 			</InputForm>
