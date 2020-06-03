@@ -247,7 +247,11 @@ class Quiz extends Component {
 				) : null}
 			</div>
 		) : (
-			<Report stats={this.state.stats} settings={this.props.settings} />
+			<Report
+				quizzes={this.props.quizzes.map((quiz) => quiz._id)}
+				stats={this.state.stats}
+				settings={this.props.settings}
+			/>
 		);
 	}
 }

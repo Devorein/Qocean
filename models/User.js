@@ -87,6 +87,12 @@ const UserSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox'
 	},
+	reports: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Report'
+		}
+	],
 	watched_folders: [
 		{
 			type: mongoose.Schema.ObjectId,

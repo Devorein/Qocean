@@ -59,7 +59,7 @@ app.use('/api/v1/auth', auth);
 app.use('/api/v1/users', user);
 app.use('/api/v1/folders', folder);
 app.use('/api/v1/environments', environment);
-app.use('/api/v1/report', report);
+app.use('/api/v1/reports', report);
 app.use(cookieParser);
 app.use(errorHandler);
 

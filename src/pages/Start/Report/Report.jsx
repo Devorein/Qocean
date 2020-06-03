@@ -37,6 +37,10 @@ class Report extends Component {
 				}
 			)
 			.then(({ data: { data: validations } }) => {
+				console.log(this.props.stats, questions, validations);
+				const incorrect = validations.incorrect.length;
+				const correct = validations.correct.length;
+				const total = incorrect + correct;
 				this.setState({
 					validations
 				});
@@ -56,21 +60,23 @@ class Report extends Component {
 	};
 
 	render() {
-		const { theme } = this.props;
+		const { theme, settings, quizzes } = this.props;
 		const stats = this.transformStats();
-		const { validations } = this.state;
-		return (
+		const { validations, filters } = this.state;
+		const props = {
+			stats,
+			theme,
+			validations,
+			filters,
+			settings,
+			quizzes
+		};
+		return validations ? (
 			<div className="report pages">
-				<ReportHeader
-					stats={stats}
-					theme={theme}
-					validations={validations}
-					setFilters={this.setFilters}
-					filters={this.state.filters}
-				/>
-				<ReportBody stats={stats} theme={theme} filters={this.state.filters} validations={validations} />
+				<ReportHeader {...props} setFilters={this.setFilters} />
+				<ReportBody {...props} />
 			</div>
-		);
+		) : null;
 	}
 }
 

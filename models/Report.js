@@ -10,8 +10,8 @@ const ReportSchema = new mongoose.Schema({
 		ref: 'User',
 		required: true
 	},
-	avg_points: { type: Number, required: true },
-	avg_timetaken: { type: Number, required: true },
+	average_points: { type: Number, required: true },
+	average_time: { type: Number, required: true },
 	correct: { type: Number, required: true },
 	incorrect: { type: Number, required: true },
 	total: { type: Number, required: true },
@@ -32,9 +32,18 @@ const ReportSchema = new mongoose.Schema({
 				ref: 'Question'
 			},
 			user_answers: [ String ],
-			result: { type: String, required: true }
+			result: { type: Boolean, required: true },
+			time_taken: Number
 		}
-	]
+	],
+	disabled: {
+		type: {
+			type: [ String ]
+		},
+		difficulty: {
+			type: [ String ]
+		}
+	}
 });
 
 module.exports = mongoose.model('Report', ReportSchema);
