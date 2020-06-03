@@ -24,6 +24,7 @@ const user = require('./routes/user');
 const folder = require('./routes/folders');
 const environment = require('./routes/environment');
 const report = require('./routes/report');
+const watchlist = require('./routes/watchlist');
 
 connectDB();
 
@@ -60,6 +61,7 @@ app.use('/api/v1/users', user);
 app.use('/api/v1/folders', folder);
 app.use('/api/v1/environments', environment);
 app.use('/api/v1/reports', report);
+app.use('/api/v1/watchlist', watchlist);
 app.use(cookieParser);
 app.use(errorHandler);
 

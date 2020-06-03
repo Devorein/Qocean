@@ -22,7 +22,6 @@ import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
 import Play from './pages/Play/Play';
 import Report from './pages/Report/Report';
-import Watchlist from './pages/Watchlist/Watchlist';
 import Inbox from './pages/Inbox/Inbox';
 import Upgrade from './pages/Upgrade/Upgrade';
 import Unauthorized from './pages/401/Unauthorized';
@@ -252,13 +251,6 @@ class App extends Component {
 								exact
 								render={() => {
 									return session.data ? <Inbox user={session.data.data} /> : <Redirect to="/401" />;
-								}}
-							/>
-							<Route
-								path="/watchlist/:type"
-								exact
-								render={() => {
-									return session.data ? <Watchlist user={session.data.data} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route

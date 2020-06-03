@@ -35,7 +35,12 @@ function CustomTabs(props) {
 			classes={{ root: tabs }}
 		>
 			{headers.map(({ name, icon }) => (
-				<Tab classes={{ root: tab }} key={name} label={name} icon={addIcon ? getIcons(name) : icon} />
+				<Tab
+					classes={{ root: tab }}
+					key={name}
+					label={name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}
+					icon={addIcon ? getIcons(name.includes('_') ? name.split('_')[1] : name) : icon}
+				/>
 			))}
 		</Tabs>
 	);

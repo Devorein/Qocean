@@ -23,7 +23,9 @@ class Explore extends Component {
 
 	state = {
 		data: [],
-		type: this.props.user ? this.props.user.current_environment.default_explore_landing.toLowerCase() : 'user',
+		type: this.props.user
+			? this.props.user.current_environment.default_explore_landing.toLowerCase()
+			: this.props.match.params.type,
 		rowsPerPage: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15,
 		totaCount: 0,
 		page: 0,
@@ -81,7 +83,6 @@ class Explore extends Component {
 
 	refetchData = (type, queryParams, newState = {}) => {
 		type = type ? type : this.state.type;
-
 		queryParams = queryParams
 			? queryParams
 			: {
@@ -103,25 +104,43 @@ class Explore extends Component {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
-		const [ count, endpoint, header ] = this.props.user
-			? [ `countOthers`, '/others/', headers ]
-			: [ 'countAll', '/', {} ];
-		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}`, { ...header })
-			.then(({ data: { data: totalCount } }) => {
-				axios
-					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}${queryString}`, { ...header })
-					.then(({ data: { data } }) => {
+		if (!type.startsWith('w_')) {
+			const [ count, endpoint, header ] = this.props.user
+				? [ `countOthers`, '/others/', headers ]
+				: [ 'countAll', '/', {} ];
+			axios
+				.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}`, { ...header })
+				.then(({ data: { data: totalCount } }) => {
+					axios
+						.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}${queryString}`, { ...header })
+						.then(({ data: { data } }) => {
+							this.setState({
+								data,
+								totalCount,
+								...newState
+							});
+						});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else {
+			type = pluralize(type.split('_')[1], 2);
+			axios
+				.get(`http://localhost:5001/api/v1/watchlist/${type}/count`, { ...headers })
+				.then(({ data: { data: totalCount } }) => {
+					axios.get(`http://localhost:5001/api/v1/watchlist/${type}`, { ...headers }).then(({ data: { data } }) => {
 						this.setState({
 							data,
 							totalCount,
 							...newState
 						});
 					});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
 	};
 
 	switchPage = (page) => {
@@ -239,15 +258,14 @@ class Explore extends Component {
 					</div>
 				);
 			},
-			filterType: 'checkbox',
 			count: totalCount,
 			page,
 			rowsPerPage,
 			responsive: 'scrollMaxHeight',
 			rowsPerPageOptions: [ 10, 15, 20, 30, 40, 50 ],
+			serverSide: true,
 			print: false,
 			download: false,
-			serverSide: true,
 			filter: false,
 			search: false,
 			onChangePage: (page) => {
@@ -297,9 +315,9 @@ class Explore extends Component {
 		};
 
 		if (type === 'user') return <ExploreUsers {...props} />;
-		else if (type === 'quiz') return <ExploreQuizzes {...props} />;
+		else if (type === 'quiz' || type === 'w_quiz') return <ExploreQuizzes {...props} />;
 		else if (type === 'question') return <ExploreQuestions {...props} />;
-		else if (type === 'folder') return <ExploreFolders {...props} />;
+		else if (type === 'folder' || type === 'w_folder') return <ExploreFolders {...props} />;
 		else if (type === 'environment') return <ExploreEnvironments {...props} />;
 	};
 
@@ -309,7 +327,9 @@ class Explore extends Component {
 		const { match: { params: { type } } } = this.props;
 		const { submitForm } = this.context;
 
-		const headers = [ 'user', 'quiz', 'question', 'folder', 'environment' ].map((header) => {
+		let headers = [ 'user', 'quiz', 'question', 'folder', 'environment' ];
+		if (this.props.user) headers.push('w_folder', 'w_quiz');
+		headers = headers.map((header) => {
 			return {
 				name: header,
 				link: `explore/${header}`
