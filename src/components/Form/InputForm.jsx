@@ -3,7 +3,6 @@ import { Formik } from 'formik';
 import Form from './Form';
 
 class InputForm extends Component {
-
 	render() {
 		const {
 			validationSchema,
@@ -83,13 +82,7 @@ class InputForm extends Component {
 									values: props.values,
 									errors: props.errors,
 									isValid: props.isValid,
-									inputs: passFormAsProp ? FORM : null,
-									setDisabled: (value) => {
-										if (value !== this.state.disabled)
-											this.setState({
-												disabled: value
-											});
-									}
+									inputs: passFormAsProp ? FORM : null
 								})
 							) : (
 								children

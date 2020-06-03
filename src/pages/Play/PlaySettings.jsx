@@ -19,14 +19,9 @@ const inputs = [
 				}
 			]
 		},
-		defaultValue: 'end',
-		siblings: [
-			{
-				type: 'component',
-				component: <CustomSlider min={15} max={120} key="time_slider" slider={[ 15, 60 ]} />
-			}
-		]
+		defaultValue: 'end'
 	},
+	null,
 	{
 		name: 'disable_by_difficulty',
 		type: 'group',
@@ -52,28 +47,63 @@ const inputs = [
 		})
 	},
 	{
-		type: 'checkbox',
-		name: 'randomized_quiz',
-		defaultValue: false
-	},
-	{
-		type: 'checkbox',
-		name: 'randomized_question',
-		defaultValue: false
-  },
-  {
-		type: 'checkbox',
-		name: 'randomized_options',
-		defaultValue: false
+		name: 'randomize',
+		type: 'group',
+		extra: { treeView: true },
+		children: [
+			{
+				type: 'checkbox',
+				name: 'randomized_quiz',
+				defaultValue: false
+			},
+			{
+				type: 'checkbox',
+				name: 'randomized_question',
+				defaultValue: false
+			},
+			{
+				type: 'checkbox',
+				name: 'randomized_options',
+				defaultValue: false
+			}
+		]
 	}
 ];
 
 class PlaySettings extends Component {
+	state = {
+		value: [ 15, 120 ]
+	};
 	render() {
+		inputs[2] = {
+			type: 'component',
+			component: (
+				<CustomSlider
+					min={15}
+					max={120}
+					key="time_slider"
+					value={this.state.value}
+					onChange={(e, value) => {
+						this.setState({ value });
+					}}
+				/>
+			)
+		};
 		return (
-			<div className="play_settings">
-				<InputForm formButtons={false} inputs={inputs} customHandler={this.props.customHandler} />
-			</div>
+			<InputForm formButtons={false} inputs={inputs} passFormAsProp>
+				{({ setValues, values, errors, isValid, inputs }) => {
+					return this.props.children({
+						formData: {
+							values,
+							errors,
+							isValid
+						},
+						inputs: <div className="play_settings">{inputs}</div>,
+						setValues,
+						slider: this.state.value
+					});
+				}}
+			</InputForm>
 		);
 	}
 }

@@ -72,6 +72,11 @@ const advancedResults = (model, populate, option = {}) =>
 							public: true
 						};
 				}
+				if (req.baseUrl.includes('watchlist'))
+					option.match = {
+						...option.match,
+						watchers: { $in: [ req.user._id ] }
+					};
 				reqQuery = { ...reqQuery, ...option.match };
 				query = model.find(reqQuery);
 				let fields = '';

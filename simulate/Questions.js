@@ -66,7 +66,8 @@ casual.define('question', function() {
 		options,
 		answers,
 		favourite: casual.boolean,
-		public: casual.boolean
+		public: casual.boolean,
+		format: [ 'md', 'regular' ][getRandomInt(0, 1)]
 	};
 });
 

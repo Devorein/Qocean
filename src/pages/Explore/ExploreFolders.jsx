@@ -51,12 +51,12 @@ class ExploreFolders extends Component {
 						{this.props.user ? item.watchers.includes(this.props.user._id) ? (
 							<VisibilityIcon
 								style={{ fill: success.main }}
-								onClick={this.props.watchToggle.bind(null, 'folders', item._id)}
+								onClick={this.props.watchToggle.bind(null, 'folders', [ item._id ])}
 							/>
 						) : (
 							<VisibilityOffIcon
 								style={{ fill: error.main }}
-								onClick={this.props.watchToggle.bind(null, 'folders', item._id)}
+								onClick={this.props.watchToggle.bind(null, 'folders', [ item._id ])}
 							/>
 						) : null}
 					</div>

@@ -15,6 +15,11 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ],
 		required: [ true, 'Please provide the question type' ]
 	},
+	format: {
+		type: String,
+		enum: [ 'md', 'regular' ],
+		default: 'regular'
+	},
 	weight: {
 		type: Number,
 		default: 1,

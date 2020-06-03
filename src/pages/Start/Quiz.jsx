@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Timer from '../../components/Timer/Timer';
 import Report from './Report/Report';
+import arrayShuffler from '../../Utils/arrayShuffler';
 
 const flexCenter = `
   display: flex;
@@ -43,7 +44,11 @@ class Quiz extends Component {
 		question: null,
 		stats: [],
 		isOnReport: false,
-		disabled: false
+		showTimer: true,
+		quizResults: {
+			correct: 0,
+			incorrect: 0
+		}
 	};
 
 	componentDidMount() {
@@ -92,8 +97,8 @@ class Quiz extends Component {
 
 	setQuestion = (timeout, { user_answers, reset_answers }) => {
 		const totalQuestion = this.getTotalQuestions();
-		const { quizzes } = this.props;
-		let { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		const { quizzes, settings } = this.props;
+		let { currentQuestion, currentQuiz, currentQuizQuestion, quizResults } = this.state;
 		if (currentQuizQuestion < quizzes[currentQuiz].questions.length - 1) currentQuizQuestion++;
 		else {
 			currentQuiz++;
@@ -116,42 +121,60 @@ class Quiz extends Component {
 			add_to_score
 		});
 
-		if (currentQuestion < totalQuestion - 1) {
-			this.setState(
-				{
-					currentQuestion: currentQuestion + 1,
-					currentQuizQuestion,
-					currentQuiz,
-					stats,
-					disabled: true
-				},
-				() => {
-					this.fetchQuestion();
-					reset_answers();
-					setTimeout(() => {
-						this.setState({
-							disabled: false
-						});
-					}, 2500);
-				}
-			);
-		} else {
-			this.setState(
-				{
-					currentQuestion: currentQuestion + 1,
-					stats,
-					isOnReport: true
-				},
-				() => {
-					reset_answers();
-				}
-			);
-		}
+		const getNextQuestion = () => {
+			if (currentQuestion < totalQuestion - 1) {
+				this.setState(
+					{
+						currentQuestion: currentQuestion + 1,
+						currentQuizQuestion,
+						currentQuiz,
+						stats,
+						showTimer: false,
+						quizResults
+					},
+					() => {
+						this.fetchQuestion();
+						reset_answers();
+						setTimeout(() => {
+							this.setState({
+								showTimer: true
+							});
+						}, 1000);
+					}
+				);
+			} else {
+				this.setState(
+					{
+						currentQuestion: currentQuestion + 1,
+						stats,
+						isOnReport: true,
+						quizResults
+					},
+					() => {
+						reset_answers();
+					}
+				);
+			}
+		};
+
+		if (settings.validation === 'instant') {
+			axios
+				.put(`http://localhost:5001/api/v1/questions/_/validation`, {
+					id: _id,
+					answers: user_answers
+				})
+				.then(({ data }) => {
+					const { isCorrect } = data;
+					if (isCorrect) quizResults.correct++;
+					else quizResults.incorrect++;
+					getNextQuestion();
+				});
+		} else getNextQuestion();
 	};
 
 	renderQuizStats = () => {
-		const { quizzes, theme } = this.props;
-		const { currentQuestion, currentQuiz, currentQuizQuestion } = this.state;
+		const { quizzes, theme, settings } = this.props;
+		const { currentQuestion, currentQuiz, currentQuizQuestion, quizResults } = this.state;
 		const totalQuestion = this.getTotalQuestions();
 
 		const stats = [
@@ -161,62 +184,91 @@ class Quiz extends Component {
 			[ 'Question', `${currentQuestion + 1} of ${totalQuestion}` ]
 		];
 
+		if (settings.validation === 'instant')
+			stats.push(
+				[ 'Correct', `${quizResults.correct}`, { color: theme.palette.success.main } ],
+				[ 'Incorrect', `${quizResults.incorrect}`, { color: theme.palette.error.main } ]
+			);
+
 		return (
 			<QuizStats theme={theme}>
-				{stats.map(([ key, value ]) => (
+				{stats.map(([ key, value, style ]) => (
 					<QuizStat theme={theme} key={key}>
 						<span className="question_stat_key">{key}</span> :
-						<span className="question_stat_value">{value.toString()}</span>
+						<span className="question_stat_value" style={style ? style : {}}>
+							{value.toString()}
+						</span>
 					</QuizStat>
 				))}
 			</QuizStats>
 		);
 	};
-
+	transformOption = (question) => {
+		if (this.props.settings.randomized_options && question.type === 'MCQ') {
+			if (!question.shuffled) {
+				question.options = arrayShuffler(question.options.map((option, index) => ({ option, index })));
+				question.shuffled = true;
+			}
+		} else if (!this.props.settings.randomized_options && question.type === 'MCQ') question.shuffled = false;
+		else if (this.props.settings.randomized_options && question.type === 'MS') {
+			if (!question.shuffled) {
+				question.options = arrayShuffler(question.options.map((option, index) => ({ option, index })));
+				question.shuffled = true;
+			}
+		} else if (!this.props.settings.randomized_options && question.type === 'MS') question.shuffled = false;
+	};
 	render() {
-		const { getTotalQuestions, setQuestion, renderQuizStats } = this;
+		const { getTotalQuestions, setQuestion, renderQuizStats, transformOption } = this;
 		const { currentQuestion, question } = this.state;
+		if (question) transformOption(question);
 		const totalQuestion = getTotalQuestions();
 		let questionManipRef = null;
 		return currentQuestion < totalQuestion ? (
-			<Fragment>
-				<Question question={question}>
-					{({ question, questionManip }) => {
-						questionManipRef = questionManip;
-						return (
-							<Fragment>
-								{renderQuizStats()}
-								{question}
-							</Fragment>
-						);
-					}}
-				</Question>
-				<Timer
-					timeout={this.state.question ? this.state.question.time_allocated : 0}
-					onTimerEnd={() => {
-						this.Button.click();
-					}}
-				>
-					{({ currentTime, timer, clearInterval }) => {
-						return (
-							<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
-								{timer}
-								<GenericButton
-									buttonRef={(ref) => (this.Button = ref)}
-									text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
-									onClick={(e) => {
-										clearInterval();
-										setQuestion(currentTime, questionManipRef);
-									}}
-									disabled={this.state.disabled}
-								/>
-							</div>
-						);
-					}}
-				</Timer>
-			</Fragment>
+			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
+				{question ? (
+					<Question question={question}>
+						{({ question, questionManip }) => {
+							questionManipRef = questionManip;
+							return (
+								<Fragment>
+									{renderQuizStats()}
+									{question}
+								</Fragment>
+							);
+						}}
+					</Question>
+				) : null}
+				{this.state.showTimer && this.state.question ? (
+					<Timer
+						timeout={this.state.question.time_allocated}
+						onTimerEnd={() => {
+							if (this.Button) this.Button.click();
+						}}
+					>
+						{({ currentTime, timer, clearInterval }) => {
+							return (
+								<Fragment>
+									{timer}
+									<GenericButton
+										buttonRef={(ref) => (this.Button = ref)}
+										text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
+										onClick={(e) => {
+											clearInterval();
+											setQuestion(currentTime, questionManipRef);
+										}}
+									/>
+								</Fragment>
+							);
+						}}
+					</Timer>
+				) : null}
+			</div>
 		) : (
-			<Report stats={this.state.stats} />
+			<Report
+				quizzes={this.props.quizzes.map((quiz) => quiz._id)}
+				stats={this.state.stats}
+				settings={this.props.settings}
+			/>
 		);
 	}
 }

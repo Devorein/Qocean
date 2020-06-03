@@ -81,11 +81,13 @@ class Question extends Component {
 	};
 
 	componentWillUnmount = () => {
-		this.setState({
-			user_answers: [],
-			show_answer: false
-		});
+		this._ismounted = false;
 	};
+
+	componentDidMount() {
+		this._ismounted = true;
+	}
+
 	getFlashCardAnswer = () => {
 		axios
 			.get(`http://localhost:5001/api/v1/questions/answers/${this.props.question._id}`, {
@@ -94,33 +96,38 @@ class Question extends Component {
 				}
 			})
 			.then(({ data: { data: [ answers ] } }) => {
-				this.setState({
-					show_answer: true,
-					answers
-				});
+				if (this._ismounted)
+					this.setState({
+						show_answer: true,
+						answers
+					});
 			});
 	};
 
 	renderQuestionBody = () => {
-		const { question: { type, options, name }, theme } = this.props;
+		const { question: { type, options, name, shuffled }, theme } = this.props;
 		if (type === 'MS')
 			return (
 				<QuestionOptions>
-					{options.map((option, index) => (
-						<QuestionOption theme={theme} key={option}>
-							<Checkbox
-								checked={this.state.user_answers.includes(index)}
-								onChange={(e) => {
-									let { user_answers } = this.state;
-									if (e.target.checked) user_answers.push(index);
-									else user_answers = user_answers.filter((answer) => answer !== index);
-									this.setState({ user_answers });
-								}}
-								color="primary"
-							/>
-							{option}
-						</QuestionOption>
-					))}
+					{options.map((option, index) => {
+						index = shuffled ? option.index : index;
+						return (
+							<Fragment key={shuffled ? option.option : `${option}${index}`}>
+								<QuestionOption
+									theme={theme}
+									onClick={(e) => {
+										let { user_answers } = this.state;
+										if (!user_answers.includes(index)) user_answers.push(index);
+										else user_answers = user_answers.filter((answer) => answer !== index);
+										if (this._ismounted) this.setState({ user_answers });
+									}}
+								>
+									<Checkbox checked={this.state.user_answers.includes(index)} color="primary" />
+									{shuffled ? option.option : option}
+								</QuestionOption>
+							</Fragment>
+						);
+					})}
 				</QuestionOptions>
 			);
 		else if (type === 'FIB')
@@ -132,9 +139,10 @@ class Question extends Component {
 						onChange={(e) => {
 							const { user_answers } = this.state;
 							user_answers[index] = e.target.value;
-							this.setState({
-								user_answers
-							});
+							if (this._ismounted)
+								this.setState({
+									user_answers
+								});
 						}}
 					/>
 				);
@@ -143,8 +151,18 @@ class Question extends Component {
 			let radioItems = null;
 			if (type === 'TF')
 				radioItems = [ 'False', 'True' ].map((option, index) => ({ label: option, value: index.toString() }));
-			else if (type === 'MCQ')
-				radioItems = options.map((option, index) => ({ label: option, value: index.toString() }));
+			else if (type === 'MCQ') {
+				if (shuffled)
+					radioItems = options.map(({ option, index }) => ({
+						label: option,
+						value: index.toString()
+					}));
+				else
+					radioItems = options.map((option, index) => ({
+						label: option,
+						value: index.toString()
+					}));
+			}
 			return (
 				<RadioInput
 					OptionsContainer={QuestionOptions}
@@ -153,9 +171,10 @@ class Question extends Component {
 					optionProps={{ theme }}
 					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
 					onChange={(e) => {
-						this.setState({
-							user_answers: [ e.target.value ]
-						});
+						if (this._ismounted)
+							this.setState({
+								user_answers: [ e.target.value ]
+							});
 					}}
 				/>
 			);
@@ -164,9 +183,10 @@ class Question extends Component {
 				<TextField
 					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
 					onChange={(e) => {
-						this.setState({
-							user_answers: [ e.target.value ]
-						});
+						if (this._ismounted)
+							this.setState({
+								user_answers: [ e.target.value ]
+							});
 					}}
 				/>
 			);
@@ -190,7 +210,7 @@ class Question extends Component {
 											let { user_answers } = this.state;
 											if (e.target.checked) user_answers.push(index);
 											else user_answers = user_answers.filter((answer) => answer !== index);
-											this.setState({ user_answers });
+											if (this._ismounted) this.setState({ user_answers });
 										}}
 										color="primary"
 									/>
@@ -217,10 +237,11 @@ class Question extends Component {
 	};
 
 	resetAnswers = () => {
-		this.setState({
-			user_answers: [],
-			show_answer: false
-		});
+		if (this._ismounted)
+			this.setState({
+				user_answers: [],
+				show_answer: false
+			});
 	};
 
 	decideLabel = (label) => {
@@ -228,7 +249,7 @@ class Question extends Component {
 	};
 
 	render() {
-		const { question, theme } = this.props;
+		let { question, theme } = this.props;
 		return this.props.children({
 			question: question ? (
 				<QuizContent theme={theme}>

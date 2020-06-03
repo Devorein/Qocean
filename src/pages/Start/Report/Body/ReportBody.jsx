@@ -54,7 +54,7 @@ class ReportBody extends Component {
 				return (
 					<div className="report_body_item" key={stat._id}>
 						<ReportBodyItemHeader stat={stat} answer={answers[index]} validations={validations} />
-						<ReportBodyItemBody stat={stat} answer={answers[index]} />
+						<ReportBodyItemBody stat={stat} answer={answers[index]} random={this.props.settings.randomized_options} />
 					</div>
 				);
 			});

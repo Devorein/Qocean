@@ -83,18 +83,20 @@ const UserSchema = new mongoose.Schema({
 	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
 	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
 	image: { type: String, default: 'none.png' },
-	watched_folders: [
+	inbox: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Inbox'
+	},
+	reports: [
 		{
 			type: mongoose.Schema.ObjectId,
-			ref: 'Folder'
+			ref: 'Report'
 		}
 	],
-	watched_quizzes: [
-		{
-			type: mongoose.Schema.ObjectId,
-			ref: 'Quiz'
-		}
-	]
+	watchlist: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Watchlist'
+	}
 });
 
 UserSchema.methods.getSignedJwtToken = function() {

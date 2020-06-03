@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-// import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import getIcons from '../../Utils/getIcons';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -32,16 +30,6 @@ const MiniGrid = withStyles((theme) => ({
 	}
 }))(Container);
 
-/* const MiniGridTitle2 = withStyles((theme) => ({
-	root: {
-		gridArea: '2/1/3/2',
-		textAlign: 'center',
-		display: 'flex',
-		justifyContent: 'flex-start',
-		alignItems: 'center'
-	}
-}))(Typography); */
-
 const EnhancedListItemText = withStyles((theme) => ({
 	root: {
 		whiteSpace: 'nowrap',
@@ -53,7 +41,8 @@ class CustomList extends React.Component {
 	state = {
 		checked: [],
 		manipulated: false,
-		filteredItems: []
+		filteredItems: [],
+		selectedIndex: 0
 	};
 
 	handleToggle = (index, e) => {
@@ -156,12 +145,15 @@ class CustomList extends React.Component {
 		});
 	};
 
-	render() {
+	renderList = () => {
 		const { handleToggle, handleToggleAll, filterList, deleteItems, refetchData } = this;
+
+		const { classes, className, title, containsCheckbox = true, onClick, selectedIcons, listItems } = this.props;
 		const { manipulated, filteredItems, checked, lastClicked } = this.state;
-		const { listItems, title, containsCheckbox, onClick, selectedIcons, classes, className } = this.props;
-		const rootClass = clsx(className, classes.listContainer);
+
 		const items = manipulated ? filteredItems : listItems;
+		const rootClass = clsx(className, classes.listContainer);
+
 		return (
 			<Container className={rootClass}>
 				<MiniGrid>
@@ -171,7 +163,7 @@ class CustomList extends React.Component {
 					<TextField onChange={filterList} />
 					{
 						<IconContainer>
-							{checked.length >= 1 ? selectedIcons.map((icon) => icon) : null}
+							{checked.length >= 1 && selectedIcons ? selectedIcons.map((icon) => icon) : null}
 							<DeleteIcon onClick={deleteItems} />
 							<ReplayIcon onClick={refetchData} />
 							<ListItemIcon classes={{ root: classes.listItemIcon }} onClick={handleToggleAll}>
@@ -227,16 +219,23 @@ class CustomList extends React.Component {
 										);
 									}}
 								/>
-								{/* <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete">
-                  {getIcons(secondaryIcon)}
-                </IconButton>
-              </ListItemSecondaryAction> */}
 							</ListItem>
 						);
 					})}
 				</List>
 			</Container>
+		);
+	};
+
+	render() {
+		const { renderList } = this;
+		return (
+			<Fragment>
+				{this.props.children({
+					list: renderList(),
+					checked: this.state.checked
+				})}
+			</Fragment>
 		);
 	}
 }

@@ -12,24 +12,17 @@ function ValueLabelComponent(props) {
 }
 
 class CustomSlider extends Component {
-	state = {
-		slider: this.props.slider || [ 0, 100 ]
-	};
 	render() {
-		const { min = 0, max = 100, step = 1 } = this.props;
+		const { min = 0, max = 100, step = 1, onChange, value } = this.props;
 		return (
 			<Slider
 				key="time_slider"
-				value={this.state.slider}
+				value={value}
 				min={min}
 				max={max}
 				step={step}
 				ValueLabelComponent={ValueLabelComponent}
-				onChange={(e, value) => {
-					this.setState({
-						slider: value
-					});
-				}}
+				onChange={onChange}
 			/>
 		);
 	}

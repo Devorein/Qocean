@@ -28,25 +28,23 @@ class Timer extends Component {
 		});
 	};
 
-	UNSAFE_componentWillReceiveProps = (nextProps) => {
-		if (nextProps.timeout !== this.state.timeout) {
-			clearInterval(this.state.timer);
-			const timer = setInterval(() => {
-				if (this.state.timeout !== 0) {
-					this.setState({
-						timeout: this.state.timeout - 1
-					});
-				} else {
-					this.props.onTimerEnd();
-					clearInterval(timer);
-				}
-			}, 1000);
-			this.setState({
-				timeout: nextProps.timeout,
-				timer
-			});
-		}
-	};
+	componentDidMount() {
+		clearInterval(this.state.timer);
+		const timer = setInterval(() => {
+			if (this.state.timeout !== 0) {
+				this.setState({
+					timeout: this.state.timeout - 1
+				});
+			} else {
+				this.props.onTimerEnd();
+				clearInterval(timer);
+			}
+		}, 1000);
+		this.setState({
+			timeout: this.props.timeout,
+			timer
+		});
+	}
 
 	displayTime = (time) => {
 		const min = Math.floor(time / 60);
