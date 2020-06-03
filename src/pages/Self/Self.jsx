@@ -176,31 +176,54 @@ class Self extends Component {
 	};
 
 	transformData = (data) => {
-		const { type } = this.state;
-		return data.map((data) => {
-			const negate = [ 'user', '_id', '__v', 'id' ];
-			const temp = {};
-			if (type === 'quiz')
-				negate.push(
-					'average_quiz_time',
-					'average_difficulty',
-					'total_questions',
-					'total_folders',
-					'folders',
-					'rating',
-					'questions',
-					'watchers',
-					'ratings',
-					'raters'
-				);
-			else if (type === 'question') negate.push('quiz');
-			else if (type === 'folder') negate.push('quizzes', 'ratings', 'total_questions', 'total_quizzes');
+		let { type } = this.state;
+		type = type.toLowerCase();
 
-			const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
-			fields.forEach((field) => (temp[field] = data[field]));
-			temp.rtype = type.toLowerCase();
-			return temp;
-		});
+		if (type === 'question') {
+			return axios
+				.put(
+					'http://localhost:5001/api/v1/questions/_/answers',
+					{
+						questions: data.map(({ _id }) => _id)
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					}
+				)
+				.then(({ data: { data: answers } }) => {
+					const dataWithAnswers = data.map((data, index) => ({ ...data, answers: answers[index].answers }));
+					return transformData(dataWithAnswers);
+				});
+		} else return new Promise((resolve, reject) => resolve(transformData(data)));
+
+		function transformData(datas) {
+			return datas.map((data) => {
+				const negate = [ 'user', '_id', '__v', 'id' ];
+				const temp = {};
+				if (type === 'quiz')
+					negate.push(
+						'average_quiz_time',
+						'average_difficulty',
+						'total_questions',
+						'total_folders',
+						'folders',
+						'rating',
+						'questions',
+						'watchers',
+						'ratings',
+						'raters'
+					);
+				else if (type === 'question') negate.push('quiz');
+				else if (type === 'folder') negate.push('quizzes', 'ratings', 'total_questions', 'total_quizzes');
+
+				const fields = Object.keys(data).filter((key) => negate.indexOf(key) === -1);
+				fields.forEach((field) => (temp[field] = data[field]));
+				temp.rtype = type.toLowerCase();
+				return temp;
+			});
+		}
 	};
 
 	genericTransformData = (data, filterData) => {
@@ -221,7 +244,9 @@ class Self extends Component {
 						/>
 						<GetAppIcon
 							onClick={(e) => {
-								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(this.transformData([ item ])));
+								this.transformData([ item ]).then((data) => {
+									download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
+								});
 							}}
 						/>
 					</Fragment>
@@ -275,10 +300,9 @@ class Self extends Component {
 						/>
 						<GetAppIcon
 							onClick={(e) => {
-								download(
-									`${Date.now()}_${shortid.generate()}.json`,
-									JSON.stringify(this.transformData(this.state.data))
-								);
+								this.transformData(this.state.data).then((data) => {
+									download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
+								});
 							}}
 						/>
 					</div>
@@ -313,10 +337,9 @@ class Self extends Component {
 						/>
 						<GetAppIcon
 							onClick={(e) => {
-								download(
-									`${Date.now()}_${shortid.generate()}.json`,
-									JSON.stringify(this.transformData(selectedRows.data.map(({ index }) => this.state.data[index])))
-								);
+								this.transformData(selectedRows.data.map(({ index }) => this.state.data[index])).then((data) => {
+									download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
+								});
 							}}
 						/>
 					</div>
