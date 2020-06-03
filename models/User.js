@@ -83,6 +83,10 @@ const UserSchema = new mongoose.Schema({
 	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
 	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
 	image: { type: String, default: 'none.png' },
+	inbox: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Inbox'
+	},
 	watched_folders: [
 		{
 			type: mongoose.Schema.ObjectId,

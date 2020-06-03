@@ -80,7 +80,7 @@ class SignIn extends Component {
 
 	render() {
 		return (
-			<FileInput>
+			<FileInput src="">
 				{({ FileInput, getFileData }) => {
 					return (
 						<div className="signup pages">
