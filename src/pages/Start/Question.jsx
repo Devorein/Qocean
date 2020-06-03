@@ -105,25 +105,29 @@ class Question extends Component {
 	};
 
 	renderQuestionBody = () => {
-		const { question: { type, options, name }, theme } = this.props;
+		const { question: { type, options, name, shuffled }, theme } = this.props;
 		if (type === 'MS')
 			return (
 				<QuestionOptions>
-					{options.map((option, index) => (
-						<QuestionOption theme={theme} key={option}>
-							<Checkbox
-								checked={this.state.user_answers.includes(index)}
-								onChange={(e) => {
-									let { user_answers } = this.state;
-									if (e.target.checked) user_answers.push(index);
-									else user_answers = user_answers.filter((answer) => answer !== index);
-									if (this._ismounted) this.setState({ user_answers });
-								}}
-								color="primary"
-							/>
-							{option}
-						</QuestionOption>
-					))}
+					{options.map((option, index) => {
+						index = shuffled ? option.index : index;
+						return (
+							<Fragment key={shuffled ? option.option : `${option}${index}`}>
+								<QuestionOption
+									theme={theme}
+									onClick={(e) => {
+										let { user_answers } = this.state;
+										if (!user_answers.includes(index)) user_answers.push(index);
+										else user_answers = user_answers.filter((answer) => answer !== index);
+										if (this._ismounted) this.setState({ user_answers });
+									}}
+								>
+									<Checkbox checked={this.state.user_answers.includes(index)} color="primary" />
+									{shuffled ? option.option : option}
+								</QuestionOption>
+							</Fragment>
+						);
+					})}
 				</QuestionOptions>
 			);
 		else if (type === 'FIB')
@@ -147,8 +151,18 @@ class Question extends Component {
 			let radioItems = null;
 			if (type === 'TF')
 				radioItems = [ 'False', 'True' ].map((option, index) => ({ label: option, value: index.toString() }));
-			else if (type === 'MCQ')
-				radioItems = options.map((option, index) => ({ label: option, value: index.toString() }));
+			else if (type === 'MCQ') {
+				if (shuffled)
+					radioItems = options.map(({ option, index }) => ({
+						label: option,
+						value: index.toString()
+					}));
+				else
+					radioItems = options.map((option, index) => ({
+						label: option,
+						value: index.toString()
+					}));
+			}
 			return (
 				<RadioInput
 					OptionsContainer={QuestionOptions}
@@ -235,7 +249,7 @@ class Question extends Component {
 	};
 
 	render() {
-		const { question, theme } = this.props;
+		let { question, theme } = this.props;
 		return this.props.children({
 			question: question ? (
 				<QuizContent theme={theme}>

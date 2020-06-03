@@ -59,7 +59,7 @@ class ReportBodyItemBodyClass extends Component {
 				return (
 					<div {...props}>
 						<span className="color" />
-						{option}
+						{this.props.random && option.option ? option.option : option}
 					</div>
 				);
 			});

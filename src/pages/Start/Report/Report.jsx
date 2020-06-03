@@ -57,6 +57,7 @@ class Report extends Component {
 
 	render() {
 		const { theme, settings, quizzes } = this.props;
+
 		const stats = this.transformStats();
 		const { validations, filters } = this.state;
 		const props = {

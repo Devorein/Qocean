@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { withTheme } from '@material-ui/core';
 import Timer from '../../components/Timer/Timer';
 import Report from './Report/Report';
+import arrayShuffler from '../../Utils/arrayShuffler';
 
 const flexCenter = `
   display: flex;
@@ -202,25 +203,41 @@ class Quiz extends Component {
 			</QuizStats>
 		);
 	};
-
+	transformOption = (question) => {
+		if (this.props.settings.randomized_options && question.type === 'MCQ') {
+			if (!question.shuffled) {
+				question.options = arrayShuffler(question.options.map((option, index) => ({ option, index })));
+				question.shuffled = true;
+			}
+		} else if (!this.props.settings.randomized_options && question.type === 'MCQ') question.shuffled = false;
+		else if (this.props.settings.randomized_options && question.type === 'MS') {
+			if (!question.shuffled) {
+				question.options = arrayShuffler(question.options.map((option, index) => ({ option, index })));
+				question.shuffled = true;
+			}
+		} else if (!this.props.settings.randomized_options && question.type === 'MS') question.shuffled = false;
+	};
 	render() {
-		const { getTotalQuestions, setQuestion, renderQuizStats } = this;
+		const { getTotalQuestions, setQuestion, renderQuizStats, transformOption } = this;
 		const { currentQuestion, question } = this.state;
+		if (question) transformOption(question);
 		const totalQuestion = getTotalQuestions();
 		let questionManipRef = null;
 		return currentQuestion < totalQuestion ? (
 			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
-				<Question question={question}>
-					{({ question, questionManip }) => {
-						questionManipRef = questionManip;
-						return (
-							<Fragment>
-								{renderQuizStats()}
-								{question}
-							</Fragment>
-						);
-					}}
-				</Question>
+				{question ? (
+					<Question question={question}>
+						{({ question, questionManip }) => {
+							questionManipRef = questionManip;
+							return (
+								<Fragment>
+									{renderQuizStats()}
+									{question}
+								</Fragment>
+							);
+						}}
+					</Question>
+				) : null}
 				{this.state.showTimer && this.state.question ? (
 					<Timer
 						timeout={this.state.question.time_allocated}
