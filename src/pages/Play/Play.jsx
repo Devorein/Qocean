@@ -87,6 +87,13 @@ class Play extends Component {
 									...formData.values,
 									slider
 								});
+
+								let filteredQuestions = 0;
+								for (let i = 0; i < filteredQuizzes.length; i++) {
+									const filteredQuiz = filteredQuizzes[i];
+									filteredQuestions += filteredQuiz.filteredQuestions.length;
+								}
+
 								return !hasStarted ? (
 									<div className="play pages">
 										{list}
@@ -94,13 +101,22 @@ class Play extends Component {
 										<div className="play_button">
 											<GenericButton
 												text="Play"
-												onClick={(e) => (checked.length !== 0 ? this.setState({ hasStarted: true }) : void 0)}
+												onClick={(e) =>
+													checked.length !== 0 && filteredQuestions !== 0
+														? this.setState({ hasStarted: true })
+														: void 0}
 											/>
 										</div>
 										{inputs}
 									</div>
 								) : (
-									<Quiz settings={formData.values} quizzes={filteredQuizzes} />
+									<Quiz
+										settings={formData.values}
+										quizzes={filteredQuizzes.map((filteredQuiz) => ({
+											...filteredQuiz,
+											questions: filteredQuiz.filteredQuestions
+										}))}
+									/>
 								);
 							}}
 						</PlaySettings>
