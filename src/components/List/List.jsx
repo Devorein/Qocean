@@ -149,7 +149,7 @@ class CustomList extends React.Component {
 		const { handleToggle, handleToggleAll, filterList, deleteItems, refetchData } = this;
 
 		const { classes, className, title, containsCheckbox = true, onClick, selectedIcons, listItems } = this.props;
-		const { manipulated, filteredItems, checked, lastClicked } = this.state;
+		const { manipulated, filteredItems, checked, selectedIndex } = this.state;
 
 		const items = manipulated ? filteredItems : listItems;
 		const rootClass = clsx(className, classes.listContainer);
@@ -189,7 +189,7 @@ class CustomList extends React.Component {
 							<ListItem
 								key={key ? key : primary}
 								classes={{ root: classes.listItem }}
-								className={lastClicked === index ? 'selected' : null}
+								className={selectedIndex === index ? 'selected' : null}
 							>
 								<ListItemText classes={{ root: classes.listIndex }}>{index + 1}</ListItemText>
 								{containsCheckbox ? (
@@ -211,7 +211,7 @@ class CustomList extends React.Component {
 									onClick={(e) => {
 										this.setState(
 											{
-												lastClicked: index
+												selectedIndex: index
 											},
 											() => {
 												onClick(index);
@@ -229,12 +229,18 @@ class CustomList extends React.Component {
 
 	render() {
 		const { renderList } = this;
+		const { selectedIndex, checked } = this.state;
 		return (
 			<Fragment>
-				{this.props.children({
-					list: renderList(),
-					checked: this.state.checked
-				})}
+				{this.props.children ? (
+					this.props.children({
+						list: renderList(),
+						checked,
+						selectedIndex
+					})
+				) : (
+					renderList()
+				)}
 			</Fragment>
 		);
 	}

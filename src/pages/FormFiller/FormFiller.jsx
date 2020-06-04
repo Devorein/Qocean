@@ -29,8 +29,8 @@ class FormFiller extends Component {
 
 	decideForm = () => {
 		const { transformValue } = this;
-		const { type, data, user, submitMsg, onSubmit } = this.props;
-
+		const { data, user, submitMsg, onSubmit } = this.props;
+		const type = this.props.type.toLowerCase();
 		const props = {
 			user,
 			submitMsg,
@@ -38,8 +38,8 @@ class FormFiller extends Component {
 			customInputs: transformValue
 		};
 		if (data) {
-			if (type.toLowerCase() === 'folder') return <FolderForm {...props} selected_quizzes={data.quizzes} />;
-			else if (type.toLowerCase() === 'question')
+			if (type === 'folder') return <FolderForm {...props} selected_quizzes={data.quizzes} />;
+			else if (type === 'question')
 				return (
 					<QuestionForm
 						{...props}
@@ -50,9 +50,9 @@ class FormFiller extends Component {
 						defaultOptions={data.options}
 					/>
 				);
-			else if (type.toLowerCase() === 'quiz')
+			else if (type === 'quiz')
 				return <QuizForm {...props} tags={data.tags} src={data.image} selected_folders={data.folders} />;
-			else if (type.toLowerCase() === 'environment') return <EnvironmentForm {...props} />;
+			else if (type === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};
 
