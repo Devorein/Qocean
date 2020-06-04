@@ -82,7 +82,7 @@ const INIT_MS_STATE = {
 
 class OptionForm extends Component {
 	state = {
-		type: this.props.user.default_question_type ? this.props.user.default_question_type : 'MCQ',
+		type: this.props.defaultType || 'MCQ',
 		blank_count: 1,
 		FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
 	};

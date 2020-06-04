@@ -101,7 +101,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched, handleChange, setValues } = this.props;
+		const { values, errors, handleBlur, touched, handleChange } = this.props;
 		const {
 			name,
 			label,

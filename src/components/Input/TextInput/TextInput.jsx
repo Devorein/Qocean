@@ -11,7 +11,7 @@ class TextInput extends Component {
 				value={value}
 				type={'text'}
 				onChange={onChange}
-				fullWidth
+				fullWidth={fullWidth}
 				onBlur={handleBlur}
 				error={Boolean(errorText)}
 				helperText={errorText}

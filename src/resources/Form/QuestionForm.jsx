@@ -31,7 +31,7 @@ let defaultInputs = [
 		defaultValue: 'Advanced'
 	},
 	{
-		name: 'question_weight',
+		name: 'weight',
 		type: 'number',
 		inputProps: {
 			min: 1,
@@ -165,16 +165,18 @@ class QuestionForm extends Component {
 			) : null
 		};
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
-
 		return (
 			<FileInputRP src={src}>
 				{({ FileInput, resetFileInput, getFileData }) => {
 					return (
 						<div className="create_question create_form">
-							<OptionForm user={this.props.user}>
+							<OptionForm
+								defaultType={this.props.defaultType ? this.props.defaultType : this.props.user.default_question_type}
+							>
 								{({ form, formData, select, type }) => {
-									if (type === 'FIB') defaultInputs[0] = { name: 'name', type: 'textarea', extra: { row: 4 } };
-									else defaultInputs[0] = { name: 'name' };
+									if (type === 'FIB')
+										defaultInputs[0] = { ...defaultInputs[0], name: 'name', type: 'textarea', extra: { row: 4 } };
+									else defaultInputs[0] = { ...defaultInputs[0], name: 'name' };
 									defaultInputs[2] = select;
 									return (
 										<Fragment>
