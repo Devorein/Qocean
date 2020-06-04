@@ -25,9 +25,9 @@ class InputForm extends Component {
 		let initialErrors = {};
 		inputs.forEach((input) => {
 			if (input) {
-				const { name, defaultValue, type, children } = input;
+				const { name, defaultValue, extra = {}, type, children } = input;
 				if (name) {
-					if (type === 'group')
+					if (type === 'group' && !extra.coalesce)
 						children.forEach(({ name, defaultValue }) => {
 							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 							try {
@@ -37,7 +37,15 @@ class InputForm extends Component {
 								initialErrors[name] = err.message;
 							}
 						});
-					else {
+					else if (type === 'group' && extra.coalesce) {
+						initialValues[name] = [];
+						try {
+							if (validateOnChange && validationSchema._nodes.includes(name))
+								validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
+						} catch (err) {
+							initialErrors[name] = err.message;
+						}
+					} else {
 						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 						try {
 							if (validateOnChange && validationSchema._nodes.includes(name))

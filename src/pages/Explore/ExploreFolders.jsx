@@ -18,6 +18,7 @@ class ExploreFolders extends Component {
 				{ name: 'total_quizzes', sort: true, filter: true },
 				{ name: 'total_questions', sort: true, filter: true },
 				{ name: 'creator', sort: true, filter: false },
+				{ name: 'ratings', sort: true, filter: false },
 				{ name: 'watchers', sort: true, filter: false },
 				{ name: 'created_at', sort: false, filter: false },
 				{ name: 'updated_at', sort: false, filter: false }

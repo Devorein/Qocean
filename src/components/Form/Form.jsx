@@ -100,7 +100,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched, handleChange } = this.props;
+		const { values, errors, handleBlur, touched, handleChange, setValues } = this.props;
 		const {
 			name,
 			label,
@@ -118,8 +118,10 @@ class Form extends React.Component {
 			onkeyPress,
 			fieldHandler,
 			component,
-			extra
+			extra = {}
 		} = input;
+		extra.groupData = extra.groupData ? extra.groupData : {};
+		const { groupName, groupIndex } = extra.groupData;
 		if (type === 'component') return component;
 		else if (type === 'component_') {
 			return React.createElement(component, { ...extra.props });
@@ -159,26 +161,51 @@ class Form extends React.Component {
 					valueLabelDisplay="auto"
 				/>
 			);
-		} else if (type === 'checkbox')
-			return (
-				<Fragment key={name}>
-					<FormControlLabel
-						control={
-							<Checkbox
-								color={'primary'}
-								checked={values[name] === true ? true : false}
-								name={name}
-								onChange={this.change.bind(null, name, fieldHandler)}
-								onBlur={handleBlur}
-								error={touched[name] && errors[name]}
-							/>
-						}
-						label={this.decideLabel(name, label)}
-					/>
-					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
-				</Fragment>
-			);
-		else if (type === 'radio') {
+		} else if (type === 'checkbox') {
+			if (groupName) {
+				return (
+					<Fragment key={name}>
+						<FormControlLabel
+							control={
+								<Checkbox
+									color={'primary'}
+									checked={values[groupName].includes(groupIndex)}
+									name={name}
+									onChange={(e) => {
+										if (!values[groupName].includes(groupIndex)) {
+											values[groupName].push(groupIndex);
+											setValues({ ...values, [groupName]: values[groupName] });
+										} else
+											setValues({ ...values, [groupName]: values[groupName].filter((name) => name !== groupIndex) });
+									}}
+									onBlur={handleBlur}
+								/>
+							}
+							label={this.decideLabel(name, label)}
+						/>
+						{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
+					</Fragment>
+				);
+			} else
+				return (
+					<Fragment key={name}>
+						<FormControlLabel
+							control={
+								<Checkbox
+									color={'primary'}
+									checked={values[name] === true ? true : false}
+									name={name}
+									onChange={this.change.bind(null, name, fieldHandler)}
+									onBlur={handleBlur}
+									error={touched[name] && errors[name]}
+								/>
+							}
+							label={this.decideLabel(name, label)}
+						/>
+						{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
+					</Fragment>
+				);
+		} else if (type === 'radio') {
 			const props = this.formikProps(name, label, placeholder, controlled, { fieldHandler });
 			delete props.helperText;
 			delete props.error;
@@ -272,7 +299,9 @@ class Form extends React.Component {
 							defaultExpanded={[ input.extra.collapse ? null : '1' ]}
 						>
 							<TreeItem nodeId="1" label={this.decideLabel(input.name)}>
-								<FormGroup row={false}>{input.children.map((child) => this.renderFormComponent(child))}</FormGroup>
+								<FormGroup row={false}>
+									{input.children.map((child, index) => this.renderFormComponent(child))}
+								</FormGroup>
 							</TreeItem>
 						</TreeView>
 					);
