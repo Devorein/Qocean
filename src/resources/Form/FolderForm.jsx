@@ -17,9 +17,10 @@ class FolderForm extends Component {
 	state = {
 		folders: [],
 		loading: true,
-		selected_quizzes: [],
+		selected_quizzes: this.props.selected_quizzes || [],
 		quizzes: []
 	};
+
 	componentDidMount() {
 		axios
 			.get('http://localhost:5001/api/v1/quizzes/me?select=name&populate=false', {

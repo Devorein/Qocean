@@ -210,6 +210,7 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 };
 
 QuestionSchema.post('save', async function() {
+	console.log(this);
 	await this.model('User').add(this.user, 'questions', this._id);
 	await this.model('Quiz').add(this.quiz, 'questions', this._id);
 	const folders = await this.model('Folder').find({ quizzes: this.quiz });

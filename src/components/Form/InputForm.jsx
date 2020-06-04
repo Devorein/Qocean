@@ -95,6 +95,7 @@ class InputForm extends Component {
 									values: props.values,
 									errors: props.errors,
 									isValid: props.isValid,
+									resetForm: props.resetForm,
 									inputs: passFormAsProp ? FORM : null
 								})
 							) : (

@@ -178,13 +178,16 @@ class OptionForm extends Component {
 							[
 								Yup.ref('option_2'),
 								Yup.ref('option_3'),
-								Yup.ref('additional_option_1'),
+								Yup.ref('additional_options.additional_option_1'),
 								Yup.ref('additional_option_2'),
 								Yup.ref('additional_option_3')
 							],
 							'Duplicate Option found'
 						)
-						.required('Option 1 is required'),
+						.required('Option 1 is required')
+						.test('Duplication test', 'Duplicated value entered', (value) => {
+							console.log(value, Yup.ref('additional_option_1').getter('additional_options.additional_option_1'));
+						}),
 					option_2: Yup.string('Enter option 2')
 						.required('Option 2 is required')
 						.notOneOf(
@@ -342,22 +345,6 @@ class OptionForm extends Component {
 		});
 	};
 
-	resetOptionInput = (values, setValues) => {
-		const { type } = this.state;
-		const temp = {};
-		Object.keys(values).forEach((key) => (temp[key] = ''));
-		if (type === 'MCQ') setValues({ ...temp, answers: 'answer_1' });
-		else if (type === 'MS') setValues({ ...temp, answer_1: true });
-		else if (type === 'FC') setValues({ ...temp });
-		else if (type === 'FIB') {
-			setValues({ ...temp });
-			this.setState({
-				FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
-			});
-		} else if (type === 'TF') setValues({ ...temp, answers: 'answer_1' });
-		else if (type === 'Snippet') setValues({ ...temp });
-	};
-
 	FIBHandler = (values, setValues, e) => {
 		if (this.state.type === 'FIB') {
 			const [ type, index, num ] = e.target.name.split('_');
@@ -371,7 +358,7 @@ class OptionForm extends Component {
 	};
 
 	render() {
-		const { typeChangeHandler, decideValidation, decideInputs, transformValues, resetOptionInput, FIBHandler } = this;
+		const { typeChangeHandler, decideValidation, decideInputs, transformValues, FIBHandler } = this;
 		const validationSchema = decideValidation();
 		const { options, answers } = decideInputs();
 
@@ -386,7 +373,7 @@ class OptionForm extends Component {
 				validateOnChange={true}
 				customHandler={FIBHandler}
 			>
-				{({ values, errors, isValid, inputs, setValues }) => {
+				{({ values, errors, isValid, inputs, resetForm }) => {
 					return this.props.children({
 						form: <OptionFormContainer className="answers_form">{inputs}</OptionFormContainer>,
 						type: this.state.type,
@@ -395,7 +382,7 @@ class OptionForm extends Component {
 							errors,
 							isValid,
 							transformValues,
-							resetOptionInput: resetOptionInput.bind(null, values, setValues)
+							resetOptionInput: resetForm
 						},
 						select: {
 							type: 'component',

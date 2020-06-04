@@ -36,12 +36,13 @@ class FormFiller extends Component {
 			customInputs: transformValue
 		};
 		if (data) {
-			if (type.toLowerCase() === 'folder') return <FolderForm {...props} />;
+			if (type.toLowerCase() === 'folder') return <FolderForm {...props} selected_quizzes={data.quizzes} />;
 			else if (type.toLowerCase() === 'question') return <QuestionForm {...props} />;
 			else if (type.toLowerCase() === 'quiz') return <QuizForm {...props} tags={data.tags} src={data.image} />;
 			else if (type.toLowerCase() === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};
+
 	render() {
 		const { decideForm } = this;
 		const { isOpen, handleClose } = this.props;
