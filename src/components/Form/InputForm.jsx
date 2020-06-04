@@ -32,7 +32,7 @@ class InputForm extends Component {
 							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 							try {
 								if (validateOnChange && validationSchema._nodes.includes(name))
-									validationSchema.validateSyncAt(name, initialValues[name]);
+									validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
 							} catch (err) {
 								initialErrors[name] = err.message;
 							}
@@ -41,7 +41,7 @@ class InputForm extends Component {
 						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 						try {
 							if (validateOnChange && validationSchema._nodes.includes(name))
-								validationSchema.validateSyncAt(name, initialValues[name]);
+								validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
 						} catch (err) {
 							initialErrors[name] = err.message;
 						}

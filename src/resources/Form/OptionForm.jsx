@@ -171,22 +171,30 @@ class OptionForm extends Component {
 
 	decideValidation = () => {
 		const { type } = this.state;
-		if (type === 'MCQ') {
-			return Yup.object({
-				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
-				option_2: Yup.string('Enter option 2').required('Option 2 is required'),
-				option_3: Yup.string('Enter option 3').required('Option 3 is required'),
-				answers: Yup.string('Enter answer')
-					.oneOf([ 'answer_1', 'answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6' ])
-					.required('An answer must be choosen')
-			});
-		} else if (type === 'MS')
-			return Yup.object({
-				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
-				option_2: Yup.string('Enter option 2').required('Option 2 is required'),
-				option_3: Yup.string('Enter option 3').required('Option 3 is required')
-			});
-		else if (type === 'Snippet')
+		if (type === 'MCQ' || type === 'MS') {
+			const optionObj = {
+				option_1: Yup.string('Enter option 1')
+					.notOneOf([ Yup.ref('option_2'), Yup.ref('option_3') ], 'Duplicate Option found')
+					.required('Option 1 is required'),
+				option_2: Yup.string('Enter option 2')
+					.required('Option 2 is required')
+					.notOneOf([ Yup.ref('option_1'), Yup.ref('option_3') ], 'Duplicate Option found'),
+				option_3: Yup.string('Enter option 3')
+					.required('Option 3 is required')
+					.notOneOf([ Yup.ref('option_1'), Yup.ref('option_2') ], 'Duplicate Option found')
+			};
+			if (type === 'MCQ')
+				return Yup.object({
+					...optionObj,
+					answers: Yup.string('Enter answer')
+						.oneOf([ 'answer_1', 'answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6' ])
+						.required('An answer must be choosen')
+				});
+			else if (type === 'MS')
+				return Yup.object({
+					...optionObj
+				});
+		} else if (type === 'Snippet')
 			return Yup.object({
 				answers: Yup.string('Enter answer').required('Answer is required')
 			});
