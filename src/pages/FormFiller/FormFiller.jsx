@@ -58,13 +58,17 @@ class FormFiller extends Component {
 
 	render() {
 		const { decideForm } = this;
-		const { isOpen, handleClose } = this.props;
+		const { isOpen, handleClose, useModal = true } = this.props;
 
 		return (
-			<div className="update">
-				<CustomModal handleClose={handleClose} isOpen={isOpen}>
-					{decideForm()}
-				</CustomModal>
+			<div className="FormFiller">
+				{useModal ? (
+					<CustomModal handleClose={handleClose} isOpen={isOpen}>
+						{decideForm()}
+					</CustomModal>
+				) : (
+					decideForm()
+				)}
 			</div>
 		);
 	}

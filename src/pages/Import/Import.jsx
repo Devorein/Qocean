@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withSnackbar } from 'notistack';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';
@@ -116,29 +116,21 @@ class Import extends Component {
 						<CustomList
 							title={`Imported ${data.length} ${type.toLowerCase()}`}
 							listItems={this.transformList(data)}
-							onClick={() => {
-								this.setState({
-									isOpen: true
-								});
-							}}
 							selectedIcons={[ <PublishIcon key={'publish'} onClick={(e) => {}} /> ]}
 						>
 							{({ selectedIndex, list }) => {
 								return (
-									<div className={`${type}-import-section-list import-section-list`}>
+									<Fragment>
 										{list}
 										<FormFiller
-											isOpen={this.state.isOpen}
+											useModal={false}
 											user={this.props.user}
-											handleClose={() => {
-												this.setState({ isOpen: false });
-											}}
 											submitMsg={'Import'}
 											onSubmit={this.context.submitForm}
 											type={type}
 											data={this.state.data[selectedIndex]}
 										/>
-									</div>
+									</Fragment>
 								);
 							}}
 						</CustomList>

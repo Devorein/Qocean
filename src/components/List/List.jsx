@@ -148,11 +148,19 @@ class CustomList extends React.Component {
 	renderList = () => {
 		const { handleToggle, handleToggleAll, filterList, deleteItems, refetchData } = this;
 
-		const { classes, className, title, containsCheckbox = true, onClick, selectedIcons, listItems } = this.props;
+		const {
+			classes,
+			className,
+			title,
+			containsCheckbox = true,
+			onClick = () => {},
+			selectedIcons,
+			listItems
+		} = this.props;
 		const { manipulated, filteredItems, checked, selectedIndex } = this.state;
 
 		const items = manipulated ? filteredItems : listItems;
-		const rootClass = clsx(className, classes.listContainer);
+		const rootClass = clsx(className, classes.listContainer, 'CustomList');
 
 		return (
 			<Container className={rootClass}>

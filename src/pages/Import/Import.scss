@@ -2,10 +2,10 @@
   height: 90%;
   display: grid;
   grid-template: 1fr 1fr/300px 1fr;
-  &-list {
+  .Customlist {
     grid-area: 1/1/3/2;
   }
-  &-form {
+  .FormFiller {
     grid-area: 1/2/3/3;
   }
 }
