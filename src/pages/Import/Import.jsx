@@ -1,16 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withSnackbar } from 'notistack';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';
 import UploadButton from '../../components/Buttons/UploadButton';
 import { AppContext } from '../../context/AppContext';
 import CustomList from '../../components/List/List';
-import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
-import FolderForm from '../../resources/Form/FolderForm';
-import QuestionForm from '../../resources/Form/QuestionForm';
-import QuizForm from '../../resources/Form/QuizForm';
-import EnvironmentForm from '../../resources/Form/EnvironmentForm';
+import FormFiller from '../FormFiller/FormFiller';
 
 import './Import.scss';
 
@@ -22,7 +18,7 @@ class Import extends Component {
 		inputs: [],
 		currentPage: this.props.match.params.type,
 		currentType: '',
-		selectedIndex: null
+		isOpen: false
 	};
 
 	switchPage = (page) => {
@@ -88,89 +84,10 @@ class Import extends Component {
 		});
 	};
 
-	renderList = () => {
+	render() {
+		const { setFile } = this;
 		const { match: { params: { type } } } = this.props;
 		const { data } = this.state;
-		return data.length !== 0 ? (
-			<div className={`${type}-import-section-list import-section-list`}>
-				<CustomList
-					containsCheckbox={true}
-					title={`Imported ${data.length} ${type.toLowerCase()}`}
-					listItems={this.transformList(data)}
-					onClick={(selectedIndex, e) => {
-						this.setState({
-							selectedIndex
-						});
-					}}
-					ref={(r) => (this.CustomList = r)}
-					selectedIcons={[
-						<DeleteIcon
-							key={'delete'}
-							onClick={(e) => {
-								this.deleteItems(this.CustomList.state.checked);
-								this.CustomList.state.checked = [];
-							}}
-						/>,
-						<PublishIcon key={'publish'} onClick={(e) => {}} />
-					]}
-				/>
-			</div>
-		) : (
-			<div>Nothing imported</div>
-		);
-	};
-
-	deleteItems = (indexes) => {
-		const filtered = this.state.data.filter((data, index) => !indexes.includes(index));
-		this.setState({
-			data: filtered
-		});
-	};
-	transformValue = (defaultInputs) => {
-		let { selectedIndex, data } = this.state;
-
-		const target = data[selectedIndex];
-		function recurse(defaultInputs) {
-			defaultInputs.forEach((defaultInput, index) => {
-				const { type, defaultValue } = defaultInput;
-				if (type !== 'group') {
-					defaultInput.defaultValue = target[defaultInput.name]
-						? target[defaultInput.name]
-						: defaultValue.toString() ? defaultValue : typeof defaultValue === 'boolean' ? true : '';
-				} else recurse(defaultInput.children);
-			});
-		}
-		recurse(defaultInputs);
-		return defaultInputs;
-	};
-
-	renderForm = () => {
-		const { transformValue } = this;
-		let { match: { params: { type } } } = this.props;
-		let { currentType, data, selectedIndex } = this.state;
-
-		currentType = currentType.toLowerCase();
-		type = type.toLowerCase();
-
-		const props = {
-			user: this.props.user,
-			submitMsg: 'Import',
-			onSubmit: this.context.submitForm,
-			customInputs: transformValue
-		};
-		const cond = currentType === type && data.length > 0 && typeof selectedIndex === 'number';
-
-		if (cond && type === 'quiz')
-			return <QuizForm tags={data[selectedIndex].tags} {...props} src={data[selectedIndex].image} />;
-		else if (cond && type === 'question') return <QuestionForm {...props} />;
-		else if (cond && type === 'folder') return <FolderForm {...props} />;
-		else if (cond && type === 'environment') return <EnvironmentForm {...props} />;
-	};
-
-	render() {
-		const { setFile, renderList, renderForm } = this;
-		const { match: { params: { type } } } = this.props;
-
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
 			return {
 				name: header,
@@ -195,8 +112,31 @@ class Import extends Component {
 					inputRef={(i) => (this.UploadButton = i)}
 				/>
 				<div className={`import-section ${type}-import-section`}>
-					{renderList()}
-					{renderForm()}
+					{data.length !== 0 ? (
+						<CustomList
+							title={`Imported ${data.length} ${type.toLowerCase()}`}
+							listItems={this.transformList(data)}
+							selectedIcons={[ <PublishIcon key={'publish'} onClick={(e) => {}} /> ]}
+						>
+							{({ selectedIndex, list }) => {
+								return (
+									<Fragment>
+										{list}
+										<FormFiller
+											useModal={false}
+											user={this.props.user}
+											submitMsg={'Import'}
+											onSubmit={this.context.submitForm}
+											type={type}
+											data={this.state.data[selectedIndex]}
+										/>
+									</Fragment>
+								);
+							}}
+						</CustomList>
+					) : (
+						<div>Nothing imported</div>
+					)}
 				</div>
 			</div>
 		);

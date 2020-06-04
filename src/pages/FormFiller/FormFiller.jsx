@@ -13,12 +13,14 @@ class FormFiller extends Component {
 		let { data: target } = this.props;
 		function recurse(defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
-				const { type, defaultValue, name } = defaultInput;
-				if (type !== 'group') {
-					defaultInput.defaultValue = target[name]
-						? target[name]
-						: defaultValue ? defaultValue.toString() : typeof defaultValue === 'boolean' ? true : '';
-				} else recurse(defaultInput.children);
+				if (defaultInput) {
+					const { type, defaultValue, name } = defaultInput;
+					if (type !== 'group') {
+						defaultInput.defaultValue = target[name]
+							? target[name]
+							: defaultValue ? defaultValue.toString() : typeof defaultValue === 'boolean' ? true : '';
+					} else recurse(defaultInput.children);
+				}
 			});
 		}
 		recurse(defaultInputs);
@@ -27,8 +29,8 @@ class FormFiller extends Component {
 
 	decideForm = () => {
 		const { transformValue } = this;
-		const { type, data, user, submitMsg, onSubmit } = this.props;
-
+		const { data, user, submitMsg, onSubmit } = this.props;
+		const type = this.props.type.toLowerCase();
 		const props = {
 			user,
 			submitMsg,
@@ -36,21 +38,37 @@ class FormFiller extends Component {
 			customInputs: transformValue
 		};
 		if (data) {
-			if (type.toLowerCase() === 'folder') return <FolderForm {...props} />;
-			else if (type.toLowerCase() === 'question') return <QuestionForm {...props} />;
-			else if (type.toLowerCase() === 'quiz') return <QuizForm {...props} tags={data.tags} src={data.image} />;
-			else if (type.toLowerCase() === 'environment') return <EnvironmentForm {...props} />;
+			if (type === 'folder') return <FolderForm {...props} selected_quizzes={data.quizzes} />;
+			else if (type === 'question')
+				return (
+					<QuestionForm
+						{...props}
+						defaultType={data.type}
+						selected_quiz={data.quiz ? data.quiz._id : ''}
+						defaultAnswers={data.answers}
+						blank_count={data.type === 'FIB' ? data.name.match(/\$\{_\}/g).length : 0}
+						defaultOptions={data.options}
+					/>
+				);
+			else if (type === 'quiz')
+				return <QuizForm {...props} tags={data.tags} src={data.image} selected_folders={data.folders} />;
+			else if (type === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};
+
 	render() {
 		const { decideForm } = this;
-		const { isOpen, handleClose } = this.props;
+		const { isOpen, handleClose, useModal = true } = this.props;
 
 		return (
-			<div className="update">
-				<CustomModal handleClose={handleClose} isOpen={isOpen}>
-					{decideForm()}
-				</CustomModal>
+			<div className="FormFiller">
+				{useModal ? (
+					<CustomModal handleClose={handleClose} isOpen={isOpen}>
+						{decideForm()}
+					</CustomModal>
+				) : (
+					decideForm()
+				)}
 			</div>
 		);
 	}

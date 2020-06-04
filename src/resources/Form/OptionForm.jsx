@@ -15,21 +15,29 @@ const OptionFormContainer = styled.div`
 	}
 `;
 
-const INIT_MCQ_STATE = {
-	options: [
-		{
-			type: 'group',
-			name: 'options',
-			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-			extra: { treeView: true }
-		},
-		{
-			type: 'group',
-			name: 'additional_options',
-			children: [ { name: 'option_4' }, { name: 'option_5' }, { name: 'option_6' } ],
-			extra: { treeView: true, collapse: true }
+const options = [
+	{
+		type: 'group',
+		name: 'options',
+		children: Array(3).fill(0).map((_, index) => ({ name: `option_${index + 1}` })),
+		extra: { treeView: true, coalesce: true, groupType: 'text', helperText: 'Provide options' }
+	},
+	{
+		type: 'group',
+		name: 'additional_options',
+		children: Array(3).fill(0).map((_, index) => ({ name: `additional_option_${index + 1}` })),
+		extra: {
+			treeView: true,
+			collapsed: true,
+			coalesce: true,
+			groupType: 'text',
+			helperText: 'Provide additional options(optional)'
 		}
-	],
+	}
+];
+
+const INIT_MCQ_STATE = {
+	options: [ ...options ],
 	answers: [
 		{
 			name: 'answers',
@@ -50,42 +58,44 @@ const INIT_MCQ_STATE = {
 };
 
 const INIT_MS_STATE = {
-	options: [
-		{
-			type: 'group',
-			name: 'options',
-			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-			extra: { treeView: true }
-		},
-		{
-			type: 'group',
-			name: 'additional_options',
-			children: [ { name: 'option_4' }, { name: 'option_5' }, { name: 'option_6' } ],
-			extra: { treeView: true, collapse: true }
-		}
-	],
+	options: [ ...options ],
 	answers: [
 		{
 			type: 'group',
 			name: 'answers',
-			extra: { treeView: false },
-			children: [
-				{ name: 'answer_1', type: 'checkbox' },
-				{ name: 'answer_2', type: 'checkbox' },
-				{ name: 'answer_3', type: 'checkbox' },
-				{ name: 'answer_4', type: 'checkbox' },
-				{ name: 'answer_5', type: 'checkbox' },
-				{ name: 'answer_6', type: 'checkbox' }
-			]
+			extra: {
+				groupType: 'checkbox',
+				treeView: true,
+				coalesce: true,
+				useArray: true,
+				row: true,
+				helperText: 'Choose answers'
+			},
+			children: Array(6).fill(0).map((_, index) => ({
+				name: `answer_${index + 1}`,
+				type: 'checkbox',
+				defaultValue: false
+			}))
 		}
 	]
 };
 
 class OptionForm extends Component {
 	state = {
-		type: 'MCQ',
-		blank_count: 1,
-		FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
+		type: this.props.defaultType || 'MCQ',
+		blank_count: this.props.blank_count ? this.props.blank_count : 1,
+		FIB_data: (() => {
+			if (this.props.defaultType !== 'FIB')
+				return Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }));
+			else {
+				const { defaultAnswers } = this.props;
+				return defaultAnswers.map((defaultAnswer, index) => ({
+					answers: defaultAnswer[0],
+					alternate1: defaultAnswer[1],
+					alternate2: defaultAnswer[2]
+				}));
+			}
+		})()
 	};
 
 	renderFIB = () => {
@@ -111,23 +121,46 @@ class OptionForm extends Component {
 
 	decideInputs = () => {
 		const { type } = this.state;
-		if (type === 'MCQ') return INIT_MCQ_STATE;
-		else if (type === 'MS') return INIT_MS_STATE;
-		else if (type === 'FC')
+		const { defaultAnswers, defaultOptions } = this.props;
+		if (type === 'MS' || type === 'MCQ') {
+			let ref = null;
+			if (type === 'MCQ') {
+				ref = INIT_MCQ_STATE;
+				ref.answers[0].defaultValue = `answer_${parseInt(defaultAnswers[0]) + 1}`;
+			} else if (type === 'MS') {
+				ref = INIT_MS_STATE;
+				const answers = defaultAnswers.flat().map((answer) => parseInt(answer));
+				ref.answers[0].children = ref.answers[0].children.map((child, index) => {
+					return {
+						...child,
+						defaultValue: answers.includes(index)
+					};
+				});
+			}
+			ref.options[0].children = options[0].children.map((child, index) => ({
+				...child,
+				defaultValue: defaultOptions[index]
+			}));
+			ref.options[1].children = options[1].children.map((child, index) => ({
+				...child,
+				defaultValue: defaultOptions[index + 3]
+			}));
+			return ref;
+		} else if (type === 'FC')
 			return {
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 4 } },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 } },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 } }
+					{ name: 'answers', type: 'textarea', extra: { row: 4 }, defaultValue: defaultAnswers[0][0] },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][1] },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][2] }
 				],
 				options: []
 			};
 		else if (type === 'Snippet')
 			return {
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+					{ name: 'answers', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][0] },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 }, defaultValue: defaultAnswers[0][1] },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 }, defaultValue: defaultAnswers[0][2] }
 				],
 				options: []
 			};
@@ -163,7 +196,7 @@ class OptionForm extends Component {
 						extra: {
 							radioItems: [ { value: 'answer_1', label: 'True' }, { value: 'answer_2', label: 'False' } ]
 						},
-						defaultValue: 'answer_1'
+						defaultValue: defaultAnswers[0] ? `answer_${defaultAnswers[0][0]}` : 'answer_1'
 					}
 				]
 			};
@@ -171,22 +204,104 @@ class OptionForm extends Component {
 
 	decideValidation = () => {
 		const { type } = this.state;
-		if (type === 'MCQ') {
-			return Yup.object({
-				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
-				option_2: Yup.string('Enter option 2').required('Option 2 is required'),
-				option_3: Yup.string('Enter option 3').required('Option 3 is required'),
-				answers: Yup.string('Enter answer')
-					.oneOf([ 'answer_1', 'answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6' ])
-					.required('An answer must be choosen')
-			});
-		} else if (type === 'MS')
-			return Yup.object({
-				option_1: Yup.string('Enter option 1').required('Option 1 is required'),
-				option_2: Yup.string('Enter option 2').required('Option 2 is required'),
-				option_3: Yup.string('Enter option 3').required('Option 3 is required')
-			});
-		else if (type === 'Snippet')
+		if (type === 'MCQ' || type === 'MS') {
+			const optionObj = {
+				options: Yup.object({
+					option_1: Yup.string('Enter option 1')
+						.notOneOf(
+							[
+								Yup.ref('option_2'),
+								Yup.ref('option_3'),
+								Yup.ref('additional_options.additional_option_1'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+						.required('Option 1 is required'),
+					option_2: Yup.string('Enter option 2')
+						.required('Option 2 is required')
+						.notOneOf(
+							[
+								Yup.ref('option_1'),
+								Yup.ref('option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						),
+					option_3: Yup.string('Enter option 3')
+						.required('Option 3 is required')
+						.notOneOf(
+							[
+								Yup.ref('option_1'),
+								Yup.ref('option_2'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+				}),
+				additional_options: Yup.object({
+					additional_option_1: Yup.string('Enter additional option 1')
+						.notOneOf(
+							[
+								Yup.ref('options.option_1'),
+								Yup.ref('options.option_2'),
+								Yup.ref('options.option_3'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+						.default('additional_option_1'),
+					additional_option_2: Yup.string('Enter additional option 2')
+						.notOneOf(
+							[
+								Yup.ref('options.option_1'),
+								Yup.ref('options.option_2'),
+								Yup.ref('options.option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+						.default('additional_option_2'),
+					additional_option_3: Yup.string('Enter additional option 3')
+						.notOneOf(
+							[
+								Yup.ref('options.option_1'),
+								Yup.ref('options.option_2'),
+								Yup.ref('options.option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2')
+							],
+							'Duplicate Option found'
+						)
+						.default('additional_option_3')
+				})
+			};
+			if (type === 'MCQ')
+				return Yup.object({
+					...optionObj,
+					answers: Yup.string('Enter answer')
+						.oneOf([ 'answer_1', 'answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6' ])
+						.required('An answer must be choosen')
+				});
+			else if (type === 'MS')
+				return Yup.object({
+					...optionObj,
+					answers: Yup.array()
+						.of(Yup.boolean())
+						.test(
+							'Test answers length',
+							'Must choose atleast two answers',
+							(vals = []) => vals.filter((val) => val).length >= 2
+						)
+				});
+		} else if (type === 'Snippet')
 			return Yup.object({
 				answers: Yup.string('Enter answer').required('Answer is required')
 			});
@@ -212,26 +327,22 @@ class OptionForm extends Component {
 	transformValues = (source, dest) => {
 		const { type } = this.state;
 		dest.type = type;
-		if (type === 'MCQ') {
+		if (type === 'MCQ' || type === 'MS') {
 			const options = [];
-			Object.entries(source).forEach(([ key, value ]) => {
-				if (key.startsWith('option_') && value !== '') options.push(value);
+			Object.entries(source.options).forEach(([ key, value ]) => {
+				if (value !== '') options.push(value);
 			});
-			dest.options = options;
-			dest.answers = [ parseInt(source.answers.split('_')[1]) - 1 ];
-		} else if (type === 'MS') {
-			const options = [];
-			const answers = [];
-			let index = 0;
-			Object.entries(source).forEach(([ key, value ]) => {
-				if (key.startsWith('option_') && value !== '') options.push(value);
-				else if (key.startsWith('answer_')) {
-					if (value) answers.push(index);
-					index++;
-				}
+			Object.entries(source.additional_options).forEach(([ key, value ]) => {
+				if (value !== '') options.push(value);
 			});
+			if (type === 'MCQ') dest.answers = [ parseInt(source.answers.split('_')[1]) - 1 ];
+			else {
+				dest.answers = [];
+				source.answers.forEach((answer, index) => {
+					if (answer) dest.answers.push([ index ]);
+				});
+			}
 			dest.options = options;
-			dest.answers = answers.map((answer) => [ parseInt(answer) ]);
 		} else if (type === 'Snippet') {
 			dest.answers = [ [ source.answers ] ];
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);
@@ -265,28 +376,11 @@ class OptionForm extends Component {
 		});
 	};
 
-	resetOptionInput = (values, setValues) => {
-		const { type } = this.state;
-		const temp = {};
-		Object.keys(values).forEach((key) => (temp[key] = ''));
-		if (type === 'MCQ') setValues({ ...temp, answers: 'answer_1' });
-		else if (type === 'MS') setValues({ ...temp, answer_1: true });
-		else if (type === 'FC') setValues({ ...temp });
-		else if (type === 'FIB') {
-			setValues({ ...temp });
-			this.setState({
-				FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
-			});
-		} else if (type === 'TF') setValues({ ...temp, answers: 'answer_1' });
-		else if (type === 'Snippet') setValues({ ...temp });
-	};
-
 	FIBHandler = (values, setValues, e) => {
 		if (this.state.type === 'FIB') {
 			const [ type, index, num ] = e.target.name.split('_');
 			const { FIB_data } = this.state;
 			FIB_data[index - 1][`${type}${num ? num : ''}`] = e.target.value;
-			console.log(`${type}${num ? num : index}`);
 			this.setState({
 				FIB_data
 			});
@@ -294,7 +388,7 @@ class OptionForm extends Component {
 	};
 
 	render() {
-		const { typeChangeHandler, decideValidation, decideInputs, transformValues, resetOptionInput, FIBHandler } = this;
+		const { typeChangeHandler, decideValidation, decideInputs, transformValues, FIBHandler } = this;
 		const validationSchema = decideValidation();
 		const { options, answers } = decideInputs();
 
@@ -309,7 +403,7 @@ class OptionForm extends Component {
 				validateOnChange={true}
 				customHandler={FIBHandler}
 			>
-				{({ values, errors, isValid, inputs, setValues }) => {
+				{({ values, errors, isValid, inputs, resetForm }) => {
 					return this.props.children({
 						form: <OptionFormContainer className="answers_form">{inputs}</OptionFormContainer>,
 						type: this.state.type,
@@ -318,7 +412,7 @@ class OptionForm extends Component {
 							errors,
 							isValid,
 							transformValues,
-							resetOptionInput: resetOptionInput.bind(null, values, setValues)
+							resetOptionInput: resetForm
 						},
 						select: {
 							type: 'component',

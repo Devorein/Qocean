@@ -17,7 +17,6 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 	delete req.body.quizzes;
 	const [ success, message ] = await Quiz.validate(req.body);
 	if (!success) return next(new ErrorResponse(message, 400));
-
 	const quiz = await Quiz.create(req.body);
 	if (targetquizzes) {
 		const quizzesPromise = [];

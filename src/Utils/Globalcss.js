@@ -36,7 +36,6 @@ export default withStyles(
 					width: '100%'
 				},
 				'.MuiFormHelperText-root': {
-					color: theme.palette.error.main,
 					fontWeight: 'bold',
 
 					'&.Mui-disabled': {

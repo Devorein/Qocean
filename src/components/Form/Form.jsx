@@ -26,7 +26,8 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Slider from '@material-ui/core/Slider';
-
+import CheckboxGroup from '../Input/Checkbox/CheckboxGroup';
+import TextInputGroup from '../Input/TextInput/TextInputGroup';
 import './Form.scss';
 
 class Form extends React.Component {
@@ -118,7 +119,7 @@ class Form extends React.Component {
 			onkeyPress,
 			fieldHandler,
 			component,
-			extra
+			extra = {}
 		} = input;
 		if (type === 'component') return component;
 		else if (type === 'component_') {
@@ -159,7 +160,7 @@ class Form extends React.Component {
 					valueLabelDisplay="auto"
 				/>
 			);
-		} else if (type === 'checkbox')
+		} else if (type === 'checkbox') {
 			return (
 				<Fragment key={name}>
 					<FormControlLabel
@@ -178,7 +179,7 @@ class Form extends React.Component {
 					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
 				</Fragment>
 			);
-		else if (type === 'radio') {
+		} else if (type === 'radio') {
 			const props = this.formikProps(name, label, placeholder, controlled, { fieldHandler });
 			delete props.helperText;
 			delete props.error;
@@ -221,7 +222,6 @@ class Form extends React.Component {
 						type={'text'}
 						multiline
 						rows={extra.row ? extra.row : 5}
-						defaultValue={defaultValue}
 						{...this.formikProps(name, label, placeholder, controlled, { fieldHandler })}
 						fullWidth
 					/>
@@ -263,7 +263,39 @@ class Form extends React.Component {
 	formComponentRenderer = (input) => {
 		if (input) {
 			if (input.type === 'group') {
-				if (input.extra.treeView)
+				const { values, errors, setValues } = this.props;
+				const groupName = input.name;
+				const { groupType } = input.extra;
+				if (groupType === 'checkbox') {
+					return (
+						<CheckboxGroup
+							key={groupName}
+							name={groupName}
+							extra={{ ...input.extra, errorText: errors[groupName] }}
+							children={input.children}
+							onChange={(index, e) => {
+								values[groupName][index] = e.target.checked;
+								setValues({ ...values });
+							}}
+							values={values[groupName]}
+						/>
+					);
+				} else if (groupType === 'text') {
+					return (
+						<TextInputGroup
+							key={groupName}
+							onChange={(itemName, e) => {
+								values[groupName][itemName] = e.target.value;
+								setValues({ ...values });
+							}}
+							extra={{ ...input.extra }}
+							errors={errors[groupName]}
+							name={groupName}
+							children={input.children}
+							values={values[groupName]}
+						/>
+					);
+				} else if (input.extra.treeView)
 					return (
 						<TreeView
 							key={input.name}
@@ -272,7 +304,9 @@ class Form extends React.Component {
 							defaultExpanded={[ input.extra.collapse ? null : '1' ]}
 						>
 							<TreeItem nodeId="1" label={this.decideLabel(input.name)}>
-								<FormGroup row={false}>{input.children.map((child) => this.renderFormComponent(child))}</FormGroup>
+								<FormGroup row={false}>
+									{input.children.map((child, index) => this.renderFormComponent(child))}
+								</FormGroup>
 							</TreeItem>
 						</TreeView>
 					);

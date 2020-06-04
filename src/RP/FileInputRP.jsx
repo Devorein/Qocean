@@ -9,13 +9,13 @@ class FileInputRP extends Component {
 	state = {
 		image: this.props.src.match(/^(http|data)/) ? 'link' : 'upload',
 		file: null,
-		src: this.props.src
+		src: this.props.src.match(/^(http|data)/) ? this.props.src : `http://localhost:5001/uploads/${this.props.src}`
 	};
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if (nextProps.src !== this.state.src) {
 			this.setState({
-				src: nextProps.src,
+				src: nextProps.src.match(/^(http|data)/) ? nextProps.src : `http://localhost:5001/uploads/${nextProps.src}`,
 				image: nextProps.src.match(/^(http|data)/) ? 'link' : 'upload'
 			});
 		} else return null;

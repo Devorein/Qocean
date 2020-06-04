@@ -55,8 +55,9 @@ class SelfQuizzes extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
+				name: <div style={{ maxHeight: 100, overflowY: 'auto' }}>{item.name}</div>,
 				watchers: item.watchers.length,
-				tags: <ChipContainer chips={item.tags} type={'regular'} />,
+				tags: <ChipContainer chips={item.tags} type={'regular'} height={100} />,
 				creator: item.user.username,
 				created_at: moment(item.created_at).fromNow(),
 				updated_at: moment(item.updated_at).fromNow()

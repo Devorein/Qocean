@@ -31,7 +31,7 @@ let defaultInputs = [
 		defaultValue: 'Advanced'
 	},
 	{
-		name: 'question_weight',
+		name: 'weight',
 		type: 'number',
 		inputProps: {
 			min: 1,
@@ -58,8 +58,7 @@ let defaultInputs = [
 class QuestionForm extends Component {
 	state = {
 		quizzes: [],
-		loading: true,
-		type: 'MCQ'
+		loading: true
 	};
 
 	componentDidMount() {
@@ -126,7 +125,16 @@ class QuestionForm extends Component {
 
 	render() {
 		const { preSubmit, postSubmit } = this;
-		const { onSubmit, sumbitMsg, customInputs, src = '' } = this.props;
+		const {
+			onSubmit,
+			submitMsg,
+			customInputs,
+			src = '',
+			selected_quiz = '',
+			defaultAnswers = {},
+			defaultOptions = {},
+			blank_count
+		} = this.props;
 		const { quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
 			name: Yup.string('Enter the question').required('Question is required'),
@@ -146,7 +154,6 @@ class QuestionForm extends Component {
 				.max(120, 'Time allocated cant be more than 120 seconds')
 				.default(30)
 		});
-
 		defaultInputs[1] = {
 			name: 'quiz',
 			type: 'select',
@@ -166,21 +173,27 @@ class QuestionForm extends Component {
 			) : null
 		};
 		if (customInputs) defaultInputs = customInputs(defaultInputs);
-
+		defaultInputs[1].defaultValue = selected_quiz;
 		return (
 			<FileInputRP src={src}>
 				{({ FileInput, resetFileInput, getFileData }) => {
 					return (
 						<div className="create_question create_form">
-							<OptionForm>
+							<OptionForm
+								blank_count={blank_count}
+								defaultAnswers={defaultAnswers}
+								defaultOptions={defaultOptions}
+								defaultType={this.props.defaultType ? this.props.defaultType : this.props.user.default_question_type}
+							>
 								{({ form, formData, select, type }) => {
-									if (type === 'FIB') defaultInputs[0] = { name: 'name', type: 'textarea', extra: { row: 4 } };
-									else defaultInputs[0] = { name: 'name' };
+									if (type === 'FIB')
+										defaultInputs[0] = { ...defaultInputs[0], name: 'name', type: 'textarea', extra: { row: 4 } };
+									else defaultInputs[0] = { ...defaultInputs[0], name: 'name' };
 									defaultInputs[2] = select;
 									return (
 										<Fragment>
 											<InputForm
-												sumbitMsg={sumbitMsg}
+												submitMsg={submitMsg}
 												inputs={defaultInputs}
 												validationSchema={validationSchema}
 												onSubmit={onSubmit.bind(null, [

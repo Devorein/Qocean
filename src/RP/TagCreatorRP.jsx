@@ -63,12 +63,17 @@ class TagCreatorRP extends Component {
 		this.refetchTags();
 	}
 
-	static getDerivedStateFromProps(props, state) {
-		return props.tags.every((tag, index) => tag === state.tags[index])
-			? null
-			: {
-					tags: props.tags
-				};
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (
+			nextProps.tags.length === this.state.tags.length &&
+			nextProps.tags.every((tag, index) => tag === this.state.tags[index])
+		)
+			return null;
+		else {
+			this.setState({
+				tags: nextProps.tags
+			});
+		}
 	}
 
 	openCP = () => {

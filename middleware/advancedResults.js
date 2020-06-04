@@ -10,7 +10,6 @@ const advancedResults = (model, populate, option = {}) =>
 			let query = model
 				.findOne({ _id: req.query._id, ...option.match })
 				.select(option._id.exclude.map((field) => `-${field}`).join(' '));
-			// console.log(req.user, option);
 			if (option._id.populate) {
 				if (Array.isArray(option._id.populate)) option._id.populate.forEach((pop) => (query = query.populate(pop)));
 				else query = query.populate(option._id.populate);
@@ -98,7 +97,6 @@ const advancedResults = (model, populate, option = {}) =>
 				const startIndex = (page - 1) * limit;
 				const endIndex = page * limit;
 				const total = await model.countDocuments();
-
 				query = query.skip(startIndex).limit(limit);
 				if (shouldPopulate) {
 					const populations = [];
@@ -108,17 +106,16 @@ const advancedResults = (model, populate, option = {}) =>
 						populateFields = populateFields.split('-');
 						populateFields.forEach((populateField, index) => {
 							populations.push({
-								populate: populates[index],
+								path: populates[index],
 								select: populateField.split(',').join(' ')
 							});
 						});
-						query.populate(populates);
+						query.populate(populations);
 					}
 				} else if (populate) {
 					if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
 					else query = query.populate(populate);
 				}
-
 				// Pagination result
 				const pagination = {};
 				if (endIndex < total) {

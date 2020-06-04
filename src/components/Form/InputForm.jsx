@@ -20,28 +20,42 @@ class InputForm extends Component {
 			validateOnChange = false,
 			disabled
 		} = this.props;
-
 		const initialValues = {};
 		let initialErrors = {};
 		inputs.forEach((input) => {
 			if (input) {
-				const { name, defaultValue, type, children } = input;
+				const { name, defaultValue, extra = {}, type, children } = input;
 				if (name) {
-					if (type === 'group')
+					if (type === 'group' && !extra.coalesce)
 						children.forEach(({ name, defaultValue }) => {
 							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 							try {
 								if (validateOnChange && validationSchema._nodes.includes(name))
-									validationSchema.validateSyncAt(name, initialValues[name]);
+									validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
 							} catch (err) {
 								initialErrors[name] = err.message;
 							}
 						});
-					else {
+					else if (type === 'group' && extra.coalesce) {
+						const groupname = input.name;
+						if (extra.useArray) initialValues[groupname] = [];
+						else initialValues[groupname] = {};
+						children.forEach(({ name, defaultValue }, index) => {
+							const inputvalue = typeof defaultValue !== 'undefined' ? defaultValue : '';
+							if (extra.useArray) initialValues[groupname][index] = inputvalue;
+							else initialValues[groupname][name] = inputvalue;
+						});
+						try {
+							if (validateOnChange && validationSchema._nodes.includes(groupname))
+								validationSchema.validateSyncAt(groupname, initialValues[groupname], { abortEarly: true });
+						} catch (err) {
+							initialErrors[groupname] = err.message;
+						}
+					} else {
 						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 						try {
 							if (validateOnChange && validationSchema._nodes.includes(name))
-								validationSchema.validateSyncAt(name, initialValues[name]);
+								validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
 						} catch (err) {
 							initialErrors[name] = err.message;
 						}
@@ -49,7 +63,6 @@ class InputForm extends Component {
 				}
 			}
 		});
-
 		return (
 			<Formik
 				initialValues={initialValues}
@@ -82,6 +95,7 @@ class InputForm extends Component {
 									values: props.values,
 									errors: props.errors,
 									isValid: props.isValid,
+									resetForm: props.resetForm,
 									inputs: passFormAsProp ? FORM : null
 								})
 							) : (

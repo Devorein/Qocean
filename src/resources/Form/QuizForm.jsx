@@ -24,7 +24,7 @@ class QuizForm extends Component {
 	state = {
 		folders: [],
 		loading: true,
-		selected_folders: []
+		selected_folders: this.props.selected_folders || []
 	};
 
 	componentDidMount() {

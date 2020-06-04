@@ -9,7 +9,10 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		minlength: [ 3, 'Folder name must be greater than 3 characters' ],
 		maxlength: [ 20, 'Folder name must be less than 20 characters' ]
 	},
-
+	ratings: {
+		type: Number,
+		default: 0
+	},
 	icon: {
 		type: String,
 		enum: [

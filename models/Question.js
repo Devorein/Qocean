@@ -211,29 +211,30 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 
 QuestionSchema.post('save', async function() {
 	await this.model('User').add(this.user, 'questions', this._id);
-	await this.model('Quiz').add(this.quiz, 'questions', this._id);
-	const folders = await this.model('Folder').find({ quizzes: this.quiz });
-	for (let i = 0; i < folders.length; i++) {
-		const folder = folders[i];
-		folder.total_questions++;
-		await folder.save();
+	if (this.isModified('quiz')) {
+		await this.model('Quiz').add(this.quiz, 'questions', this._id);
+		const folders = await this.model('Folder').find({ quizzes: this.quiz });
+		for (let i = 0; i < folders.length; i++) {
+			const folder = folders[i];
+			folder.total_questions++;
+			await folder.save();
+		}
 	}
-	this.constructor.getAverageTimeAllocated(this.quiz);
-	this.constructor.getAverageDifficulty(this.quiz);
+	if (this.isModified('time_allocated')) this.constructor.getAverageTimeAllocated(this.quiz);
+	if (this.isModified('difficulty')) this.constructor.getAverageDifficulty(this.quiz);
 });
 
 QuestionSchema.pre('remove', async function() {
-	const question = await this.model('Question').findById(this._id);
-	await this.model('User').remove(question.user, 'questions', question._id);
-	await this.model('Quiz').remove(question.quiz, 'questions', question._id);
-	const folders = await this.model('Folder').find({ quizzes: question.quiz });
+	await this.model('User').remove(this.user, 'questions', this._id);
+	await this.model('Quiz').remove(this.quiz, 'questions', this._id);
+	const folders = await this.model('Folder').find({ quizzes: this.quiz });
 	for (let i = 0; i < folders.length; i++) {
 		const folder = folders[i];
 		folder.total_questions--;
 		await folder.save();
 	}
-	this.constructor.getAverageTimeAllocated(question.quiz);
-	this.constructor.getAverageDifficulty(question.quiz);
+	this.constructor.getAverageTimeAllocated(this.quiz);
+	this.constructor.getAverageDifficulty(this.quiz);
 });
 
 module.exports = mongoose.model('Question', QuestionSchema);
