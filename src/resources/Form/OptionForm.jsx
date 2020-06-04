@@ -111,9 +111,31 @@ class OptionForm extends Component {
 	decideInputs = () => {
 		const { type } = this.state;
 		const { defaultAnswers, defaultOptions } = this.props;
-		if (type === 'MCQ') return INIT_MCQ_STATE;
-		else if (type === 'MS') return INIT_MS_STATE;
-		else if (type === 'FC')
+		if (type === 'MS' || type === 'MCQ') {
+			let ref = null;
+			if (type === 'MCQ') {
+				ref = INIT_MCQ_STATE;
+				ref.answers[0].defaultValue = `answer_${parseInt(defaultAnswers[0]) + 1}`;
+			} else if (type === 'MS') {
+				ref = INIT_MS_STATE;
+				const answers = defaultAnswers.flat().map((answer) => parseInt(answer));
+				ref.answers[0].children = ref.answers[0].children.map((child, index) => {
+					return {
+						...child,
+						defaultValue: answers.includes(index)
+					};
+				});
+			}
+			ref.options[0].children = options[0].children.map((child, index) => ({
+				...child,
+				defaultValue: defaultOptions[index]
+			}));
+			ref.options[1].children = options[1].children.map((child, index) => ({
+				...child,
+				defaultValue: defaultOptions[index + 3]
+			}));
+			return ref;
+		} else if (type === 'FC')
 			return {
 				answers: [
 					{ name: 'answers', type: 'textarea', extra: { row: 4 }, defaultValue: defaultAnswers[0][0] },
@@ -185,10 +207,7 @@ class OptionForm extends Component {
 							],
 							'Duplicate Option found'
 						)
-						.required('Option 1 is required')
-						.test('Duplication test', 'Duplicated value entered', (value) => {
-							console.log(value, Yup.ref('additional_option_1').getter('additional_options.additional_option_1'));
-						}),
+						.required('Option 1 is required'),
 					option_2: Yup.string('Enter option 2')
 						.required('Option 2 is required')
 						.notOneOf(
