@@ -98,7 +98,6 @@ const advancedResults = (model, populate, option = {}) =>
 				const startIndex = (page - 1) * limit;
 				const endIndex = page * limit;
 				const total = await model.countDocuments();
-
 				query = query.skip(startIndex).limit(limit);
 				if (shouldPopulate) {
 					const populations = [];
@@ -108,17 +107,16 @@ const advancedResults = (model, populate, option = {}) =>
 						populateFields = populateFields.split('-');
 						populateFields.forEach((populateField, index) => {
 							populations.push({
-								populate: populates[index],
+								path: populates[index],
 								select: populateField.split(',').join(' ')
 							});
 						});
-						query.populate(populates);
+						query.populate(populations);
 					}
 				} else if (populate) {
 					if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
 					else query = query.populate(populate);
 				}
-
 				// Pagination result
 				const pagination = {};
 				if (endIndex < total) {
