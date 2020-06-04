@@ -222,7 +222,6 @@ class Form extends React.Component {
 						type={'text'}
 						multiline
 						rows={extra.row ? extra.row : 5}
-						defaultValue={defaultValue}
 						{...this.formikProps(name, label, placeholder, controlled, { fieldHandler })}
 						fullWidth
 					/>

@@ -110,23 +110,24 @@ class OptionForm extends Component {
 
 	decideInputs = () => {
 		const { type } = this.state;
+		const { defaultAnswers, defaultOptions } = this.props;
 		if (type === 'MCQ') return INIT_MCQ_STATE;
 		else if (type === 'MS') return INIT_MS_STATE;
 		else if (type === 'FC')
 			return {
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 4 } },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 } },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 } }
+					{ name: 'answers', type: 'textarea', extra: { row: 4 }, defaultValue: defaultAnswers[0][0] },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][1] },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][2] }
 				],
 				options: []
 			};
 		else if (type === 'Snippet')
 			return {
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 2 } },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 } },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 } }
+					{ name: 'answers', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][0] },
+					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 }, defaultValue: defaultAnswers[0][1] },
+					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 }, defaultValue: defaultAnswers[0][2] }
 				],
 				options: []
 			};
@@ -162,7 +163,7 @@ class OptionForm extends Component {
 						extra: {
 							radioItems: [ { value: 'answer_1', label: 'True' }, { value: 'answer_2', label: 'False' } ]
 						},
-						defaultValue: 'answer_1'
+						defaultValue: defaultAnswers[0] ? `answer_${defaultAnswers[0][0]}` : 'answer_1'
 					}
 				]
 			};

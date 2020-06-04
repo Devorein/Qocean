@@ -125,7 +125,15 @@ class QuestionForm extends Component {
 
 	render() {
 		const { preSubmit, postSubmit } = this;
-		const { onSubmit, sumbitMsg, customInputs, src = '', selected_quiz = '' } = this.props;
+		const {
+			onSubmit,
+			sumbitMsg,
+			customInputs,
+			src = '',
+			selected_quiz = '',
+			defaultAnswers = {},
+			defaultOptions = {}
+		} = this.props;
 		const { quizzes, loading } = this.state;
 		const validationSchema = Yup.object({
 			name: Yup.string('Enter the question').required('Question is required'),
@@ -171,6 +179,8 @@ class QuestionForm extends Component {
 					return (
 						<div className="create_question create_form">
 							<OptionForm
+								defaultAnswers={defaultAnswers}
+								defaultOptions={defaultOptions}
 								defaultType={this.props.defaultType ? this.props.defaultType : this.props.user.default_question_type}
 							>
 								{({ form, formData, select, type }) => {
