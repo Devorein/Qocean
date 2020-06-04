@@ -10,7 +10,6 @@ const advancedResults = (model, populate, option = {}) =>
 			let query = model
 				.findOne({ _id: req.query._id, ...option.match })
 				.select(option._id.exclude.map((field) => `-${field}`).join(' '));
-			// console.log(req.user, option);
 			if (option._id.populate) {
 				if (Array.isArray(option._id.populate)) option._id.populate.forEach((pop) => (query = query.populate(pop)));
 				else query = query.populate(option._id.populate);
