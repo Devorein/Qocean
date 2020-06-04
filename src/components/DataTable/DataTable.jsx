@@ -15,6 +15,25 @@ const getMuiTheme = (theme) =>
 					backgroundColor: theme.palette.background.dark
 				}
 			},
+			MUIDataTableBodyRow: {
+				root: {
+					'&:nth-child(odd)': {
+						backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+						'&:hover': {
+							transition: 'background-color 150ms ease-in-out',
+							backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.35).hex()
+						}
+					},
+					'&:nth-child(even)': {
+						backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.15).hex(),
+						'&:hover': {
+							transition: 'background-color 150ms ease-in-out',
+							backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.35).hex()
+						}
+					}
+				}
+			},
+
 			MuiTablePagination: {
 				actions: {
 					display: 'flex',
@@ -105,11 +124,11 @@ const getMuiTheme = (theme) =>
 			},
 			MUIDataTableBodyCell: {
 				root: {
-					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
 					color: theme.palette.text.primary,
 					fontFamily: theme.typography.fontFamily,
 					borderBottom: 'none',
-					textAlign: 'center'
+					textAlign: 'center',
+					padding: '5px 8px'
 				}
 			},
 			MUIDataTableSelectCell: {

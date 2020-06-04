@@ -4,7 +4,9 @@ import DeletableChip from './DeletableChip';
 import RegularChip from './RegularChip';
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
-	root: {
+	root: (props) => ({
+		height: props.height ? props.height : 'fit-content',
+		overflowY: 'auto',
 		display: 'flex',
 		justifyContent: 'center',
 		flexWrap: 'wrap',
@@ -15,11 +17,11 @@ const useStyles = makeStyles((theme) => ({
 			borderRadius: 3,
 			fontFamily: 'Quantico'
 		}
-	}
+	})
 }));
 
-function ChipContainer({ type, chips, onClick, onIconClick }) {
-	const classes = useStyles();
+function ChipContainer({ type, chips, onClick, onIconClick, height }) {
+	const classes = useStyles({ height });
 	return (
 		<div className={classes.root}>
 			{chips.map((tag) => {

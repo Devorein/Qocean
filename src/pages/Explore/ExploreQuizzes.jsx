@@ -127,7 +127,7 @@ class ExploreQuizzes extends Component {
 						) : null}
 					</div>
 				),
-				tags: <ChipContainer chips={item.tags} type={'regular'} />,
+				tags: <ChipContainer chips={item.tags} type={'regular'} height={100} />,
 				creator: item.user.username,
 				watchers: item.watchers.length,
 				created_at: moment(item.created_at).fromNow(),

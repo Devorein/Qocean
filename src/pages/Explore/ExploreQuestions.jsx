@@ -40,6 +40,7 @@ class ExploreQuestions extends Component {
 		return data.map((item, index) => {
 			return {
 				...item,
+				name: <div style={{ maxHeight: 100, overflowY: 'auto' }}>{item.name}</div>,
 				quiz: item.quiz.name,
 				creator: item.user.username,
 				created_at: moment(item.created_at).fromNow(),
