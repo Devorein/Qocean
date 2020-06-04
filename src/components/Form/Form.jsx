@@ -26,7 +26,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Slider from '@material-ui/core/Slider';
-
+import CheckboxGroup from '../Input/Checkbox/CheckboxGroup';
 import './Form.scss';
 
 class Form extends React.Component {
@@ -290,7 +290,23 @@ class Form extends React.Component {
 	formComponentRenderer = (input) => {
 		if (input) {
 			if (input.type === 'group') {
-				if (input.extra.treeView)
+				const { values, errors, setValues } = this.props;
+				const groupName = input.name;
+				if (input.extra.groupType === 'checkbox') {
+					return (
+						<CheckboxGroup
+							key={groupName}
+							name={groupName}
+							extra={{ ...input.extra, errorText: errors[groupName] }}
+							children={input.children}
+							onChange={(index, e) => {
+								values[groupName][index] = e.target.checked;
+								setValues({ ...values });
+							}}
+							values={values[groupName]}
+						/>
+					);
+				} else if (input.extra.treeView)
 					return (
 						<TreeView
 							key={input.name}

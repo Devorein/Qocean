@@ -68,12 +68,18 @@ const INIT_MS_STATE = {
 		{
 			type: 'group',
 			name: 'answers',
-			extra: { treeView: false, coalesce: true },
+			extra: {
+				groupType: 'checkbox',
+				treeView: true,
+				coalesce: true,
+				useArray: true,
+				row: true,
+				helperText: 'Choose answers'
+			},
 			children: Array(6).fill(0).map((_, index) => ({
 				name: `answer_${index + 1}`,
 				type: 'checkbox',
-				defaultValue: false,
-				extra: { groupData: { groupIndex: index, groupName: 'answers' } }
+				defaultValue: false
 			}))
 		}
 	]
@@ -192,8 +198,12 @@ class OptionForm extends Component {
 				return Yup.object({
 					...optionObj,
 					answers: Yup.array()
-						.of(Yup.number().min(0).max(5))
-						.test('Test answers length', 'Must choose atleast one answer', (v = []) => v.length !== 0)
+						.of(Yup.boolean())
+						.test(
+							'Test answers length',
+							'Must choose atleast two answers',
+							(vals = []) => vals.filter((val) => val).length >= 2
+						)
 				});
 		} else if (type === 'Snippet')
 			return Yup.object({
@@ -234,7 +244,10 @@ class OptionForm extends Component {
 				if (key.startsWith('option_') && value !== '') options.push(value);
 			});
 			dest.options = options;
-			dest.answers = source.answers.map((answer) => [ parseInt(answer) ]);
+			dest.answers = [];
+			source.answers.forEach((answer, index) => {
+				if (answer) dest.answers.push([ index ]);
+			});
 		} else if (type === 'Snippet') {
 			dest.answers = [ [ source.answers ] ];
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);

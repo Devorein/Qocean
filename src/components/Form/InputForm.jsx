@@ -38,12 +38,19 @@ class InputForm extends Component {
 							}
 						});
 					else if (type === 'group' && extra.coalesce) {
-						initialValues[name] = [];
+						const groupname = input.name;
+						if (extra.useArray) initialValues[groupname] = [];
+						else initialValues[groupname] = {};
+						children.forEach(({ name, defaultValue }, index) => {
+							const inputvalue = typeof defaultValue !== 'undefined' ? defaultValue : '';
+							if (extra.useArray) initialValues[groupname][index] = inputvalue;
+							else initialValues[groupname][name] = inputvalue;
+						});
 						try {
-							if (validateOnChange && validationSchema._nodes.includes(name))
-								validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
+							if (validateOnChange && validationSchema._nodes.includes(groupname))
+								validationSchema.validateSyncAt(groupname, initialValues[groupname], { abortEarly: true });
 						} catch (err) {
-							initialErrors[name] = err.message;
+							initialErrors[groupname] = err.message;
 						}
 					} else {
 						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
@@ -57,7 +64,6 @@ class InputForm extends Component {
 				}
 			}
 		});
-
 		return (
 			<Formik
 				initialValues={initialValues}
