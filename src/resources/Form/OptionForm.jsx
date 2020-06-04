@@ -83,8 +83,19 @@ const INIT_MS_STATE = {
 class OptionForm extends Component {
 	state = {
 		type: this.props.defaultType || 'MCQ',
-		blank_count: 1,
-		FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
+		blank_count: this.props.blank_count ? this.props.blank_count : 1,
+		FIB_data: (() => {
+			if (this.props.defaultType !== 'FIB')
+				return Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }));
+			else {
+				const { defaultAnswers } = this.props;
+				return defaultAnswers.map((defaultAnswer, index) => ({
+					answers: defaultAnswer[0],
+					alternate1: defaultAnswer[1],
+					alternate2: defaultAnswer[2]
+				}));
+			}
+		})()
 	};
 
 	renderFIB = () => {
@@ -370,7 +381,6 @@ class OptionForm extends Component {
 			const [ type, index, num ] = e.target.name.split('_');
 			const { FIB_data } = this.state;
 			FIB_data[index - 1][`${type}${num ? num : ''}`] = e.target.value;
-			console.log(`${type}${num ? num : index}`);
 			this.setState({
 				FIB_data
 			});

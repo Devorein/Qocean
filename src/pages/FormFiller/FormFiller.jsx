@@ -44,8 +44,9 @@ class FormFiller extends Component {
 					<QuestionForm
 						{...props}
 						defaultType={data.type}
-						selected_quiz={data.quiz._id}
+						selected_quiz={data.quiz ? data.quiz._id : ''}
 						defaultAnswers={data.answers}
+						blank_count={data.type === 'FIB' ? data.name.match(/\$\{_\}/g).length : 0}
 						defaultOptions={data.options}
 					/>
 				);
