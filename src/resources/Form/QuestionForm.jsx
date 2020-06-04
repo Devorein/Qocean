@@ -58,8 +58,7 @@ let defaultInputs = [
 class QuestionForm extends Component {
 	state = {
 		quizzes: [],
-		loading: true,
-		type: 'MCQ'
+		loading: true
 	};
 
 	componentDidMount() {
@@ -172,7 +171,7 @@ class QuestionForm extends Component {
 				{({ FileInput, resetFileInput, getFileData }) => {
 					return (
 						<div className="create_question create_form">
-							<OptionForm>
+							<OptionForm user={this.props.user}>
 								{({ form, formData, select, type }) => {
 									if (type === 'FIB') defaultInputs[0] = { name: 'name', type: 'textarea', extra: { row: 4 } };
 									else defaultInputs[0] = { name: 'name' };

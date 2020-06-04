@@ -15,21 +15,29 @@ const OptionFormContainer = styled.div`
 	}
 `;
 
-const INIT_MCQ_STATE = {
-	options: [
-		{
-			type: 'group',
-			name: 'options',
-			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-			extra: { treeView: true }
-		},
-		{
-			type: 'group',
-			name: 'additional_options',
-			children: [ { name: 'option_4' }, { name: 'option_5' }, { name: 'option_6' } ],
-			extra: { treeView: true, collapse: true }
+const options = [
+	{
+		type: 'group',
+		name: 'options',
+		children: Array(3).fill(0).map((_, index) => ({ name: `option_${index + 1}` })),
+		extra: { treeView: true, coalesce: true, groupType: 'text', helperText: 'Provide options' }
+	},
+	{
+		type: 'group',
+		name: 'additional_options',
+		children: Array(3).fill(0).map((_, index) => ({ name: `additional_option_${index + 1}` })),
+		extra: {
+			treeView: true,
+			collapsed: true,
+			coalesce: true,
+			groupType: 'text',
+			helperText: 'Provide additional options(optional)'
 		}
-	],
+	}
+];
+
+const INIT_MCQ_STATE = {
+	options: [ ...options ],
 	answers: [
 		{
 			name: 'answers',
@@ -50,20 +58,7 @@ const INIT_MCQ_STATE = {
 };
 
 const INIT_MS_STATE = {
-	options: [
-		{
-			type: 'group',
-			name: 'options',
-			children: [ { name: 'option_1' }, { name: 'option_2' }, { name: 'option_3' } ],
-			extra: { treeView: true }
-		},
-		{
-			type: 'group',
-			name: 'additional_options',
-			children: [ { name: 'option_4' }, { name: 'option_5' }, { name: 'option_6' } ],
-			extra: { treeView: true, collapse: true }
-		}
-	],
+	options: [ ...options ],
 	answers: [
 		{
 			type: 'group',
@@ -87,7 +82,7 @@ const INIT_MS_STATE = {
 
 class OptionForm extends Component {
 	state = {
-		type: 'MCQ',
+		type: this.props.user.default_question_type ? this.props.user.default_question_type : 'MCQ',
 		blank_count: 1,
 		FIB_data: Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }))
 	};
@@ -177,15 +172,82 @@ class OptionForm extends Component {
 		const { type } = this.state;
 		if (type === 'MCQ' || type === 'MS') {
 			const optionObj = {
-				option_1: Yup.string('Enter option 1')
-					.notOneOf([ Yup.ref('option_2'), Yup.ref('option_3') ], 'Duplicate Option found')
-					.required('Option 1 is required'),
-				option_2: Yup.string('Enter option 2')
-					.required('Option 2 is required')
-					.notOneOf([ Yup.ref('option_1'), Yup.ref('option_3') ], 'Duplicate Option found'),
-				option_3: Yup.string('Enter option 3')
-					.required('Option 3 is required')
-					.notOneOf([ Yup.ref('option_1'), Yup.ref('option_2') ], 'Duplicate Option found')
+				options: Yup.object({
+					option_1: Yup.string('Enter option 1')
+						.notOneOf(
+							[
+								Yup.ref('option_2'),
+								Yup.ref('option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+						.required('Option 1 is required'),
+					option_2: Yup.string('Enter option 2')
+						.required('Option 2 is required')
+						.notOneOf(
+							[
+								Yup.ref('option_1'),
+								Yup.ref('option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						),
+					option_3: Yup.string('Enter option 3')
+						.required('Option 3 is required')
+						.notOneOf(
+							[
+								Yup.ref('option_1'),
+								Yup.ref('option_2'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+				}),
+				additional_options: Yup.object({
+					additional_option_1: Yup.string('Enter additional option 1')
+						.notOneOf(
+							[
+								Yup.ref('options.option_1'),
+								Yup.ref('options.option_2'),
+								Yup.ref('options.option_3'),
+								Yup.ref('additional_option_2'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+						.default('additional_option_1'),
+					additional_option_2: Yup.string('Enter additional option 2')
+						.notOneOf(
+							[
+								Yup.ref('options.option_1'),
+								Yup.ref('options.option_2'),
+								Yup.ref('options.option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_3')
+							],
+							'Duplicate Option found'
+						)
+						.default('additional_option_2'),
+					additional_option_3: Yup.string('Enter additional option 3')
+						.notOneOf(
+							[
+								Yup.ref('options.option_1'),
+								Yup.ref('options.option_2'),
+								Yup.ref('options.option_3'),
+								Yup.ref('additional_option_1'),
+								Yup.ref('additional_option_2')
+							],
+							'Duplicate Option found'
+						)
+						.default('additional_option_3')
+				})
 			};
 			if (type === 'MCQ')
 				return Yup.object({
@@ -231,23 +293,22 @@ class OptionForm extends Component {
 	transformValues = (source, dest) => {
 		const { type } = this.state;
 		dest.type = type;
-		if (type === 'MCQ') {
+		if (type === 'MCQ' || type === 'MS') {
 			const options = [];
-			Object.entries(source).forEach(([ key, value ]) => {
-				if (key.startsWith('option_') && value !== '') options.push(value);
+			Object.entries(source.options).forEach(([ key, value ]) => {
+				if (value !== '') options.push(value);
 			});
+			Object.entries(source.additional_options).forEach(([ key, value ]) => {
+				if (value !== '') options.push(value);
+			});
+			if (type === 'MCQ') dest.answers = [ parseInt(source.answers.split('_')[1]) - 1 ];
+			else {
+				dest.answers = [];
+				source.answers.forEach((answer, index) => {
+					if (answer) dest.answers.push([ index ]);
+				});
+			}
 			dest.options = options;
-			dest.answers = [ parseInt(source.answers.split('_')[1]) - 1 ];
-		} else if (type === 'MS') {
-			const options = [];
-			Object.entries(source).forEach(([ key, value ]) => {
-				if (key.startsWith('option_') && value !== '') options.push(value);
-			});
-			dest.options = options;
-			dest.answers = [];
-			source.answers.forEach((answer, index) => {
-				if (answer) dest.answers.push([ index ]);
-			});
 		} else if (type === 'Snippet') {
 			dest.answers = [ [ source.answers ] ];
 			if (source.alternate_1) dest.answers[0].push(source.alternate_1);

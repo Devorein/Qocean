@@ -27,6 +27,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Slider from '@material-ui/core/Slider';
 import CheckboxGroup from '../Input/Checkbox/CheckboxGroup';
+import TextInputGroup from '../Input/TextInput/TextInputGroup';
 import './Form.scss';
 
 class Form extends React.Component {
@@ -120,8 +121,6 @@ class Form extends React.Component {
 			component,
 			extra = {}
 		} = input;
-		extra.groupData = extra.groupData ? extra.groupData : {};
-		const { groupName, groupIndex } = extra.groupData;
 		if (type === 'component') return component;
 		else if (type === 'component_') {
 			return React.createElement(component, { ...extra.props });
@@ -162,49 +161,24 @@ class Form extends React.Component {
 				/>
 			);
 		} else if (type === 'checkbox') {
-			if (groupName) {
-				return (
-					<Fragment key={name}>
-						<FormControlLabel
-							control={
-								<Checkbox
-									color={'primary'}
-									checked={values[groupName].includes(groupIndex)}
-									name={name}
-									onChange={(e) => {
-										if (!values[groupName].includes(groupIndex)) {
-											values[groupName].push(groupIndex);
-											setValues({ ...values, [groupName]: values[groupName] });
-										} else
-											setValues({ ...values, [groupName]: values[groupName].filter((name) => name !== groupIndex) });
-									}}
-									onBlur={handleBlur}
-								/>
-							}
-							label={this.decideLabel(name, label)}
-						/>
-						{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
-					</Fragment>
-				);
-			} else
-				return (
-					<Fragment key={name}>
-						<FormControlLabel
-							control={
-								<Checkbox
-									color={'primary'}
-									checked={values[name] === true ? true : false}
-									name={name}
-									onChange={this.change.bind(null, name, fieldHandler)}
-									onBlur={handleBlur}
-									error={touched[name] && errors[name]}
-								/>
-							}
-							label={this.decideLabel(name, label)}
-						/>
-						{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
-					</Fragment>
-				);
+			return (
+				<Fragment key={name}>
+					<FormControlLabel
+						control={
+							<Checkbox
+								color={'primary'}
+								checked={values[name] === true ? true : false}
+								name={name}
+								onChange={this.change.bind(null, name, fieldHandler)}
+								onBlur={handleBlur}
+								error={touched[name] && errors[name]}
+							/>
+						}
+						label={this.decideLabel(name, label)}
+					/>
+					{siblings ? siblings.map((sibling) => this.formComponentRenderer(sibling)) : null}
+				</Fragment>
+			);
 		} else if (type === 'radio') {
 			const props = this.formikProps(name, label, placeholder, controlled, { fieldHandler });
 			delete props.helperText;
@@ -292,7 +266,8 @@ class Form extends React.Component {
 			if (input.type === 'group') {
 				const { values, errors, setValues } = this.props;
 				const groupName = input.name;
-				if (input.extra.groupType === 'checkbox') {
+				const { groupType } = input.extra;
+				if (groupType === 'checkbox') {
 					return (
 						<CheckboxGroup
 							key={groupName}
@@ -303,6 +278,21 @@ class Form extends React.Component {
 								values[groupName][index] = e.target.checked;
 								setValues({ ...values });
 							}}
+							values={values[groupName]}
+						/>
+					);
+				} else if (groupType === 'text') {
+					return (
+						<TextInputGroup
+							key={groupName}
+							onChange={(itemName, e) => {
+								values[groupName][itemName] = e.target.value;
+								setValues({ ...values });
+							}}
+							extra={{ ...input.extra }}
+							errors={errors[groupName]}
+							name={groupName}
+							children={input.children}
 							values={values[groupName]}
 						/>
 					);

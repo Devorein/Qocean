@@ -20,7 +20,6 @@ class InputForm extends Component {
 			validateOnChange = false,
 			disabled
 		} = this.props;
-
 		const initialValues = {};
 		let initialErrors = {};
 		inputs.forEach((input) => {
