@@ -21,16 +21,35 @@ class SSFilterSort extends Component {
 		const { sorts } = this.state;
 		const sort = sorts[index];
 
+		const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at' ];
+
 		let selectItems = null;
 		if (type === 'quiz')
-			selectItems = [ 'none', 'name' ].map((name) => ({
-				value: name,
-				text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1))
-			}));
+			selectItems = [
+				...commonsorts,
+				'ratings',
+				'subject',
+				'average_quiz_time',
+				'average_difficulty',
+				'tags',
+				'watchers',
+				'total_questions'
+			];
+		else if (type === 'question')
+			selectItems = [ ...commonsorts, 'difficulty', 'type', 'subject', 'time_allocated', 'quiz' ];
+		else if (type === 'folder')
+			selectItems = [ ...commonsorts, 'icon', 'watchers', 'total_quizzes', 'total_questions' ];
+		else if (type === 'environment') selectItems = [ ...commonsorts, 'icon' ];
+
+		selectItems = selectItems.map((name) => ({
+			value: name,
+			text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
+		}));
 
 		return (
 			<Fragment>
 				<InputSelect
+					name="Target"
 					onChange={(e) => {
 						sort.target = e.target.value;
 						this.setState({
@@ -41,6 +60,7 @@ class SSFilterSort extends Component {
 					value={sort.target}
 				/>
 				<InputSelect
+					name="Order"
 					value={sort.order}
 					onChange={(e) => {
 						sort.order = e.target.value;
