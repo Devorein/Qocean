@@ -10,29 +10,24 @@ class SelfQuizzes extends Component {
 	decideColums = () => {
 		return this.props.cols
 			.concat([
-				{ name: 'ratings', sort: true, filter: true },
-				{ name: 'name', sort: true, filter: false },
-				{ name: 'subject', sort: true, filter: false },
-				{ name: 'average_quiz_time', sort: true, filter: true },
-				{ name: 'average_difficulty', sort: true, filter: true },
-				{ name: 'tags', sort: false, filter: false },
-				{ name: 'source', sort: false, filter: false },
-				{ name: 'watchers', sort: true, filter: false },
-				{ name: 'total_questions', sort: true, filter: true },
-				{ name: 'public', sort: true, filter: true },
-				{ name: 'favourite', sort: true, filter: true },
-				{ name: 'created_at', sort: false, filter: false },
-				{ name: 'updated_at', sort: false, filter: false }
+				{ name: 'ratings' },
+				{ name: 'name' },
+				{ name: 'subject' },
+				{ name: 'average_quiz_time' },
+				{ name: 'average_difficulty' },
+				{ name: 'tags' },
+				{ name: 'source' },
+				{ name: 'watchers' },
+				{ name: 'total_questions' },
+				{ name: 'public' },
+				{ name: 'favourite' },
+				{ name: 'created_at' },
+				{ name: 'updated_at' }
 			])
-			.map(({ name, sort, filter }) => {
+			.map(({ name }) => {
 				return {
 					name,
-					label: this.decideLabel(name),
-					options: {
-						filter,
-						sort,
-						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-					}
+					label: this.decideLabel(name)
 				};
 			});
 	};

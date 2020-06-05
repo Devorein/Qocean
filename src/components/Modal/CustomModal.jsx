@@ -31,8 +31,8 @@ export default function CustomModal(props) {
 				<Fade in={isOpen}>
 					<DialogContent>
 						<CancelIcon onClick={handleClose} />
-						<ChevronLeftIcon onClick={onArrowClick.bind(null, 'left')} />
-						<ChevronRightIcon onClick={onArrowClick.bind(null, 'right')} />
+						<ChevronLeftIcon onClick={onArrowClick ? onArrowClick.bind(null, 'left') : null} />
+						<ChevronRightIcon onClick={onArrowClick ? onArrowClick.bind(null, 'right') : null} />
 						<div className="modal_content">{props.children}</div>
 					</DialogContent>
 				</Fade>

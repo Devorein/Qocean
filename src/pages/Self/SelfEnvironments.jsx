@@ -17,22 +17,17 @@ class SelfEnvironments extends Component {
 	decideColumns = () => {
 		return this.props.cols
 			.concat([
-				{ name: 'icon', sort: false, filter: false },
-				{ name: 'name', sort: true, filter: false },
-				{ name: 'public', sort: true, filter: true },
-				{ name: 'favourite', sort: true, filter: true },
-				{ name: 'created_at', sort: true, filter: false },
-				{ name: 'updated_at', sort: true, filter: false }
+				{ name: 'icon' },
+				{ name: 'name' },
+				{ name: 'public' },
+				{ name: 'favourite' },
+				{ name: 'created_at' },
+				{ name: 'updated_at' }
 			])
-			.map(({ name, sort, filter }) => {
+			.map(({ name }) => {
 				return {
 					name,
-					label: this.decideLabel(name),
-					options: {
-						filter,
-						sort,
-						sortDirection: name === this.props.sortCol ? this.props.sortOrder : 'none'
-					}
+					label: this.decideLabel(name)
 				};
 			});
 	};

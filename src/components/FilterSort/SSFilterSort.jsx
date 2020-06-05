@@ -130,13 +130,12 @@ class SSFilterSort extends Component {
 		return (
 			<div className="FilterSort">
 				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
-				<GenericButton onClick={this.props.onApply.bind(this.state)} text="Apply" />
+				<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
 			</div>
 		);
 	};
 
 	render() {
-		const { type } = this.props;
 		return this.props.children({
 			filterSort: this.renderFilterSort()
 		});

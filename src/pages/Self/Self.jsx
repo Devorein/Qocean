@@ -35,8 +35,6 @@ class Self extends Component {
 		page: 0,
 		totalCount: 0,
 		selectedData: null,
-		sortCol: null,
-		sortOrder: null,
 		isOpen: false,
 		selectedRows: []
 	};
@@ -61,8 +59,7 @@ class Self extends Component {
 			queryParams.populateFields = 'name';
 			queryParams.select = '%2Banswers';
 		}
-		if (this.state.sortCol && Object.keys(newState).length === 0)
-			queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
+
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
@@ -101,8 +98,6 @@ class Self extends Component {
 		this.refetchData(page.name, null, {
 			type: page.name,
 			page: 0,
-			sortCol: null,
-			sortOrder: null,
 			selectedData: null,
 			selectedRows: []
 		});
@@ -282,7 +277,7 @@ class Self extends Component {
 
 	decideTable = (setDeleteModal) => {
 		const { getDetails, genericTransformData, refetchData, updateResource } = this;
-		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
+		const { page, rowsPerPage, totalCount, type } = this.state;
 		const options = {
 			customToolbar: () => {
 				return (
@@ -359,6 +354,7 @@ class Self extends Component {
 			download: false,
 			serverSide: true,
 			filter: false,
+			sort: false,
 			search: false,
 			onChangePage: (page) => {
 				this.setState(
@@ -379,17 +375,6 @@ class Self extends Component {
 						refetchData();
 					}
 				);
-			},
-			onColumnSortChange: (changedColumn, order) => {
-				this.setState(
-					{
-						sortCol: changedColumn,
-						sortOrder: order === 'descending' ? 'desc' : 'asc'
-					},
-					() => {
-						refetchData();
-					}
-				);
 			}
 		};
 
@@ -400,8 +385,6 @@ class Self extends Component {
 			options,
 			page,
 			getDetails,
-			sortCol,
-			sortOrder,
 			genericTransformData,
 			cols: [ { name: 'actions', label: 'Actions' } ]
 		};
@@ -449,9 +432,18 @@ class Self extends Component {
 			});
 		}
 	};
+
 	applyFilterSort = (filterSort) => {
-		console.log(filterSort);
+		let { sorts, filters } = filterSort;
+		const sort = sorts
+			.filter(({ target, order }) => order !== 'none' && target !== 'none')
+			.map(({ target, order }) => `${order === 'desc' ? '-' : ''}${target}`)
+			.join(',');
+		this.refetchData(null, {
+			sort
+		});
 	};
+
 	render() {
 		const { deleteModalMessage, refetchData, switchData } = this;
 		const { data, selectedData, isOpen } = this.state;
@@ -495,14 +487,10 @@ class Self extends Component {
 									<div className={`self_${type}_table self_content_table`}>
 										<SSFilterSort type={type} onApply={this.applyFilterSort}>
 											{({ filterSort }) => {
-												return (
-													<Fragment>
-														{filterSort}
-														{this.decideTable(setIsOpen)}
-													</Fragment>
-												);
+												return <Fragment>{filterSort}</Fragment>;
 											}}
 										</SSFilterSort>
+										{this.decideTable(setIsOpen)}
 									</div>
 								) : (
 									<div>You've not created any {type} yet</div>
