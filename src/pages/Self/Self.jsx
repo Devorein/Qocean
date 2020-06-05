@@ -22,6 +22,8 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import shortid from 'shortid';
 import download from '../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import SSFilterSort from '../../components/FilterSort/SSFilterSort';
+
 import './Self.scss';
 
 class Self extends Component {
@@ -447,7 +449,9 @@ class Self extends Component {
 			});
 		}
 	};
-
+	applyFilterSort = (filterSort) => {
+		console.log(filterSort);
+	};
 	render() {
 		const { deleteModalMessage, refetchData, switchData } = this;
 		const { data, selectedData, isOpen } = this.state;
@@ -488,7 +492,18 @@ class Self extends Component {
 							/>
 							<div className={`self_${type}_content self_content`}>
 								{data.length > 0 ? (
-									<div className={`self_${type}_table self_content_table`}>{this.decideTable(setIsOpen)}</div>
+									<div className={`self_${type}_table self_content_table`}>
+										<SSFilterSort type={type} onApply={this.applyFilterSort}>
+											{({ filterSort }) => {
+												return (
+													<Fragment>
+														{filterSort}
+														{this.decideTable(setIsOpen)}
+													</Fragment>
+												);
+											}}
+										</SSFilterSort>
+									</div>
 								) : (
 									<div>You've not created any {type} yet</div>
 								)}
