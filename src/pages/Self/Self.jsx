@@ -273,6 +273,7 @@ class Self extends Component {
 				primary,
 				data: this.state.data[index]
 			},
+			selectedIndex: index,
 			...newState
 		});
 	};
@@ -421,8 +422,34 @@ class Self extends Component {
 		);
 	};
 
+	switchData = (dir, e) => {
+		const { exclude, primary } = this.state.selectedData;
+		const { data, selectedIndex, totalCount } = this.state;
+		if (dir === 'right') {
+			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
+			this.setState({
+				selectedData: {
+					exclude,
+					primary,
+					data: data[newSelectedIndex]
+				},
+				selectedIndex: newSelectedIndex
+			});
+		} else if (dir === 'left') {
+			const newSelectedIndex = selectedIndex > 0 ? selectedIndex - 1 : totalCount - 1;
+			this.setState({
+				selectedData: {
+					exclude,
+					primary,
+					data: data[newSelectedIndex]
+				},
+				selectedIndex: newSelectedIndex
+			});
+		}
+	};
+
 	render() {
-		const { deleteModalMessage, refetchData } = this;
+		const { deleteModalMessage, refetchData, switchData } = this;
 		const { data, selectedData, isOpen } = this.state;
 		const { match: { params: { type } } } = this.props;
 
@@ -483,6 +510,7 @@ class Self extends Component {
 					onSubmit={this.context.updateResource.bind(null, selectedData ? selectedData.data._id : null, refetchData)}
 					type={type}
 					data={selectedData ? selectedData.data : null}
+					onArrowClick={switchData}
 				/>
 			</div>
 		);
