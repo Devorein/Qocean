@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import CustomTabs from '../../components/Tab/Tabs';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
@@ -11,8 +11,7 @@ import download from '../../Utils/download';
 
 class Export extends Component {
 	state = {
-		data: [],
-		selectedIndex: 0
+		data: []
 	};
 
 	transformData = (data) => {
@@ -96,28 +95,25 @@ class Export extends Component {
 					headers={headers}
 				/>
 				<CustomList
-					containsCheckbox={true}
-					ref={(r) => (this.CustomList = r)}
 					title={`Your ${type}(s)`}
 					listItems={this.transformList(this.state.data)}
-					onClick={(selectedIndex, e) => {
-						this.setState({
-							selectedIndex
-						});
-					}}
 					selectedIcons={[
-						<GetAppIcon
-							key={'publish'}
-							onClick={(e) => {
+						{
+							icon: GetAppIcon,
+							onClick: (checked) => {
 								const exports = [];
-								this.CustomList.state.checked.forEach((checked) => {
+								checked.forEach((checked) => {
 									exports.push(this.state.data[checked]);
 								});
 								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(exports));
-							}}
-						/>
+							}
+						}
 					]}
-				/>
+				>
+					{({ list, checked, selectedIndex }) => {
+						return <Fragment>{list}</Fragment>;
+					}}
+				</CustomList>
 			</div>
 		);
 	}

@@ -109,10 +109,12 @@ export default withStyles(
 						backgroundColor: red[600]
 					}
 				},
-				MuiTypography: {
-					root: {
-						fontFamily: theme.typography.fontFamily
-					}
+
+				'.MuiTypography-root': {
+					fontFamily: theme.typography.fontFamily
+				},
+				'.MuiDialogContent-root': {
+					outline: 'none'
 				}
 			}
 		};

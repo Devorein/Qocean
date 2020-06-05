@@ -14,7 +14,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ReplayIcon from '@material-ui/icons/Replay';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-
+import shortid from 'shortid';
 const IconContainer = withStyles((theme) => ({
 	root: {
 		gridArea: '2/2/3/3',
@@ -46,6 +46,12 @@ class CustomList extends React.Component {
 		filteredItems: this.props.listItems || [],
 		selectedIndex: 0
 	};
+
+	UNSAFE_componentWillReceiveProps(props) {
+		this.setState({
+			filteredItems: props.listItems
+		});
+	}
 
 	handleToggle = (index, e) => {
 		const { listItems, setChecked } = this.props;
@@ -173,7 +179,14 @@ class CustomList extends React.Component {
 					<TextField onChange={filterList} />
 					{
 						<IconContainer>
-							{checked.length >= 1 && selectedIcons ? selectedIcons.map((icon) => icon) : null}
+							{checked.length >= 1 && selectedIcons ? (
+								selectedIcons.map(({ icon, onClick }, index) =>
+									React.createElement(icon, {
+										key: shortid.generate(),
+										onClick: onClick.bind(null, this.state.checked)
+									})
+								)
+							) : null}
 							<DeleteIcon onClick={deleteItems} />
 							<ReplayIcon onClick={refetchData} />
 							<ChevronLeftIcon
