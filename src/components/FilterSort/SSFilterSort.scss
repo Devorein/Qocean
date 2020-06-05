@@ -1,13 +1,13 @@
-.FilterSort{
+.FilterSort {
   display: flex;
-  .FilterSortContainer{
+  .FilterSortContainer {
     display: flex;
     width: 80%;
-    .FilterSortItem{
+    .FilterSortItem {
       flex-grow: 1;
-      &_name{
+      &_name {
         display: flex;
-        padding: 5px; 
+        padding: 5px;
         justify-content: center;
         font-size: 1rem;
         font-weight: bolder;
@@ -18,35 +18,39 @@
       }
     }
   }
-  
 }
 
-.MuiPaper-root.MuiMenu-paper.MuiPopover-paper.SSFilterSort-popover.MuiPaper-elevation8.MuiPaper-rounded{
+.MuiPaper-root.MuiMenu-paper.MuiPopover-paper.SSFilterSort-popover.MuiPaper-elevation8.MuiPaper-rounded {
   width: fit-content;
   min-width: fit-content;
-  .MuiButton-contained.MuiButton-containedPrimary{
+  .MuiButton-contained.MuiButton-containedPrimary {
     width: fit-content;
   }
-  .SSFilterSort_apply-button{
+  .SSFilterSort_apply-button {
     display: flex;
     justify-content: center;
     cursor: pointer;
     transition: transform 250ms ease-in-out;
-    &:hover{
+    &:hover {
       transform: scale(1.25);
       transition: transform 250ms ease-in-out;
     }
   }
 }
 
-.FilterSortItem_select{
+.FilterSortItem_select {
   width: 350px;
   padding: 10px;
   display: grid;
   grid-template: 1fr / 1fr 1fr 50px;
   grid-gap: 5px;
 
-  .MuiSvgIcon-root{
+  &--filters {
+    width: 500px;
+    grid-template: 1fr / 1fr 100px 1fr;
+  }
+
+  .MuiSvgIcon-root {
     height: 100%;
     cursor: pointer;
   }

@@ -5,12 +5,14 @@ import InputSelect from '../Input/InputSelect';
 import Menu from '@material-ui/core/Menu';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withTheme } from '@material-ui/core';
+import TextInput from '../Input/TextInput/TextInput';
+
 import './SSFilterSort.scss';
 
 const DEFAULT_FILTER = {
 	target: 'none',
 	mod: 'none',
-	value: ''
+	value: null
 };
 
 const DEFAULT_SORT = {
@@ -41,8 +43,7 @@ class SSFilterSort extends Component {
 				'watchers',
 				'total_questions'
 			];
-		else if (type === 'question')
-			selectItems = [ ...commonsorts, 'difficulty', 'type', 'subject', 'time_allocated', 'quiz' ];
+		else if (type === 'question') selectItems = [ ...commonsorts, 'difficulty', 'type', 'time_allocated', 'quiz' ];
 		else if (type === 'folder')
 			selectItems = [ ...commonsorts, 'icon', 'watchers', 'total_quizzes', 'total_questions' ];
 		else if (type === 'environment') selectItems = [ ...commonsorts, 'icon' ];
@@ -90,13 +91,65 @@ class SSFilterSort extends Component {
 		);
 	};
 
+	decideTargetType = (target) => {
+		let targetType = null;
+		if (target.match(/(name|subject|quiz)/)) targetType = 'string';
+		else if (target.match(/(public|favourite)/)) targetType = 'boolean';
+		return targetType;
+	};
+
+	decideFilterItem = (targetType, index) => {
+		if (targetType === 'string')
+			return [
+				[ 'is', 'starts_with', 'ends_with', 'contains', 'regex' ].map((name) => ({
+					value: name,
+					text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
+				})),
+				<TextInput
+					value={this.state.filters[index].value}
+					name={`value`}
+					onChange={(e) => {
+						this.state.filters[index].forEach(({ value }, _index) => {
+							if (index === _index) value = e.target.value;
+						});
+						this.setState({
+							filters: this.state.filters
+						});
+					}}
+				/>
+			];
+		else if (targetType === 'boolean')
+			return [
+				[ { value: 'is', text: 'Is' }, { value: 'is_not', text: 'Is not' } ],
+				<InputSelect
+					name="Value"
+					value={this.state.filters[index].value ? this.state.filters[index].value : 'true'}
+					onChange={(e) => {
+						this.state.filters.forEach((filter, _index) => {
+							if (_index === index) filter.value = e.target.value;
+						});
+						this.setState({
+							filters: this.state.filters
+						});
+					}}
+					selectItems={[ { value: 'true', text: 'True' }, { value: 'false', text: 'False' } ]}
+				/>
+			];
+		else return [ [ { value: 'none', text: 'None' } ], null ];
+	};
+
 	renderFilterItem = (index) => {
 		const selectItems = this.getPropsBasedOnType();
+		const { target } = this.state.filters[index];
+		const targetType = this.decideTargetType(target);
+		const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
+		const modValue = this.state.filters[index].mod !== 'none' ? this.state.filters[index].mod : modItems[0].value;
+
 		return (
 			<Fragment>
 				<InputSelect
 					name="Target"
-					value={this.state.filters[index].target}
+					value={target}
 					onChange={(e) => {
 						this.state.filters.forEach((filter, _index) => {
 							if (_index === index) filter.target = e.target.value;
@@ -109,7 +162,7 @@ class SSFilterSort extends Component {
 				/>
 				<InputSelect
 					name="Mod"
-					value={this.state.filters[index].mod}
+					value={modValue}
 					onChange={(e) => {
 						this.state.filters.forEach((filter, _index) => {
 							if (_index === index) filter.mod = e.target.value;
@@ -118,18 +171,15 @@ class SSFilterSort extends Component {
 							filters: this.state.filters
 						});
 					}}
-					selectItems={[
-						{ value: 'asc', text: 'Ascending' },
-						{ value: 'desc', text: 'Descending' },
-						{ value: 'none', text: 'None' }
-					]}
+					selectItems={modItems}
 				/>
+				{valueItem}
 			</Fragment>
 		);
 	};
 
 	renderFilterSortItem = () => {
-		return [ 'sorts', 'filters' ].map((item) => {
+		return [ 'filters', 'sorts' ].map((item) => {
 			return (
 				<div className={`FilterSortItem FilterSort--${item}`} key={`${item}`}>
 					<div
@@ -155,7 +205,10 @@ class SSFilterSort extends Component {
 					>
 						{this.state[item].map((_, index) => {
 							return (
-								<div className="FilterSortItem_select" key={`${this.state[item][index].target}${index}`}>
+								<div
+									className={`FilterSortItem_select FilterSortItem_select--${item}`}
+									key={`${this.state[item][index].target}${index}`}
+								>
 									{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}
 									{index !== 0 ? (
 										<CancelIcon
