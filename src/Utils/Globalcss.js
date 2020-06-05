@@ -7,8 +7,11 @@ export default withStyles(
 	(theme) => {
 		return {
 			'@global': {
+				'.App': {
+					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex()
+				},
 				'.MuiPaper-root': {
-					backgroundColor: theme.palette.background.main
+					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
 				},
 				'.MuiTab-root': {
 					minWidth: 100

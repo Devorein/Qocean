@@ -2,6 +2,9 @@ import React, { Component, Fragment } from 'react';
 import GenericButton from '../Buttons/GenericButton';
 import CancelIcon from '@material-ui/icons/Cancel';
 import InputSelect from '../Input/InputSelect';
+import Menu from '@material-ui/core/Menu';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import { withTheme } from '@material-ui/core';
 import './SSFilterSort.scss';
 
 const DEFAULT_SORT = {
@@ -93,34 +96,59 @@ class SSFilterSort extends Component {
 		return [ 'filters', 'sorts' ].map((item, index) => {
 			return (
 				<div className={`FilterSortItem FilterSort--${item}`} key={`${item}${index}`}>
-					{this.state[item].map((_, index) => {
-						return (
-							<div className="FilterSortSortsItem" key={`${this.state[item][index].target}${index}`}>
-								{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}
-								{index !== 0 ? (
-									<CancelIcon
-										onClick={() => {
-											this.state[item].splice(index, 1);
-											this.setState({
-												[item]: this.state[item]
-											});
-										}}
-									/>
-								) : null}
+					<div
+						className={`FilterSortItem_name`}
+						onClick={(e) => {
+							this.setState({
+								anchorEl: e.currentTarget
+							});
+						}}
+					>{`${item}`}</div>
+					<Menu
+						anchorEl={this.state.anchorEl}
+						keepMounted
+						open={Boolean(this.state.anchorEl)}
+						onClose={(e) => {
+							this.setState({
+								anchorEl: null
+							});
+						}}
+						PopoverClasses={{
+							paper: 'SSFilterSort-popover'
+						}}
+					>
+						{this.state[item].map((_, index) => {
+							return (
+								<div className="FilterSortSortsItem" key={`${this.state[item][index].target}${index}`}>
+									{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}
+									{index !== 0 ? (
+										<CancelIcon
+											onClick={() => {
+												this.state[item].splice(index, 1);
+												this.setState({
+													[item]: this.state[item]
+												});
+											}}
+											style={{ color: this.props.theme.palette.error.main }}
+										/>
+									) : null}
+								</div>
+							);
+						})}
+						{this.state[item].length < 3 ? (
+							<div className="SSFilterSort_apply-button">
+								<AddBoxIcon
+									style={{ color: this.props.theme.palette.success.main }}
+									onClick={(e) => {
+										this.state[item].push(item === 'filters' ? { ...DEFAULT_FILTER } : { ...DEFAULT_SORT });
+										this.setState({
+											[item]: this.state[item]
+										});
+									}}
+								/>
 							</div>
-						);
-					})}
-					{this.state[item].length < 3 ? (
-						<GenericButton
-							text={`Add ${item}`}
-							onClick={(e) => {
-								this.state[item].push(item === 'filters' ? { ...DEFAULT_FILTER } : { ...DEFAULT_SORT });
-								this.setState({
-									[item]: this.state[item]
-								});
-							}}
-						/>
-					) : null}
+						) : null}
+					</Menu>
 				</div>
 			);
 		});
@@ -142,4 +170,4 @@ class SSFilterSort extends Component {
 	}
 }
 
-export default SSFilterSort;
+export default withTheme(SSFilterSort);
