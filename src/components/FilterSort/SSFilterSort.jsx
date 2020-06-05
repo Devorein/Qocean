@@ -4,22 +4,25 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import InputSelect from '../Input/InputSelect';
 import './SSFilterSort.scss';
 
+const DEFAULT_SORT = {
+	target: 'none',
+	order: 'none'
+};
+
+const DEFAULT_FILTER = {
+	target: 'none',
+	order: 'none'
+};
+
 class SSFilterSort extends Component {
 	state = {
-		filters: [ null ],
-		sorts: [
-			{
-				target: 'none',
-				order: 'none'
-			}
-		]
+		filters: [ { ...DEFAULT_FILTER } ],
+		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
 	renderSortItem = (index) => {
 		let { type } = this.props;
 		type = type.toLowerCase();
-		const { sorts } = this.state;
-		const sort = sorts[index];
 
 		const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at' ];
 
@@ -51,21 +54,25 @@ class SSFilterSort extends Component {
 				<InputSelect
 					name="Target"
 					onChange={(e) => {
-						sort.target = e.target.value;
+						this.state.sorts.forEach((sort, _index) => {
+							if (_index === index) sort.target = e.target.value;
+						});
 						this.setState({
-							sorts
+							sorts: this.state.sorts
 						});
 					}}
 					selectItems={selectItems}
-					value={sort.target}
+					value={this.state.sorts[index].target}
 				/>
 				<InputSelect
 					name="Order"
-					value={sort.order}
+					value={this.state.sorts[index].order}
 					onChange={(e) => {
-						sort.order = e.target.value;
+						this.state.sorts.forEach((sort, _index) => {
+							if (_index === index) sort.order = e.target.value;
+						});
 						this.setState({
-							sorts
+							sorts: this.state.sorts
 						});
 					}}
 					selectItems={[
@@ -78,78 +85,51 @@ class SSFilterSort extends Component {
 		);
 	};
 
+	renderFilterItem = (index) => {
+		return <div>Filter {index}</div>;
+	};
+
+	renderFilterSortItem = () => {
+		return [ 'filters', 'sorts' ].map((item, index) => {
+			return (
+				<div className={`FilterSortItem FilterSort--${item}`} key={`${item}${index}`}>
+					{this.state[item].map((_, index) => {
+						return (
+							<div className="FilterSortSortsItem" key={`${this.state[item][index].target}${index}`}>
+								{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}
+								{index !== 0 ? (
+									<CancelIcon
+										onClick={() => {
+											this.state[item].splice(index, 1);
+											this.setState({
+												[item]: this.state[item]
+											});
+										}}
+									/>
+								) : null}
+							</div>
+						);
+					})}
+					{this.state[item].length < 3 ? (
+						<GenericButton
+							text={`Add ${item}`}
+							onClick={(e) => {
+								this.state[item].push(item === 'filters' ? { ...DEFAULT_FILTER } : { ...DEFAULT_SORT });
+								this.setState({
+									[item]: this.state[item]
+								});
+							}}
+						/>
+					) : null}
+				</div>
+			);
+		});
+	};
+
 	renderFilterSort = () => {
 		return (
 			<div className="FilterSort">
-				<div className="FilterSortContainer">
-					<div className="FilterSortItem FilterSort--filters">
-						{this.state.filters.map((filter, index) => {
-							return (
-								<div className="FilterSortSortsItem" key={index}>
-									Filter {index}
-									{index !== 0 ? (
-										<CancelIcon
-											onClick={() => {
-												const { filters } = this.state;
-												filters.pop();
-												this.setState({
-													filters
-												});
-											}}
-										/>
-									) : null}
-								</div>
-							);
-						})}
-						{this.state.filters.length < 3 ? (
-							<GenericButton
-								text="Add Filter"
-								onClick={(e) => {
-									const { filters } = this.state;
-									filters.push(null);
-									this.setState({
-										filters
-									});
-								}}
-							/>
-						) : null}
-					</div>
-					<div className="FilterSortItem FilterSort--sorts">
-						{this.state.sorts.map((sort, index) => {
-							return (
-								<div className="FilterSortSortsItem" key={index}>
-									{this.renderSortItem(index)}
-									{index !== 0 ? (
-										<CancelIcon
-											onClick={() => {
-												const { sorts } = this.state;
-												sorts.pop();
-												this.setState({
-													sorts
-												});
-											}}
-										/>
-									) : null}
-								</div>
-							);
-						})}
-						{this.state.sorts.length < 2 ? (
-							<GenericButton
-								text="Add sort"
-								onClick={(e) => {
-									const { sorts } = this.state;
-									sorts.push({
-										target: 'none',
-										order: 'none'
-									});
-									this.setState({
-										sorts
-									});
-								}}
-							/>
-						) : null}
-					</div>
-				</div>
+				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
 				<GenericButton onClick={this.props.onApply.bind(this.state)} text="Apply" />
 			</div>
 		);
