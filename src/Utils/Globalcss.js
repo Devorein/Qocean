@@ -108,6 +108,11 @@ export default withStyles(
 					'&-filledError': {
 						backgroundColor: red[600]
 					}
+				},
+				MuiTypography: {
+					root: {
+						fontFamily: theme.typography.fontFamily
+					}
 				}
 			}
 		};

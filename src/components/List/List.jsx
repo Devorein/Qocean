@@ -12,6 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import clsx from 'clsx';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ReplayIcon from '@material-ui/icons/Replay';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const IconContainer = withStyles((theme) => ({
 	root: {
@@ -41,7 +43,7 @@ class CustomList extends React.Component {
 	state = {
 		checked: [],
 		manipulated: false,
-		filteredItems: [],
+		filteredItems: this.props.listItems || [],
 		selectedIndex: 0
 	};
 
@@ -174,6 +176,22 @@ class CustomList extends React.Component {
 							{checked.length >= 1 && selectedIcons ? selectedIcons.map((icon) => icon) : null}
 							<DeleteIcon onClick={deleteItems} />
 							<ReplayIcon onClick={refetchData} />
+							<ChevronLeftIcon
+								onClick={(e) => {
+									this.setState({
+										selectedIndex:
+											this.state.selectedIndex > 0 ? this.state.selectedIndex - 1 : this.state.filteredItems.length - 1
+									});
+								}}
+							/>
+							<ChevronRightIcon
+								onClick={(e) => {
+									this.setState({
+										selectedIndex:
+											this.state.selectedIndex < this.state.filteredItems.length - 1 ? this.state.selectedIndex + 1 : 0
+									});
+								}}
+							/>
 							<ListItemIcon classes={{ root: classes.listItemIcon }} onClick={handleToggleAll}>
 								<Checkbox
 									edge="start"

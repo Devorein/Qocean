@@ -56,11 +56,11 @@ class Self extends Component {
 				};
 		if (type === 'Question') {
 			queryParams.populate = 'quiz';
-      queryParams.populateFields = 'name';
-      queryParams.select='%2Banswers';
+			queryParams.populateFields = 'name';
+			queryParams.select = '%2Banswers';
 		}
 		if (this.state.sortCol && Object.keys(newState).length === 0)
-      queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
+			queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
