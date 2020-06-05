@@ -439,9 +439,14 @@ class Self extends Component {
 			.filter(({ target, order }) => order !== 'none' && target !== 'none')
 			.map(({ target, order }) => `${order === 'desc' ? '-' : ''}${target}`)
 			.join(',');
-		this.refetchData(null, {
+		const query = {
 			sort
+		};
+		filters.forEach(({ target, value }) => {
+			if (target !== 'none' && value && value !== '') query[target] = value;
 		});
+
+		this.refetchData(null, query);
 	};
 
 	render() {

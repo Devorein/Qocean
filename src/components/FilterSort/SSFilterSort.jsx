@@ -123,7 +123,7 @@ class SSFilterSort extends Component {
 				[ { value: 'is', text: 'Is' }, { value: 'is_not', text: 'Is not' } ],
 				<InputSelect
 					name="Value"
-					value={this.state.filters[index].value ? this.state.filters[index].value : 'true'}
+					value={this.state.filters[index].value ? this.state.filters[index].value : ''}
 					onChange={(e) => {
 						this.state.filters.forEach((filter, _index) => {
 							if (_index === index) filter.value = e.target.value;
