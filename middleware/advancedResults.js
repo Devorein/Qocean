@@ -1,4 +1,5 @@
 const ErrorResponse = require('../utils/errorResponse');
+const aqp = require('api-query-params');
 
 const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
@@ -49,7 +50,6 @@ const advancedResults = (model, populate, option = {}) =>
 				let reqQuery = { ...req.query };
 				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
 				excludeFields.forEach((param) => delete reqQuery[param]);
-
 				reqQuery = JSON.stringify(reqQuery);
 
 				reqQuery = reqQuery.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
@@ -76,7 +76,9 @@ const advancedResults = (model, populate, option = {}) =>
 						...option.match,
 						watchers: { $in: [ req.user._id ] }
 					};
-				reqQuery = { ...reqQuery, ...option.match };
+				const { filter } = aqp(req._parsedOriginalUrl.query);
+				delete filter.page;
+				reqQuery = { ...reqQuery, ...option.match, ...filter };
 				query = model.find(reqQuery);
 				let fields = '';
 				if (req.query.select) {

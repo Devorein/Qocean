@@ -12,7 +12,7 @@ import './SSFilterSort.scss';
 const DEFAULT_FILTER = {
 	target: 'none',
 	mod: 'none',
-	value: null
+	value: ''
 };
 
 const DEFAULT_SORT = {
@@ -95,6 +95,11 @@ class SSFilterSort extends Component {
 		let targetType = null;
 		if (target.match(/(name|subject|quiz)/)) targetType = 'string';
 		else if (target.match(/(public|favourite)/)) targetType = 'boolean';
+		else if (target.match(/(created_at|updated_at)/)) targetType = 'date';
+		else if (target.match(/(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes)/))
+			targetType = 'number';
+		else if (target.match(/(tags)/)) targetType = 'array';
+		else if (target.match(/(difficulty|icon|type|)/)) targetType = 'select';
 		return targetType;
 	};
 
@@ -109,9 +114,8 @@ class SSFilterSort extends Component {
 					value={this.state.filters[index].value}
 					name={`value`}
 					onChange={(e) => {
-						this.state.filters[index].forEach(({ value }, _index) => {
-							if (index === _index) value = e.target.value;
-						});
+						const target = this.state.filters[index];
+						target.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
@@ -152,7 +156,10 @@ class SSFilterSort extends Component {
 					value={target}
 					onChange={(e) => {
 						this.state.filters.forEach((filter, _index) => {
-							if (_index === index) filter.target = e.target.value;
+							if (_index === index) {
+								filter.target = e.target.value;
+								filter.type = this.decideTargetType(e.target.value);
+							}
 						});
 						this.setState({
 							filters: this.state.filters

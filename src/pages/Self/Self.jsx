@@ -439,11 +439,24 @@ class Self extends Component {
 			.filter(({ target, order }) => order !== 'none' && target !== 'none')
 			.map(({ target, order }) => `${order === 'desc' ? '-' : ''}${target}`)
 			.join(',');
-		const query = {
-			sort
-		};
-		filters.forEach(({ target, value }) => {
-			if (target !== 'none' && value && value !== '') query[target] = value;
+		const query = {};
+		if (sort !== '') query.sort = sort;
+
+		filters.forEach(({ target, value, type, mod }) => {
+			if (target !== 'none' && value && value !== '') {
+				if (type === 'boolean') {
+					if (value === 'false' && mod === 'is_not') query[target] = true;
+					else if (value === 'false' && mod === 'is') query[target] = false;
+					else if (value === 'true' && mod === 'is') query[target] = true;
+					else if (value === 'true' && mod === 'is_not') query[target] = false;
+				} else if (type === 'string') {
+					if (mod === 'is') query[target] = value;
+					else if (mod === 'starts_with') query[target] = `/^${value}/i`;
+					else if (mod === 'ends_with') query[target] = `/${value}$/`;
+					else if (mod === 'contains') query[target] = `/${value}/`;
+					else if (mod === 'regex') query[target] = value;
+				}
+			}
 		});
 
 		this.refetchData(null, query);

@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
 		overflowY: 'auto',
 		display: 'flex',
 		justifyContent: 'center',
+		alignItems: 'center',
 		flexWrap: 'wrap',
 		'& > *': {
 			margin: theme.spacing(0.5)
