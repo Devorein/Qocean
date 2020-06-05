@@ -14,7 +14,15 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ReplayIcon from '@material-ui/icons/Replay';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { HotKeys } from 'react-hotkeys';
 import shortid from 'shortid';
+
+const keyMap = {
+	MOVE_UP: 'up',
+	MOVE_DOWN: 'down',
+	CHECK: 'right'
+};
+
 const IconContainer = withStyles((theme) => ({
 	root: {
 		gridArea: '2/2/3/3',
@@ -89,7 +97,6 @@ class CustomList extends React.Component {
 		} else {
 			const currentIndex = checked.indexOf(index);
 			const newChecked = [ ...checked ];
-
 			if (currentIndex === -1) newChecked.push(index);
 			else newChecked.splice(currentIndex, 1);
 			this.setState(
@@ -153,8 +160,30 @@ class CustomList extends React.Component {
 		});
 	};
 
+	handlers = {
+		MOVE_UP: (event) => this.onKeyDown('up'),
+		MOVE_DOWN: (event) => this.onKeyDown('down')
+	};
+
+	onKeyDown = (keyName, e) => {
+		if (keyName === 'down') this.moveDown(e);
+		else if (keyName === 'up') this.moveUp(e);
+	};
+
+	moveUp = (e) => {
+		this.setState({
+			selectedIndex: this.state.selectedIndex > 0 ? this.state.selectedIndex - 1 : this.state.filteredItems.length - 1
+		});
+	};
+
+	moveDown = (e) => {
+		this.setState({
+			selectedIndex: this.state.selectedIndex < this.state.filteredItems.length - 1 ? this.state.selectedIndex + 1 : 0
+		});
+	};
+
 	renderList = () => {
-		const { handleToggle, handleToggleAll, filterList, deleteItems, refetchData } = this;
+		const { handleToggle, handleToggleAll, filterList, deleteItems, refetchData, moveLeft, moveRight } = this;
 
 		const {
 			classes,
@@ -171,98 +200,94 @@ class CustomList extends React.Component {
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
 
 		return (
-			<Container className={rootClass}>
-				<MiniGrid>
-					<Typography variant="h6" classes={{ root: classes.listHeader }}>
-						{title}
-					</Typography>
-					<TextField onChange={filterList} />
-					{
-						<IconContainer>
-							{checked.length >= 1 && selectedIcons ? (
-								selectedIcons.map(({ icon, onClick }, index) =>
-									React.createElement(icon, {
-										key: shortid.generate(),
-										onClick: onClick.bind(null, this.state.checked)
-									})
-								)
-							) : null}
-							<DeleteIcon onClick={deleteItems} />
-							<ReplayIcon onClick={refetchData} />
-							<ChevronLeftIcon
-								onClick={(e) => {
-									this.setState({
-										selectedIndex:
-											this.state.selectedIndex > 0 ? this.state.selectedIndex - 1 : this.state.filteredItems.length - 1
-									});
-								}}
-							/>
-							<ChevronRightIcon
-								onClick={(e) => {
-									this.setState({
-										selectedIndex:
-											this.state.selectedIndex < this.state.filteredItems.length - 1 ? this.state.selectedIndex + 1 : 0
-									});
-								}}
-							/>
-							<ListItemIcon classes={{ root: classes.listItemIcon }} onClick={handleToggleAll}>
-								<Checkbox
-									edge="start"
-									checked={checked.length === items.length && items.length !== 0}
-									tabIndex={-1}
-									disableRipple
-									color="primary"
-									inputProps={{ 'aria-labelledby': 'Select All' }}
-									className={classes.checkbox}
-								/>
-							</ListItemIcon>
-							<ListItemText classes={{ root: classes.listSelected }}>{checked.length}</ListItemText>
-						</IconContainer>
-					}
-				</MiniGrid>
-
-				<List dense={false} classes={{ root: classes.listBody }}>
-					{items.map((listItem, index) => {
-						const { primary, secondary, primaryIcon, key } = listItem;
-						return (
-							<ListItem
-								key={key ? key : primary}
-								classes={{ root: classes.listItem }}
-								className={selectedIndex === index ? 'selected' : null}
-							>
-								<ListItemText classes={{ root: classes.listIndex }}>{index + 1}</ListItemText>
-								{containsCheckbox ? (
-									<ListItemIcon onClick={handleToggle.bind(null, index)}>
-										<Checkbox
-											edge="start"
-											checked={checked.indexOf(index) !== -1}
-											tabIndex={-1}
-											disableRipple
-											color="primary"
-											inputProps={{ 'aria-labelledby': primary }}
-										/>
-									</ListItemIcon>
+			<HotKeys keyMap={keyMap}>
+				<Container className={rootClass}>
+					<MiniGrid>
+						<Typography variant="h6" classes={{ root: classes.listHeader }}>
+							{title}
+						</Typography>
+						<TextField onChange={filterList} />
+						{
+							<IconContainer>
+								{checked.length >= 1 && selectedIcons ? (
+									selectedIcons.map(({ icon, onClick }, index) =>
+										React.createElement(icon, {
+											key: shortid.generate(),
+											onClick: onClick.bind(null, this.state.checked)
+										})
+									)
 								) : null}
-								<ListItemIcon>{getIcons(primaryIcon)}</ListItemIcon>
-								<EnhancedListItemText
-									primary={primary}
-									secondary={secondary}
-									onClick={(e) => {
-										this.setState(
-											{
-												selectedIndex: index
-											},
-											() => {
-												onClick(index);
-											}
-										);
+								<DeleteIcon onClick={deleteItems} />
+								<ReplayIcon onClick={refetchData} />
+								<ChevronLeftIcon onClick={moveLeft} />
+								<ChevronRightIcon onClick={moveRight} />
+								<ListItemIcon classes={{ root: classes.listItemIcon }} onClick={handleToggleAll}>
+									<Checkbox
+										edge="start"
+										checked={checked.length === items.length && items.length !== 0}
+										tabIndex={-1}
+										disableRipple
+										color="primary"
+										inputProps={{ 'aria-labelledby': 'Select All' }}
+										className={classes.checkbox}
+									/>
+								</ListItemIcon>
+								<ListItemText classes={{ root: classes.listSelected }}>{checked.length}</ListItemText>
+							</IconContainer>
+						}
+					</MiniGrid>
+
+					<List dense={false} classes={{ root: classes.listBody }}>
+						{items.map((listItem, index) => {
+							const { primary, secondary, primaryIcon, key } = listItem;
+							return (
+								<HotKeys
+									key={key ? key : primary}
+									handlers={{
+										...this.handlers,
+										CHECK: (event) => handleToggle(this.state.selectedIndex, event)
 									}}
-								/>
-							</ListItem>
-						);
-					})}
-				</List>
-			</Container>
+								>
+									<ListItem
+										classes={{ root: classes.listItem }}
+										className={selectedIndex === index ? 'selected' : null}
+									>
+										<ListItemText classes={{ root: classes.listIndex }}>{index + 1}</ListItemText>
+
+										{containsCheckbox ? (
+											<ListItemIcon onClick={handleToggle.bind(null, index)}>
+												<Checkbox
+													edge="start"
+													checked={checked.indexOf(index) !== -1}
+													tabIndex={-1}
+													disableRipple
+													color="primary"
+													inputProps={{ 'aria-labelledby': primary }}
+												/>
+											</ListItemIcon>
+										) : null}
+										<ListItemIcon>{getIcons(primaryIcon)}</ListItemIcon>
+										<EnhancedListItemText
+											primary={primary}
+											secondary={secondary}
+											onClick={(e) => {
+												this.setState(
+													{
+														selectedIndex: index
+													},
+													() => {
+														onClick(index);
+													}
+												);
+											}}
+										/>
+									</ListItem>
+								</HotKeys>
+							);
+						})}
+					</List>
+				</Container>
+			</HotKeys>
 		);
 	};
 
