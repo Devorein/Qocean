@@ -93,13 +93,13 @@ class SSFilterSort extends Component {
 
 	decideTargetType = (target) => {
 		let targetType = null;
-		if (target.match(/(name|subject|quiz)/)) targetType = 'string';
-		else if (target.match(/(public|favourite)/)) targetType = 'boolean';
-		else if (target.match(/(created_at|updated_at)/)) targetType = 'date';
-		else if (target.match(/(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes)/))
+		if (target.match(/^(name|subject|quiz)$/)) targetType = 'string';
+		else if (target.match(/^(public|favourite)$/)) targetType = 'boolean';
+		else if (target.match(/^(created_at|updated_at)$/)) targetType = 'date';
+		else if (target.match(/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes)$/))
 			targetType = 'number';
-		else if (target.match(/(tags)/)) targetType = 'array';
-		else if (target.match(/(difficulty|icon|type|)/)) targetType = 'select';
+		else if (target.match(/^(tags)$/)) targetType = 'array';
+		else if (target.match(/(difficulty|icon|type|)$/)) targetType = 'select';
 		return targetType;
 	};
 
@@ -139,7 +139,79 @@ class SSFilterSort extends Component {
 					selectItems={[ { value: 'true', text: 'True' }, { value: 'false', text: 'False' } ]}
 				/>
 			];
-		else return [ [ { value: 'none', text: 'None' } ], null ];
+		else if (targetType === 'number') {
+			const { mod } = this.state.filters[index];
+			return [
+				[
+					'is',
+					'is_not',
+					'greater_than',
+					'less_than',
+					'greater_than_equal',
+					'less_than_equal',
+					'between',
+					'not_between'
+				].map((name) => ({
+					value: name,
+					text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
+				})),
+				mod.match(/^(between|not_between)$/g) ? (
+					<Fragment>
+						<TextInput
+							value={
+								Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[0] ? (
+									this.state.filters[index].value[0]
+								) : (
+									[]
+								)
+							}
+							name={`value`}
+							type={'number'}
+							onChange={(e) => {
+								const target = this.state.filters[index];
+								if (!Array.isArray(target.value)) target.value = [];
+								target.value[0] = e.target.value;
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+						/>
+						<TextInput
+							value={
+								Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[1] ? (
+									this.state.filters[index].value[1]
+								) : (
+									[]
+								)
+							}
+							name={`value`}
+							type={'number'}
+							onChange={(e) => {
+								const target = this.state.filters[index];
+								if (!Array.isArray(target.value)) target.value = [];
+								target.value[1] = e.target.value;
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+						/>
+					</Fragment>
+				) : (
+					<TextInput
+						value={this.state.filters[index].value}
+						name={`value`}
+						type={'number'}
+						onChange={(e) => {
+							const target = this.state.filters[index];
+							target.value = e.target.value;
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+					/>
+				)
+			];
+		} else return [ [ { value: 'none', text: 'None' } ], null ];
 	};
 
 	renderFilterItem = (index) => {
