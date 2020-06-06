@@ -6,13 +6,13 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 class DatePicker extends Component {
 	render() {
 		let { value, onChange } = this.props;
-		value = value === '' ? moment.unix(Date.now()).format('dd/MM/yyyy') : value;
+		value = value === '' ? moment(Date.now()).toISOString() : value;
 		return (
 			<MuiPickersUtilsProvider utils={MomentUtils}>
 				<KeyboardDatePicker
 					disableToolbar
 					variant="inline"
-					format="dd/MM/yyyy"
+					format="DD/MM/YYYY"
 					margin="normal"
 					id="date-picker-inline"
 					label="Pick date"

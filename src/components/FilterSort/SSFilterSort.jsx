@@ -9,6 +9,7 @@ import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
 import Switch from '@material-ui/core/Switch';
+import moment from 'moment';
 
 import './SSFilterSort.scss';
 import MultiSelect from '../Input/MultiSelect';
@@ -316,13 +317,17 @@ class SSFilterSort extends Component {
 					name="Target"
 					value={target}
 					onChange={(e) => {
-						this.state.filters.forEach((filter, _index) => {
-							if (_index === index) {
-								filter.target = e.target.value;
-								filter.type = this.decideTargetType(e.target.value);
-								// filter.value = this.decideTargetValue(e.target.value);
-							}
-						});
+						const targetFilter = this.state.filters[index];
+						const targetType = this.decideTargetType(e.target.value);
+						targetFilter.target = e.target.value;
+						targetFilter.type = targetType;
+						targetFilter.value = (() => {
+							if (targetType === 'string') return '';
+							else if (targetType === 'number') return [ 0 ];
+							else if (targetType === 'boolean') return true;
+							else if (targetType === 'date') return moment(Date.now()).toISOString();
+						})();
+						console.log(targetFilter.value);
 						this.setState({
 							filters: this.state.filters
 						});
