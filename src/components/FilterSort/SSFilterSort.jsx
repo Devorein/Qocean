@@ -10,7 +10,7 @@ import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
 import Switch from '@material-ui/core/Switch';
 import moment from 'moment';
-
+import shortid from 'shortid';
 import './SSFilterSort.scss';
 import MultiSelect from '../Input/MultiSelect';
 
@@ -85,6 +85,7 @@ class SSFilterSort extends Component {
 					/>
 				</div>
 				<InputSelect
+					className="FilterSortItem_select_target"
 					name="Target"
 					onChange={(e) => {
 						this.state.sorts.forEach((sort, _index) => {
@@ -99,6 +100,7 @@ class SSFilterSort extends Component {
 					value={this.state.sorts[index].target}
 				/>
 				<InputSelect
+					className="FilterSortItem_select_order"
 					name="Order"
 					value={this.state.sorts[index].order}
 					onChange={(e) => {
@@ -263,6 +265,7 @@ class SSFilterSort extends Component {
 				/>
 			];
 		} else if (targetType === 'date') {
+			const { mod } = this.state.filters[index];
 			return [
 				[
 					'exact',
@@ -276,22 +279,25 @@ class SSFilterSort extends Component {
 					'last_year',
 					'within_last_year'
 				].map((item) => ({ value: item, text: capitalize(item) })),
-				<DatePicker
-					value={this.state.filters[index].value}
-					onChange={(date) => {
-						const target = this.state.filters[index];
-						target.value = date;
-						this.setState({
-							filters: this.state.filters
-						});
-					}}
-				/>
+				mod.match(/(exact|within)/)
+					? Array(mod.match(/(exact)/) ? 1 : 2).fill(0).map((_, _index) => (
+							<DatePicker
+								key={`datepicker_${_index}${shortid.generate()}`}
+								value={this.state.filters[index].value[_index]}
+								onChange={(date) => {
+									const target = this.state.filters[index];
+									target.value[_index] = date;
+									this.setState({
+										filters: this.state.filters
+									});
+								}}
+							/>
+						))
+					: null
 			];
 		} else return [ [ { value: 'none', text: 'None' } ], null ];
 	};
-
 	renderFilterItem = (index) => {
-		const filterCount = this.state.filters.length;
 		const selectItems = this.getPropsBasedOnType();
 		const currentTarget = this.state.filters[index];
 		const { target, mod, disabled } = currentTarget;
@@ -299,7 +305,6 @@ class SSFilterSort extends Component {
 		const targetType = this.decideTargetType(target);
 		const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
 		const modValue = mod !== 'none' ? mod : modItems[0].value;
-
 		return (
 			<Fragment>
 				<div className="FilterSortItem_select_switch">
@@ -317,6 +322,7 @@ class SSFilterSort extends Component {
 				</div>
 				{index >= 1 ? (
 					<InputSelect
+						className="FilterSortItem_select_cond"
 						name="Cond"
 						value={currentTarget.cond}
 						onChange={(e) => {
@@ -330,19 +336,28 @@ class SSFilterSort extends Component {
 					/>
 				) : null}
 				<InputSelect
+					className="FilterSortItem_select_target"
 					name="Target"
 					value={target}
 					onChange={(e) => {
 						const targetType = this.decideTargetType(e.target.value);
+						const [ modItems ] = this.decideFilterItem(targetType, index);
+
 						currentTarget.target = e.target.value;
 						currentTarget.type = targetType;
 						currentTarget.cond = 'and';
-						currentTarget.value = (() => {
-							if (targetType === 'string') return '';
-							else if (targetType === 'number') return [ 0 ];
-							else if (targetType === 'boolean') return true;
-							else if (targetType === 'date') return moment(Date.now()).toISOString();
-						})();
+						currentTarget.mod = modItems[0].value;
+						if (targetType === 'date') {
+							const currentDate = moment(Date.now()).toISOString();
+							if (modValue === 'exact') currentTarget.value = [ currentDate ];
+							else if (modValue === 'within') currentTarget.value = [ currentDate, currentDate ];
+						} else {
+							currentTarget.value = (() => {
+								if (targetType === 'string') return '';
+								else if (targetType === 'number') return [ 0 ];
+								else if (targetType === 'boolean') return true;
+							})();
+						}
 						this.setState({
 							filters: this.state.filters
 						});
@@ -351,6 +366,7 @@ class SSFilterSort extends Component {
 					selectItems={selectItems}
 				/>
 				<InputSelect
+					className="FilterSortItem_select_mod"
 					name="Mod"
 					value={modValue}
 					onChange={(e) => {
@@ -362,7 +378,7 @@ class SSFilterSort extends Component {
 					disabledSelect={disabled}
 					selectItems={modItems}
 				/>
-				{valueItem}
+				<div className="FilterSortItem_select_value">{valueItem}</div>
 			</Fragment>
 		);
 	};

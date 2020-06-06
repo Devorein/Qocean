@@ -50,6 +50,18 @@
   &_filters {
     width: 750px;
     grid-template: 1fr / 50px 75px 200px 150px 1fr 50px;
+    .FilterSortItem_select_cond {
+      grid-area: 1/2/2/3;
+    }
+    .FilterSortItem_select_target {
+      grid-area: 1/3/2/4;
+    }
+    .FilterSortItem_select_mod {
+      grid-area: 1/4/2/5;
+    }
+    .FilterSortItem_select_value {
+      grid-area: 1/5/2/6;
+    }
   }
   .MuiSwitch-thumb {
     width: 20px;
