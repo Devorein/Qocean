@@ -249,7 +249,7 @@ class SSFilterSort extends Component {
 							})
 						)
 					}
-					customChipRenderer={getColoredIcons.bind(null, this.props.type)}
+					customChipRenderer={target.match(/(icon)/) ? getColoredIcons.bind(null, this.props.type) : null}
 					handleChange={(e) => {
 						const target = this.state.filters[index];
 						if (!Array.isArray(target.value)) target.value = [];
@@ -354,7 +354,7 @@ class SSFilterSort extends Component {
 			let totalActive = 0;
 
 			this.state[item].forEach((item) => (totalActive += item.disabled ? 0 : 1));
-
+			const items = this.state[item];
 			return (
 				<div className={`FilterSortItem FilterSort_${item}`} key={`${item}`}>
 					<div
@@ -380,22 +380,24 @@ class SSFilterSort extends Component {
 							paper: 'SSFilterSort-popover'
 						}}
 					>
-						{this.state[item].map((_, index) => {
+						{items.map(({ disabled, target }, index) => {
 							return (
 								<div
-									className={`FilterSortItem_select FilterSortItem_select_${item} ${this.state[item][index].disabled
+									className={`FilterSortItem_select FilterSortItem_select_${item} ${disabled
 										? 'FilterSortItem_select--disabled'
 										: ''}`}
-									key={`${this.state[item][index].target}${index}`}
+									key={`${target}${index}`}
 								>
 									{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}
 									{index !== 0 ? (
 										<CancelIcon
 											onClick={() => {
-												this.state[item].splice(index, 1);
-												this.setState({
-													[item]: this.state[item]
-												});
+												if (!disabled) {
+													items.splice(index, 1);
+													this.setState({
+														[item]: items
+													});
+												}
 											}}
 											style={{ color: this.props.theme.palette.error.main }}
 										/>
@@ -403,14 +405,14 @@ class SSFilterSort extends Component {
 								</div>
 							);
 						})}
-						{this.state[item].length < 3 ? (
+						{items.length < 3 ? (
 							<div className="SSFilterSort_apply-button">
 								<AddBoxIcon
 									style={{ color: this.props.theme.palette.success.main }}
 									onClick={(e) => {
-										this.state[item].push(item === 'filters' ? { ...DEFAULT_FILTER } : { ...DEFAULT_SORT });
+										items.push(item === 'filters' ? { ...DEFAULT_FILTER } : { ...DEFAULT_SORT });
 										this.setState({
-											[item]: this.state[item]
+											[item]: items
 										});
 									}}
 								/>
