@@ -8,6 +8,7 @@ import { withTheme } from '@material-ui/core';
 import TextInput from '../Input/TextInput/TextInput';
 
 import './SSFilterSort.scss';
+import MultiSelect from '../Input/MultiSelect';
 
 const DEFAULT_FILTER = {
 	target: 'none',
@@ -19,6 +20,10 @@ const DEFAULT_SORT = {
 	target: 'none',
 	order: 'none'
 };
+
+function capitalize(item) {
+	return item.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ');
+}
 
 class SSFilterSort extends Component {
 	state = {
@@ -99,7 +104,7 @@ class SSFilterSort extends Component {
 		else if (target.match(/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes)$/))
 			targetType = 'number';
 		else if (target.match(/^(tags)$/)) targetType = 'array';
-		else if (target.match(/(difficulty|icon|type|)$/)) targetType = 'select';
+		else if (target.match(/(difficulty|icon|type|average_difficulty)$/)) targetType = 'select';
 		return targetType;
 	};
 
@@ -155,64 +160,62 @@ class SSFilterSort extends Component {
 					'not_between_exclusive'
 				].map((name) => ({
 					value: name,
-					text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
+					text: capitalize(name)
 				})),
-				mod.match(/^(between_exclusive|not_between_exclusive|between_inclusive|not_between_inclusive)$/g) ? (
-					<Fragment>
-						<TextInput
-							value={
-								Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[0] ? (
-									this.state.filters[index].value[0]
-								) : (
-									[]
-								)
-							}
-							name={`value`}
-							type={'number'}
-							onChange={(e) => {
-								const target = this.state.filters[index];
-								if (!Array.isArray(target.value)) target.value = [];
-								target.value[0] = e.target.value;
-								this.setState({
-									filters: this.state.filters
-								});
-							}}
-						/>
-						<TextInput
-							value={
-								Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[1] ? (
-									this.state.filters[index].value[1]
-								) : (
-									[]
-								)
-							}
-							name={`value`}
-							type={'number'}
-							onChange={(e) => {
-								const target = this.state.filters[index];
-								if (!Array.isArray(target.value)) target.value = [];
-								target.value[1] = e.target.value;
-								this.setState({
-									filters: this.state.filters
-								});
-							}}
-						/>
-					</Fragment>
-				) : (
-					<TextInput
-						value={this.state.filters[index].value}
-						name={`value`}
-						type={'number'}
-						onChange={(e) => {
+				<Fragment>
+					{Array(
+						mod.match(/^(between_exclusive|not_between_exclusive|between_inclusive|not_between_inclusive)$/g) ? 2 : 1
+					)
+						.fill(0)
+						.map((_, _index) => (
+							<TextInput
+								key={`${_index}_${targetType}_${mod}`}
+								value={
+									Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[_index] ? (
+										this.state.filters[index].value[_index]
+									) : (
+										[]
+									)
+								}
+								name={`value`}
+								type={'number'}
+								onChange={(e) => {
+									const target = this.state.filters[index];
+									if (!Array.isArray(target.value)) target.value = [];
+									target.value[_index] = e.target.value;
+									this.setState({
+										filters: this.state.filters
+									});
+								}}
+							/>
+						))}
+				</Fragment>
+			];
+		} else if (targetType === 'select') {
+			const { target, value = [] } = this.state.filters[index];
+			if (target.match(/(difficulty|average_difficulty)/))
+				return [
+					[ 'is', 'is_not' ].map((name) => ({
+						value: name,
+						text: capitalize(name)
+					})),
+					<MultiSelect
+						label={capitalize(target)}
+						selected={Array.isArray(value) ? value : []}
+						items={[ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
+							name: item,
+							_id: item
+						}))}
+						handleChange={(e) => {
 							const target = this.state.filters[index];
+							if (!Array.isArray(target.value)) target.value = [];
 							target.value = e.target.value;
 							this.setState({
 								filters: this.state.filters
 							});
 						}}
 					/>
-				)
-			];
+				];
 		} else return [ [ { value: 'none', text: 'None' } ], null ];
 	};
 
@@ -233,6 +236,7 @@ class SSFilterSort extends Component {
 							if (_index === index) {
 								filter.target = e.target.value;
 								filter.type = this.decideTargetType(e.target.value);
+								// filter.value = this.decideTargetValue(e.target.value);
 							}
 						});
 						this.setState({

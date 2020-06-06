@@ -464,12 +464,12 @@ class Self extends Component {
 						query[`${target}[$options]`] = modifiers;
 					}
 				} else if (type === 'number') {
-					if (mod === 'is') query[target] = value;
-					else if (mod === 'is_not') query[`${target}[$ne]`] = `${value}`;
-					else if (mod === 'greater_than') query[`${target}[$gt]`] = `${value}`;
-					else if (mod === 'less_than') query[`${target}[$lt]`] = `${value}`;
-					else if (mod === 'greater_than_equal') query[`${target}[$gte]`] = `${value}`;
-					else if (mod === 'less_than_equal') query[`${target}[$lte]`] = `${value}`;
+					if (mod === 'is') query[target] = value[0];
+					else if (mod === 'is_not') query[`${target}[$ne]`] = `${value[0]}`;
+					else if (mod === 'greater_than') query[`${target}[$gt]`] = `${value[0]}`;
+					else if (mod === 'less_than') query[`${target}[$lt]`] = `${value[0]}`;
+					else if (mod === 'greater_than_equal') query[`${target}[$gte]`] = `${value[0]}`;
+					else if (mod === 'less_than_equal') query[`${target}[$lte]`] = `${value[0]}`;
 					else if (mod === 'between_inclusive') {
 						const transformedValue = value.map((value) => parseFloat(value));
 						query[`${target}[$gte]`] = Math.min(...transformedValue);
@@ -486,6 +486,16 @@ class Self extends Component {
 						const transformedValue = value.map((value) => parseFloat(value));
 						query[`[$or][0][${target}][$gte]`] = Math.max(...transformedValue);
 						query[`[$or][1][${target}][$lte]`] = Math.min(...transformedValue);
+					}
+				} else if (type === 'select') {
+					if (mod === 'is') {
+						value.forEach((val, index) => {
+							query[`[$or][${index}][${target}]`] = val;
+						});
+					} else if (mod === 'is_not') {
+						value.forEach((val, index) => {
+							query[`[$and][${index}][${target}][$ne]`] = val;
+						});
 					}
 				}
 			}

@@ -50,6 +50,7 @@ const advancedResults = (model, populate, option = {}) =>
 				// const newValue = regex.exec(value)[1];
 
 				let reqQuery = { ...req.query };
+				console.log(reqQuery);
 				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
 				excludeFields.forEach((param) => delete reqQuery[param]);
 
@@ -76,7 +77,6 @@ const advancedResults = (model, populate, option = {}) =>
 						...option.match,
 						watchers: { $in: [ req.user._id ] }
 					};
-
 				reqQuery = { ...reqQuery, ...option.match };
 				query = model.find(reqQuery);
 				let fields = '';
