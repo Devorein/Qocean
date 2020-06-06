@@ -351,6 +351,10 @@ class SSFilterSort extends Component {
 
 	renderFilterSortItem = () => {
 		return [ 'filters', 'sorts' ].map((item) => {
+			let totalActive = 0;
+
+			this.state[item].forEach((item) => (totalActive += item.disabled ? 0 : 1));
+
 			return (
 				<div className={`FilterSortItem FilterSort_${item}`} key={`${item}`}>
 					<div
@@ -360,7 +364,9 @@ class SSFilterSort extends Component {
 								[`anchorEl${item}`]: e.currentTarget
 							});
 						}}
-					>{`${item}`}</div>
+					>
+						{totalActive} {`${item}`} <span style={{ fontSize: 12, marginLeft: 5 }}>{'Active'}</span>
+					</div>
 					<Menu
 						anchorEl={this.state[`anchorEl${item}`]}
 						keepMounted
