@@ -5,11 +5,12 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import shortid from 'shortid';
 class DatePicker extends Component {
 	render() {
-		let { value, onChange } = this.props;
+		let { value, onChange, disabled = false } = this.props;
 		value = value === '' ? moment(Date.now()).toISOString() : value;
 		return (
 			<MuiPickersUtilsProvider utils={MomentUtils}>
 				<KeyboardDatePicker
+					disabled={disabled}
 					disableFuture
 					disableToolbar
 					variant="inline"

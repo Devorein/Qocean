@@ -135,6 +135,7 @@ class SSFilterSort extends Component {
 	};
 
 	decideFilterItem = (targetType, index) => {
+		const { disabled } = this.state.filters[index];
 		if (targetType === 'string')
 			return [
 				[ 'is', 'starts_with', 'ends_with', 'contains', 'regex' ].map((name) => ({
@@ -144,6 +145,7 @@ class SSFilterSort extends Component {
 				<TextInput
 					value={this.state.filters[index].value}
 					name={`value`}
+					disabled={disabled}
 					onChange={(e) => {
 						const target = this.state.filters[index];
 						target.value = e.target.value;
@@ -168,6 +170,7 @@ class SSFilterSort extends Component {
 						});
 					}}
 					selectItems={[ { value: 'true', text: 'True' }, { value: 'false', text: 'False' } ]}
+					disabledSelect={disabled}
 				/>
 			];
 		else if (targetType === 'number') {
@@ -195,6 +198,7 @@ class SSFilterSort extends Component {
 						.fill(0)
 						.map((_, _index) => (
 							<TextInput
+								disabled={disabled}
 								key={`${_index}_${targetType}_${mod}`}
 								value={
 									Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[_index] ? (
@@ -225,6 +229,7 @@ class SSFilterSort extends Component {
 					text: capitalize(name)
 				})),
 				<MultiSelect
+					disabled={disabled}
 					label={capitalize(target)}
 					selected={Array.isArray(value) ? value : []}
 					items={
@@ -282,6 +287,7 @@ class SSFilterSort extends Component {
 				mod.match(/^(exact|within)$/)
 					? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
 							<DatePicker
+								disabled={disabled}
 								key={`datepicker_${_index}${shortid.generate()}`}
 								value={this.state.filters[index].value[_index]}
 								onChange={(date) => {
