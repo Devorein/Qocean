@@ -437,14 +437,14 @@ class Self extends Component {
 	applyFilterSort = (filterSort) => {
 		let { sorts, filters } = filterSort;
 		const sort = sorts
-			.filter(({ target, order }) => order !== 'none' && target !== 'none')
+			.filter(({ target, order, disabled }) => !disabled && order !== 'none' && target !== 'none')
 			.map(({ target, order }) => `${order === 'desc' ? '-' : ''}${target}`)
 			.join(',');
 		const query = {};
 		if (sort !== '') query.sort = sort;
 
-		filters.forEach(({ target, value, type, mod }) => {
-			if (target !== 'none' && value && value !== '') {
+		filters.forEach(({ target, value, type, mod, disabled }) => {
+			if (!disabled && target !== 'none' && value && value !== '') {
 				if (type === 'boolean') {
 					if (value === 'false' && mod === 'is_not') query[target] = true;
 					else if (value === 'false' && mod === 'is') query[target] = false;
@@ -529,8 +529,7 @@ class Self extends Component {
 				}
 			}
 		});
-
-		this.refetchData(null, query);
+		if (Object.keys(query).length > 0) this.refetchData(null, query);
 	};
 
 	render() {

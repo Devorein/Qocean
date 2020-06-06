@@ -399,7 +399,8 @@ class SSFilterSort extends Component {
 							});
 						}}
 					>
-						{totalActive} {`${item}`} <span style={{ fontSize: 12, marginLeft: 5 }}>{'Active'}</span>
+						{totalActive}/{this.state[item].length} {`${item}`}{' '}
+						<span style={{ fontSize: 12, marginLeft: 5 }}>{'Active'}</span>
 					</div>
 					<Menu
 						anchorEl={this.state[`anchorEl${item}`]}
