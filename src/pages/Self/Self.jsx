@@ -20,6 +20,7 @@ import FormFiller from '../FormFiller/FormFiller';
 import ModalRP from '../../RP/ModalRP';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import shortid from 'shortid';
+import moment from 'moment';
 import download from '../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SSFilterSort from '../../components/FilterSort/SSFilterSort';
@@ -497,6 +498,34 @@ class Self extends Component {
 							query[`[$and][${index}][${target}][$ne]`] = val;
 						});
 					}
+				} else if (type === 'date') {
+					if (mod === 'exact') {
+						query[`[$and][0][${target}][$gte]`] = moment(value[0]).format('YYYY-MM-DD');
+						query[`[$and][1][${target}][$lte]`] = moment(value[0]).add(1, 'days').format('YYYY-MM-DD');
+					} else if (mod === 'today') {
+						query[`[$and][0][${target}][$gte]`] = moment().format('YYYY-MM-DD');
+						query[`[$and][1][${target}][$lte]`] = moment().add(1, 'days').format('YYYY-MM-DD');
+					} else if (mod === 'yesterday') {
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(1, 'days').format('YYYY-MM-DD');
+						query[`[$and][1][${target}][$lte]`] = moment().format('YYYY-MM-DD');
+					} else if (mod === 'within') {
+						query[`[$and][0][${target}][$gte]`] = moment(value[0]).format('YYYY-MM-DD');
+						query[`[$and][1][${target}][$lte]`] = moment(value[1]).format('YYYY-MM-DD');
+					} else if (mod === 'last_week') {
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(7, 'days').format('YYYY-MM-DD');
+						query[`[$and][0][${target}][$lte]`] = moment().subtract(6, 'days').format('YYYY-MM-DD');
+					} else if (mod === 'within_last_week')
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(1, 'weeks').format('YYYY-MM-DD');
+					else if (mod === 'last_month') {
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(31, 'days').format('YYYY-MM-DD');
+						query[`[$and][0][${target}][$lte]`] = moment().subtract(30, 'days').format('YYYY-MM-DD');
+					} else if (mod === 'within_last_month')
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(1, 'month').format('YYYY-MM-DD');
+					else if (mod === 'last_year') {
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(365, 'days').format('YYYY-MM-DD');
+						query[`[$and][0][${target}][$lte]`] = moment().subtract(364, 'days').format('YYYY-MM-DD');
+					} else if (mod === 'within_last_year')
+						query[`[$and][0][${target}][$gte]`] = moment().subtract(1, 'year').format('YYYY-MM-DD');
 				}
 			}
 		});

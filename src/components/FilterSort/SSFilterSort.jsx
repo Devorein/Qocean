@@ -279,14 +279,14 @@ class SSFilterSort extends Component {
 					'last_year',
 					'within_last_year'
 				].map((item) => ({ value: item, text: capitalize(item) })),
-				mod.match(/(exact|within)/)
-					? Array(mod.match(/(exact)/) ? 1 : 2).fill(0).map((_, _index) => (
+				mod.match(/^(exact|within)$/)
+					? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
 							<DatePicker
 								key={`datepicker_${_index}${shortid.generate()}`}
 								value={this.state.filters[index].value[_index]}
 								onChange={(date) => {
 									const target = this.state.filters[index];
-									target.value[_index] = date;
+									target.value[_index] = date.toISOString();
 									this.setState({
 										filters: this.state.filters
 									});
@@ -349,8 +349,8 @@ class SSFilterSort extends Component {
 						currentTarget.mod = modItems[0].value;
 						if (targetType === 'date') {
 							const currentDate = moment(Date.now()).toISOString();
-							if (modValue === 'exact') currentTarget.value = [ currentDate ];
-							else if (modValue === 'within') currentTarget.value = [ currentDate, currentDate ];
+							if (currentTarget.mod === 'exact') currentTarget.value = [ currentDate ];
+							else if (currentTarget.mod === 'within') currentTarget.value = [ currentDate, currentDate ];
 						} else {
 							currentTarget.value = (() => {
 								if (targetType === 'string') return '';
