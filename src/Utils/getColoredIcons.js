@@ -5,29 +5,19 @@ import SettingsIcon from '@material-ui/icons/Settings';
 
 function getColouredIcons(icon, color) {
 	function detectColor(color) {
-		switch (color) {
-			case 'red':
-				return red[500];
-			case 'orange':
-				return orange[500];
-			case 'yellow':
-				return yellow[500];
-			case 'green':
-				return green[500];
-			case 'blue':
-				return blue[500];
-			case 'indigo':
-				return indigo[500];
-			case 'purple':
-				return purple[500];
-
-			default:
-				return red[500];
-		}
+		if (color.match(/^(red)/i)) return red[500];
+		else if (color.match(/^(orange)/i)) return orange[500];
+		else if (color.match(/^(yellow)/i)) return yellow[500];
+		else if (color.match(/^(green)/i)) return green[500];
+		else if (color.match(/^(blue)/i)) return blue[500];
+		else if (color.match(/^(indigo)/i)) return indigo[500];
+		else if (color.match(/^(purple)/i)) return purple[500];
+		else return red[500];
 	}
 
-	if (icon === 'Folder') return <FolderIcon style={{ fill: detectColor(color) }} />;
-	else if (icon === 'Settings') return <SettingsIcon style={{ fill: detectColor(color) }} />;
+	if (icon === 'Folder') return <FolderIcon key={color} style={{ fill: detectColor(color) }} />;
+	else if (icon === 'Settings' || icon === 'Environment')
+		return <SettingsIcon key={color} style={{ fill: detectColor(color) }} />;
 }
 
 export default getColouredIcons;

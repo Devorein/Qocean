@@ -222,12 +222,13 @@ class SSFilterSort extends Component {
 								const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
 								return {
 									text: capitalized,
-									_id: `${capitalized}_folder.svg`,
-									customText: getColoredIcons('Folder', color)
+									_id: `${capitalized}_${this.props.type.toLowerCase()}.svg`,
+									customText: getColoredIcons(this.props.type, color)
 								};
 							})
 						)
 					}
+					customChip={getColoredIcons.bind(null, this.props.type)}
 					handleChange={(e) => {
 						const target = this.state.filters[index];
 						if (!Array.isArray(target.value)) target.value = [];
