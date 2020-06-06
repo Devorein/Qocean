@@ -18,7 +18,8 @@ const DEFAULT_FILTER = {
 	target: 'none',
 	mod: 'none',
 	value: '',
-	disabled: false
+	disabled: false,
+	cond: 'and'
 };
 
 const DEFAULT_SORT = {
@@ -290,6 +291,7 @@ class SSFilterSort extends Component {
 	};
 
 	renderFilterItem = (index) => {
+		const filterCount = this.state.filters.length;
 		const selectItems = this.getPropsBasedOnType();
 		const currentTarget = this.state.filters[index];
 		const { target, mod, disabled } = currentTarget;
@@ -313,21 +315,34 @@ class SSFilterSort extends Component {
 						}}
 					/>
 				</div>
+				{index >= 1 ? (
+					<InputSelect
+						name="Cond"
+						value={currentTarget.cond}
+						onChange={(e) => {
+							currentTarget.cond = e.target.value;
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+						disabledSelect={disabled}
+						selectItems={[ { value: 'and', text: 'AND' }, { value: 'or', text: 'OR' } ]}
+					/>
+				) : null}
 				<InputSelect
 					name="Target"
 					value={target}
 					onChange={(e) => {
-						const targetFilter = this.state.filters[index];
 						const targetType = this.decideTargetType(e.target.value);
-						targetFilter.target = e.target.value;
-						targetFilter.type = targetType;
-						targetFilter.value = (() => {
+						currentTarget.target = e.target.value;
+						currentTarget.type = targetType;
+						currentTarget.cond = 'and';
+						currentTarget.value = (() => {
 							if (targetType === 'string') return '';
 							else if (targetType === 'number') return [ 0 ];
 							else if (targetType === 'boolean') return true;
 							else if (targetType === 'date') return moment(Date.now()).toISOString();
 						})();
-						console.log(targetFilter.value);
 						this.setState({
 							filters: this.state.filters
 						});
@@ -339,9 +354,7 @@ class SSFilterSort extends Component {
 					name="Mod"
 					value={modValue}
 					onChange={(e) => {
-						this.state.filters.forEach((filter, _index) => {
-							if (_index === index) filter.mod = e.target.value;
-						});
+						currentTarget.mod = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
