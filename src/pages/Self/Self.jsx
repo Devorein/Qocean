@@ -22,6 +22,8 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import shortid from 'shortid';
 import download from '../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import SSFilterSort from '../../components/FilterSort/SSFilterSort';
+
 import './Self.scss';
 
 class Self extends Component {
@@ -33,8 +35,6 @@ class Self extends Component {
 		page: 0,
 		totalCount: 0,
 		selectedData: null,
-		sortCol: null,
-		sortOrder: null,
 		isOpen: false,
 		selectedRows: []
 	};
@@ -56,11 +56,10 @@ class Self extends Component {
 				};
 		if (type === 'Question') {
 			queryParams.populate = 'quiz';
-      queryParams.populateFields = 'name';
-      queryParams.select='%2Banswers';
+			queryParams.populateFields = 'name';
+			queryParams.select = '%2Banswers';
 		}
-		if (this.state.sortCol && Object.keys(newState).length === 0)
-      queryParams.sort = (this.state.sortOrder === 'desc' ? '-' : '') + this.state.sortCol;
+
 		const queryString = queryParams
 			? '?' +
 				Object.keys(queryParams)
@@ -99,8 +98,6 @@ class Self extends Component {
 		this.refetchData(page.name, null, {
 			type: page.name,
 			page: 0,
-			sortCol: null,
-			sortOrder: null,
 			selectedData: null,
 			selectedRows: []
 		});
@@ -273,13 +270,14 @@ class Self extends Component {
 				primary,
 				data: this.state.data[index]
 			},
+			selectedIndex: index,
 			...newState
 		});
 	};
 
 	decideTable = (setDeleteModal) => {
 		const { getDetails, genericTransformData, refetchData, updateResource } = this;
-		const { page, rowsPerPage, totalCount, type, sortCol, sortOrder } = this.state;
+		const { page, rowsPerPage, totalCount, type } = this.state;
 		const options = {
 			customToolbar: () => {
 				return (
@@ -356,6 +354,7 @@ class Self extends Component {
 			download: false,
 			serverSide: true,
 			filter: false,
+			sort: false,
 			search: false,
 			onChangePage: (page) => {
 				this.setState(
@@ -376,17 +375,6 @@ class Self extends Component {
 						refetchData();
 					}
 				);
-			},
-			onColumnSortChange: (changedColumn, order) => {
-				this.setState(
-					{
-						sortCol: changedColumn,
-						sortOrder: order === 'descending' ? 'desc' : 'asc'
-					},
-					() => {
-						refetchData();
-					}
-				);
 			}
 		};
 
@@ -397,8 +385,6 @@ class Self extends Component {
 			options,
 			page,
 			getDetails,
-			sortCol,
-			sortOrder,
 			genericTransformData,
 			cols: [ { name: 'actions', label: 'Actions' } ]
 		};
@@ -421,8 +407,81 @@ class Self extends Component {
 		);
 	};
 
+	switchData = (dir, e) => {
+		const { exclude, primary } = this.state.selectedData;
+		const { data, selectedIndex, totalCount } = this.state;
+		if (dir === 'right') {
+			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
+			this.setState({
+				selectedData: {
+					exclude,
+					primary,
+					data: data[newSelectedIndex]
+				},
+				selectedIndex: newSelectedIndex
+			});
+		} else if (dir === 'left') {
+			const newSelectedIndex = selectedIndex > 0 ? selectedIndex - 1 : totalCount - 1;
+			this.setState({
+				selectedData: {
+					exclude,
+					primary,
+					data: data[newSelectedIndex]
+				},
+				selectedIndex: newSelectedIndex
+			});
+		}
+	};
+
+	applyFilterSort = (filterSort) => {
+		let { sorts, filters } = filterSort;
+		const sort = sorts
+			.filter(({ target, order }) => order !== 'none' && target !== 'none')
+			.map(({ target, order }) => `${order === 'desc' ? '-' : ''}${target}`)
+			.join(',');
+		const query = {};
+		if (sort !== '') query.sort = sort;
+
+		filters.forEach(({ target, value, type, mod }) => {
+			if (target !== 'none' && value && value !== '') {
+				if (type === 'boolean') {
+					if (value === 'false' && mod === 'is_not') query[target] = true;
+					else if (value === 'false' && mod === 'is') query[target] = false;
+					else if (value === 'true' && mod === 'is') query[target] = true;
+					else if (value === 'true' && mod === 'is_not') query[target] = false;
+				} else if (type === 'string') {
+					if (mod === 'is') query[target] = value;
+					else if (mod === 'starts_with') {
+						query[`${target}.$regex`] = `/^${value}/`;
+						query[`${target}.$options`] = 'i';
+					} else if (mod === 'ends_with') query[`${target}.$regex`] = `/${value}$/`;
+					else if (mod === 'contains') query[`${target}.$regex`] = `/${value}/`;
+					else if (mod === 'regex') query[`${target}.$regex`] = value;
+				} else if (type === 'number') {
+					if (mod === 'is') query[target] = value;
+					else if (mod === 'is_not') query[`${target}.$ne`] = `${value}`;
+					else if (mod === 'greater_than') query[`${target}.$gt`] = `${value}`;
+					else if (mod === 'less_than') query[`${target}.$lt`] = `${value}`;
+					else if (mod === 'greater_than_equal') query[`${target}.$gte`] = `${value}`;
+					else if (mod === 'less_than_equal') query[`${target}.$lte`] = `${value}`;
+					else if (mod === 'between') {
+						const transformedValue = value.map((value) => parseFloat(value));
+						query[`${target}.$gte`] = Math.min(...transformedValue);
+						query[`${target}.$lte`] = Math.max(...transformedValue);
+					} else if (mod === 'not_between') {
+						const transformedValue = value.map((value) => parseFloat(value));
+						query[`${target}.$gte`] = Math.max(...transformedValue);
+						query[`${target}.$lte`] = Math.min(...transformedValue);
+					}
+				}
+			}
+		});
+
+		this.refetchData(null, query);
+	};
+
 	render() {
-		const { deleteModalMessage, refetchData } = this;
+		const { deleteModalMessage, refetchData, switchData } = this;
 		const { data, selectedData, isOpen } = this.state;
 		const { match: { params: { type } } } = this.props;
 
@@ -461,7 +520,14 @@ class Self extends Component {
 							/>
 							<div className={`self_${type}_content self_content`}>
 								{data.length > 0 ? (
-									<div className={`self_${type}_table self_content_table`}>{this.decideTable(setIsOpen)}</div>
+									<div className={`self_${type}_table self_content_table`}>
+										<SSFilterSort type={type} onApply={this.applyFilterSort}>
+											{({ filterSort }) => {
+												return <Fragment>{filterSort}</Fragment>;
+											}}
+										</SSFilterSort>
+										{this.decideTable(setIsOpen)}
+									</div>
 								) : (
 									<div>You've not created any {type} yet</div>
 								)}
@@ -483,6 +549,7 @@ class Self extends Component {
 					onSubmit={this.context.updateResource.bind(null, selectedData ? selectedData.data._id : null, refetchData)}
 					type={type}
 					data={selectedData ? selectedData.data : null}
+					onArrowClick={switchData}
 				/>
 			</div>
 		);

@@ -1,7 +1,10 @@
 const ErrorResponse = require('../utils/errorResponse');
+const qs = require('qs');
+const aqp = require('api-query-params');
 
 const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
+		console.log(qs.parse(req._parsedOriginalUrl.query, { allowDots: true }));
 		if (req.query._id) {
 			option._id = { ...option._id };
 			option._id.exclude = option._id.exclude || [];
@@ -46,15 +49,29 @@ const advancedResults = (model, populate, option = {}) =>
 				res.status(200).json({ success: true, data: count });
 			} else {
 				let query;
-				let reqQuery = { ...req.query };
+				let nestedObject = {};
+				req._parsedOriginalUrl.query.split('&').forEach((chunk) => {
+					let [ key, value ] = chunk.split('=');
+					if (key.includes('.')) {
+						const [ parent, child ] = key.split('.');
+						if (child === '$regex') {
+							const regex = /^\/(\w+)\//g;
+							const newValue = regex.exec(value)[1];
+							const modifiers = value.substr(value.lastIndexOf('/') + 1);
+							value = new RegExp(newValue, modifiers);
+						}
+						if (!nestedObject[parent]) {
+							nestedObject[parent] = { [child]: value };
+						} else nestedObject[parent][child] = value;
+					} else nestedObject[key] = value;
+				});
+
+				let reqQuery = { ...nestedObject };
 				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
 				excludeFields.forEach((param) => delete reqQuery[param]);
 
-				reqQuery = JSON.stringify(reqQuery);
-
-				reqQuery = reqQuery.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
-				reqQuery = JSON.parse(reqQuery);
 				option.match = { ...option.match };
+
 				if (model.modelName === 'User') {
 					if (req.route.path === '/others') option.match._id = { $ne: req.user._id };
 				} else {
@@ -76,6 +93,7 @@ const advancedResults = (model, populate, option = {}) =>
 						...option.match,
 						watchers: { $in: [ req.user._id ] }
 					};
+
 				reqQuery = { ...reqQuery, ...option.match };
 				query = model.find(reqQuery);
 				let fields = '';

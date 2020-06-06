@@ -3,13 +3,24 @@ import TextField from '@material-ui/core/TextField';
 
 class TextInput extends Component {
 	render() {
-		const { name, value, onChange, handleBlur, fullWidth = true, errorText = false } = this.props;
+		const {
+			name,
+			value,
+			onChange,
+			handleBlur,
+			fullWidth = true,
+			errorText = false,
+			type = 'text',
+			inputProps = {}
+		} = this.props;
 
 		return (
 			<TextField
 				name={name}
 				value={value}
-				type={'text'}
+				type={type}
+				multiline={type === 'textarea' ? true : false}
+				{...inputProps}
 				onChange={onChange}
 				fullWidth={fullWidth}
 				onBlur={handleBlur}

@@ -15,3 +15,7 @@ html {
   width: 100vw;
   overflow: hidden;
 }
+
+div{
+  outline: none;
+}

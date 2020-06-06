@@ -5,30 +5,33 @@ import { withTheme } from '@material-ui/core';
 import Color from 'color';
 import convert from 'color-convert';
 
-const getMuiTheme = (theme) =>
-	createMuiTheme({
+const getMuiTheme = (theme) => {
+	const primaryText = theme.palette.text.primary;
+	const backgroundDark = theme.palette.background.dark;
+
+	return createMuiTheme({
 		overrides: {
 			MUIDataTablePagination: {
 				root: {
 					overflow: 'hidden',
 					border: 'none',
-					backgroundColor: theme.palette.background.dark
+					backgroundColor: backgroundDark
 				}
 			},
 			MUIDataTableBodyRow: {
 				root: {
 					'&:nth-child(odd)': {
-						backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+						backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).lighten(0.15).hex(),
 						'&:hover': {
 							transition: 'background-color 150ms ease-in-out',
-							backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.35).hex()
+							backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).lighten(0.35).hex()
 						}
 					},
 					'&:nth-child(even)': {
-						backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.15).hex(),
+						backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).darken(0.15).hex(),
 						'&:hover': {
 							transition: 'background-color 150ms ease-in-out',
-							backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.35).hex()
+							backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).darken(0.35).hex()
 						}
 					}
 				}
@@ -37,19 +40,19 @@ const getMuiTheme = (theme) =>
 			MuiTablePagination: {
 				actions: {
 					display: 'flex',
-					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+					backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).lighten(0.15).hex(),
 					borderRadius: 3,
 					'& svg': {
 						width: '1em',
-						color: theme.palette.text.primary
+						color: primaryText
 					}
 				},
 				caption: {
-					color: theme.palette.text.primary,
+					color: primaryText,
 					fontFamily: theme.typography.fontFamily
 				},
 				select: {
-					color: theme.palette.text.primary,
+					color: primaryText,
 					fontWeight: 'bolder',
 					fontFamily: theme.typography.fontFamily,
 					display: 'flex',
@@ -58,14 +61,21 @@ const getMuiTheme = (theme) =>
 			},
 			MuiSelect: {
 				icon: {
-					color: theme.palette.text.primary,
+					color: primaryText,
 					width: '1em'
+				}
+			},
+			MuiIconButton: {
+				root: {
+					'& svg': {
+						color: theme.palette.primary.main
+					}
 				}
 			},
 			MuiSvgIcon: {
 				root: {
 					width: '.75em',
-					color: theme.palette.text.primary,
+					color: primaryText,
 					'&:hover': {
 						cursor: 'pointer'
 					}
@@ -75,14 +85,14 @@ const getMuiTheme = (theme) =>
 				titleText: {
 					fontSize: '2em',
 					fontWeight: 'bolder',
-					color: theme.palette.text.primary,
+					color: primaryText,
 					textTransform: 'capitalize'
 				},
 				actions: {
 					display: 'flex',
 					justifyContent: 'flex-end',
 					alignItems: 'center',
-					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex(),
+					backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).lighten(0.15).hex(),
 					borderRadius: 3,
 					padding: 5,
 					'& .MuiButtonBase-root': {
@@ -90,7 +100,7 @@ const getMuiTheme = (theme) =>
 					},
 					'& svg': {
 						width: '1em',
-						color: theme.palette.text.primary
+						color: primaryText
 					}
 				}
 			},
@@ -104,13 +114,13 @@ const getMuiTheme = (theme) =>
 					minHeight: 50,
 					height: 50,
 					paddingRight: 5,
-					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.15).hex()
+					backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).darken(0.15).hex()
 				}
 			},
 			MUIDataTableHeadCell: {
 				fixedHeaderCommon: {
-					backgroundColor: theme.palette.background.dark,
-					color: theme.palette.text.primary,
+					backgroundColor: backgroundDark,
+					color: primaryText,
 					fontFamily: theme.typography.fontFamily
 				},
 				fixedHeaderYAxis: {
@@ -124,7 +134,7 @@ const getMuiTheme = (theme) =>
 			},
 			MUIDataTableBodyCell: {
 				root: {
-					color: theme.palette.text.primary,
+					color: primaryText,
 					fontFamily: theme.typography.fontFamily,
 					borderBottom: 'none',
 					textAlign: 'center',
@@ -133,24 +143,40 @@ const getMuiTheme = (theme) =>
 			},
 			MUIDataTableSelectCell: {
 				headerCell: {
-					backgroundColor: theme.palette.background.dark
+					backgroundColor: backgroundDark
 				},
 				fixedHeaderCommon: {
-					backgroundColor: theme.palette.background.dark,
+					backgroundColor: backgroundDark,
 					borderBottom: 'none'
 				}
 			},
 			MuiMenuItem: {
 				root: {
-					color: theme.palette.text.primary,
+					color: primaryText,
 					fontFamily: theme.typography.fontFamily,
 					'&:hover': {
-						backgroundColor: theme.palette.background.dark
+						backgroundColor: backgroundDark
 					}
+				}
+			},
+			MUIDataTableToolbarSelect: {
+				root: {
+					backgroundColor: Color.rgb(convert.hex.rgb(backgroundDark)).darken(0.15).hex(),
+					color: primaryText,
+					fontFamily: theme.typography.fontFamily
+				}
+			},
+			MuiTypography: {
+				subtitle1: {
+					fontFamily: theme.typography.fontFamily,
+					fontWeight: 'bolder',
+					fontSize: '1em'
 				}
 			}
 		}
 	});
+};
+
 export default withTheme(function DataTable({ data, columns, title, options, theme }) {
 	return (
 		<MuiThemeProvider theme={getMuiTheme(theme)}>

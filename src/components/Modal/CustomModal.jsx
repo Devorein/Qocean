@@ -4,6 +4,8 @@ import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import DialogContent from '@material-ui/core/DialogContent';
 import CancelIcon from '@material-ui/icons/Cancel';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const useStyles = makeStyles((theme) => ({
 	modal: {
@@ -22,13 +24,15 @@ const useStyles = makeStyles((theme) => ({
 export default function CustomModal(props) {
 	const classes = useStyles();
 
-	const { isOpen, handleClose } = props;
+	const { isOpen, handleClose, onArrowClick } = props;
 	return (
 		<div className="custom_modal">
 			<Modal className={classes.modal} open={isOpen} closeAfterTransition>
 				<Fade in={isOpen}>
 					<DialogContent>
 						<CancelIcon onClick={handleClose} />
+						<ChevronLeftIcon onClick={onArrowClick ? onArrowClick.bind(null, 'left') : null} />
+						<ChevronRightIcon onClick={onArrowClick ? onArrowClick.bind(null, 'right') : null} />
 						<div className="modal_content">{props.children}</div>
 					</DialogContent>
 				</Fade>

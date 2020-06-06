@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import styled from 'styled-components';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import CustomTabs from '../../components/Tab/Tabs';
@@ -17,6 +18,8 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import shortid from 'shortid';
 import download from '../../Utils/download';
 import './Explore.scss';
+
+const IconRow = styled.div`display: 'flex';`;
 
 class Explore extends Component {
 	static contextType = AppContext;
@@ -205,7 +208,7 @@ class Explore extends Component {
 		const options = {
 			customToolbarSelect: (selectedRows) => {
 				return (
-					<div>
+					<IconRow>
 						{this.state.type === 'quiz' || this.state.type === 'folder' ? (
 							<VisibilityIcon
 								onClick={this.watchToggle.bind(
@@ -225,7 +228,7 @@ class Explore extends Component {
 								}}
 							/>
 						) : null}
-					</div>
+					</IconRow>
 				);
 			},
 			customToolbar: () => {

@@ -1,0 +1,57 @@
+.FilterSort {
+  display: flex;
+  .FilterSortContainer {
+    display: flex;
+    width: 80%;
+    .FilterSortItem {
+      flex-grow: 1;
+      &_name {
+        display: flex;
+        padding: 5px;
+        justify-content: center;
+        font-size: 1rem;
+        font-weight: bolder;
+        text-transform: capitalize;
+        cursor: pointer;
+        height: 100%;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.MuiPaper-root.MuiMenu-paper.MuiPopover-paper.SSFilterSort-popover.MuiPaper-elevation8.MuiPaper-rounded {
+  width: fit-content;
+  min-width: fit-content;
+  .MuiButton-contained.MuiButton-containedPrimary {
+    width: fit-content;
+  }
+  .SSFilterSort_apply-button {
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 250ms ease-in-out;
+    &:hover {
+      transform: scale(1.25);
+      transition: transform 250ms ease-in-out;
+    }
+  }
+}
+
+.FilterSortItem_select {
+  width: 350px;
+  padding: 10px;
+  display: grid;
+  grid-template: 1fr / 1fr 1fr 50px;
+  grid-gap: 5px;
+
+  &--filters {
+    width: 500px;
+    grid-template: 1fr / 1fr 100px 1fr;
+  }
+
+  .MuiSvgIcon-root {
+    height: 100%;
+    cursor: pointer;
+  }
+}
