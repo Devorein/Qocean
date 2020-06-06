@@ -7,6 +7,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withTheme } from '@material-ui/core';
 import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
+import DatePicker from '../Input/DatePicker';
 
 import './SSFilterSort.scss';
 import MultiSelect from '../Input/MultiSelect';
@@ -228,11 +229,36 @@ class SSFilterSort extends Component {
 							})
 						)
 					}
-					customChip={getColoredIcons.bind(null, this.props.type)}
+					customChipRenderer={getColoredIcons.bind(null, this.props.type)}
 					handleChange={(e) => {
 						const target = this.state.filters[index];
 						if (!Array.isArray(target.value)) target.value = [];
 						target.value = e.target.value;
+						this.setState({
+							filters: this.state.filters
+						});
+					}}
+				/>
+			];
+		} else if (targetType === 'date') {
+			return [
+				[
+					'exact',
+					'today',
+					'yesterday',
+					'within',
+					'last_week',
+					'within_last_week',
+					'last_month',
+					'within_last_month',
+					'last_year',
+					'within_last_year'
+				].map((item) => ({ value: item, text: capitalize(item) })),
+				<DatePicker
+					value={this.state.filters[index].value}
+					onChange={(date) => {
+						const target = this.state.filters[index];
+						target.value = date;
 						this.setState({
 							filters: this.state.filters
 						});

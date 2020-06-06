@@ -32,7 +32,7 @@ export default function MultiSelect({
 	handleChange,
 	items,
 	useColoredChip = false,
-	customChip = false
+	customChipRenderer = false
 }) {
 	const classes = useStyles();
 	return (
@@ -51,8 +51,8 @@ export default function MultiSelect({
 								(value) =>
 									useColoredChip ? (
 										<RegularChip className={classes.chip} key={value} tag={value} />
-									) : customChip ? (
-										customChip(value)
+									) : customChipRenderer ? (
+										customChipRenderer(value)
 									) : (
 										<Chip
 											className={classes.chip}
