@@ -8,6 +8,7 @@ import { withTheme } from '@material-ui/core';
 import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
+import Switch from '@material-ui/core/Switch';
 
 import './SSFilterSort.scss';
 import MultiSelect from '../Input/MultiSelect';
@@ -15,12 +16,14 @@ import MultiSelect from '../Input/MultiSelect';
 const DEFAULT_FILTER = {
 	target: 'none',
 	mod: 'none',
-	value: ''
+	value: '',
+	disabled: false
 };
 
 const DEFAULT_SORT = {
 	target: 'none',
-	order: 'none'
+	order: 'none',
+	disabled: false
 };
 
 function capitalize(item) {
@@ -62,8 +65,23 @@ class SSFilterSort extends Component {
 
 	renderSortItem = (index) => {
 		const selectItems = this.getPropsBasedOnType();
+		const currentTarget = this.state.sorts[index];
+		const { disabled } = currentTarget;
 		return (
 			<Fragment>
+				<div className="FilterSortItem_select_switch">
+					<Switch
+						name={`sort${index}`}
+						checked={!disabled}
+						color="primary"
+						onChange={(e) => {
+							currentTarget.disabled = !disabled;
+							this.setState({
+								sorts: this.state.sorts
+							});
+						}}
+					/>
+				</div>
 				<InputSelect
 					name="Target"
 					onChange={(e) => {
@@ -75,6 +93,7 @@ class SSFilterSort extends Component {
 						});
 					}}
 					selectItems={selectItems}
+					disabledSelect={disabled}
 					value={this.state.sorts[index].target}
 				/>
 				<InputSelect
@@ -93,6 +112,7 @@ class SSFilterSort extends Component {
 						{ value: 'desc', text: 'Descending' },
 						{ value: 'none', text: 'None' }
 					]}
+					disabledSelect={disabled}
 				/>
 			</Fragment>
 		);
@@ -270,13 +290,28 @@ class SSFilterSort extends Component {
 
 	renderFilterItem = (index) => {
 		const selectItems = this.getPropsBasedOnType();
-		const { target } = this.state.filters[index];
+		const currentTarget = this.state.filters[index];
+		const { target, mod, disabled } = currentTarget;
+
 		const targetType = this.decideTargetType(target);
 		const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
-		const modValue = this.state.filters[index].mod !== 'none' ? this.state.filters[index].mod : modItems[0].value;
+		const modValue = mod !== 'none' ? mod : modItems[0].value;
 
 		return (
 			<Fragment>
+				<div className="FilterSortItem_select_switch">
+					<Switch
+						name={`${targetType}${index}`}
+						checked={!disabled}
+						color="primary"
+						onChange={(e) => {
+							currentTarget.disabled = !disabled;
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+					/>
+				</div>
 				<InputSelect
 					name="Target"
 					value={target}
@@ -292,6 +327,7 @@ class SSFilterSort extends Component {
 							filters: this.state.filters
 						});
 					}}
+					disabledSelect={disabled}
 					selectItems={selectItems}
 				/>
 				<InputSelect
@@ -305,6 +341,7 @@ class SSFilterSort extends Component {
 							filters: this.state.filters
 						});
 					}}
+					disabledSelect={disabled}
 					selectItems={modItems}
 				/>
 				{valueItem}
@@ -315,7 +352,7 @@ class SSFilterSort extends Component {
 	renderFilterSortItem = () => {
 		return [ 'filters', 'sorts' ].map((item) => {
 			return (
-				<div className={`FilterSortItem FilterSort--${item}`} key={`${item}`}>
+				<div className={`FilterSortItem FilterSort_${item}`} key={`${item}`}>
 					<div
 						className={`FilterSortItem_name`}
 						onClick={(e) => {
@@ -340,7 +377,9 @@ class SSFilterSort extends Component {
 						{this.state[item].map((_, index) => {
 							return (
 								<div
-									className={`FilterSortItem_select FilterSortItem_select--${item}`}
+									className={`FilterSortItem_select FilterSortItem_select_${item} ${this.state[item][index].disabled
+										? 'FilterSortItem_select--disabled'
+										: ''}`}
 									key={`${this.state[item][index].target}${index}`}
 								>
 									{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}

@@ -42,12 +42,32 @@
   width: 350px;
   padding: 10px;
   display: grid;
-  grid-template: 1fr / 1fr 1fr 50px;
+  grid-template: 1fr / 50px 1fr 1fr 50px;
   grid-gap: 5px;
-
-  &--filters {
+  &--disabled {
+    opacity: 0.5;
+  }
+  &_filters {
     width: 500px;
-    grid-template: 1fr / 1fr 100px 1fr;
+    grid-template: 1fr / 50px 1fr 100px 1fr;
+  }
+  .MuiSwitch-thumb {
+    width: 20px;
+    position: relative;
+    height: 20px;
+    top: -2.5px;
+  }
+
+  .MuiSwitch-track {
+    height: 18px;
+  }
+
+  &_switch {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .MuiSvgIcon-root {
