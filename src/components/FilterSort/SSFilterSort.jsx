@@ -6,6 +6,7 @@ import Menu from '@material-ui/core/Menu';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withTheme } from '@material-ui/core';
 import TextInput from '../Input/TextInput/TextInput';
+import getColoredIcons from '../../Utils/getColoredIcons';
 
 import './SSFilterSort.scss';
 import MultiSelect from '../Input/MultiSelect';
@@ -193,29 +194,50 @@ class SSFilterSort extends Component {
 			];
 		} else if (targetType === 'select') {
 			const { target, value = [] } = this.state.filters[index];
-			if (target.match(/(difficulty|average_difficulty)/))
-				return [
-					[ 'is', 'is_not' ].map((name) => ({
-						value: name,
-						text: capitalize(name)
-					})),
-					<MultiSelect
-						label={capitalize(target)}
-						selected={Array.isArray(value) ? value : []}
-						items={[ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
-							name: item,
-							_id: item
-						}))}
-						handleChange={(e) => {
-							const target = this.state.filters[index];
-							if (!Array.isArray(target.value)) target.value = [];
-							target.value = e.target.value;
-							this.setState({
-								filters: this.state.filters
-							});
-						}}
-					/>
-				];
+			return [
+				[ 'is', 'is_not' ].map((name) => ({
+					value: name,
+					text: capitalize(name)
+				})),
+				<MultiSelect
+					label={capitalize(target)}
+					selected={Array.isArray(value) ? value : []}
+					items={
+						target.match(/(difficulty|average_difficulty)/) ? (
+							[ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
+								name: item,
+								_id: item
+							}))
+						) : target.match(/(type)/) ? (
+							[
+								{ name: 'Multi Select', _id: 'MS' },
+								{ name: 'Multi Choice Question', _id: 'MCQ' },
+								{ name: 'Fill in Blanks', _id: 'FIB' },
+								{ name: 'Flashcard', _id: 'FC' },
+								{ name: 'True/False', _id: 'TF' },
+								{ name: 'Snippet', _id: 'Snippet' }
+							]
+						) : (
+							[ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+								const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+								return {
+									text: capitalized,
+									_id: `${capitalized}_folder.svg`,
+									customText: getColoredIcons('Folder', color)
+								};
+							})
+						)
+					}
+					handleChange={(e) => {
+						const target = this.state.filters[index];
+						if (!Array.isArray(target.value)) target.value = [];
+						target.value = e.target.value;
+						this.setState({
+							filters: this.state.filters
+						});
+					}}
+				/>
+			];
 		} else return [ [ { value: 'none', text: 'None' } ], null ];
 	};
 
