@@ -452,26 +452,40 @@ class Self extends Component {
 				} else if (type === 'string') {
 					if (mod === 'is') query[target] = value;
 					else if (mod === 'starts_with') {
-						query[`${target}.$regex`] = `/^${value}/`;
-						query[`${target}.$options`] = 'i';
-					} else if (mod === 'ends_with') query[`${target}.$regex`] = `/${value}$/`;
-					else if (mod === 'contains') query[`${target}.$regex`] = `/${value}/`;
-					else if (mod === 'regex') query[`${target}.$regex`] = value;
+						query[`${target}[$regex]`] = `^${value}`;
+						query[`${target}[$options]`] = 'i';
+					} else if (mod === 'ends_with') query[`${target}[$regex]`] = `${value}$`;
+					else if (mod === 'contains') query[`${target}[$regex]`] = `${value}`;
+					else if (mod === 'regex') {
+						const regex = /^\/(\w+)\//g;
+						const regexValue = regex.exec(value)[1];
+						const modifiers = value.substr(value.lastIndexOf('/') + 1);
+						query[`${target}[$regex]`] = regexValue;
+						query[`${target}[$options]`] = modifiers;
+					}
 				} else if (type === 'number') {
 					if (mod === 'is') query[target] = value;
-					else if (mod === 'is_not') query[`${target}.$ne`] = `${value}`;
-					else if (mod === 'greater_than') query[`${target}.$gt`] = `${value}`;
-					else if (mod === 'less_than') query[`${target}.$lt`] = `${value}`;
-					else if (mod === 'greater_than_equal') query[`${target}.$gte`] = `${value}`;
-					else if (mod === 'less_than_equal') query[`${target}.$lte`] = `${value}`;
-					else if (mod === 'between') {
+					else if (mod === 'is_not') query[`${target}[$ne]`] = `${value}`;
+					else if (mod === 'greater_than') query[`${target}[$gt]`] = `${value}`;
+					else if (mod === 'less_than') query[`${target}[$lt]`] = `${value}`;
+					else if (mod === 'greater_than_equal') query[`${target}[$gte]`] = `${value}`;
+					else if (mod === 'less_than_equal') query[`${target}[$lte]`] = `${value}`;
+					else if (mod === 'between_inclusive') {
 						const transformedValue = value.map((value) => parseFloat(value));
-						query[`${target}.$gte`] = Math.min(...transformedValue);
-						query[`${target}.$lte`] = Math.max(...transformedValue);
-					} else if (mod === 'not_between') {
+						query[`${target}[$gte]`] = Math.min(...transformedValue);
+						query[`${target}[$lte]`] = Math.max(...transformedValue);
+					} else if (mod === 'between_exclusive') {
 						const transformedValue = value.map((value) => parseFloat(value));
-						query[`${target}.$gte`] = Math.max(...transformedValue);
-						query[`${target}.$lte`] = Math.min(...transformedValue);
+						query[`${target}[$gt]`] = Math.min(...transformedValue);
+						query[`${target}[$lt]`] = Math.max(...transformedValue);
+					} else if (mod === 'not_between_exclusive') {
+						const transformedValue = value.map((value) => parseFloat(value));
+						query[`[$or][0][${target}][$gt]`] = Math.max(...transformedValue);
+						query[`[$or][1][${target}][$lt]`] = Math.min(...transformedValue);
+					} else if (mod === 'not_between_inclusive') {
+						const transformedValue = value.map((value) => parseFloat(value));
+						query[`[$or][0][${target}][$gte]`] = Math.max(...transformedValue);
+						query[`[$or][1][${target}][$lte]`] = Math.min(...transformedValue);
 					}
 				}
 			}

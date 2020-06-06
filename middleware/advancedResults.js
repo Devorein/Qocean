@@ -1,10 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse');
-const qs = require('qs');
-const aqp = require('api-query-params');
 
 const advancedResults = (model, populate, option = {}) =>
 	async function(req, res, next) {
-		console.log(qs.parse(req._parsedOriginalUrl.query, { allowDots: true }));
 		if (req.query._id) {
 			option._id = { ...option._id };
 			option._id.exclude = option._id.exclude || [];
@@ -49,24 +46,10 @@ const advancedResults = (model, populate, option = {}) =>
 				res.status(200).json({ success: true, data: count });
 			} else {
 				let query;
-				let nestedObject = {};
-				req._parsedOriginalUrl.query.split('&').forEach((chunk) => {
-					let [ key, value ] = chunk.split('=');
-					if (key.includes('.')) {
-						const [ parent, child ] = key.split('.');
-						if (child === '$regex') {
-							const regex = /^\/(\w+)\//g;
-							const newValue = regex.exec(value)[1];
-							const modifiers = value.substr(value.lastIndexOf('/') + 1);
-							value = new RegExp(newValue, modifiers);
-						}
-						if (!nestedObject[parent]) {
-							nestedObject[parent] = { [child]: value };
-						} else nestedObject[parent][child] = value;
-					} else nestedObject[key] = value;
-				});
+				// const regex = /^\/(\w+)\//g;
+				// const newValue = regex.exec(value)[1];
 
-				let reqQuery = { ...nestedObject };
+				let reqQuery = { ...req.query };
 				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
 				excludeFields.forEach((param) => delete reqQuery[param]);
 

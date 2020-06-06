@@ -149,13 +149,15 @@ class SSFilterSort extends Component {
 					'less_than',
 					'greater_than_equal',
 					'less_than_equal',
-					'between',
-					'not_between'
+					'between_inclusive',
+					'between_exclusive',
+					'not_between_inclusive',
+					'not_between_exclusive'
 				].map((name) => ({
 					value: name,
 					text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
 				})),
-				mod.match(/^(between|not_between)$/g) ? (
+				mod.match(/^(between_exclusive|not_between_exclusive|between_inclusive|not_between_inclusive)$/g) ? (
 					<Fragment>
 						<TextInput
 							value={
