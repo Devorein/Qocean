@@ -17,6 +17,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import filterSort from '../../Utils/filterSort';
 import Explorer from '../../components/Explorer/Explorer';
 import shortid from 'shortid';
+import qs from 'qs';
 
 import './Self.scss';
 
@@ -24,40 +25,18 @@ class Self extends Component {
 	state = {
 		data: [],
 		type: this.props.user.current_environment.default_self_landing,
-		rowsPerPage: this.props.user.current_environment.default_self_rpp,
-		page: 0,
-		totalCount: 0,
-		selectedData: null,
-		isOpen: false
+		totalCount: 0
 	};
-
-	componentDidMount() {
-		this.refetchData(this.state.type, {
-			limit: this.state.rowsPerPage,
-			page: this.state.page
-		});
-	}
 
 	refetchData = (type, queryParams, newState = {}) => {
 		type = type ? type : this.state.type;
-		queryParams = queryParams
-			? queryParams
-			: {
-					limit: this.state.rowsPerPage,
-					page: this.state.page
-				};
 		if (type === 'Question') {
 			queryParams.populate = 'quiz';
 			queryParams.populateFields = 'name';
 			queryParams.select = '%2Banswers';
 		}
 
-		const queryString = queryParams
-			? '?' +
-				Object.keys(queryParams)
-					.map((key) => key + '=' + (key === 'page' ? parseInt(queryParams[key]) + 1 : queryParams[key]))
-					.join('&')
-			: '';
+		const queryString = qs.stringify(queryParams);
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -69,7 +48,7 @@ class Self extends Component {
 			})
 			.then(({ data: { data: totalCount } }) => {
 				axios
-					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/me${queryString}`, {
+					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/me?${queryString}`, {
 						...headers
 					})
 					.then(({ data: { data } }) => {
@@ -136,11 +115,6 @@ class Self extends Component {
 
 	getDetails = ({ exclude, primary }, index, newState = {}) => {
 		this.setState({
-			selectedData: {
-				exclude,
-				primary,
-				data: this.state.data[index]
-			},
 			selectedIndex: index,
 			...newState
 		});

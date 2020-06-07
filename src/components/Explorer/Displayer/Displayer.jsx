@@ -19,6 +19,13 @@ class Displayer extends Component {
 		isFormFillerOpen: false
 	};
 
+	componentDidMount() {
+		this.props.refetchData(this.state.type, {
+			limit: this.context.user.current_environment.default_self_rpp,
+			page: 1
+		});
+	}
+
 	decideDisplayer = () => {
 		const { view } = this.state;
 		const { indieEffectors } = this.props;
@@ -60,17 +67,23 @@ class Displayer extends Component {
 		const { data, totalCount, page, refetchData, type } = this.props;
 		return (
 			<div className="Displayer">
-				<Effector type={type} page={page} totalCount={totalCount} selectedIndex={selectedIndex}>
+				<Effector
+					type={type}
+					page={page}
+					totalCount={totalCount}
+					selectedIndex={selectedIndex}
+					refetchData={refetchData}
+				>
 					{({ EffectorTopBar, EffectorBottomBar }) => {
 						return (
 							<Fragment>
 								{EffectorTopBar}
-								{decideDisplayer()}
 								{EffectorBottomBar}
 							</Fragment>
 						);
 					}}
 				</Effector>
+				{decideDisplayer()}
 				<Detailer data={data[detailerIndex]} />
 				<FormFiller
 					isOpen={isFormFillerOpen}

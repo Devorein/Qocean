@@ -10,14 +10,103 @@ import download from '../../../Utils/download';
 import shaveData from '../../../Utils/shaveData';
 import shortid from 'shortid';
 import ModalRP from '../../../RP/ModalRP';
+import InputSelect from '../../Input/InputSelect';
+import TextInput from '../../Input/TextInput/TextInput';
 import { AppContext } from '../../../context/AppContext';
+import GenericButton from '../../Buttons/GenericButton';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 class Effector extends Component {
+	state = {
+		itemsPerPage: 15,
+		currentPage: 1,
+		typedPage: 1
+	};
 	static contextType = AppContext;
+
+	refetchData = () => {
+		const { itemsPerPage, currentPage } = this.state;
+		this.props.refetchData(null, {
+			limit: itemsPerPage,
+			page: currentPage
+		});
+	};
 
 	renderEffectorBottomBar = () => {
 		const { totalCount } = this.props;
-		return <div>{totalCount}</div>;
+		const { itemsPerPage, currentPage, typedPage } = this.state;
+		const maxPage = Math.ceil(totalCount / itemsPerPage);
+		return (
+			<div>
+				<TextInput
+					type="number"
+					name="Go to page"
+					value={typedPage}
+					onChange={(e) => {
+						this.setState({ typedPage: e.target.value });
+					}}
+					inputProps={{ max: maxPage }}
+				/>
+				<div>
+					<ChevronLeftIcon
+						onClick={(e) => {
+							if (currentPage > 1) {
+								this.setState(
+									{
+										currentPage: currentPage - 1
+									},
+									() => {
+										this.refetchData();
+									}
+								);
+							}
+						}}
+					/>
+					<ChevronRightIcon
+						onClick={(e) => {
+							if (currentPage < maxPage) {
+								this.setState(
+									{
+										currentPage: currentPage + 1
+									},
+									() => {
+										this.refetchData();
+									}
+								);
+							}
+						}}
+					/>
+				</div>
+				<GenericButton
+					text={'Go to page'}
+					onClick={(e) => {
+						if (currentPage !== typedPage) {
+							this.setState(
+								{
+									currentPage: typedPage
+								},
+								() => {
+									this.refetchData();
+								}
+							);
+						}
+					}}
+					disabled={typedPage > maxPage}
+				/>
+				<InputSelect
+					name="Items Per Page"
+					value={itemsPerPage}
+					onChange={(e) => {
+						this.setState({ itemsPerPage: e.target.value }, () => {
+							this.refetchData();
+						});
+					}}
+					selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
+				/>
+				{totalCount}
+			</div>
+		);
 	};
 
 	updateResource = (selectedRows, field) => {

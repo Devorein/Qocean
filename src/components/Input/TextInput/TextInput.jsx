@@ -22,7 +22,7 @@ class TextInput extends Component {
 				type={type}
 				disabled={disabled}
 				multiline={type === 'textarea' ? true : false}
-				{...inputProps}
+				inputProps={inputProps}
 				onChange={onChange}
 				fullWidth={fullWidth}
 				onBlur={handleBlur}
