@@ -15,6 +15,7 @@ class ListDisplayer extends Component {
 						}}
 						checked={item.checked}
 					/>
+					<div className="ListDisplayer_item_container ListDisplayer_item_container-actions">{item.actions}</div>
 					{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
 						return (
 							<div

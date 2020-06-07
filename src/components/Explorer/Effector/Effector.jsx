@@ -16,7 +16,7 @@ import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-
+import './Effector.scss';
 class Effector extends Component {
 	state = {
 		itemsPerPage: 15,
@@ -39,8 +39,9 @@ class Effector extends Component {
 		const { itemsPerPage, currentPage, typedPage } = this.state;
 		const maxPage = Math.ceil(totalCount / itemsPerPage);
 		return (
-			<div>
+			<Fragment>
 				<TextInput
+					className="Effector_bottombar-pageinput"
 					type="number"
 					name="Go to page"
 					value={typedPage}
@@ -49,7 +50,36 @@ class Effector extends Component {
 					}}
 					inputProps={{ max: maxPage }}
 				/>
-				<div>
+				<GenericButton
+					className="Effector_bottombar-pagebutton"
+					text={'Go to page'}
+					onClick={(e) => {
+						if (currentPage !== typedPage) {
+							this.setState(
+								{
+									currentPage: typedPage
+								},
+								() => {
+									this.refetchData();
+								}
+							);
+						}
+					}}
+					disabled={typedPage > maxPage}
+				/>
+
+				<InputSelect
+					className="Effector_bottombar-itemselect"
+					name="Items Per Page"
+					value={itemsPerPage}
+					onChange={(e) => {
+						this.setState({ itemsPerPage: e.target.value }, () => {
+							this.refetchData();
+						});
+					}}
+					selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
+				/>
+				<div className="Effector_bottombar-pagenavigation">
 					<ChevronLeftIcon
 						onClick={(e) => {
 							if (currentPage > 1) {
@@ -79,34 +109,15 @@ class Effector extends Component {
 						}}
 					/>
 				</div>
-				<GenericButton
-					text={'Go to page'}
-					onClick={(e) => {
-						if (currentPage !== typedPage) {
-							this.setState(
-								{
-									currentPage: typedPage
-								},
-								() => {
-									this.refetchData();
-								}
-							);
-						}
-					}}
-					disabled={typedPage > maxPage}
-				/>
-				<InputSelect
-					name="Items Per Page"
-					value={itemsPerPage}
-					onChange={(e) => {
-						this.setState({ itemsPerPage: e.target.value }, () => {
-							this.refetchData();
-						});
-					}}
-					selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
-				/>
-				{totalCount}
-			</div>
+				<div className="Effector_bottombar-itemcount">
+					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
+						totalCount
+					) : (
+						itemsPerPage * currentPage
+					)}{' '}
+					of {totalCount}
+				</div>
+			</Fragment>
 		);
 	};
 
@@ -167,7 +178,7 @@ class Effector extends Component {
 		const { data, page, refetchData } = this.props;
 		if (page === 'Self') {
 			return (
-				<div>
+				<div className="Effector_topbar_globals">
 					<RotateLeftIcon
 						onClick={(e) => {
 							refetchData();
@@ -272,8 +283,9 @@ class Effector extends Component {
 
 	renderEffectorTopBar = (setDeleteModal) => {
 		return (
-			<div>
+			<Fragment>
 				<InputSelect
+					className="Effector_topbar_view"
 					name="Data view"
 					value={this.state.view}
 					onChange={(e) => {
@@ -289,7 +301,7 @@ class Effector extends Component {
 				) : (
 					this.renderGlobalEffectors()
 				)}
-			</div>
+			</Fragment>
 		);
 	};
 
@@ -327,8 +339,8 @@ class Effector extends Component {
 				{({ setIsOpen }) =>
 					this.props.children({
 						view: this.state.view,
-						EffectorTopBar: <div className="EffectorTopBar">{renderEffectorTopBar(setIsOpen)}</div>,
-						EffectorBottomBar: <div className="EffectorBottomBar">{renderEffectorBottomBar()}</div>
+						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
+						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>
 					})}
 			</ModalRP>
 		);
