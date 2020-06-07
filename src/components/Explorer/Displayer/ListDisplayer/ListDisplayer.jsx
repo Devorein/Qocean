@@ -5,15 +5,15 @@ import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
 import './ListDisplayer.scss';
 class ListDisplayer extends Component {
 	renderListDisplayer = () => {
-		const { type, data, classes } = this.props;
-		return data.map((item) => {
+		const { type, data, classes, setChecked } = this.props;
+		return data.map((item, index) => {
 			return (
 				<div className={`ListDisplayer_item ${classes.ListDisplayer_item}`} key={item._id}>
 					<CheckboxInput
 						onChange={(e) => {
-							console.log(e.target.checked);
+							setChecked(index);
 						}}
-						checked={true}
+						checked={item.checked}
 					/>
 					{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
 						return (

@@ -239,8 +239,8 @@ class Effector extends Component {
 	renderSelectedEffectors = (setDeleteModal) => {
 		const { updateResource } = this;
 		const { data, page } = this.props;
-		const selectedItems = this.props.selectedIndex.map(({ index }) => data[index]);
-		if (page === 'Self')
+		const selectedItems = this.props.selectedIndex.map((index) => data[index]);
+		/* if (page === 'Self')
 			return (
 				<div>
 					<DeleteIcon
@@ -266,7 +266,7 @@ class Effector extends Component {
 						}}
 					/>
 				</div>
-			);
+			); */
 	};
 
 	renderEffectorTopBar = (setDeleteModal) => {
@@ -276,11 +276,12 @@ class Effector extends Component {
 	};
 
 	deleteModalMessage = () => {
-		const selectedItems = this.props.selectedIndex.map(({ index }) => this.props.data[index]);
+		const { selectedIndex, data, type } = this.props;
+		const selectedItems = selectedIndex.map((index) => data[index]);
 		return (
 			<Fragment>
 				<div>
-					Youre about to delete the following {selectedItems.length} {this.props.type.toLowerCase()}(s)
+					Youre about to delete the following {selectedItems.length} {type.toLowerCase()}(s)
 				</div>
 				{selectedItems.map((selectedItem) => <div key={selectedItem._id}>{selectedItem.name}</div>)}
 			</Fragment>

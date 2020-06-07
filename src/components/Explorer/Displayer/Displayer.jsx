@@ -38,7 +38,8 @@ class Displayer extends Component {
 	}
 
 	transformData = (data) => {
-		data.forEach((item) => {
+		data.forEach((item, index) => {
+			data.checked = this.state.selectedIndex.includes(index);
 			item.actions = (
 				<Fragment>
 					<UpdateIcon />
@@ -81,7 +82,15 @@ class Displayer extends Component {
 
 		const props = {
 			data: sectorizeData(this.transformData(data), type, this.context.user),
-			type
+			type,
+			setChecked: (index) => {
+				const { selectedIndex } = this.state;
+				if (selectedIndex.includes(index)) selectedIndex.splice(index, 1);
+				else selectedIndex.push(index);
+				this.setState({
+					selectedIndex
+				});
+			}
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} />;
@@ -91,26 +100,15 @@ class Displayer extends Component {
 	};
 
 	switchData = (dir, e) => {
-		const { exclude, primary } = this.state.selectedData;
 		const { data, selectedIndex, totalCount } = this.state;
 		if (dir === 'right') {
 			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
 			this.setState({
-				selectedData: {
-					exclude,
-					primary,
-					data: data[newSelectedIndex]
-				},
 				selectedIndex: newSelectedIndex
 			});
 		} else if (dir === 'left') {
 			const newSelectedIndex = selectedIndex > 0 ? selectedIndex - 1 : totalCount - 1;
 			this.setState({
-				selectedData: {
-					exclude,
-					primary,
-					data: data[newSelectedIndex]
-				},
 				selectedIndex: newSelectedIndex
 			});
 		}
@@ -125,6 +123,7 @@ class Displayer extends Component {
 				<Effector
 					type={type}
 					page={page}
+					data={data}
 					totalCount={totalCount}
 					selectedIndex={selectedIndex}
 					refetchData={refetchData}
