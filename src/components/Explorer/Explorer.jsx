@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 
 import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
-import Detailer from './Detailer/Detailer';
 
 class Explorer extends Component {
 	render() {
-		const { data, refetchData, totalCount, globalEffectors, selectedEffectors } = this.props;
+		const { data, refetchData, totalCount, globalEffectors, selectedEffectors, type } = this.props;
 		return (
 			<div className="Explorer">
-				<Manipulator onApply={refetchData} />
+				<Manipulator onApply={refetchData} type={type} />
 				<Displayer
 					data={data}
 					totalCount={totalCount}

@@ -475,9 +475,12 @@ class SSFilterSort extends Component {
 	};
 
 	render() {
-		return this.props.children({
-			filterSort: this.renderFilterSort()
-		});
+		const { passFSAsProp = true } = this.props;
+		if (passFSAsProp)
+			return this.props.children({
+				filterSort: this.renderFilterSort()
+			});
+		else return this.renderFilterSort();
 	}
 }
 

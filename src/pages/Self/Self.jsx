@@ -24,6 +24,8 @@ import download from '../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SSFilterSort from '../../components/FilterSort/SSFilterSort';
 import filterSort from '../../Utils/filterSort';
+import Explorer from '../../components/Explorer/Explorer';
+
 import './Self.scss';
 
 class Self extends Component {
@@ -440,7 +442,7 @@ class Self extends Component {
 
 	render() {
 		const { deleteModalMessage, refetchData, switchData } = this;
-		const { data, selectedData, isOpen } = this.state;
+		const { data, selectedData, isOpen, totalCount } = this.state;
 		const { match: { params: { type } } } = this.props;
 
 		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
@@ -476,7 +478,7 @@ class Self extends Component {
 								height={50}
 								headers={headers}
 							/>
-							<div className={`self_${type}_content self_content`}>
+							{/* <div className={`self_${type}_content self_content`}>
 								{data.length > 0 ? (
 									<div className={`self_${type}_table self_content_table`}>
 										<SSFilterSort type={type} onApply={this.applyFilterSort}>
@@ -492,7 +494,15 @@ class Self extends Component {
 								<div className={`self_${type}_list--linear self_content_list`}>
 									<LinearList selectedData={selectedData} />
 								</div>
-							</div>
+							</div> */}
+							<Explorer
+								data={data}
+								totalCount={totalCount}
+								type={type}
+								refetchData={refetchData}
+								globalEffectors={[]}
+								selectedEffectors={[]}
+							/>
 						</Fragment>
 					)}
 				</ModalRP>
