@@ -78,11 +78,11 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (view) => {
-		const { data, type } = this.props;
+	decideDisplayer = (data, view) => {
+		const { type } = this.props;
 
 		const props = {
-			data: sectorizeData(this.transformData(data), type, this.context.user),
+			data,
 			type,
 			setChecked: (index) => {
 				const { selectedIndex } = this.state;
@@ -101,7 +101,7 @@ class Displayer extends Component {
 	};
 
 	switchData = (dir, e) => {
-		const { data, selectedIndex, totalCount } = this.state;
+		const { selectedIndex, totalCount } = this.state;
 		if (dir === 'right') {
 			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
 			this.setState({
@@ -115,10 +115,24 @@ class Displayer extends Component {
 		}
 	};
 
+	getCols = (manipulatedData) => {
+		const cols = [];
+		if (manipulatedData.length > 0)
+			Object.keys(manipulatedData[0]).forEach((key) => {
+				if (key !== '_id' && key !== 'actions')
+					Object.keys(manipulatedData[0][key]).forEach((col) =>
+						cols.push(col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' '))
+					);
+			});
+		return cols;
+	};
+
 	render() {
-		const { decideDisplayer, switchData } = this;
-		const { detailerIndex, selectedIndex, isFormFillerOpen, formFillerIndex } = this.state;
+		const { decideDisplayer, switchData, getCols } = this;
+		const { selectedIndex, isFormFillerOpen, formFillerIndex } = this.state;
 		const { data, totalCount, page, refetchData, type } = this.props;
+		const manipulatedData = sectorizeData(this.transformData(data), type, this.context.user);
+		const cols = getCols(manipulatedData);
 		return (
 			<div className="Displayer">
 				<Effector
@@ -128,12 +142,13 @@ class Displayer extends Component {
 					totalCount={totalCount}
 					selectedIndex={selectedIndex}
 					refetchData={refetchData}
+					cols={cols}
 				>
 					{({ EffectorTopBar, EffectorBottomBar, view }) => {
 						return (
 							<Fragment>
 								{EffectorTopBar}
-								<div className="Displayer_data">{decideDisplayer(view)}</div>
+								<div className="Displayer_data">{decideDisplayer(manipulatedData, view)}</div>
 								{EffectorBottomBar}
 							</Fragment>
 						);

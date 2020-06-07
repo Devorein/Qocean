@@ -11,21 +11,32 @@ import shaveData from '../../../Utils/shaveData';
 import shortid from 'shortid';
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
+import MultiSelect from '../../Input/MultiSelect';
 import TextInput from '../../Input/TextInput/TextInput';
 import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import './Effector.scss';
 class Effector extends Component {
 	state = {
 		itemsPerPage: 15,
 		currentPage: 1,
 		typedPage: 1,
-		view: 'list'
+		view: 'list',
+		cols: this.props.cols || [],
+		selected_props: this.props.cols || []
 	};
 	static contextType = AppContext;
 
+	UNSAFE_componentWillReceiveProps(props) {
+		if (props.cols.length > 0)
+			this.setState({
+				cols: props.cols,
+				selected_props: props.cols
+			});
+	}
 	refetchData = () => {
 		const { itemsPerPage, currentPage } = this.state;
 		this.props.refetchData(null, {
@@ -252,7 +263,7 @@ class Effector extends Component {
 		const { updateResource } = this;
 		const { data, page } = this.props;
 		const selectedItems = this.props.selectedIndex.map((index) => data[index]);
-		/* if (page === 'Self')
+		if (page === 'Self')
 			return (
 				<div>
 					<DeleteIcon
@@ -278,7 +289,7 @@ class Effector extends Component {
 						}}
 					/>
 				</div>
-			); */
+			);
 	};
 
 	renderEffectorTopBar = (setDeleteModal) => {
@@ -294,6 +305,22 @@ class Effector extends Component {
 					selectItems={[ 'table', 'list', 'board', 'gallery' ].map((value) => ({
 						value,
 						text: value.charAt(0).toUpperCase() + value.substr(1)
+					}))}
+				/>
+				<MultiSelect
+					customRenderValue={(selected) => `${selected.length} Shown`}
+					useSwitch={true}
+					className="Effector_topbar_properties"
+					name="Toggle Properties"
+					selected={this.state.selected_props}
+					handleChange={(e) => {
+						this.setState({
+							selected_props: e.target.value
+						});
+					}}
+					items={this.state.cols.map((value) => ({
+						_id: value,
+						name: value.charAt(0).toUpperCase() + value.substr(1)
 					}))}
 				/>
 				{this.props.selectedIndex.length > 0 ? (

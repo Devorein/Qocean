@@ -9,6 +9,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 import RegularChip from '../../components/Chip/RegularChip';
+import Switch from '@material-ui/core/Switch';
 
 const useStyles = makeStyles(() => ({
 	chips: {
@@ -33,13 +34,19 @@ export default function MultiSelect({
 	items,
 	useColoredChip = false,
 	customChipRenderer = false,
-	disabled = false
+	disabled = false,
+	name = '',
+	useSwitch = false,
+	className,
+	customRenderValue
 }) {
 	const classes = useStyles();
 	return (
 		<FormControl fullWidth>
 			<InputLabel id="multiple-chip">{label}</InputLabel>
 			<Select
+				className={className}
+				name={name}
 				disabled={disabled}
 				labelId="multiple-chip"
 				multiple
@@ -47,7 +54,9 @@ export default function MultiSelect({
 				onChange={handleChange}
 				input={<Input id="select-multiple-chip" />}
 				renderValue={(selected) => {
-					return (
+					return customRenderValue ? (
+						customRenderValue(selected)
+					) : (
 						<div className={classes.chips}>
 							{selected.map(
 								(value) =>
@@ -69,7 +78,12 @@ export default function MultiSelect({
 			>
 				{items.map(({ name, _id, customText, disabled }, index) => (
 					<MenuItem key={_id} value={_id} disabled={disabled}>
-						<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
+						{!useSwitch ? (
+							<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
+						) : (
+							<Switch checked={selected.includes(name)} color="primary" />
+						)}
+
 						{customText ? customText : <ListItemText primary={name} />}
 					</MenuItem>
 				))}
