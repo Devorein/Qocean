@@ -12,7 +12,8 @@ class TextInput extends Component {
 			errorText = false,
 			type = 'text',
 			inputProps = {},
-			disabled = false
+			disabled = false,
+			className
 		} = this.props;
 
 		return (
@@ -22,12 +23,13 @@ class TextInput extends Component {
 				type={type}
 				disabled={disabled}
 				multiline={type === 'textarea' ? true : false}
-				{...inputProps}
+				inputProps={inputProps}
 				onChange={onChange}
 				fullWidth={fullWidth}
 				onBlur={handleBlur}
 				error={Boolean(errorText)}
 				helperText={errorText}
+				className={className}
 				label={name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ')}
 			/>
 		);

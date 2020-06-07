@@ -1,0 +1,38 @@
+.ListDisplayer {
+  display: flex;
+  flex-direction: column;
+  &_item {
+    display: flex;
+    padding: 5px;
+    margin: 3px;
+    border-radius: 3px;
+    .MuiFormControlLabel-root {
+      margin-right: 0px;
+    }
+    &_container {
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      &_item {
+        margin: 0 3px;
+      }
+      &-primary {
+        width: 30%;
+        font-weight: bolder;
+        font-size: 1rem;
+      }
+      &-actions {
+        .MuiSvgIcon-root {
+          width: 0.75em;
+        }
+      }
+      &-tertiary {
+        flex-grow: 1;
+        justify-content: flex-end;
+      }
+    }
+    &_part {
+      padding: 3px;
+    }
+  }
+}

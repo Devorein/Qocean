@@ -1,0 +1,13 @@
+.Explorer {
+  display: grid;
+  grid-template: 1fr 1fr/350px 1fr;
+  height: calc(100% - 50px);
+  .Displayer_container {
+    height: 100%;
+    grid-area: 1/2/3/3;
+    grid-template: 50px 1fr/1fr;
+    .Manipulator {
+      height: 50px;
+    }
+  }
+}
