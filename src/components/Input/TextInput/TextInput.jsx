@@ -11,7 +11,8 @@ class TextInput extends Component {
 			fullWidth = true,
 			errorText = false,
 			type = 'text',
-			inputProps = {}
+			inputProps = {},
+			disabled = false
 		} = this.props;
 
 		return (
@@ -19,6 +20,7 @@ class TextInput extends Component {
 				name={name}
 				value={value}
 				type={type}
+				disabled={disabled}
 				multiline={type === 'textarea' ? true : false}
 				{...inputProps}
 				onChange={onChange}

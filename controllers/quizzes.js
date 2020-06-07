@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
+const { flatten } = require('lodash');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -57,6 +58,16 @@ exports.updateQuizzes = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: updated_quizzes });
 });
 
+exports.getAllTags = asyncHandler(async (req, res, next) => {
+	let tags = await Quiz.find(
+		{
+			$nor: [ { tags: { $exists: false } }, { tags: { $size: 0 } } ]
+		},
+		{ tags: 1, _id: 0 }
+	);
+	tags = Array.from(new Set(flatten(tags.map(({ tags }) => tags)).map((tag) => tag.split(':')[0])));
+	res.status(200).json({ success: true, data: tags });
+});
 // @desc: Delete single quiz
 // @route: DELETE /api/v1/quizzes/:id
 // @access: Private

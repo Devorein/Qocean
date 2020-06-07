@@ -11,6 +11,7 @@ const rateLimiter = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const mongoSanitize = require('express-mongo-sanitize');
+const qs = require('qs');
 
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
@@ -48,10 +49,10 @@ if (process.env.NODE_ENV === 'development') {
 app.use(cors());
 app.use(express.json());
 app.use(fileupload());
-app.use(mongoSanitize());
+// app.use(mongoSanitize());
 app.use(helmet());
 app.use(xssClean());
-app.use(hpp());
+// app.use(hpp());
 app.use(limiter);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/quizzes', quizzes);

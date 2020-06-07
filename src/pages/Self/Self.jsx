@@ -23,7 +23,7 @@ import shortid from 'shortid';
 import download from '../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SSFilterSort from '../../components/FilterSort/SSFilterSort';
-
+import filterSort from '../../Utils/filterSort';
 import './Self.scss';
 
 class Self extends Component {
@@ -433,51 +433,9 @@ class Self extends Component {
 		}
 	};
 
-	applyFilterSort = (filterSort) => {
-		let { sorts, filters } = filterSort;
-		const sort = sorts
-			.filter(({ target, order }) => order !== 'none' && target !== 'none')
-			.map(({ target, order }) => `${order === 'desc' ? '-' : ''}${target}`)
-			.join(',');
-		const query = {};
-		if (sort !== '') query.sort = sort;
-
-		filters.forEach(({ target, value, type, mod }) => {
-			if (target !== 'none' && value && value !== '') {
-				if (type === 'boolean') {
-					if (value === 'false' && mod === 'is_not') query[target] = true;
-					else if (value === 'false' && mod === 'is') query[target] = false;
-					else if (value === 'true' && mod === 'is') query[target] = true;
-					else if (value === 'true' && mod === 'is_not') query[target] = false;
-				} else if (type === 'string') {
-					if (mod === 'is') query[target] = value;
-					else if (mod === 'starts_with') {
-						query[`${target}.$regex`] = `/^${value}/`;
-						query[`${target}.$options`] = 'i';
-					} else if (mod === 'ends_with') query[`${target}.$regex`] = `/${value}$/`;
-					else if (mod === 'contains') query[`${target}.$regex`] = `/${value}/`;
-					else if (mod === 'regex') query[`${target}.$regex`] = value;
-				} else if (type === 'number') {
-					if (mod === 'is') query[target] = value;
-					else if (mod === 'is_not') query[`${target}.$ne`] = `${value}`;
-					else if (mod === 'greater_than') query[`${target}.$gt`] = `${value}`;
-					else if (mod === 'less_than') query[`${target}.$lt`] = `${value}`;
-					else if (mod === 'greater_than_equal') query[`${target}.$gte`] = `${value}`;
-					else if (mod === 'less_than_equal') query[`${target}.$lte`] = `${value}`;
-					else if (mod === 'between') {
-						const transformedValue = value.map((value) => parseFloat(value));
-						query[`${target}.$gte`] = Math.min(...transformedValue);
-						query[`${target}.$lte`] = Math.max(...transformedValue);
-					} else if (mod === 'not_between') {
-						const transformedValue = value.map((value) => parseFloat(value));
-						query[`${target}.$gte`] = Math.max(...transformedValue);
-						query[`${target}.$lte`] = Math.min(...transformedValue);
-					}
-				}
-			}
-		});
-
-		this.refetchData(null, query);
+	applyFilterSort = (filter_sort) => {
+		const query = filterSort(filter_sort);
+		if (Object.keys(query).length > 0) this.refetchData(null, query);
 	};
 
 	render() {

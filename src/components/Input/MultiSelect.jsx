@@ -26,12 +26,21 @@ const useStyles = makeStyles(() => ({
 	}
 }));
 
-export default function MultiSelect({ label, selected, handleChange, items, useColoredChip }) {
+export default function MultiSelect({
+	label,
+	selected,
+	handleChange,
+	items,
+	useColoredChip = false,
+	customChipRenderer = false,
+	disabled = false
+}) {
 	const classes = useStyles();
 	return (
 		<FormControl fullWidth>
 			<InputLabel id="multiple-chip">{label}</InputLabel>
 			<Select
+				disabled={disabled}
 				labelId="multiple-chip"
 				multiple
 				value={selected}
@@ -44,6 +53,8 @@ export default function MultiSelect({ label, selected, handleChange, items, useC
 								(value) =>
 									useColoredChip ? (
 										<RegularChip className={classes.chip} key={value} tag={value} />
+									) : customChipRenderer ? (
+										customChipRenderer(value)
 									) : (
 										<Chip
 											className={classes.chip}

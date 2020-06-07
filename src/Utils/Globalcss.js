@@ -118,6 +118,12 @@ export default withStyles(
 				},
 				'.MuiDialogContent-root': {
 					outline: 'none'
+				},
+				'.MuiPickersCalendarHeader-iconButton': {
+					backgroundColor: theme.palette.primary.dark,
+					'&.MuiButtonBase-root': {
+						margin: '5px 8px'
+					}
 				}
 			}
 		};

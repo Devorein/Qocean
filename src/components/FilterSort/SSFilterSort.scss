@@ -42,12 +42,44 @@
   width: 350px;
   padding: 10px;
   display: grid;
-  grid-template: 1fr / 1fr 1fr 50px;
+  grid-template: 1fr / 50px 1fr 1fr 50px;
   grid-gap: 5px;
+  &--disabled {
+    opacity: 0.5;
+  }
+  &_filters {
+    width: 750px;
+    grid-template: 1fr / 50px 75px 200px 150px 1fr 50px;
+    .FilterSortItem_select_cond {
+      grid-area: 1/2/2/3;
+    }
+    .FilterSortItem_select_target {
+      grid-area: 1/3/2/4;
+    }
+    .FilterSortItem_select_mod {
+      grid-area: 1/4/2/5;
+    }
+    .FilterSortItem_select_value {
+      grid-area: 1/5/2/6;
+    }
+  }
+  .MuiSwitch-thumb {
+    width: 20px;
+    position: relative;
+    height: 20px;
+    top: -2.5px;
+  }
 
-  &--filters {
-    width: 500px;
-    grid-template: 1fr / 1fr 100px 1fr;
+  .MuiSwitch-track {
+    height: 18px;
+  }
+
+  &_switch {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .MuiSvgIcon-root {

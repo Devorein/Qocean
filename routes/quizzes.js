@@ -14,7 +14,8 @@ const {
 	updatePlayedTimes,
 	updateQuizRatings,
 	watchQuizzes,
-	updateQuizzes
+	updateQuizzes,
+	getAllTags
 } = require('../controllers/quizzes');
 
 router.route('/me').get(protect, advancedResults(Quiz));
@@ -50,6 +51,7 @@ router
 router.route('/:id').put(protect, updateQuiz).delete(protect, deleteQuiz);
 router.route('/:id/photo').put(protect, imageUpload(Quiz, 'Quiz'), quizPhotoUpload);
 router.route('/_/watchQuizzes').put(protect, watchQuizzes);
+router.route('/getAllTags').get(getAllTags);
 
 router.route('/_/ratings').put(protect, updateQuizRatings);
 router.route('/_/updatePlayedTimes').put(protect, updatePlayedTimes);
