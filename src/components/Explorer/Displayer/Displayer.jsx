@@ -23,7 +23,6 @@ class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		view: 'list',
 		selectedIndex: [],
 		detailerIndex: 0,
 		formFillerIndex: null,
@@ -76,8 +75,7 @@ class Displayer extends Component {
 		return data;
 	};
 
-	decideDisplayer = () => {
-		const { view } = this.state;
+	decideDisplayer = (view) => {
 		const { data, type } = this.props;
 
 		const props = {
@@ -128,11 +126,11 @@ class Displayer extends Component {
 					selectedIndex={selectedIndex}
 					refetchData={refetchData}
 				>
-					{({ EffectorTopBar, EffectorBottomBar }) => {
+					{({ EffectorTopBar, EffectorBottomBar, view }) => {
 						return (
 							<Fragment>
 								{EffectorTopBar}
-								{decideDisplayer()}
+								{decideDisplayer(view)}
 								{EffectorBottomBar}
 							</Fragment>
 						);

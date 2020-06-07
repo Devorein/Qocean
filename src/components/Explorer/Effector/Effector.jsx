@@ -21,7 +21,8 @@ class Effector extends Component {
 	state = {
 		itemsPerPage: 15,
 		currentPage: 1,
-		typedPage: 1
+		typedPage: 1,
+		view: 'list'
 	};
 	static contextType = AppContext;
 
@@ -270,9 +271,26 @@ class Effector extends Component {
 	};
 
 	renderEffectorTopBar = (setDeleteModal) => {
-		return this.props.selectedIndex.length > 0
-			? this.renderSelectedEffectors(setDeleteModal)
-			: this.renderGlobalEffectors();
+		return (
+			<div>
+				<InputSelect
+					name="Data view"
+					value={this.state.view}
+					onChange={(e) => {
+						this.setState({ view: e.target.value });
+					}}
+					selectItems={[ 'table', 'list', 'board', 'gallery' ].map((value) => ({
+						value,
+						text: value.charAt(0).toUpperCase() + value.substr(1)
+					}))}
+				/>
+				{this.props.selectedIndex.length > 0 ? (
+					this.renderSelectedEffectors(setDeleteModal)
+				) : (
+					this.renderGlobalEffectors()
+				)}
+			</div>
+		);
 	};
 
 	deleteModalMessage = () => {
@@ -308,6 +326,7 @@ class Effector extends Component {
 			>
 				{({ setIsOpen }) =>
 					this.props.children({
+						view: this.state.view,
 						EffectorTopBar: <div className="EffectorTopBar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="EffectorBottomBar">{renderEffectorBottomBar()}</div>
 					})}
