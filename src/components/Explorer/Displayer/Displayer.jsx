@@ -5,12 +5,18 @@ import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
 import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
 import Effector from '../Effector/Effector';
 import Detailer from '../Detailer/Detailer';
+import FormFiller from '../../../pages/FormFiller/FormFiller';
+import { AppContext } from '../../../context/AppContext';
 
 class Displayer extends Component {
+	static contextType = AppContext;
+
 	state = {
 		view: 'table',
 		selectedIndex: [],
-		detailerIndex: 0
+		detailerIndex: 0,
+		formFillerIndex: null,
+		isFormFillerOpen: false
 	};
 
 	decideDisplayer = () => {
@@ -22,19 +28,39 @@ class Displayer extends Component {
 		else if (view === 'gallery') return <GalleryDisplayer indieEffectors={indieEffectors} />;
 	};
 
+	switchData = (dir, e) => {
+		const { exclude, primary } = this.state.selectedData;
+		const { data, selectedIndex, totalCount } = this.state;
+		if (dir === 'right') {
+			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
+			this.setState({
+				selectedData: {
+					exclude,
+					primary,
+					data: data[newSelectedIndex]
+				},
+				selectedIndex: newSelectedIndex
+			});
+		} else if (dir === 'left') {
+			const newSelectedIndex = selectedIndex > 0 ? selectedIndex - 1 : totalCount - 1;
+			this.setState({
+				selectedData: {
+					exclude,
+					primary,
+					data: data[newSelectedIndex]
+				},
+				selectedIndex: newSelectedIndex
+			});
+		}
+	};
+
 	render() {
-		const { decideDisplayer } = this;
-		const { detailerIndex, selectedIndex } = this.state;
-		const { globalEffectors, selectedEffectors, data, totalCount } = this.props;
+		const { decideDisplayer, switchData } = this;
+		const { detailerIndex, selectedIndex, isFormFillerOpen, formFillerIndex } = this.state;
+		const { data, totalCount, page, refetchData, type } = this.props;
 		return (
 			<div className="Displayer">
-				<Effector
-					constantEffectors={[]}
-					globalEffectors={globalEffectors}
-					selectedEffectors={selectedEffectors}
-					totalCount={totalCount}
-					selectedIndex={selectedIndex}
-				>
+				<Effector type={type} page={page} totalCount={totalCount} selectedIndex={selectedIndex}>
 					{({ EffectorTopBar, EffectorBottomBar }) => {
 						return (
 							<Fragment>
@@ -46,6 +72,18 @@ class Displayer extends Component {
 					}}
 				</Effector>
 				<Detailer data={data[detailerIndex]} />
+				<FormFiller
+					isOpen={isFormFillerOpen}
+					user={this.context.user}
+					handleClose={() => {
+						this.setState({ isOpen: false });
+					}}
+					submitMsg={'Update'}
+					onSubmit={this.context.updateResource.bind(null, formFillerIndex ? data[formFillerIndex] : null, refetchData)}
+					type={type}
+					data={formFillerIndex ? data[formFillerIndex] : null}
+					onArrowClick={switchData}
+				/>
 			</div>
 		);
 	}

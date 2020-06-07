@@ -5,16 +5,11 @@ import Displayer from './Displayer/Displayer';
 
 class Explorer extends Component {
 	render() {
-		const { data, refetchData, totalCount, globalEffectors, selectedEffectors, type } = this.props;
+		const { data, refetchData, totalCount, type, page } = this.props;
 		return (
 			<div className="Explorer">
 				<Manipulator onApply={refetchData} type={type} />
-				<Displayer
-					data={data}
-					totalCount={totalCount}
-					globalEffectors={globalEffectors}
-					selectedEffectors={selectedEffectors}
-				/>
+				<Displayer refetchData={refetchData} page={page} data={data} totalCount={totalCount} type={type} />
 			</div>
 		);
 	}
