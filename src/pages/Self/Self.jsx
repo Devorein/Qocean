@@ -66,12 +66,13 @@ class Self extends Component {
 
 	switchPage = (page) => {
 		this.props.history.push(`/${page.link}`);
-		this.refetchData(page.name, null, {
-			type: page.name,
-			page: 0,
-			selectedData: null,
-			selectedRows: []
-		});
+		this.refetchData(
+			page.name,
+			{ page: 1, limit: this.props.users.current_environment.default_self_rpp },
+			{
+				type: page.name
+			}
+		);
 	};
 
 	genericTransformData = (data, filterData) => {

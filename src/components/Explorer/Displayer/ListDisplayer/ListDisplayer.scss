@@ -1,0 +1,9 @@
+.ListDisplayer {
+  display: flex;
+  &_item {
+    padding: 5px;
+    &_part {
+      padding: 3px;
+    }
+  }
+}

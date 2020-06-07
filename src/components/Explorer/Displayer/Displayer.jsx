@@ -7,12 +7,13 @@ import Effector from '../Effector/Effector';
 import Detailer from '../Detailer/Detailer';
 import FormFiller from '../../../pages/FormFiller/FormFiller';
 import { AppContext } from '../../../context/AppContext';
+import sectorizeData from '../../../Utils/sectorizeData';
 
 class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		view: 'table',
+		view: 'list',
 		selectedIndex: [],
 		detailerIndex: 0,
 		formFillerIndex: null,
@@ -25,14 +26,22 @@ class Displayer extends Component {
 			page: 1
 		});
 	}
-
+	transformData = (data) => {
+		console.log(data);
+		return data;
+	};
 	decideDisplayer = () => {
 		const { view } = this.state;
-		const { indieEffectors } = this.props;
-		if (view === 'table') return <TableDisplayer indieEffectors={indieEffectors} />;
-		else if (view === 'list') return <ListDisplayer indieEffectors={indieEffectors} />;
-		else if (view === 'board') return <BoardDisplayer indieEffectors={indieEffectors} />;
-		else if (view === 'gallery') return <GalleryDisplayer indieEffectors={indieEffectors} />;
+		const { data, type } = this.props;
+
+		const props = {
+			data: this.transformData(sectorizeData(data, type, this.context.user))
+		};
+
+		if (view === 'table') return <TableDisplayer {...props} />;
+		else if (view === 'list') return <ListDisplayer {...props} />;
+		else if (view === 'board') return <BoardDisplayer {...props} />;
+		else if (view === 'gallery') return <GalleryDisplayer {...props} />;
 	};
 
 	switchData = (dir, e) => {

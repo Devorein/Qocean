@@ -156,9 +156,9 @@ class Effector extends Component {
 				)
 				.then(({ data: { data: answers } }) => {
 					const dataWithAnswers = data.map((data, index) => ({ ...data, answers: answers[index].answers }));
-					return shaveData(dataWithAnswers, type);
+					return shaveData(dataWithAnswers, type, { purpose: 'download' });
 				});
-		} else return new Promise((resolve, reject) => resolve(shaveData(data, type)));
+		} else return new Promise((resolve, reject) => resolve(shaveData(data, type, { purpose: 'download' })));
 	};
 
 	renderGlobalEffectors = () => {
