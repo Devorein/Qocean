@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
-import Effector from './Effector/Effector';
+import Detailer from './Detailer/Detailer';
 
 class Explorer extends Component {
 	render() {

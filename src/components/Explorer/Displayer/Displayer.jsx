@@ -1,12 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import TableDisplayer from './TableDisplayer/TableDisplayer';
 import ListDisplayer from './ListDisplayer/ListDisplayer';
 import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
 import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
+import Effector from '../Effector/Effector';
+import Detailer from '../Detailer/Detailer';
 
 class Displayer extends Component {
 	state = {
-		view: 'table'
+		view: 'table',
+		selectedRows: [],
+		detailerIndex: 0
 	};
 
 	decideDisplayer = () => {
@@ -19,7 +23,29 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer } = this;
-		return <div className="Displayer">{decideDisplayer()}</div>;
+		const { detailerIndex } = this.state;
+		const { globalEffectors, selectedEffectors, data, totalCount } = this.props;
+		return (
+			<div className="Displayer">
+				<Effector
+					constantEffectors={[]}
+					globalEffectors={globalEffectors}
+					selectedEffectors={selectedEffectors}
+					totalCount={totalCount}
+				>
+					{({ EffectorTopBar, EffectorBottomBar }) => {
+						return (
+							<Fragment>
+								{EffectorTopBar}
+								{decideDisplayer()}
+								{EffectorBottomBar}
+							</Fragment>
+						);
+					}}
+				</Effector>
+				<Detailer data={data[detailerIndex]} />
+			</div>
+		);
 	}
 }
 
