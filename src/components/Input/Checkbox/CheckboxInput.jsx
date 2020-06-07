@@ -9,7 +9,7 @@ class CheckboxInput extends Component {
 	};
 
 	render() {
-		const { name, onChange, checked, handleBlur, label = '' } = this.props;
+		const { name = '', onChange, checked, handleBlur, label = '' } = this.props;
 		return (
 			<FormControlLabel
 				control={<Checkbox color={'primary'} checked={checked} name={name} onChange={onChange} onBlur={handleBlur} />}

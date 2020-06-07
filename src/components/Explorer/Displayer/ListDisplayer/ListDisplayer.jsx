@@ -1,35 +1,48 @@
 import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
 
+import './ListDisplayer.scss';
 class ListDisplayer extends Component {
-	renderListDisplayerTertiary = (data) => {
-		delete data.name;
-		delete data.subject;
-		delete data.tags;
-
-		return Object.entries(data).map(([ key, value ], index) => (
-			<span className="ListDisplayer_item_part ListDisplayer_item_part--tertiary" key={`${key}${index}`}>
-				{value}
-			</span>
-		));
-	};
 	renderListDisplayer = () => {
-		const { data, authenticated, type } = this.props;
-		// return shaveData(data, type, { purpose: 'display', authenticated }).map((data) => {
-		// 	return (
-		// 		<div className="ListDisplayer_item" key={data._id}>
-		// 			<span className="ListDisplayer_item_part ListDisplayer_item_part--primary">{data.name}</span>
-		// 			<span className="ListDisplayer_item_part_container">
-		// 				<span className="ListDisplayer_item_part ListDisplayer_item_part--secondary">{data.subject}</span>
-		// 				<span className="ListDisplayer_item_part ListDisplayer_item_part--secondary">{data.tags}</span>
-		// 			</span>
-		// 			<span className="ListDisplayer_item_part_container">{this.renderListDisplayerTertiary(data)}</span>
-		// 		</div>
-		// 	);
-		// });
+		const { type, data, classes } = this.props;
+		return data.map((item) => {
+			return (
+				<div className={`ListDisplayer_item ${classes.ListDisplayer_item}`} key={item._id}>
+					<CheckboxInput
+						onChange={(e) => {
+							console.log(e.target.checked);
+						}}
+						checked={true}
+					/>
+					{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
+						return (
+							<div
+								key={`${type}${key}${index}`}
+								className={`ListDisplayer_item_container ListDisplayer_item_container-${key}`}
+							>
+								{Object.entries(item[key]).map(([ key, val ], index) => (
+									<span
+										key={`${type}${key}${index}`}
+										className={`ListDisplayer_item_container_item ListDisplayer_item_container-${key}_item`}
+									>
+										{val}
+									</span>
+								))}
+							</div>
+						);
+					})}
+				</div>
+			);
+		});
 	};
 	render() {
 		return <div className="ListDisplayer">{this.renderListDisplayer()}</div>;
 	}
 }
 
-export default ListDisplayer;
+export default withStyles((theme) => ({
+	ListDisplayer_item: {
+		backgroundColor: theme.palette.background.main
+	}
+}))(ListDisplayer);

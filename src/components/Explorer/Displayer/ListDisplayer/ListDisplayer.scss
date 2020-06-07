@@ -1,7 +1,21 @@
 .ListDisplayer {
   display: flex;
+  flex-direction: column;
   &_item {
+    display: flex;
     padding: 5px;
+    margin: 3px;
+    border-radius: 3px;
+    &_container {
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      &-primary {
+        width: 50%;
+        font-weight: bolder;
+        font-size: 1rem;
+      }
+    }
     &_part {
       padding: 3px;
     }

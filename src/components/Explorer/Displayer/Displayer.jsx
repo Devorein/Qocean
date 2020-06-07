@@ -8,6 +8,16 @@ import Detailer from '../Detailer/Detailer';
 import FormFiller from '../../../pages/FormFiller/FormFiller';
 import { AppContext } from '../../../context/AppContext';
 import sectorizeData from '../../../Utils/sectorizeData';
+import ChipContainer from '../../../components/Chip/ChipContainer';
+import StarIcon from '@material-ui/icons/Star';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+import PublicIcon from '@material-ui/icons/Public';
+import UpdateIcon from '@material-ui/icons/Update';
+import InfoIcon from '@material-ui/icons/Info';
+import download from '../../../Utils/download';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import shortid from 'shortid';
+import moment from 'moment';
 
 class Displayer extends Component {
 	static contextType = AppContext;
@@ -26,16 +36,52 @@ class Displayer extends Component {
 			page: 1
 		});
 	}
+
 	transformData = (data) => {
-		console.log(data);
+		data.forEach((item) => {
+			item.actions = (
+				<Fragment>
+					<UpdateIcon />
+					<InfoIcon />
+					<GetAppIcon
+					// onClick={(e) => {
+					// 	this.transformData([ item ]).then((data) => {
+					// 		download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
+					// 	});
+					// }}
+					/>
+				</Fragment>
+			);
+
+			if (item.tags) data.tags = <ChipContainer chips={item.tags} type={'regular'} height={100} />;
+			if (item.public)
+				item.public = item.public ? (
+					<PublicIcon /* onClick={this.updateResource.bind(null, [ item ], 'public')}*/ style={{ fill: '#00a3e6' }} />
+				) : (
+					<PublicIcon /* onClick={this.updateResource.bind(null, [ item ], 'public')}*/ style={{ fill: '#f4423c' }} />
+				);
+			if (item.favourite)
+				item.favourite = item.favourite ? (
+					<StarIcon /* onClick={this.updateResource.bind(null, [ item ], 'favourite')}*/ style={{ fill: '#f0e744' }} />
+				) : (
+					<StarBorderIcon
+						/* onClick={this.updateResource.bind(null, [ item ], 'favourite')}*/ style={{ fill: '#ead50f' }}
+					/>
+				);
+			if (item.created_at) item.created_at = moment(item.created_at).fromNow();
+			if (item.updated_at) item.updated_at = moment(item.updated_at).fromNow();
+		});
+
 		return data;
 	};
+
 	decideDisplayer = () => {
 		const { view } = this.state;
 		const { data, type } = this.props;
 
 		const props = {
-			data: this.transformData(sectorizeData(data, type, this.context.user))
+			data: sectorizeData(this.transformData(data), type, this.context.user),
+			type
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} />;
@@ -87,12 +133,12 @@ class Displayer extends Component {
 						return (
 							<Fragment>
 								{EffectorTopBar}
+								{decideDisplayer()}
 								{EffectorBottomBar}
 							</Fragment>
 						);
 					}}
 				</Effector>
-				{decideDisplayer()}
 				<Detailer data={data[detailerIndex]} />
 				<FormFiller
 					isOpen={isFormFillerOpen}

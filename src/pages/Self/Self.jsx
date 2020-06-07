@@ -7,16 +7,7 @@ import SelfQuizzes from './SelfQuizzes';
 import SelfQuestions from './SelfQuestions';
 import SelfFolders from './SelfFolders';
 import SelfEnvironments from './SelfEnvironments';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import PublicIcon from '@material-ui/icons/Public';
-import UpdateIcon from '@material-ui/icons/Update';
-import InfoIcon from '@material-ui/icons/Info';
-import download from '../../Utils/download';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import filterSort from '../../Utils/filterSort';
 import Explorer from '../../components/Explorer/Explorer';
-import shortid from 'shortid';
 import qs from 'qs';
 
 import './Self.scss';
@@ -75,75 +66,21 @@ class Self extends Component {
 		);
 	};
 
-	genericTransformData = (data, filterData) => {
-		return data.map((item, index) => {
-			return {
-				...item,
-				actions: (
-					<Fragment>
-						<UpdateIcon
-							onClick={(e) => {
-								this.getDetails(filterData(item), index, { isOpen: true });
-							}}
-						/>
-						<InfoIcon
-							onClick={(e) => {
-								this.getDetails(filterData(item), index);
-							}}
-						/>
-						<GetAppIcon
-							onClick={(e) => {
-								this.transformData([ item ]).then((data) => {
-									download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
-								});
-							}}
-						/>
-					</Fragment>
-				),
-				public: item.public ? (
-					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
-				) : (
-					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
-				),
-				favourite: item.favourite ? (
-					<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
-				) : (
-					<StarBorderIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#ead50f' }} />
-				)
-			};
-		});
-	};
-
-	getDetails = ({ exclude, primary }, index, newState = {}) => {
-		this.setState({
-			selectedIndex: index,
-			...newState
-		});
-	};
-
 	decideTable = (setDeleteModal) => {
-		const { getDetails, genericTransformData, refetchData } = this;
+		const { refetchData } = this;
 		const { page, rowsPerPage, type } = this.state;
 
 		const props = {
 			limit: rowsPerPage,
 			refetchData,
 			data: this.state.data,
-			page,
-			getDetails,
-			genericTransformData,
-			cols: [ { name: 'actions', label: 'Actions' } ]
+			page
 		};
 
 		if (type === 'Quiz') return <SelfQuizzes {...props} />;
 		else if (type === 'Question') return <SelfQuestions {...props} />;
 		else if (type === 'Folder') return <SelfFolders {...props} />;
 		else if (type === 'Environment') return <SelfEnvironments {...props} />;
-	};
-
-	applyFilterSort = (filter_sort) => {
-		const query = filterSort(filter_sort);
-		if (Object.keys(query).length > 0) this.refetchData(null, query);
 	};
 
 	render() {
