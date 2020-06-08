@@ -1,4 +1,4 @@
-export default function(data, type, authenticated) {
+export default function(data, type, { authenticated, singular = false }) {
 	type = type.toLowerCase();
 	const primary = [ 'name' ],
 		secondary = [],
@@ -12,16 +12,24 @@ export default function(data, type, authenticated) {
 		}
 	}
 
-	return data.map((data) => {
+	if (!singular)
+		return data.map((data) => {
+			const temp = {};
+			temp.primary = {};
+			temp.secondary = {};
+			temp.tertiary = {};
+			primary.forEach((prop) => (temp['primary'][prop] = data[prop]));
+			secondary.forEach((prop) => (temp['secondary'][prop] = data[prop]));
+			tertiary.forEach((prop) => (temp['tertiary'][prop] = data[prop]));
+			temp._id = data._id;
+			temp.actions = data.actions;
+			return temp;
+		});
+	else {
 		const temp = {};
-		temp.primary = {};
-		temp.secondary = {};
-		temp.tertiary = {};
-		primary.forEach((prop) => (temp['primary'][prop] = data[prop]));
-		secondary.forEach((prop) => (temp['secondary'][prop] = data[prop]));
-		tertiary.forEach((prop) => (temp['tertiary'][prop] = data[prop]));
-		temp._id = data._id;
-		temp.actions = data.actions;
+		primary.forEach((prop) => (temp[prop] = data[prop]));
+		secondary.forEach((prop) => (temp[prop] = data[prop]));
+		tertiary.forEach((prop) => (temp[prop] = data[prop]));
 		return temp;
-	});
+	}
 }

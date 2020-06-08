@@ -35,7 +35,7 @@ class Displayer extends Component {
 		});
 	}
 
-	transformData = (data) => {
+	transformData = (data, selected_props) => {
 		return data.map((item, index) => {
 			const temp = {
 				...item,
@@ -115,14 +115,13 @@ class Displayer extends Component {
 		}
 	};
 
-	getCols = (manipulatedData) => {
+	getCols = (data) => {
 		const cols = [];
-		if (manipulatedData.length > 0)
-			Object.keys(manipulatedData[0]).forEach((key) => {
-				if (key !== '_id' && key !== 'actions')
-					Object.keys(manipulatedData[0][key]).forEach((col) =>
-						cols.push(col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' '))
-					);
+		if (data.length > 0)
+			Object.keys(
+				sectorizeData(data[0], this.props.type, { authenticated: this.context.user, singular: true })
+			).forEach((col) => {
+				cols.push(col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' '));
 			});
 		return cols;
 	};
@@ -131,8 +130,7 @@ class Displayer extends Component {
 		const { decideDisplayer, switchData, getCols } = this;
 		const { selectedIndex, isFormFillerOpen, formFillerIndex } = this.state;
 		const { data, totalCount, page, refetchData, type } = this.props;
-		const manipulatedData = sectorizeData(this.transformData(data), type, this.context.user);
-		const cols = getCols(manipulatedData);
+		const cols = getCols(data);
 		return (
 			<div className="Displayer">
 				<Effector
@@ -144,7 +142,11 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 				>
-					{({ EffectorTopBar, EffectorBottomBar, view }) => {
+					{({ EffectorTopBar, EffectorBottomBar, view, selected_props }) => {
+						const manipulatedData = sectorizeData(this.transformData(data, selected_props), type, {
+							authenticated: this.context.user
+						});
+
 						return (
 							<Fragment>
 								{EffectorTopBar}

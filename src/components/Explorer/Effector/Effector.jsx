@@ -347,6 +347,7 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
+		const { selected_props, view } = this.state;
 		return (
 			<ModalRP
 				onClose={(e) => {
@@ -365,7 +366,8 @@ class Effector extends Component {
 			>
 				{({ setIsOpen }) =>
 					this.props.children({
-						view: this.state.view,
+						selected_props,
+						view,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>
 					})}
