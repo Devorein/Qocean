@@ -51,12 +51,11 @@ export default function MultiSelect({
 	const classes = useStyles();
 	return (
 		<FormControl fullWidth>
-			<InputLabel id="multiple-chip">{label}</InputLabel>
+			<InputLabel>{label}</InputLabel>
 			<Select
 				className={className}
 				name={name}
 				disabled={disabled}
-				labelId="multiple-chip"
 				multiple
 				value={selected}
 				onChange={handleChange}

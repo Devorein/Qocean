@@ -211,7 +211,7 @@ class TagCreatorRP extends Component {
 					/>
 				</PrevTagSelection>
 				<TagContainer>
-					{tags.map((tag) => {
+					{tags.map((tag, index) => {
 						return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
 					})}
 				</TagContainer>
