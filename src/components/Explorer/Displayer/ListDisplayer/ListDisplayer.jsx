@@ -6,7 +6,7 @@ import convert from 'color-convert';
 import './ListDisplayer.scss';
 class ListDisplayer extends Component {
 	renderListDisplayer = () => {
-		const { type, data, classes, setChecked } = this.props;
+		const { type, data, classes } = this.props;
 		return data.map((item, index) => {
 			return (
 				<div className={`ListDisplayer_item ${classes.ListDisplayer_item}`} key={item._id}>

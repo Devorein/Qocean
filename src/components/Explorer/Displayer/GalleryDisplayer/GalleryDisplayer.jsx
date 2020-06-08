@@ -12,7 +12,7 @@ class GalleryDisplayer extends Component {
 	};
 
 	renderGalleryDisplayer = () => {
-		const { type, data, classes, setChecked } = this.props;
+		const { type, data, classes } = this.props;
 		return (
 			<div
 				className="GalleryDisplayer_container"

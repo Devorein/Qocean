@@ -5,7 +5,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
 import Color from 'color';
 import convert from 'color-convert';
 import './TableDisplayer.scss';
@@ -34,7 +33,7 @@ class TableDisplayer extends Component {
 					</TableHead>
 					<TableBody className={'TableDisplayer_body'}>
 						{data.map((item) => (
-							<TableRow key={item.name} className={`TableDisplayer_body_row TableDisplayer_row`}>
+							<TableRow key={item._id} className={`TableDisplayer_body_row TableDisplayer_row`}>
 								{cols.map((col, index) => (
 									<TableCell
 										key={`${col}${item[col]}${index}`}
