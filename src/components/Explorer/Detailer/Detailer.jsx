@@ -14,7 +14,6 @@ class Detailer extends Component {
 					purpose: 'detail'
 				})
 			: null;
-		console.log(manipulatedData);
 		return <div className="Detailer">Detailer</div>;
 	}
 }

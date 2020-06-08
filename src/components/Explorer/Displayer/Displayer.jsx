@@ -27,7 +27,11 @@ import './Displayer.scss';
 const keyMap = {
 	MOVE_UP: 'up',
 	MOVE_DOWN: 'down',
-	SELECT: [ 's', 'shift+s', 'alt+s' ]
+	SELECT: [ 's', 'shift+s', 'alt+s' ],
+	ACTION_1: '1',
+	ACTION_2: '2',
+	ACTION_3: '3',
+	ACTION_4: '4'
 };
 
 class Displayer extends Component {
@@ -75,6 +79,7 @@ class Displayer extends Component {
 	};
 
 	deleteResource = (selectedRows) => {
+		console.log(selectedRows);
 		const { type } = this.props;
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
@@ -258,7 +263,6 @@ class Displayer extends Component {
 								flatten: true
 							});
 						}
-
 						return (
 							<Fragment>
 								{EffectorTopBar}
@@ -269,18 +273,29 @@ class Displayer extends Component {
 											MOVE_UP: (event) => {
 												this.setState({
 													currentSelected:
-														this.state.currentSelected > 0 ? this.state.currentSelected - 1 : this.props.data.length - 1
+														this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
 												});
 											},
 											MOVE_DOWN: (event) => {
 												this.setState({
 													currentSelected:
-														this.state.currentSelected < this.props.data.length - 1 ? this.state.currentSelected + 1 : 0
+														this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
 												});
 											},
 											SELECT: (e) => {
-												console.log(e.nativeEvent.altKey);
 												this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
+											},
+											ACTION_1: (e) => {
+												this.props.setDetailerIndex(this.state.currentSelected);
+											},
+											ACTION_2: (e) => {
+												exportData(type, [ data[this.state.currentSelected] ]);
+											},
+											ACTION_3: (e) => {
+												this.props.enableFormFiller(this.state.currentSelected);
+											},
+											ACTION_4: (e) => {
+												this.deleteResource([ data[this.state.currentSelected]._id ]);
 											}
 										}}
 									>
