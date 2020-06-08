@@ -31,7 +31,11 @@ const keyMap = {
 	ACTION_1: '1',
 	ACTION_2: '2',
 	ACTION_3: '3',
-	ACTION_4: '4'
+	ACTION_4: '4',
+	GLOBAL_ACTION_1: 'shift+1',
+	GLOBAL_ACTION_2: 'shift+2',
+	GLOBAL_ACTION_3: 'shift+3',
+	GLOBAL_ACTION_4: 'shift+4'
 };
 
 class Displayer extends Component {
@@ -79,7 +83,6 @@ class Displayer extends Component {
 	};
 
 	deleteResource = (selectedRows) => {
-		console.log(selectedRows);
 		const { type } = this.props;
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
@@ -249,7 +252,15 @@ class Displayer extends Component {
 					cols={cols}
 					deleteResource={deleteResource}
 				>
-					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
+					{({
+						EffectorTopBar,
+						EffectorBottomBar,
+						view,
+						removed_cols,
+						setSelectedIndex,
+						selectedIndex,
+						GLOBAL_ICONS
+					}) => {
 						let manipulatedData = null;
 						if (view !== 'table')
 							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
@@ -263,42 +274,49 @@ class Displayer extends Component {
 								flatten: true
 							});
 						}
+
+						const handlers = {
+							MOVE_UP: (event) => {
+								this.setState({
+									currentSelected: this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
+								});
+							},
+							MOVE_DOWN: (event) => {
+								this.setState({
+									currentSelected: this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
+								});
+							},
+							SELECT: (e) => {
+								this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
+							},
+							ACTION_1: (e) => {
+								this.props.setDetailerIndex(this.state.currentSelected);
+							},
+							ACTION_2: (e) => {
+								exportData(type, [ data[this.state.currentSelected] ]);
+							},
+							ACTION_3: (e) => {
+								this.props.enableFormFiller(this.state.currentSelected);
+							},
+							ACTION_4: (e) => {
+								this.deleteResource([ data[this.state.currentSelected]._id ]);
+							}
+						};
+						[ 1, 2, 3, 4 ].forEach((item) => {
+							handlers[`GLOBAL_ACTION_${item}`] = (e) => {
+								const evt = new MouseEvent('click', {
+									bubbles: true,
+									cancelable: true,
+									view: window
+								});
+								GLOBAL_ICONS[`GLOBAL_ACTION_${item}`].dispatchEvent(evt);
+							};
+						});
 						return (
 							<Fragment>
 								{EffectorTopBar}
 								<div className={`Displayer_data Displayer_data-${view}`}>
-									<HotKeys
-										keyMap={keyMap}
-										handlers={{
-											MOVE_UP: (event) => {
-												this.setState({
-													currentSelected:
-														this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
-												});
-											},
-											MOVE_DOWN: (event) => {
-												this.setState({
-													currentSelected:
-														this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
-												});
-											},
-											SELECT: (e) => {
-												this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
-											},
-											ACTION_1: (e) => {
-												this.props.setDetailerIndex(this.state.currentSelected);
-											},
-											ACTION_2: (e) => {
-												exportData(type, [ data[this.state.currentSelected] ]);
-											},
-											ACTION_3: (e) => {
-												this.props.enableFormFiller(this.state.currentSelected);
-											},
-											ACTION_4: (e) => {
-												this.deleteResource([ data[this.state.currentSelected]._id ]);
-											}
-										}}
-									>
+									<HotKeys keyMap={keyMap} handlers={handlers}>
 										{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
 									</HotKeys>
 								</div>

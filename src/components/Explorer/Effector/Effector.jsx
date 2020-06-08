@@ -27,7 +27,7 @@ class Effector extends Component {
 		selected_cols: this.props.cols || [],
 		selectedIndex: []
 	};
-
+	GLOBAL_ICONS = {};
 	static contextType = AppContext;
 
 	UNSAFE_componentWillReceiveProps(props) {
@@ -143,6 +143,9 @@ class Effector extends Component {
 			return (
 				<div className="Effector_topbar_globals">
 					<RotateLeftIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
+						}}
 						onClick={(e) => {
 							refetchData(null, {
 								page: currentPage,
@@ -151,16 +154,25 @@ class Effector extends Component {
 						}}
 					/>
 					<StarIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
+						}}
 						onClick={(e) => {
 							updateResource(data, 'favourite');
 						}}
 					/>
 					<PublicIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
+						}}
 						onClick={(e) => {
 							updateResource(data, 'public');
 						}}
 					/>
 					<GetAppIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
+						}}
 						onClick={(e) => {
 							exportData(type, data);
 						}}
@@ -177,21 +189,33 @@ class Effector extends Component {
 			return (
 				<div className="Effector_topbar_selected">
 					<DeleteIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
+						}}
 						onClick={(e) => {
 							setDeleteModal(true);
 						}}
 					/>
 					<StarIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
+						}}
 						onClick={(e) => {
 							updateResource(selectedItems, 'favourite');
 						}}
 					/>
 					<PublicIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
+						}}
 						onClick={(e) => {
 							updateResource(selectedItems, 'public');
 						}}
 					/>
 					<GetAppIcon
+						ref={(ref) => {
+							this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
+						}}
 						onClick={(e) => {
 							exportData(type, selectedItems);
 						}}
@@ -307,7 +331,8 @@ class Effector extends Component {
 						selectedIndex,
 						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
-						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>
+						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,
+						GLOBAL_ICONS: this.GLOBAL_ICONS
 					})}
 			</ModalRP>
 		);
