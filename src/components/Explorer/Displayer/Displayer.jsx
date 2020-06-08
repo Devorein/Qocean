@@ -21,14 +21,22 @@ import axios from 'axios';
 import pluralize from 'pluralize';
 import moment from 'moment';
 import { difference } from 'lodash';
+import { HotKeys } from 'react-hotkeys';
 import './Displayer.scss';
+
+const keyMap = {
+	MOVE_UP: 'up',
+	MOVE_DOWN: 'down',
+	CHECK: 'right'
+};
 
 class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
 		formFillerIndex: null,
-		isFormFillerOpen: false
+		isFormFillerOpen: false,
+		currentSelected: 0
 	};
 
 	componentDidMount() {
@@ -195,7 +203,8 @@ class Displayer extends Component {
 
 		const props = {
 			data,
-			type
+			type,
+			currentSelected: this.state.currentSelected
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} cols={cols} />;
@@ -250,7 +259,25 @@ class Displayer extends Component {
 							<Fragment>
 								{EffectorTopBar}
 								<div className={`Displayer_data Displayer_data-${view}`}>
-									{decideDisplayer(manipulatedData, view, difference(cols, removed_cols))}
+									<HotKeys
+										keyMap={keyMap}
+										handlers={{
+											MOVE_UP: (event) => {
+												this.setState({
+													currentSelected:
+														this.state.currentSelected > 0 ? this.state.currentSelected - 1 : this.props.data.length - 1
+												});
+											},
+											MOVE_DOWN: (event) => {
+												this.setState({
+													currentSelected:
+														this.state.currentSelected < this.props.data.length - 1 ? this.state.currentSelected + 1 : 0
+												});
+											}
+										}}
+									>
+										{decideDisplayer(manipulatedData, view, difference(cols, removed_cols))}
+									</HotKeys>
 								</div>
 								{EffectorBottomBar}
 							</Fragment>

@@ -11,7 +11,7 @@ import './TableDisplayer.scss';
 
 class TableDisplayer extends Component {
 	render() {
-		const { type, classes } = this.props;
+		const { type, classes, currentSelected } = this.props;
 		let { data, cols } = this.props;
 		cols.unshift('checked', 'actions');
 
@@ -32,8 +32,13 @@ class TableDisplayer extends Component {
 						</TableRow>
 					</TableHead>
 					<TableBody className={'TableDisplayer_body'}>
-						{data.map((item) => (
-							<TableRow key={item._id} className={`TableDisplayer_body_row TableDisplayer_row`}>
+						{data.map((item, index) => (
+							<TableRow
+								key={item._id}
+								className={`TableDisplayer_body_row TableDisplayer_row ${currentSelected === index
+									? 'TableDisplayer_row--selected'
+									: ''}`}
+							>
 								{cols.map((col, index) => (
 									<TableCell
 										key={`${col}${item[col]}${index}`}
@@ -58,7 +63,10 @@ export default withStyles((theme) => ({
 			background: theme.palette.background.dark
 		},
 		'& .TableDisplayer_body': {
-			background: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
+			background: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex(),
+			'& .TableDisplayer_row--selected': {
+				backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
+			}
 		},
 		'& .MuiTableCell-body': {
 			padding: 5
