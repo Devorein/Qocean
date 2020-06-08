@@ -255,7 +255,7 @@ class Effector extends Component {
 	};
 
 	deleteModalMessage = () => {
-		/* 		const { data, type } = this.props;
+		const { data, type } = this.props;
 		const { selectedIndex } = this.state;
 		const selectedItems = selectedIndex.map((index) => data[index]);
 		return (
@@ -265,7 +265,7 @@ class Effector extends Component {
 				</div>
 				{selectedItems.map((selectedItem) => <div key={selectedItem._id}>{selectedItem.name}</div>)}
 			</Fragment>
-		); */
+		);
 	};
 
 	setSelectedIndex = (index) => {
@@ -282,16 +282,11 @@ class Effector extends Component {
 		const { selected_cols, view, selectedIndex } = this.state;
 		return (
 			<ModalRP
-				onClose={(e) => {
-					this.setState({
-						selectedRows: []
-					});
-				}}
 				onAccept={() => {
-					const selectedDatas = this.state.selectedRows.map((index) => this.state.data[index]._id);
+					const selectedDatas = selectedIndex.map((index) => this.props.data[index]._id);
 					this.props.deleteResource(selectedDatas);
 					this.setState({
-						selectedRows: []
+						selectedIndex: []
 					});
 				}}
 				modalMsg={deleteModalMessage()}
