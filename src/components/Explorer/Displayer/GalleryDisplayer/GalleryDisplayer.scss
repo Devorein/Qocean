@@ -1,9 +1,15 @@
 .GalleryDisplayer {
-  display: grid;
-  grid-template: 300px/1fr 1fr 1fr;
-  grid-auto-rows: 300px;
-  grid-gap: 5px;
-
+  &_colcount {
+    width: 50%;
+    margin: 0 auto;
+    max-width: 150px;
+  }
+  &_container {
+    grid-auto-rows: 300px;
+    grid-template-rows: 300px;
+    display: grid;
+    grid-gap: 5px;
+  }
   &_item {
     padding: 5px;
     border-radius: 3px;
@@ -70,7 +76,10 @@
 }
 
 .GalleryDisplayer-Quiz {
-  .GalleryDisplayer_item_container-secondary {
+  .GalleryDisplayer_container {
+    grid-auto-rows: 300px;
+  }
+  v .GalleryDisplayer_item_container-secondary {
     display: grid;
     grid-template: 30px 1fr/ 1fr 1fr 1fr;
     .GalleryDisplayer_item_container_item {
@@ -80,5 +89,12 @@
     .GalleryDisplayer_item_container-tags_item {
       grid-area: 2/1/3/4;
     }
+  }
+}
+
+.GalleryDisplayer-Environment {
+  .GalleryDisplayer_container {
+    grid-auto-rows: 250px;
+    grid-template-rows: 250px;
   }
 }
