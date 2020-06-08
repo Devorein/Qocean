@@ -4,7 +4,8 @@ import sectorizeData from '../../../Utils/sectorizeData';
 
 class Detailer extends Component {
 	static contextType = AppContext;
-	render() {
+
+	renderDetailer = () => {
 		const { type, data } = this.props;
 
 		const manipulatedData = data
@@ -14,7 +15,26 @@ class Detailer extends Component {
 					purpose: 'detail'
 				})
 			: null;
-		return <div className="Detailer">Detailer</div>;
+
+		if (manipulatedData) {
+			return [ 'primary', 'secondary', 'tertiary', 'refs' ].map((sector) => (
+				<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
+					{Object.entries(manipulatedData[sector]).map(([ key, value ]) => (
+						<div className={`Detailer_container_item Detailer_container-${sector}_item`} key={key}>
+							<span className={`Detailer_container_item-key Detailer_container-${sector}_item-key`}>
+								{key.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1))}
+							</span>
+							<span className={`Detailer_container_item-value Detailer_container-${sector}_item-value`}>
+								{value.toString()}
+							</span>
+						</div>
+					))}
+				</div>
+			));
+		}
+	};
+	render() {
+		return <div className="Detailer">{this.renderDetailer()}</div>;
 	}
 }
 
