@@ -168,12 +168,17 @@ class Effector extends Component {
 	renderGlobalEffectors = () => {
 		const { updateResource } = this;
 		const { data, page, refetchData, type } = this.props;
+		const { itemsPerPage, currentPage } = this.state;
+
 		if (page === 'Self') {
 			return (
 				<div className="Effector_topbar_globals">
 					<RotateLeftIcon
 						onClick={(e) => {
-							refetchData();
+							refetchData(null, {
+								page: currentPage,
+								limit: itemsPerPage
+							});
 						}}
 					/>
 					<StarIcon

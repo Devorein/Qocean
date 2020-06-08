@@ -4,7 +4,6 @@ import ListDisplayer from './ListDisplayer/ListDisplayer';
 import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
 import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
 import Effector from '../Effector/Effector';
-import FormFiller from '../../../pages/FormFiller/FormFiller';
 import { AppContext } from '../../../context/AppContext';
 import sectorizeData from '../../../Utils/sectorizeData';
 import ChipContainer from '../../../components/Chip/ChipContainer';
@@ -41,7 +40,11 @@ class Displayer extends Component {
 				checked: selectedIndex.includes(index),
 				actions: (
 					<Fragment>
-						<UpdateIcon />
+						<UpdateIcon
+							onClick={(e) => {
+								this.props.enableFormFiller(index);
+							}}
+						/>
 						<InfoIcon />
 						<GetAppIcon
 							onClick={(e) => {
@@ -93,21 +96,6 @@ class Displayer extends Component {
 		else if (view === 'gallery') return <GalleryDisplayer {...props} />;
 	};
 
-	/* 	switchData = (dir, e) => {
-		const { selectedIndex, totalCount } = this.state;
-		if (dir === 'right') {
-			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
-			this.setState({
-				selectedIndex: newSelectedIndex
-			});
-		} else if (dir === 'left') {
-			const newSelectedIndex = selectedIndex > 0 ? selectedIndex - 1 : totalCount - 1;
-			this.setState({
-				selectedIndex: newSelectedIndex
-			});
-		}
-	}; */
-
 	getCols = (data) => {
 		const cols = [];
 		if (data.length > 0)
@@ -120,8 +108,7 @@ class Displayer extends Component {
 	};
 
 	render() {
-		const { decideDisplayer, switchData, getCols } = this;
-		const { isFormFillerOpen, formFillerIndex } = this.state;
+		const { decideDisplayer, getCols } = this;
 		const { data, totalCount, page, refetchData, type } = this.props;
 		const cols = getCols(data);
 		return (
@@ -142,18 +129,6 @@ class Displayer extends Component {
 						);
 					}}
 				</Effector>
-				<FormFiller
-					isOpen={isFormFillerOpen}
-					user={this.context.user}
-					handleClose={() => {
-						this.setState({ isOpen: false });
-					}}
-					submitMsg={'Update'}
-					onSubmit={this.context.updateResource.bind(null, formFillerIndex ? data[formFillerIndex] : null, refetchData)}
-					type={type}
-					data={formFillerIndex ? data[formFillerIndex] : null}
-					onArrowClick={switchData}
-				/>
 			</div>
 		);
 	}
