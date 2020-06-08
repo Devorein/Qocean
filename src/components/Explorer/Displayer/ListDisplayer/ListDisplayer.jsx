@@ -6,10 +6,15 @@ import convert from 'color-convert';
 import './ListDisplayer.scss';
 class ListDisplayer extends Component {
 	renderListDisplayer = () => {
-		const { type, data, classes } = this.props;
+		const { type, data, classes, currentSelected } = this.props;
 		return data.map((item, index) => {
 			return (
-				<div className={`ListDisplayer_item ${classes.ListDisplayer_item}`} key={item._id}>
+				<div
+					className={`ListDisplayer_item ${classes.ListDisplayer_item} ${currentSelected === index
+						? 'ListDisplayer_item--selected'
+						: ''}`}
+					key={item._id}
+				>
 					{item.checked}
 					<div className="ListDisplayer_item_container ListDisplayer_item_container-actions">{item.actions}</div>
 					{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
@@ -40,6 +45,9 @@ class ListDisplayer extends Component {
 
 export default withStyles((theme) => ({
 	ListDisplayer_item: {
-		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
+		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex(),
+		'&.ListDisplayer_item--selected': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
+		}
 	}
 }))(ListDisplayer);

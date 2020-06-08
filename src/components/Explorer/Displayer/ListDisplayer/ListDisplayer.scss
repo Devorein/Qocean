@@ -1,11 +1,17 @@
 .ListDisplayer {
   display: flex;
   flex-direction: column;
+
   &_item {
     display: flex;
     padding: 5px;
     margin: 3px;
     border-radius: 3px;
+    transition: background-color 250ms ease-in-out;
+
+    &--selected {
+      transition: background-color 250ms ease-in-out;
+    }
     .MuiFormControlLabel-root {
       margin-right: 0px;
     }

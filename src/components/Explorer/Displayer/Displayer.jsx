@@ -21,14 +21,30 @@ import axios from 'axios';
 import pluralize from 'pluralize';
 import moment from 'moment';
 import { difference } from 'lodash';
+import { HotKeys } from 'react-hotkeys';
 import './Displayer.scss';
+
+const keyMap = {
+	MOVE_UP: 'up',
+	MOVE_DOWN: 'down',
+	SELECT: [ 's', 'shift+s', 'alt+s' ],
+	ACTION_1: '1',
+	ACTION_2: '2',
+	ACTION_3: '3',
+	ACTION_4: '4',
+	GLOBAL_ACTION_1: 'shift+1',
+	GLOBAL_ACTION_2: 'shift+2',
+	GLOBAL_ACTION_3: 'shift+3',
+	GLOBAL_ACTION_4: 'shift+4'
+};
 
 class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
 		formFillerIndex: null,
-		isFormFillerOpen: false
+		isFormFillerOpen: false,
+		currentSelected: 0
 	};
 
 	componentDidMount() {
@@ -108,6 +124,16 @@ class Displayer extends Component {
 			});
 	};
 
+	decideShortcut = (e, { selectedIndex, setSelectedIndex, index }) => {
+		const { altKey, shiftKey } = e.nativeEvent;
+		if (shiftKey && altKey) {
+			const indexes = Array(index + 1).fill(0).map((_, _index) => _index);
+			setSelectedIndex(difference(indexes, selectedIndex), true);
+		} else if (shiftKey) setSelectedIndex(Array(index + 1).fill(0).map((_, _index) => _index), true);
+		else if (altKey) setSelectedIndex([ index ], true);
+		else setSelectedIndex(index);
+	};
+
 	transformData = (data, selectedIndex, setSelectedIndex) => {
 		return data.map((item, index) => {
 			const actions = [
@@ -152,7 +178,7 @@ class Displayer extends Component {
 						<CheckboxInput
 							checked={selectedIndex.includes(index)}
 							onChange={(e) => {
-								setSelectedIndex(index);
+								this.decideShortcut(e, { selectedIndex, setSelectedIndex, index });
 							}}
 						/>
 					</div>
@@ -184,12 +210,13 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (data, view, cols) => {
+	decideDisplayer = (data, view, cols, setSelectedIndex) => {
 		const { type } = this.props;
 
 		const props = {
 			data,
-			type
+			type,
+			currentSelected: this.state.currentSelected
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} cols={cols} />;
@@ -225,7 +252,15 @@ class Displayer extends Component {
 					cols={cols}
 					deleteResource={deleteResource}
 				>
-					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
+					{({
+						EffectorTopBar,
+						EffectorBottomBar,
+						view,
+						removed_cols,
+						setSelectedIndex,
+						selectedIndex,
+						GLOBAL_ICONS
+					}) => {
 						let manipulatedData = null;
 						if (view !== 'table')
 							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
@@ -240,11 +275,50 @@ class Displayer extends Component {
 							});
 						}
 
+						const handlers = {
+							MOVE_UP: (event) => {
+								this.setState({
+									currentSelected: this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
+								});
+							},
+							MOVE_DOWN: (event) => {
+								this.setState({
+									currentSelected: this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
+								});
+							},
+							SELECT: (e) => {
+								this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
+							},
+							ACTION_1: (e) => {
+								this.props.setDetailerIndex(this.state.currentSelected);
+							},
+							ACTION_2: (e) => {
+								exportData(type, [ data[this.state.currentSelected] ]);
+							},
+							ACTION_3: (e) => {
+								this.props.enableFormFiller(this.state.currentSelected);
+							},
+							ACTION_4: (e) => {
+								this.deleteResource([ data[this.state.currentSelected]._id ]);
+							}
+						};
+						[ 1, 2, 3, 4 ].forEach((item) => {
+							handlers[`GLOBAL_ACTION_${item}`] = (e) => {
+								const evt = new MouseEvent('click', {
+									bubbles: true,
+									cancelable: true,
+									view: window
+								});
+								GLOBAL_ICONS[`GLOBAL_ACTION_${item}`].dispatchEvent(evt);
+							};
+						});
 						return (
 							<Fragment>
 								{EffectorTopBar}
 								<div className={`Displayer_data Displayer_data-${view}`}>
-									{decideDisplayer(manipulatedData, view, difference(cols, removed_cols))}
+									<HotKeys keyMap={keyMap} handlers={handlers}>
+										{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
+									</HotKeys>
 								</div>
 								{EffectorBottomBar}
 							</Fragment>

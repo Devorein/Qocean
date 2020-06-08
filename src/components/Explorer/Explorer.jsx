@@ -31,7 +31,7 @@ class Explorer extends Component {
 		const { data, refetchData, totalCount, type, page } = this.props;
 		return (
 			<div className="Explorer">
-				<Detailer data={detailerIndex !== null ? data[detailerIndex] : null} />
+				<Detailer data={detailerIndex !== null ? data[detailerIndex] : null} type={type} />
 				<div className="Displayer_container">
 					<Manipulator onApply={refetchData} type={type} />
 					<Displayer

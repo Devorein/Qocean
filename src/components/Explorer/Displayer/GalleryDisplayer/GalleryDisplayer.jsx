@@ -12,7 +12,7 @@ class GalleryDisplayer extends Component {
 	};
 
 	renderGalleryDisplayer = () => {
-		const { type, data, classes } = this.props;
+		const { type, data, classes, currentSelected } = this.props;
 		return (
 			<div
 				className="GalleryDisplayer_container"
@@ -20,7 +20,12 @@ class GalleryDisplayer extends Component {
 			>
 				{data.map((item, index) => {
 					return (
-						<div className={`GalleryDisplayer_item ${classes.GalleryDisplayer_item}`} key={item._id}>
+						<div
+							className={`GalleryDisplayer_item ${classes.GalleryDisplayer_item} ${currentSelected === index
+								? 'GalleryDisplayer_item--selected'
+								: ''}`}
+							key={item._id}
+						>
 							{item.checked}
 							<div className="GalleryDisplayer_item_container GalleryDisplayer_item_container-actions">
 								{item.actions}
@@ -88,6 +93,9 @@ class GalleryDisplayer extends Component {
 export default withStyles((theme) => ({
 	GalleryDisplayer_item: {
 		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex(),
+		'&.GalleryDisplayer_item--selected': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
+		},
 		'& .GalleryDisplayer_item_container-tertiary': {
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
 		},
