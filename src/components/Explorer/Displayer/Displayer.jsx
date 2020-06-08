@@ -224,7 +224,9 @@ class Displayer extends Component {
 						return (
 							<Fragment>
 								{EffectorTopBar}
-								<div className="Displayer_data">{decideDisplayer(manipulatedData, view, setSelectedIndex)}</div>
+								<div className={`Displayer_data Displayer_data-${view}`}>
+									{decideDisplayer(manipulatedData, view, setSelectedIndex)}
+								</div>
 								{EffectorBottomBar}
 							</Fragment>
 						);

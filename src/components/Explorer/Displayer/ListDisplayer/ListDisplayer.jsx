@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
+import Color from 'color';
+import convert from 'color-convert';
 
 import './ListDisplayer.scss';
 class ListDisplayer extends Component {
@@ -39,6 +41,6 @@ class ListDisplayer extends Component {
 
 export default withStyles((theme) => ({
 	ListDisplayer_item: {
-		backgroundColor: theme.palette.background.main
+		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
 	}
 }))(ListDisplayer);

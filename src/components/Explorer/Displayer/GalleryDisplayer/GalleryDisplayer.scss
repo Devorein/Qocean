@@ -9,6 +9,9 @@
     grid-template-rows: 300px;
     display: grid;
     grid-gap: 5px;
+    overflow-y: auto;
+    height: 460px;
+    overflow-y: auto;
   }
   &_item {
     padding: 5px;

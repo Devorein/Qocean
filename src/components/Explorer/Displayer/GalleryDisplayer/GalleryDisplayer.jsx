@@ -88,7 +88,7 @@ class GalleryDisplayer extends Component {
 
 export default withStyles((theme) => ({
 	GalleryDisplayer_item: {
-		backgroundColor: theme.palette.background.main,
+		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex(),
 		'& .GalleryDisplayer_item_container-tertiary': {
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
 		},

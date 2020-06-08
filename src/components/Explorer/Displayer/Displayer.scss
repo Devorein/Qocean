@@ -5,6 +5,9 @@
   &_data {
     overflow-y: auto;
   }
+  &_data-gallery {
+    overflow-y: hidden;
+  }
   &_actions {
     &-delete,
     .MuiSvgIcon-root {
