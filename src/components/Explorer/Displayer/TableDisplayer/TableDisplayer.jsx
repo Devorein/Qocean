@@ -12,19 +12,12 @@ import './TableDisplayer.scss';
 
 class TableDisplayer extends Component {
 	render() {
-		const { type, classes, setChecked } = this.props;
+		const { type, classes } = this.props;
 		let { data, cols } = this.props;
-		cols.unshift('selected', 'actions');
-		data.forEach((item, index) => {
-			item.selected = (
-				<div className="TableDisplayer_checked">
-					<CheckboxInput onChange={setChecked.bind(null, index)} checked={item.checked} />
-				</div>
-			);
-		});
+		cols.unshift('checked', 'actions');
 
 		return (
-			<div className="TableDisplayer">
+			<div className={`TableDisplayer TableDisplayer-${type}`}>
 				<Table className={classes.table}>
 					<TableHead className={'TableDisplayer_header'}>
 						<TableRow className={`TableDisplayer_header_row TableDisplayer_row`}>

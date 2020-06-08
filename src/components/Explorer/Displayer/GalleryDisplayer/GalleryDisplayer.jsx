@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
 import Color from 'color';
 import convert from 'color-convert';
 import InputSelect from '../../../Input/InputSelect';
@@ -22,7 +21,7 @@ class GalleryDisplayer extends Component {
 				{data.map((item, index) => {
 					return (
 						<div className={`GalleryDisplayer_item ${classes.GalleryDisplayer_item}`} key={item._id}>
-							<CheckboxInput onChange={setChecked.bind(null, index)} checked={item.checked} />
+							{item.checked}
 							<div className="GalleryDisplayer_item_container GalleryDisplayer_item_container-actions">
 								{item.actions}
 							</div>

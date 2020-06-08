@@ -16,6 +16,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import getColouredIcons from '../../../Utils/getColoredIcons';
 import exportData from '../../../Utils/exportData';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import moment from 'moment';
@@ -107,7 +108,7 @@ class Displayer extends Component {
 			});
 	};
 
-	transformData = (data, selectedIndex) => {
+	transformData = (data, selectedIndex, setSelectedIndex) => {
 		return data.map((item, index) => {
 			const actions = [
 				<InfoIcon
@@ -146,7 +147,16 @@ class Displayer extends Component {
 
 			const temp = {
 				...item,
-				checked: selectedIndex.includes(index),
+				checked: (
+					<div className="Displayer_checked">
+						<CheckboxInput
+							checked={selectedIndex.includes(index)}
+							onChange={(e) => {
+								setSelectedIndex(index);
+							}}
+						/>
+					</div>
+				),
 				actions: <div className="Displayer_actions">{actions.map((action) => action)}</div>
 			};
 			if (item.icon) temp.icon = getColouredIcons(this.props.type, item.icon);
@@ -174,13 +184,12 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (data, view, setSelectedIndex, cols) => {
+	decideDisplayer = (data, view, cols) => {
 		const { type } = this.props;
 
 		const props = {
 			data,
-			type,
-			setChecked: setSelectedIndex
+			type
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} cols={cols} />;
@@ -219,12 +228,12 @@ class Displayer extends Component {
 					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
 						let manipulatedData = null;
 						if (view !== 'table')
-							manipulatedData = sectorizeData(this.transformData(data, selectedIndex), type, {
+							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
 								authenticated: this.context.user,
 								blacklist: removed_cols
 							});
 						else {
-							manipulatedData = sectorizeData(this.transformData(data, selectedIndex), type, {
+							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
 								authenticated: this.context.user,
 								blacklist: removed_cols,
 								flatten: true
@@ -235,7 +244,7 @@ class Displayer extends Component {
 							<Fragment>
 								{EffectorTopBar}
 								<div className={`Displayer_data Displayer_data-${view}`}>
-									{decideDisplayer(manipulatedData, view, setSelectedIndex, difference(cols, removed_cols))}
+									{decideDisplayer(manipulatedData, view, difference(cols, removed_cols))}
 								</div>
 								{EffectorBottomBar}
 							</Fragment>
