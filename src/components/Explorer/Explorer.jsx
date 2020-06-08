@@ -4,8 +4,6 @@ import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
 import Detailer from './Detailer/Detailer';
 import FormFiller from '../../pages/FormFiller/FormFiller';
-import axios from 'axios';
-import pluralize from 'pluralize';
 import './Explorer.scss';
 
 class Explorer extends Component {
@@ -19,14 +17,10 @@ class Explorer extends Component {
 	switchData = (dir, e) => {
 		const { formFillerIndex } = this.state;
 		const { data } = this.props;
-		const type = pluralize(this.props.type, 2).toLowerCase();
 		let newSelectedIndex = null;
 		if (dir === 'right') newSelectedIndex = formFillerIndex < data.length - 1 ? formFillerIndex + 1 : 0;
 		else if (dir === 'left') newSelectedIndex = formFillerIndex > 0 ? formFillerIndex - 1 : data.length - 1;
 
-		// axios.get(`http://localhost:5001/api/v1/${type}/me?_id=${data[newSelectedIndex]._id}`).then(({data:{data}})=>{
-
-		// })
 		this.setState({
 			formFillerIndex: newSelectedIndex
 		});

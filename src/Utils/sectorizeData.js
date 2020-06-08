@@ -1,6 +1,6 @@
 import { difference } from 'lodash';
 
-export default function(data, type, { authenticated, singular = false, blacklist = [] }) {
+export default function(data, type, { authenticated, flatten = false, singular = false, blacklist = [] }) {
 	type = type.toLowerCase();
 	const primary = [],
 		secondary = [],
@@ -24,7 +24,24 @@ export default function(data, type, { authenticated, singular = false, blacklist
 	primary.push('name');
 	tertiary.push('created_at', 'updated_at');
 
-	if (!singular)
+	if (flatten) {
+		return data.map((data) => {
+			const temp = {};
+			difference(primary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
+			difference(secondary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
+			difference(tertiary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
+			temp._id = data._id;
+			temp.actions = data.actions;
+			temp.checked = data.checked;
+			return temp;
+		});
+	} else if (singular) {
+		const temp = {};
+		primary.forEach((prop) => (temp[prop] = data[prop]));
+		secondary.forEach((prop) => (temp[prop] = data[prop]));
+		tertiary.forEach((prop) => (temp[prop] = data[prop]));
+		return temp;
+	} else {
 		return data.map((data) => {
 			const temp = {};
 			temp.primary = {};
@@ -38,11 +55,5 @@ export default function(data, type, { authenticated, singular = false, blacklist
 			temp.checked = data.checked;
 			return temp;
 		});
-	else {
-		const temp = {};
-		primary.forEach((prop) => (temp[prop] = data[prop]));
-		secondary.forEach((prop) => (temp[prop] = data[prop]));
-		tertiary.forEach((prop) => (temp[prop] = data[prop]));
-		return temp;
 	}
 }

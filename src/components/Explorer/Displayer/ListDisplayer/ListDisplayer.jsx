@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
+import Color from 'color';
+import convert from 'color-convert';
 
 import './ListDisplayer.scss';
 class ListDisplayer extends Component {
 	renderListDisplayer = () => {
-		const { type, data, classes, setChecked } = this.props;
+		const { type, data, classes } = this.props;
 		return data.map((item, index) => {
 			return (
 				<div className={`ListDisplayer_item ${classes.ListDisplayer_item}`} key={item._id}>
-					<CheckboxInput onChange={setChecked.bind(null, index)} checked={item.checked} />
+					{item.checked}
 					<div className="ListDisplayer_item_container ListDisplayer_item_container-actions">{item.actions}</div>
 					{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
 						return (
@@ -39,6 +40,6 @@ class ListDisplayer extends Component {
 
 export default withStyles((theme) => ({
 	ListDisplayer_item: {
-		backgroundColor: theme.palette.background.main
+		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
 	}
 }))(ListDisplayer);

@@ -16,9 +16,11 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import getColouredIcons from '../../../Utils/getColoredIcons';
 import exportData from '../../../Utils/exportData';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import moment from 'moment';
+import { difference } from 'lodash';
 import './Displayer.scss';
 
 class Displayer extends Component {
@@ -106,7 +108,7 @@ class Displayer extends Component {
 			});
 	};
 
-	transformData = (data, selectedIndex) => {
+	transformData = (data, selectedIndex, setSelectedIndex) => {
 		return data.map((item, index) => {
 			const actions = [
 				<InfoIcon
@@ -145,8 +147,17 @@ class Displayer extends Component {
 
 			const temp = {
 				...item,
-				checked: selectedIndex.includes(index),
-				actions: actions.map((action) => action)
+				checked: (
+					<div className="Displayer_checked">
+						<CheckboxInput
+							checked={selectedIndex.includes(index)}
+							onChange={(e) => {
+								setSelectedIndex(index);
+							}}
+						/>
+					</div>
+				),
+				actions: <div className="Displayer_actions">{actions.map((action) => action)}</div>
 			};
 			if (item.icon) temp.icon = getColouredIcons(this.props.type, item.icon);
 			if (item.quiz) temp.quiz = item.quiz.name;
@@ -173,16 +184,15 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (data, view, setSelectedIndex) => {
+	decideDisplayer = (data, view, cols) => {
 		const { type } = this.props;
 
 		const props = {
 			data,
-			type,
-			setChecked: setSelectedIndex
+			type
 		};
 
-		if (view === 'table') return <TableDisplayer {...props} />;
+		if (view === 'table') return <TableDisplayer {...props} cols={cols} />;
 		else if (view === 'list') return <ListDisplayer {...props} />;
 		else if (view === 'board') return <BoardDisplayer {...props} />;
 		else if (view === 'gallery') return <GalleryDisplayer {...props} />;
@@ -216,15 +226,26 @@ class Displayer extends Component {
 					deleteResource={deleteResource}
 				>
 					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
-						const manipulatedData = sectorizeData(this.transformData(data, selectedIndex), type, {
-							authenticated: this.context.user,
-							blacklist: removed_cols
-						});
+						let manipulatedData = null;
+						if (view !== 'table')
+							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
+								authenticated: this.context.user,
+								blacklist: removed_cols
+							});
+						else {
+							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
+								authenticated: this.context.user,
+								blacklist: removed_cols,
+								flatten: true
+							});
+						}
 
 						return (
 							<Fragment>
 								{EffectorTopBar}
-								<div className="Displayer_data">{decideDisplayer(manipulatedData, view, setSelectedIndex)}</div>
+								<div className={`Displayer_data Displayer_data-${view}`}>
+									{decideDisplayer(manipulatedData, view, difference(cols, removed_cols))}
+								</div>
 								{EffectorBottomBar}
 							</Fragment>
 						);

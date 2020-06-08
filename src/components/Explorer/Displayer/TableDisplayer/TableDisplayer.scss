@@ -1,0 +1,23 @@
+.TableDisplayer {
+  &_checked {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .MuiFormControlLabel-root {
+      margin: 0px;
+    }
+  }
+  &_header {
+    &_cell,
+    .MuiTableCell-head {
+      padding: 5px;
+      font-weight: bolder;
+      font-size: 16px;
+    }
+  }
+  &_body {
+    &_cell {
+      display: flex;
+    }
+  }
+}

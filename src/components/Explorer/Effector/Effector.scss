@@ -61,6 +61,10 @@
       margin: 5px;
     }
     &-itemselect {
+      width: 150px;
+      & .MuiFormControl-root {
+        width: 100%;
+      }
     }
   }
 }

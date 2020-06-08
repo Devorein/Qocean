@@ -3,10 +3,6 @@ import { withRouter } from 'react-router-dom';
 import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
 import pluralize from 'pluralize';
-import SelfQuizzes from './SelfQuizzes';
-import SelfQuestions from './SelfQuestions';
-import SelfFolders from './SelfFolders';
-import SelfEnvironments from './SelfEnvironments';
 import Explorer from '../../components/Explorer/Explorer';
 import qs from 'qs';
 
@@ -64,23 +60,6 @@ class Self extends Component {
 				type: page.name
 			}
 		);
-	};
-
-	decideTable = (setDeleteModal) => {
-		const { refetchData } = this;
-		const { page, rowsPerPage, type } = this.state;
-
-		const props = {
-			limit: rowsPerPage,
-			refetchData,
-			data: this.state.data,
-			page
-		};
-
-		if (type === 'Quiz') return <SelfQuizzes {...props} />;
-		else if (type === 'Question') return <SelfQuestions {...props} />;
-		else if (type === 'Folder') return <SelfFolders {...props} />;
-		else if (type === 'Environment') return <SelfEnvironments {...props} />;
 	};
 
 	render() {
