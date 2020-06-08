@@ -10,7 +10,7 @@ import './Explorer.scss';
 class Explorer extends Component {
 	static contextType = AppContext;
 	state = {
-		detailerIndex: 0,
+		detailerIndex: null,
 		formFillerIndex: 0,
 		isFormFillerOpen: false
 	};
@@ -32,11 +32,11 @@ class Explorer extends Component {
 	};
 
 	render() {
-		const { isFormFillerOpen, formFillerIndex } = this.state;
+		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
 		const { data, refetchData, totalCount, type, page } = this.props;
 		return (
 			<div className="Explorer">
-				<Detailer data={data[this.state.detailerIndex]} />
+				<Detailer data={detailerIndex !== null ? data[detailerIndex] : null} />
 				<div className="Displayer_container">
 					<Manipulator onApply={refetchData} type={type} />
 					<Displayer
@@ -54,6 +54,7 @@ class Explorer extends Component {
 								formFillerIndex
 							});
 						}}
+						updateDataLocally={(data) => this.setState({ data })}
 					/>
 				</div>
 				<FormFiller

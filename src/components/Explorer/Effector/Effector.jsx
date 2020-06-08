@@ -137,37 +137,8 @@ class Effector extends Component {
 		);
 	};
 
-	updateResource = (selectedRows, field) => {
-		selectedRows = selectedRows.map((row) => ({ id: row._id, body: { [field]: !row[field] } }));
-		let { type } = this.state;
-		type = pluralize(type, 2).toLowerCase();
-		axios
-			.put(
-				`http://localhost:5001/api/v1/${type}`,
-				{
-					[type]: selectedRows
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				}
-			)
-			.then(({ data: { data: updatedDatas } }) => {
-				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
-				this.setState({
-					data: this.state.data.map((data) => {
-						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
-						if (updatedData) data[field] = updatedData[field];
-						return data;
-					})
-				});
-			});
-	};
-
 	renderGlobalEffectors = () => {
-		const { updateResource } = this;
-		const { data, page, refetchData, type } = this.props;
+		const { data, page, refetchData, type, updateResource } = this.props;
 		const { itemsPerPage, currentPage } = this.state;
 
 		if (page === 'Self') {
@@ -245,8 +216,7 @@ class Effector extends Component {
 	};
 
 	renderSelectedEffectors = (setDeleteModal) => {
-		const { updateResource } = this;
-		const { data, page, type } = this.props;
+		const { data, page, type, updateResource } = this.props;
 		const selectedItems = this.state.selectedIndex.map((index) => data[index]);
 		if (page === 'Self')
 			return (

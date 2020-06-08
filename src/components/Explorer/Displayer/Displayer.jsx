@@ -15,6 +15,8 @@ import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import getColouredIcons from '../../../Utils/getColoredIcons';
 import exportData from '../../../Utils/exportData';
+import axios from 'axios';
+import pluralize from 'pluralize';
 import moment from 'moment';
 import './Displayer.scss';
 
@@ -33,6 +35,34 @@ class Displayer extends Component {
 		});
 	}
 
+	updateResource = (selectedRows, field) => {
+		selectedRows = selectedRows.map((row) => ({ id: row._id, body: { [field]: !row[field] } }));
+		let { type } = this.props;
+		type = pluralize(type, 2).toLowerCase();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}`,
+				{
+					[type]: selectedRows
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then(({ data: { data: updatedDatas } }) => {
+				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
+				this.props.updateDataLocally(
+					this.props.data.map((data) => {
+						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
+						if (updatedData) data[field] = updatedData[field];
+						return data;
+					})
+				);
+			});
+	};
+
 	transformData = (data, selectedIndex) => {
 		return data.map((item, index) => {
 			const temp = {
@@ -45,7 +75,11 @@ class Displayer extends Component {
 								this.props.enableFormFiller(index);
 							}}
 						/>
-						<InfoIcon />
+						<InfoIcon
+							onClick={(e) => {
+								this.props.setDetailerIndex(index);
+							}}
+						/>
 						<GetAppIcon
 							onClick={(e) => {
 								exportData(this.props.type, [ item ]);
@@ -60,18 +94,16 @@ class Displayer extends Component {
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
 			if (item.public !== undefined)
 				temp.public = item.public ? (
-					<PublicIcon /* onClick={this.updateResource.bind(null, [ item ], 'public')}*/ style={{ fill: '#00a3e6' }} />
+					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
 				) : (
-					<PublicIcon /* onClick={this.updateResource.bind(null, [ item ], 'public')}*/ style={{ fill: '#f4423c' }} />
+					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
 				);
 			if (item.watchers) temp.watchers = item.watchers.length;
 			if (item.favourite !== undefined)
 				temp.favourite = item.favourite ? (
-					<StarIcon /* onClick={this.updateResource.bind(null, [ item ], 'favourite')}*/ style={{ fill: '#f0e744' }} />
+					<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
 				) : (
-					<StarBorderIcon
-						/* onClick={this.updateResource.bind(null, [ item ], 'favourite')}*/ style={{ fill: '#ead50f' }}
-					/>
+					<StarBorderIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#ead50f' }} />
 				);
 
 			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
@@ -108,12 +140,20 @@ class Displayer extends Component {
 	};
 
 	render() {
-		const { decideDisplayer, getCols } = this;
+		const { decideDisplayer, getCols, updateResource } = this;
 		const { data, totalCount, page, refetchData, type } = this.props;
 		const cols = getCols(data);
 		return (
 			<div className="Displayer">
-				<Effector type={type} page={page} data={data} totalCount={totalCount} refetchData={refetchData} cols={cols}>
+				<Effector
+					updateResource={updateResource}
+					type={type}
+					page={page}
+					data={data}
+					totalCount={totalCount}
+					refetchData={refetchData}
+					cols={cols}
+				>
 					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
 						const manipulatedData = sectorizeData(this.transformData(data, selectedIndex), type, {
 							authenticated: this.context.user,

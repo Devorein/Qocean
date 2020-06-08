@@ -1,6 +1,6 @@
 .Explorer {
   display: grid;
-  grid-template: 1fr 1fr/350px 1fr;
+  grid-template: 1fr/350px 1fr;
   height: calc(100% - 50px);
   .Displayer_container {
     height: 100%;
