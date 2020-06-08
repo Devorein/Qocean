@@ -89,7 +89,7 @@ export default function MultiSelect({
 						{!useSwitch ? (
 							<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
 						) : (
-							<Switch className={classes.switch} checked={selected.includes(name)} color="primary" />
+							<Switch name={name} className={classes.switch} checked={selected.includes(_id)} color="primary" />
 						)}
 
 						{customText ? customText : <ListItemText primary={name} />}

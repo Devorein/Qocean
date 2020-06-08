@@ -35,7 +35,7 @@ class Displayer extends Component {
 		});
 	}
 
-	transformData = (data, selected_props) => {
+	transformData = (data) => {
 		return data.map((item, index) => {
 			const temp = {
 				...item,
@@ -74,6 +74,7 @@ class Displayer extends Component {
 
 			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
+
 			return temp;
 		});
 	};
@@ -121,7 +122,7 @@ class Displayer extends Component {
 			Object.keys(
 				sectorizeData(data[0], this.props.type, { authenticated: this.context.user, singular: true })
 			).forEach((col) => {
-				cols.push(col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' '));
+				cols.push(col);
 			});
 		return cols;
 	};
@@ -142,9 +143,10 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 				>
-					{({ EffectorTopBar, EffectorBottomBar, view, selected_props }) => {
-						const manipulatedData = sectorizeData(this.transformData(data, selected_props), type, {
-							authenticated: this.context.user
+					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols }) => {
+						const manipulatedData = sectorizeData(this.transformData(data), type, {
+							authenticated: this.context.user,
+							blacklist: removed_cols
 						});
 
 						return (

@@ -1,4 +1,6 @@
-export default function(data, type, { authenticated, singular = false }) {
+import { difference } from 'lodash';
+
+export default function(data, type, { authenticated, singular = false, blacklist = [] }) {
 	type = type.toLowerCase();
 	const primary = [ 'name' ],
 		secondary = [],
@@ -18,9 +20,9 @@ export default function(data, type, { authenticated, singular = false }) {
 			temp.primary = {};
 			temp.secondary = {};
 			temp.tertiary = {};
-			primary.forEach((prop) => (temp['primary'][prop] = data[prop]));
-			secondary.forEach((prop) => (temp['secondary'][prop] = data[prop]));
-			tertiary.forEach((prop) => (temp['tertiary'][prop] = data[prop]));
+			difference(primary, blacklist).forEach((prop) => (temp['primary'][prop] = data[prop]));
+			difference(secondary, blacklist).forEach((prop) => (temp['secondary'][prop] = data[prop]));
+			difference(tertiary, blacklist).forEach((prop) => (temp['tertiary'][prop] = data[prop]));
 			temp._id = data._id;
 			temp.actions = data.actions;
 			return temp;

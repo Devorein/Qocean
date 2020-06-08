@@ -18,6 +18,8 @@ import GenericButton from '../../Buttons/GenericButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
+import { difference } from 'lodash';
+
 import './Effector.scss';
 class Effector extends Component {
 	state = {
@@ -26,7 +28,7 @@ class Effector extends Component {
 		typedPage: 1,
 		view: 'list',
 		cols: this.props.cols || [],
-		selected_props: this.props.cols || []
+		selected_cols: this.props.cols || []
 	};
 	static contextType = AppContext;
 
@@ -34,7 +36,7 @@ class Effector extends Component {
 		if (props.cols.length > 0)
 			this.setState({
 				cols: props.cols,
-				selected_props: props.cols
+				selected_cols: props.cols
 			});
 	}
 	refetchData = () => {
@@ -312,15 +314,15 @@ class Effector extends Component {
 					useSwitch={true}
 					className="Effector_topbar_properties"
 					name="Toggle Properties"
-					selected={this.state.selected_props}
+					selected={this.state.selected_cols}
 					handleChange={(e) => {
 						this.setState({
-							selected_props: e.target.value
+							selected_cols: e.target.value
 						});
 					}}
-					items={this.state.cols.map((value) => ({
-						_id: value,
-						name: value.charAt(0).toUpperCase() + value.substr(1)
+					items={this.state.cols.map((col) => ({
+						_id: col,
+						name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
 					}))}
 				/>
 				{this.props.selectedIndex.length > 0 ? (
@@ -347,7 +349,7 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { selected_props, view } = this.state;
+		const { selected_cols, view } = this.state;
 		return (
 			<ModalRP
 				onClose={(e) => {
@@ -366,7 +368,7 @@ class Effector extends Component {
 			>
 				{({ setIsOpen }) =>
 					this.props.children({
-						selected_props,
+						removed_cols: difference(this.props.cols, selected_cols),
 						view,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>
