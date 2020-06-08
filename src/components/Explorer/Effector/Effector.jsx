@@ -7,7 +7,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import download from '../../../Utils/download';
-import shaveData from '../../../Utils/shaveData';
 import shortid from 'shortid';
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
@@ -17,8 +16,8 @@ import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import { difference } from 'lodash';
+import exportData from '../../../Utils/exportData';
 
 import './Effector.scss';
 class Effector extends Component {
@@ -122,6 +121,9 @@ class Effector extends Component {
 						}}
 					/>
 				</div>
+				<div>
+					Pg. {currentPage} of {maxPage}
+				</div>
 				<div className="Effector_bottombar-itemcount">
 					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
 						totalCount
@@ -162,33 +164,9 @@ class Effector extends Component {
 			});
 	};
 
-	transformData = (data) => {
-		let { type } = this.state;
-		type = type.toLowerCase();
-
-		if (type === 'question') {
-			return axios
-				.put(
-					'http://localhost:5001/api/v1/questions/_/answers',
-					{
-						questions: data.map(({ _id }) => _id)
-					},
-					{
-						headers: {
-							Authorization: `Bearer ${localStorage.getItem('token')}`
-						}
-					}
-				)
-				.then(({ data: { data: answers } }) => {
-					const dataWithAnswers = data.map((data, index) => ({ ...data, answers: answers[index].answers }));
-					return shaveData(dataWithAnswers, type, { purpose: 'download' });
-				});
-		} else return new Promise((resolve, reject) => resolve(shaveData(data, type, { purpose: 'download' })));
-	};
-
 	renderGlobalEffectors = () => {
-		const { updateResource, transformData } = this;
-		const { data, page, refetchData } = this.props;
+		const { updateResource } = this;
+		const { data, page, refetchData, type } = this.props;
 		if (page === 'Self') {
 			return (
 				<div className="Effector_topbar_globals">
@@ -209,9 +187,7 @@ class Effector extends Component {
 					/>
 					<GetAppIcon
 						onClick={(e) => {
-							transformData(data).then((data) => {
-								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
-							});
+							exportData(type, data);
 						}}
 					/>
 				</div>
@@ -220,7 +196,7 @@ class Effector extends Component {
 	};
 
 	deleteResource = (selectedRows) => {
-		const { type } = this.state;
+		const { type } = this.props;
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
 			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
@@ -263,7 +239,7 @@ class Effector extends Component {
 
 	renderSelectedEffectors = (setDeleteModal) => {
 		const { updateResource } = this;
-		const { data, page } = this.props;
+		const { data, page, type } = this.props;
 		const selectedItems = this.props.selectedIndex.map((index) => data[index]);
 		if (page === 'Self')
 			return (
@@ -285,9 +261,7 @@ class Effector extends Component {
 					/>
 					<GetAppIcon
 						onClick={(e) => {
-							this.transformData(selectedItems).then((data) => {
-								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
-							});
+							exportData(type, selectedItems);
 						}}
 					/>
 				</div>

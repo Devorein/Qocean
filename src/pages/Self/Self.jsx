@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';

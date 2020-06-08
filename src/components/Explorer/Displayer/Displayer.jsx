@@ -13,10 +13,9 @@ import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
-import download from '../../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import getColouredIcons from '../../../Utils/getColoredIcons';
-import shortid from 'shortid';
+import exportData from '../../../Utils/exportData';
 import moment from 'moment';
 import './Displayer.scss';
 
@@ -46,11 +45,9 @@ class Displayer extends Component {
 						<UpdateIcon />
 						<InfoIcon />
 						<GetAppIcon
-						// onClick={(e) => {
-						// 	this.transformData([ item ]).then((data) => {
-						// 		download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
-						// 	});
-						// }}
+							onClick={(e) => {
+								exportData(this.props.type, [ item ]);
+							}}
 						/>
 					</Fragment>
 				)

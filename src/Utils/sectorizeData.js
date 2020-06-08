@@ -3,9 +3,9 @@ import { difference } from 'lodash';
 export default function(data, type, { authenticated, singular = false, blacklist = [] }) {
 	type = type.toLowerCase();
 	const primary = [],
-		secondary = [ 'public', 'favourite' ],
+		secondary = [],
 		tertiary = [];
-
+	if (authenticated) secondary.push('public', 'favourite');
 	if (type === 'quiz') {
 		secondary.push('subject', 'tags');
 		tertiary.push('total_questions', 'average_difficulty', 'average_quiz_time', 'ratings', 'total_played');
