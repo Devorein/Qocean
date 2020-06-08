@@ -152,7 +152,13 @@ class Displayer extends Component {
 						<CheckboxInput
 							checked={selectedIndex.includes(index)}
 							onChange={(e) => {
-								setSelectedIndex(index);
+								const { altKey, shiftKey } = e.nativeEvent;
+								if (shiftKey && altKey) {
+									const indexes = Array(index + 1).fill(0).map((_, _index) => _index);
+									setSelectedIndex(difference(indexes, selectedIndex), true);
+								} else if (shiftKey) setSelectedIndex(Array(index + 1).fill(0).map((_, _index) => _index), true);
+								else if (altKey) setSelectedIndex([ index ], true);
+								else setSelectedIndex(index);
 							}}
 						/>
 					</div>

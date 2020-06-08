@@ -268,10 +268,13 @@ class Effector extends Component {
 		);
 	};
 
-	setSelectedIndex = (index) => {
+	setSelectedIndex = (index, useGiven = false) => {
 		let { selectedIndex } = this.state;
-		if (selectedIndex.includes(index)) selectedIndex = selectedIndex.filter((_index) => index !== _index);
-		else selectedIndex.push(index);
+		if (useGiven) selectedIndex = index;
+		else {
+			if (selectedIndex.includes(index)) selectedIndex = selectedIndex.filter((_index) => index !== _index);
+			else selectedIndex.push(index);
+		}
 		this.setState({
 			selectedIndex
 		});
