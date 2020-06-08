@@ -4,8 +4,6 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import StarIcon from '@material-ui/icons/Star';
 import PublicIcon from '@material-ui/icons/Public';
 import DeleteIcon from '@material-ui/icons/Delete';
-import axios from 'axios';
-import pluralize from 'pluralize';
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
@@ -164,55 +162,12 @@ class Effector extends Component {
 					/>
 					<GetAppIcon
 						onClick={(e) => {
-							console.log(data);
 							exportData(type, data);
 						}}
 					/>
 				</div>
 			);
 		}
-	};
-
-	deleteResource = (selectedRows) => {
-		const { type } = this.props;
-		const deleteResources = (selectedRows) => {
-			const target = pluralize(type, 2).toLowerCase();
-			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				},
-				data: {
-					[target]: selectedRows
-				}
-			});
-		};
-
-		if (type === 'Environment') {
-			let containsCurrent = false;
-			const temp = [];
-			selectedRows.forEach((selectedRow) => {
-				if (selectedRow === this.props.user.current_environment._id) containsCurrent = true;
-				else temp.push(selectedRow);
-			});
-			if (containsCurrent) {
-				this.context.changeResponse(
-					'Cant delete',
-					'You are trying to delete a currently activated environment',
-					'error'
-				);
-			}
-			if (selectedRows.length > 1)
-				deleteResources(temp).then(({ data: { data } }) => {
-					setTimeout(() => {
-						this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
-					}, 2500);
-					this.refetchData();
-				});
-		} else
-			deleteResources(selectedRows).then(({ data: { data } }) => {
-				this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
-				this.refetchData();
-			});
 	};
 
 	renderSelectedEffectors = (setDeleteModal) => {
@@ -334,7 +289,7 @@ class Effector extends Component {
 				}}
 				onAccept={() => {
 					const selectedDatas = this.state.selectedRows.map((index) => this.state.data[index]._id);
-					this.deleteResource(selectedDatas);
+					this.props.deleteResource(selectedDatas);
 					this.setState({
 						selectedRows: []
 					});

@@ -15,6 +15,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import getColouredIcons from '../../../Utils/getColoredIcons';
 import exportData from '../../../Utils/exportData';
+import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import moment from 'moment';
@@ -63,30 +64,89 @@ class Displayer extends Component {
 			});
 	};
 
+	deleteResource = (selectedRows) => {
+		const { type } = this.props;
+		const deleteResources = (selectedRows) => {
+			const target = pluralize(type, 2).toLowerCase();
+			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				},
+				data: {
+					[target]: selectedRows
+				}
+			});
+		};
+
+		if (type === 'Environment') {
+			let containsCurrent = false;
+			const temp = [];
+			selectedRows.forEach((selectedRow) => {
+				if (selectedRow === this.props.user.current_environment._id) containsCurrent = true;
+				else temp.push(selectedRow);
+			});
+			if (containsCurrent) {
+				this.context.changeResponse(
+					'Cant delete',
+					'You are trying to delete a currently activated environment',
+					'error'
+				);
+			}
+			if (selectedRows.length > 1)
+				deleteResources(temp).then(({ data: { data } }) => {
+					setTimeout(() => {
+						this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+					}, 2500);
+					this.props.refetchData();
+				});
+		} else
+			deleteResources(selectedRows).then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+				this.props.refetchData();
+			});
+	};
+
 	transformData = (data, selectedIndex) => {
 		return data.map((item, index) => {
+			const actions = [
+				<InfoIcon
+					className="Displayer_actions-info"
+					key={'info'}
+					onClick={(e) => {
+						this.props.setDetailerIndex(index);
+					}}
+				/>,
+				<GetAppIcon
+					className="Displayer_actions-export"
+					key={'export'}
+					onClick={(e) => {
+						exportData(this.props.type, [ item ]);
+					}}
+				/>
+			];
+			if (this.props.page === 'Self') {
+				actions.push(
+					<UpdateIcon
+						className="Displayer_actions-update"
+						key={'update'}
+						onClick={(e) => {
+							this.props.enableFormFiller(index);
+						}}
+					/>,
+					<DeleteIcon
+						className="Displayer_actions-delete"
+						key={'delete'}
+						onClick={(e) => {
+							this.deleteResource([ item._id ]);
+						}}
+					/>
+				);
+			}
+
 			const temp = {
 				...item,
 				checked: selectedIndex.includes(index),
-				actions: (
-					<Fragment>
-						<UpdateIcon
-							onClick={(e) => {
-								this.props.enableFormFiller(index);
-							}}
-						/>
-						<InfoIcon
-							onClick={(e) => {
-								this.props.setDetailerIndex(index);
-							}}
-						/>
-						<GetAppIcon
-							onClick={(e) => {
-								exportData(this.props.type, [ item ]);
-							}}
-						/>
-					</Fragment>
-				)
+				actions: actions.map((action) => action)
 			};
 			if (item.icon) temp.icon = getColouredIcons(this.props.type, item.icon);
 			if (item.quiz) temp.quiz = item.quiz.name;
@@ -140,7 +200,7 @@ class Displayer extends Component {
 	};
 
 	render() {
-		const { decideDisplayer, getCols, updateResource } = this;
+		const { decideDisplayer, getCols, updateResource, deleteResource } = this;
 		const { data, totalCount, page, refetchData, type } = this.props;
 		const cols = getCols(data);
 		return (
@@ -153,6 +213,7 @@ class Displayer extends Component {
 					totalCount={totalCount}
 					refetchData={refetchData}
 					cols={cols}
+					deleteResource={deleteResource}
 				>
 					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
 						const manipulatedData = sectorizeData(this.transformData(data, selectedIndex), type, {

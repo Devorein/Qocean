@@ -5,4 +5,14 @@
   &_data {
     overflow-y: auto;
   }
+  &_actions {
+    &-delete,
+    .MuiSvgIcon-root {
+      color: #f81a12;
+    }
+    &-update,
+    .MuiSvgIcon-root {
+      color: #00a3e6;
+    }
+  }
 }
