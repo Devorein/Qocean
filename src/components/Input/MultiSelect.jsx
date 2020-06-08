@@ -24,6 +24,14 @@ const useStyles = makeStyles(() => ({
 	},
 	chip: {
 		margin: 2
+	},
+	switch: {
+		'& .MuiSwitch-thumb': {
+			width: '17px',
+			height: '17px',
+			top: '-3px',
+			position: 'relative'
+		}
 	}
 }));
 
@@ -43,12 +51,11 @@ export default function MultiSelect({
 	const classes = useStyles();
 	return (
 		<FormControl fullWidth>
-			<InputLabel id="multiple-chip">{label}</InputLabel>
+			<InputLabel>{label}</InputLabel>
 			<Select
 				className={className}
 				name={name}
 				disabled={disabled}
-				labelId="multiple-chip"
 				multiple
 				value={selected}
 				onChange={handleChange}
@@ -81,7 +88,7 @@ export default function MultiSelect({
 						{!useSwitch ? (
 							<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
 						) : (
-							<Switch checked={selected.includes(name)} color="primary" />
+							<Switch name={name} className={classes.switch} checked={selected.includes(_id)} color="primary" />
 						)}
 
 						{customText ? customText : <ListItemText primary={name} />}

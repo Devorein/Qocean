@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
@@ -24,7 +24,7 @@ class Self extends Component {
 		if (type === 'Question') {
 			queryParams.populate = 'quiz';
 			queryParams.populateFields = 'name';
-			queryParams.select = '%2Banswers';
+			// queryParams.select = '%2Banswers';
 		}
 
 		const queryString = qs.stringify(queryParams);
@@ -59,7 +59,7 @@ class Self extends Component {
 		this.props.history.push(`/${page.link}`);
 		this.refetchData(
 			page.name,
-			{ page: 1, limit: this.props.users.current_environment.default_self_rpp },
+			{ page: 1, limit: this.props.user.current_environment.default_self_rpp },
 			{
 				type: page.name
 			}

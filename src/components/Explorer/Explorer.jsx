@@ -1,19 +1,43 @@
 import React, { Component } from 'react';
-
+import { AppContext } from '../../context/AppContext';
 import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
 import Detailer from './Detailer/Detailer';
+import FormFiller from '../../pages/FormFiller/FormFiller';
+import axios from 'axios';
+import pluralize from 'pluralize';
 import './Explorer.scss';
 
 class Explorer extends Component {
+	static contextType = AppContext;
 	state = {
-		detailerIndex: 0
+		detailerIndex: null,
+		formFillerIndex: null,
+		isFormFillerOpen: false
 	};
+
+	switchData = (dir, e) => {
+		const { formFillerIndex } = this.state;
+		const { data } = this.props;
+		const type = pluralize(this.props.type, 2).toLowerCase();
+		let newSelectedIndex = null;
+		if (dir === 'right') newSelectedIndex = formFillerIndex < data.length - 1 ? formFillerIndex + 1 : 0;
+		else if (dir === 'left') newSelectedIndex = formFillerIndex > 0 ? formFillerIndex - 1 : data.length - 1;
+
+		// axios.get(`http://localhost:5001/api/v1/${type}/me?_id=${data[newSelectedIndex]._id}`).then(({data:{data}})=>{
+
+		// })
+		this.setState({
+			formFillerIndex: newSelectedIndex
+		});
+	};
+
 	render() {
+		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
 		const { data, refetchData, totalCount, type, page } = this.props;
 		return (
 			<div className="Explorer">
-				<Detailer data={data[this.state.detailerIndex]} />
+				<Detailer data={detailerIndex !== null ? data[detailerIndex] : null} />
 				<div className="Displayer_container">
 					<Manipulator onApply={refetchData} type={type} />
 					<Displayer
@@ -25,8 +49,29 @@ class Explorer extends Component {
 						data={data}
 						totalCount={totalCount}
 						type={type}
+						enableFormFiller={(formFillerIndex) => {
+							this.setState({
+								isFormFillerOpen: true,
+								formFillerIndex
+							});
+						}}
+						updateDataLocally={(data) => this.setState({ data })}
 					/>
 				</div>
+				{formFillerIndex !== null ? (
+					<FormFiller
+						isOpen={isFormFillerOpen}
+						user={this.context.user}
+						handleClose={() => {
+							this.setState({ isFormFillerOpen: false });
+						}}
+						submitMsg={'Update'}
+						onSubmit={this.context.updateResource.bind(null, data[formFillerIndex]._id, refetchData)}
+						type={type}
+						data={data[formFillerIndex]}
+						onArrowClick={this.switchData}
+					/>
+				) : null}
 			</div>
 		);
 	}

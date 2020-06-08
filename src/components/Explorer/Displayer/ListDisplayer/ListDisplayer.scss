@@ -15,6 +15,7 @@
       padding: 3px;
       &_item {
         margin: 0 3px;
+        user-select: none;
       }
       &-primary {
         width: 30%;
@@ -24,6 +25,7 @@
       &-actions {
         .MuiSvgIcon-root {
           width: 0.75em;
+          cursor: pointer;
         }
       }
       &-tertiary {

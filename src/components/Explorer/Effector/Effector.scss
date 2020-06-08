@@ -6,6 +6,7 @@
     height: 50px;
     &_view {
       width: 25%;
+      margin-right: 5px;
       max-width: 100px;
     }
     &_properties {
@@ -17,6 +18,20 @@
       display: flex;
       align-items: center;
       padding: 5px;
+    }
+    &_selected {
+      display: flex;
+    }
+    &_toggleall,
+    .MuiFormControlLabel-root {
+      margin-right: 0px;
+    }
+    &_selectstat {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      margin-right: 5px;
     }
   }
   &_bottombar {

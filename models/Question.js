@@ -75,7 +75,7 @@ QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
 	]);
 	try {
 		await this.model('Quiz').findByIdAndUpdate(quizId, {
-			average_quiz_time: obj[0].averageTimeAllocated
+			average_quiz_time: obj[0].averageTimeAllocated.toFixed(2)
 		});
 	} catch (err) {
 		console.log(err);
