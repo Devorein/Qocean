@@ -23,7 +23,6 @@ class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		selectedIndex: [],
 		formFillerIndex: null,
 		isFormFillerOpen: false
 	};
@@ -35,11 +34,11 @@ class Displayer extends Component {
 		});
 	}
 
-	transformData = (data) => {
+	transformData = (data, selectedIndex) => {
 		return data.map((item, index) => {
 			const temp = {
 				...item,
-				checked: this.state.selectedIndex.includes(index),
+				checked: selectedIndex.includes(index),
 				actions: (
 					<Fragment>
 						<UpdateIcon />
@@ -79,20 +78,13 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (data, view) => {
+	decideDisplayer = (data, view, setSelectedIndex) => {
 		const { type } = this.props;
 
 		const props = {
 			data,
 			type,
-			setChecked: (index) => {
-				const { selectedIndex } = this.state;
-				if (selectedIndex.includes(index)) selectedIndex.splice(index, 1);
-				else selectedIndex.push(index);
-				this.setState({
-					selectedIndex
-				});
-			}
+			setChecked: setSelectedIndex
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} />;
@@ -101,7 +93,7 @@ class Displayer extends Component {
 		else if (view === 'gallery') return <GalleryDisplayer {...props} />;
 	};
 
-	switchData = (dir, e) => {
+	/* 	switchData = (dir, e) => {
 		const { selectedIndex, totalCount } = this.state;
 		if (dir === 'right') {
 			const newSelectedIndex = selectedIndex < totalCount - 1 ? selectedIndex + 1 : 0;
@@ -114,7 +106,7 @@ class Displayer extends Component {
 				selectedIndex: newSelectedIndex
 			});
 		}
-	};
+	}; */
 
 	getCols = (data) => {
 		const cols = [];
@@ -129,22 +121,14 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer, switchData, getCols } = this;
-		const { selectedIndex, isFormFillerOpen, formFillerIndex } = this.state;
+		const { isFormFillerOpen, formFillerIndex } = this.state;
 		const { data, totalCount, page, refetchData, type } = this.props;
 		const cols = getCols(data);
 		return (
 			<div className="Displayer">
-				<Effector
-					type={type}
-					page={page}
-					data={data}
-					totalCount={totalCount}
-					selectedIndex={selectedIndex}
-					refetchData={refetchData}
-					cols={cols}
-				>
-					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols }) => {
-						const manipulatedData = sectorizeData(this.transformData(data), type, {
+				<Effector type={type} page={page} data={data} totalCount={totalCount} refetchData={refetchData} cols={cols}>
+					{({ EffectorTopBar, EffectorBottomBar, view, removed_cols, setSelectedIndex, selectedIndex }) => {
+						const manipulatedData = sectorizeData(this.transformData(data, selectedIndex), type, {
 							authenticated: this.context.user,
 							blacklist: removed_cols
 						});
@@ -152,7 +136,7 @@ class Displayer extends Component {
 						return (
 							<Fragment>
 								{EffectorTopBar}
-								<div className="Displayer_data">{decideDisplayer(manipulatedData, view)}</div>
+								<div className="Displayer_data">{decideDisplayer(manipulatedData, view, setSelectedIndex)}</div>
 								{EffectorBottomBar}
 							</Fragment>
 						);

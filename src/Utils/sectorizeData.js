@@ -35,6 +35,7 @@ export default function(data, type, { authenticated, singular = false, blacklist
 			difference(tertiary, blacklist).forEach((prop) => (temp['tertiary'][prop] = data[prop]));
 			temp._id = data._id;
 			temp.actions = data.actions;
+			temp.checked = data.checked;
 			return temp;
 		});
 	else {

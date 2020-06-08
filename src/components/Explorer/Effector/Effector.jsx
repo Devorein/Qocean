@@ -6,12 +6,11 @@ import PublicIcon from '@material-ui/icons/Public';
 import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 import pluralize from 'pluralize';
-import download from '../../../Utils/download';
-import shortid from 'shortid';
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
 import TextInput from '../../Input/TextInput/TextInput';
+import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -27,8 +26,10 @@ class Effector extends Component {
 		typedPage: 1,
 		view: 'list',
 		cols: this.props.cols || [],
-		selected_cols: this.props.cols || []
+		selected_cols: this.props.cols || [],
+		selectedIndex: []
 	};
+
 	static contextType = AppContext;
 
 	UNSAFE_componentWillReceiveProps(props) {
@@ -187,6 +188,7 @@ class Effector extends Component {
 					/>
 					<GetAppIcon
 						onClick={(e) => {
+							console.log(data);
 							exportData(type, data);
 						}}
 					/>
@@ -240,7 +242,7 @@ class Effector extends Component {
 	renderSelectedEffectors = (setDeleteModal) => {
 		const { updateResource } = this;
 		const { data, page, type } = this.props;
-		const selectedItems = this.props.selectedIndex.map((index) => data[index]);
+		const selectedItems = this.state.selectedIndex.map((index) => data[index]);
 		if (page === 'Self')
 			return (
 				<div className="Effector_topbar_selected">
@@ -269,8 +271,26 @@ class Effector extends Component {
 	};
 
 	renderEffectorTopBar = (setDeleteModal) => {
+		const { data } = this.props;
+
+		const { selectedIndex } = this.state;
 		return (
 			<Fragment>
+				<CheckboxInput
+					className="Effector_topbar_toggleall"
+					checked={selectedIndex.length === data.length}
+					onChange={(e) => {
+						let newIndex = null;
+						if (!e.target.checked) newIndex = [];
+						else newIndex = Array(data.length).fill(0).map((_, index) => index);
+						this.setState({
+							selectedIndex: newIndex
+						});
+					}}
+				/>
+				<div className="Effector_topbar_selectstat">
+					{selectedIndex.length}/{data.length}
+				</div>
 				<InputSelect
 					className="Effector_topbar_view"
 					name="Data view"
@@ -284,7 +304,7 @@ class Effector extends Component {
 					}))}
 				/>
 				<MultiSelect
-					customRenderValue={(selected) => `${selected.length} Shown`}
+					customRenderValue={(selected) => `${selected ? selected.length : 0} Shown`}
 					useSwitch={true}
 					className="Effector_topbar_properties"
 					name="Toggle Properties"
@@ -299,17 +319,14 @@ class Effector extends Component {
 						name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
 					}))}
 				/>
-				{this.props.selectedIndex.length > 0 ? (
-					this.renderSelectedEffectors(setDeleteModal)
-				) : (
-					this.renderGlobalEffectors()
-				)}
+				{selectedIndex.length > 0 ? this.renderSelectedEffectors(setDeleteModal) : this.renderGlobalEffectors()}
 			</Fragment>
 		);
 	};
 
 	deleteModalMessage = () => {
-		const { selectedIndex, data, type } = this.props;
+		/* 		const { data, type } = this.props;
+		const { selectedIndex } = this.state;
 		const selectedItems = selectedIndex.map((index) => data[index]);
 		return (
 			<Fragment>
@@ -318,12 +335,21 @@ class Effector extends Component {
 				</div>
 				{selectedItems.map((selectedItem) => <div key={selectedItem._id}>{selectedItem.name}</div>)}
 			</Fragment>
-		);
+		); */
+	};
+
+	setSelectedIndex = (index) => {
+		let { selectedIndex } = this.state;
+		if (selectedIndex.includes(index)) selectedIndex = selectedIndex.filter((_index) => index !== _index);
+		else selectedIndex.push(index);
+		this.setState({
+			selectedIndex
+		});
 	};
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { selected_cols, view } = this.state;
+		const { selected_cols, view, selectedIndex } = this.state;
 		return (
 			<ModalRP
 				onClose={(e) => {
@@ -344,6 +370,8 @@ class Effector extends Component {
 					this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
 						view,
+						selectedIndex,
+						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>
 					})}
