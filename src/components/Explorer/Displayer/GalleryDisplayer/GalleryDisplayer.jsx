@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import CheckboxInput from '../../../Input/Checkbox/CheckboxInput';
+import Color from 'color';
+import convert from 'color-convert';
 import './GalleryDisplayer.scss';
 
 class GalleryDisplayer extends Component {
@@ -17,12 +19,21 @@ class GalleryDisplayer extends Component {
 								key={`${type}${key}${index}`}
 								className={`GalleryDisplayer_item_container GalleryDisplayer_item_container-${key}`}
 							>
-								{Object.entries(item[key]).map(([ key, val ], index) => (
+								{Object.entries(item[key]).map(([ _key, val ], index) => (
 									<span
-										key={`${type}${key}${index}`}
-										className={`GalleryDisplayer_item_container_item GalleryDisplayer_item_container-${key}_item`}
+										key={`${type}${_key}${index}`}
+										className={`GalleryDisplayer_item_container_item GalleryDisplayer_item_container-${_key}_item`}
 									>
-										{val}
+										{key.match(/(tertiary)/) ? (
+											<Fragment>
+												<span className="GalleryDisplayer_item_container_item-key">
+													{_key.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}
+												</span>
+												<span className="GalleryDisplayer_item_container_item-value">{val}</span>
+											</Fragment>
+										) : (
+											<span className="GalleryDisplayer_item_container_item">{val}</span>
+										)}
 									</span>
 								))}
 							</div>
@@ -33,12 +44,20 @@ class GalleryDisplayer extends Component {
 		});
 	};
 	render() {
-		return <div className="GalleryDisplayer">{this.renderGalleryDisplayer()}</div>;
+		return (
+			<div className={`GalleryDisplayer-${this.props.type} GalleryDisplayer`}>{this.renderGalleryDisplayer()}</div>
+		);
 	}
 }
 
 export default withStyles((theme) => ({
 	GalleryDisplayer_item: {
-		backgroundColor: theme.palette.background.main
+		backgroundColor: theme.palette.background.main,
+		'& .GalleryDisplayer_item_container-tertiary': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
+		},
+		'& .GalleryDisplayer_item_container_item-value': {
+			backgroundColor: theme.palette.background.light
+		}
 	}
 }))(GalleryDisplayer);

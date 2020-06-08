@@ -1,2 +1,84 @@
 .GalleryDisplayer {
+  display: grid;
+  grid-template: 300px/1fr 1fr 1fr;
+  grid-auto-rows: 300px;
+  grid-gap: 5px;
+
+  &_item {
+    padding: 5px;
+    border-radius: 3px;
+    overflow-y: auto;
+    .MuiFormControlLabel-root {
+      margin: 0px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      .MuiButtonBase-root.MuiCheckbox-root {
+        padding: 0px;
+      }
+      .MuiSvgIcon-root {
+        width: 0.75em;
+      }
+    }
+    &_container {
+      &-actions {
+        display: flex;
+        justify-content: center;
+        & .MuiSvgIcon-root {
+          width: 0.75em;
+        }
+      }
+      &-primary {
+        display: flex;
+        justify-content: center;
+        font-size: 1.25em;
+        font-weight: bolder;
+        padding: 3px;
+        margin: 5px;
+        text-align: center;
+      }
+      &-secondary {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .GalleryDisplayer_item_container_item {
+          padding: 3px;
+        }
+      }
+      &-tertiary {
+        display: flex;
+        flex-direction: column;
+        margin-top: 8px;
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 5px;
+        .GalleryDisplayer_item_container_item {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 3px;
+          &-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.GalleryDisplayer-Quiz {
+  .GalleryDisplayer_item_container-secondary {
+    display: grid;
+    grid-template: 30px 1fr/ 1fr 1fr 1fr;
+    .GalleryDisplayer_item_container_item {
+      display: flex;
+      justify-content: center;
+    }
+    .GalleryDisplayer_item_container-tags_item {
+      grid-area: 2/1/3/4;
+    }
+  }
 }
