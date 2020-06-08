@@ -210,9 +210,15 @@ class Effector extends Component {
 					className="Effector_topbar_toggleall"
 					checked={selectedIndex.length === data.length}
 					onChange={(e) => {
+						const { shiftKey, altKey } = e.nativeEvent;
 						let newIndex = null;
-						if (!e.target.checked) newIndex = [];
-						else newIndex = Array(data.length).fill(0).map((_, index) => index);
+						if (shiftKey && altKey)
+							newIndex = difference(Array(data.length).fill(0).map((_, index) => index), this.state.selectedIndex);
+						else if (shiftKey) newIndex = [];
+						else {
+							if (!e.target.checked) newIndex = [];
+							else newIndex = Array(data.length).fill(0).map((_, index) => index);
+						}
 						this.setState({
 							selectedIndex: newIndex
 						});

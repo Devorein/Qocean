@@ -27,7 +27,7 @@ import './Displayer.scss';
 const keyMap = {
 	MOVE_UP: 'up',
 	MOVE_DOWN: 'down',
-	SELECT: 's'
+	SELECT: [ 's', 'shift+s', 'alt+s' ]
 };
 
 class Displayer extends Component {
@@ -116,6 +116,16 @@ class Displayer extends Component {
 			});
 	};
 
+	decideShortcut = (e, { selectedIndex, setSelectedIndex, index }) => {
+		const { altKey, shiftKey } = e.nativeEvent;
+		if (shiftKey && altKey) {
+			const indexes = Array(index + 1).fill(0).map((_, _index) => _index);
+			setSelectedIndex(difference(indexes, selectedIndex), true);
+		} else if (shiftKey) setSelectedIndex(Array(index + 1).fill(0).map((_, _index) => _index), true);
+		else if (altKey) setSelectedIndex([ index ], true);
+		else setSelectedIndex(index);
+	};
+
 	transformData = (data, selectedIndex, setSelectedIndex) => {
 		return data.map((item, index) => {
 			const actions = [
@@ -160,13 +170,7 @@ class Displayer extends Component {
 						<CheckboxInput
 							checked={selectedIndex.includes(index)}
 							onChange={(e) => {
-								const { altKey, shiftKey } = e.nativeEvent;
-								if (shiftKey && altKey) {
-									const indexes = Array(index + 1).fill(0).map((_, _index) => _index);
-									setSelectedIndex(difference(indexes, selectedIndex), true);
-								} else if (shiftKey) setSelectedIndex(Array(index + 1).fill(0).map((_, _index) => _index), true);
-								else if (altKey) setSelectedIndex([ index ], true);
-								else setSelectedIndex(index);
+								this.decideShortcut(e, { selectedIndex, setSelectedIndex, index });
 							}}
 						/>
 					</div>
@@ -274,8 +278,9 @@ class Displayer extends Component {
 														this.state.currentSelected < this.props.data.length - 1 ? this.state.currentSelected + 1 : 0
 												});
 											},
-											SELECT: (event) => {
-												setSelectedIndex(this.state.currentSelected);
+											SELECT: (e) => {
+												console.log(e.nativeEvent.altKey);
+												this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
 											}
 										}}
 									>
