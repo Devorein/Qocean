@@ -9,13 +9,20 @@
     overflow-y: hidden;
   }
   &_actions {
-    &-delete,
+    display: flex;
     .MuiSvgIcon-root {
-      color: #f81a12;
+      width: 0.75em;
     }
-    &-update,
-    .MuiSvgIcon-root {
-      color: #00a3e6;
+    &-delete {
+      &.MuiSvgIcon-root {
+        color: #f81a12;
+      }
+    }
+
+    &-update {
+      &.MuiSvgIcon-root {
+        color: #00a3e6;
+      }
     }
   }
 }

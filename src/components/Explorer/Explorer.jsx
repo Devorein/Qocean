@@ -4,8 +4,6 @@ import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
 import Detailer from './Detailer/Detailer';
 import FormFiller from '../../pages/FormFiller/FormFiller';
-import axios from 'axios';
-import pluralize from 'pluralize';
 import './Explorer.scss';
 
 class Explorer extends Component {
