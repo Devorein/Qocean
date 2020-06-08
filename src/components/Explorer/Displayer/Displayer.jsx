@@ -27,7 +27,7 @@ import './Displayer.scss';
 const keyMap = {
 	MOVE_UP: 'up',
 	MOVE_DOWN: 'down',
-	CHECK: 'right'
+	SELECT: 's'
 };
 
 class Displayer extends Component {
@@ -198,7 +198,7 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (data, view, cols) => {
+	decideDisplayer = (data, view, cols, setSelectedIndex) => {
 		const { type } = this.props;
 
 		const props = {
@@ -273,10 +273,13 @@ class Displayer extends Component {
 													currentSelected:
 														this.state.currentSelected < this.props.data.length - 1 ? this.state.currentSelected + 1 : 0
 												});
+											},
+											SELECT: (event) => {
+												setSelectedIndex(this.state.currentSelected);
 											}
 										}}
 									>
-										{decideDisplayer(manipulatedData, view, difference(cols, removed_cols))}
+										{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
 									</HotKeys>
 								</div>
 								{EffectorBottomBar}
