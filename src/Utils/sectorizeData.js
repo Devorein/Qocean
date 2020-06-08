@@ -1,10 +1,15 @@
 import { difference } from 'lodash';
 
-export default function(data, type, { authenticated, flatten = false, singular = false, blacklist = [] }) {
+export default function(
+	data,
+	type,
+	{ authenticated, flatten = false, singular = false, blacklist = [], purpose, singularSectorize = false }
+) {
 	type = type.toLowerCase();
 	const primary = [],
 		secondary = [],
-		tertiary = [];
+		tertiary = [],
+		refs = [];
 	if (authenticated) secondary.push('public', 'favourite');
 	if (type === 'quiz') {
 		secondary.push('subject', 'tags');
@@ -21,6 +26,22 @@ export default function(data, type, { authenticated, flatten = false, singular =
 	} else if (type === 'environment') {
 		primary.push('icon');
 	}
+
+	if (purpose === 'detail') {
+		if (type === 'quiz') {
+			primary.push('image');
+			secondary.push('source');
+			tertiary.push('raters', 'ratings', 'total_folders');
+			if (authenticated) {
+				refs.push('folders', 'questions', 'watchers');
+			}
+		} else if (type === 'question') {
+		} else if (type === 'user') {
+		} else if (type === 'folder') {
+		} else if (type === 'environment') {
+		}
+	}
+
 	primary.push('name');
 	tertiary.push('created_at', 'updated_at');
 
@@ -40,6 +61,19 @@ export default function(data, type, { authenticated, flatten = false, singular =
 		primary.forEach((prop) => (temp[prop] = data[prop]));
 		secondary.forEach((prop) => (temp[prop] = data[prop]));
 		tertiary.forEach((prop) => (temp[prop] = data[prop]));
+		refs.forEach((prop) => (temp[prop] = data[prop]));
+		return temp;
+	} else if (singularSectorize) {
+		const temp = {};
+		temp.primary = {};
+		temp.secondary = {};
+		temp.tertiary = {};
+		temp.refs = {};
+		primary.forEach((prop) => (temp['primary'][prop] = data[prop]));
+		secondary.forEach((prop) => (temp['secondary'][prop] = data[prop]));
+		tertiary.forEach((prop) => (temp['tertiary'][prop] = data[prop]));
+		refs.forEach((prop) => (temp['refs'][prop] = data[prop]));
+		temp._id = data._id;
 		return temp;
 	} else {
 		return data.map((data) => {
