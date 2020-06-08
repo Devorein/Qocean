@@ -18,6 +18,9 @@
       align-items: center;
       padding: 5px;
     }
+    &_selected {
+      display: flex;
+    }
   }
   &_bottombar {
     display: flex;

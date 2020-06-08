@@ -267,7 +267,7 @@ class Effector extends Component {
 		const selectedItems = this.props.selectedIndex.map((index) => data[index]);
 		if (page === 'Self')
 			return (
-				<div>
+				<div className="Effector_topbar_selected">
 					<DeleteIcon
 						onClick={(e) => {
 							setDeleteModal(true);

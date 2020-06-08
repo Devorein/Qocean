@@ -15,6 +15,7 @@ import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import download from '../../../Utils/download';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import getColouredIcons from '../../../Utils/getColoredIcons';
 import shortid from 'shortid';
 import moment from 'moment';
 import './Displayer.scss';
@@ -54,7 +55,9 @@ class Displayer extends Component {
 					</Fragment>
 				)
 			};
-
+			if (item.icon) temp.icon = getColouredIcons(this.props.type, item.icon);
+			if (item.quiz) temp.quiz = item.quiz.name;
+			if (item.user) temp.user = item.user.username;
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
 			if (item.public !== undefined)
 				temp.public = item.public ? (
@@ -62,7 +65,7 @@ class Displayer extends Component {
 				) : (
 					<PublicIcon /* onClick={this.updateResource.bind(null, [ item ], 'public')}*/ style={{ fill: '#f4423c' }} />
 				);
-
+			if (item.watchers) temp.watchers = item.watchers.length;
 			if (item.favourite !== undefined)
 				temp.favourite = item.favourite ? (
 					<StarIcon /* onClick={this.updateResource.bind(null, [ item ], 'favourite')}*/ style={{ fill: '#f0e744' }} />

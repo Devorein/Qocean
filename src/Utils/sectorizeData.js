@@ -2,17 +2,27 @@ import { difference } from 'lodash';
 
 export default function(data, type, { authenticated, singular = false, blacklist = [] }) {
 	type = type.toLowerCase();
-	const primary = [ 'name' ],
-		secondary = [],
-		tertiary = [ 'public', 'favourite' ];
+	const primary = [],
+		secondary = [ 'public', 'favourite' ],
+		tertiary = [];
 
-	if (authenticated) {
-		if (type === 'quiz') {
-			primary.push('name');
-			secondary.push('subject', 'tags');
-			tertiary.push('total_questions');
+	if (type === 'quiz') {
+		secondary.push('subject', 'tags');
+		tertiary.push('total_questions', 'average_difficulty', 'average_quiz_time', 'ratings', 'total_played');
+		if (authenticated) {
 		}
+	} else if (type === 'question') {
+		secondary.push('difficulty', 'quiz', 'type');
+		tertiary.push('weight', 'time_allocated');
+	} else if (type === 'user') {
+	} else if (type === 'folder') {
+		primary.push('icon');
+		tertiary.push('ratings', 'watchers', 'total_questions', 'total_quizzes');
+	} else if (type === 'environment') {
+		primary.push('icon');
 	}
+	primary.push('name');
+	tertiary.push('created_at', 'updated_at');
 
 	if (!singular)
 		return data.map((data) => {
