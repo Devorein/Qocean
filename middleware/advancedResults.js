@@ -82,7 +82,6 @@ const advancedResults = (model, option = {}) =>
 					query = query.sort(sortBy);
 				} else query = query.sort('-created_at');
 
-				// Pagination
 				const page = parseInt(req.query.page) || 1;
 				const limit = parseInt(req.query.limit) || 10;
 				const startIndex = (page - 1) * limit;
@@ -91,7 +90,6 @@ const advancedResults = (model, option = {}) =>
 				query = query.skip(startIndex).limit(limit);
 				populateQuery(query, req);
 
-				// Pagination result
 				const pagination = {};
 				if (endIndex < total) {
 					pagination.next = {

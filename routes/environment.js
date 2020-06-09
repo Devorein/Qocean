@@ -14,7 +14,7 @@ const {
 	updateEnvironments
 } = require('../controllers/environment');
 
-router.route('/me').get(protect, advancedResults(Environment, null));
+router.route('/me').get(protect, advancedResults(Environment));
 
 router.route('/countAll').get(advancedResults(Environment));
 router.route('/countMine').get(protect, advancedResults(Environment));

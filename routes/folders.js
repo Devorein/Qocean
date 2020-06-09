@@ -17,7 +17,7 @@ const {
 router.route('/countAll').get(advancedResults(Folder));
 router.route('/countMine').get(protect, advancedResults(Folder));
 router.route('/countOthers').get(protect, advancedResults(Folder));
-router.route('/me').get(protect, advancedResults(Folder, null));
+router.route('/me').get(protect, advancedResults(Folder));
 router.route('/others').get(protect, advancedResults(Folder));
 
 router

@@ -11,34 +11,36 @@ export default function(
 		tertiary = [],
 		refs = [];
 	if (authenticated) secondary.push('public', 'favourite');
-	if (type === 'quiz') {
+
+	if (type.match(/(quiz|quizzes)/)) {
 		secondary.push('subject', 'tags');
 		tertiary.push('total_questions', 'average_difficulty', 'average_quiz_time', 'ratings', 'total_played');
 		if (authenticated) {
 		}
-	} else if (type === 'question') {
+	} else if (type.match(/(question|questions)/)) {
 		secondary.push('difficulty', 'quiz', 'type');
 		tertiary.push('weight', 'time_allocated');
-	} else if (type === 'user') {
-	} else if (type === 'folder') {
+	} else if (type.match(/(user|users)/)) {
+	} else if (type.match(/(folder|folders)/)) {
 		primary.push('icon');
-		tertiary.push('ratings', 'watchers', 'total_questions', 'total_quizzes');
-	} else if (type === 'environment') {
+		tertiary.push('ratings', 'total_questions', 'total_quizzes');
+	} else if (type.match(/(environment|environments)/)) {
 		primary.push('icon');
 	}
 
 	if (purpose === 'detail') {
-		if (type === 'quiz') {
+		if (type.match(/(quiz|quizzes)/)) {
 			primary.push('image');
 			secondary.push('source');
 			tertiary.push('raters', 'ratings', 'total_folders');
-			if (authenticated) {
-				refs.push('folders', 'questions', 'watchers');
-			}
-		} else if (type === 'question') {
-		} else if (type === 'user') {
-		} else if (type === 'folder') {
-		} else if (type === 'environment') {
+			refs.push('folders', 'questions', 'watchers');
+		} else if (type.match(/(question|questions)/)) {
+			refs.push('quiz');
+		} else if (type.match(/(user|users)/)) {
+			refs.push('quizzes', 'questions', 'environments', 'folders');
+		} else if (type.match(/(folder|folders)/)) {
+			refs.push('quizzes', 'watchers');
+		} else if (type.match(/(environment|environments)/)) {
 		}
 	}
 

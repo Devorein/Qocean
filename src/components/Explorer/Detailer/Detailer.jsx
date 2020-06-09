@@ -20,7 +20,8 @@ class Detailer extends Component {
 
 	state = {
 		stack: [],
-		data: this.props.data || null
+		type: this.props.type,
+		data: this.props.data
 	};
 
 	UNSAFE_componentWillReceiveProps(props) {
@@ -37,30 +38,39 @@ class Detailer extends Component {
 
 		populateQueryParams(type, queryParams, this.context.user);
 		const queryString = qs.stringify(queryParams);
-
-		axios.get(`http://localhost:5001/api/v1/${type}?_id=${id}&${queryString}`).then(({ data: { data } }) => {
-			console.log(data);
+		const url = `http://localhost:5001/api/v1/${type}?_id=${id}&${queryString}`;
+		axios.get(url).then(({ data: { data } }) => {
+			this.state.stack.push(url);
+			this.setState({
+				data,
+				stack: this.state.stack,
+				type
+			});
 		});
 	};
 
 	renderRefs = (data, ref) => {
+		const renderRefItems = (item) => {
+			return (
+				<div
+					className={`Detailer_container-refs_item_value_container_item Detailer_container-refs_item-${ref}_value_container_item`}
+					key={item._id}
+					onClick={(e) => {
+						this.fetchData(ref, item._id);
+					}}
+				>
+					{item.name}
+				</div>
+			);
+		};
+
 		if (data.length === 0) return <div>N/A</div>;
 		else
 			return (
 				<div
 					className={`Detailer_container-refs_item_value_container Detailer_container-refs_item-${ref}_value_container`}
 				>
-					{data.map((item) => (
-						<div
-							className={`Detailer_container-refs_item_value_container_item Detailer_container-refs_item-${ref}_value_container_item`}
-							key={item._id}
-							onClick={(e) => {
-								this.fetchData(ref, item._id);
-							}}
-						>
-							{item.name}
-						</div>
-					))}
+					{Array.isArray(data) ? data.map((item) => renderRefItems(item)) : renderRefItems(data)}
 				</div>
 			);
 	};
@@ -71,34 +81,33 @@ class Detailer extends Component {
 		else if (key === 'public') value = <PublicIcon style={{ fill: value ? '#00a3e6' : '#f4423c' }} />;
 		else if (key === 'favourite')
 			value = value ? <StarIcon style={{ fill: '#f0e744' }} /> : <StarBorderIcon style={{ fill: '#ead50f' }} />;
-		else if (key === 'icon') value = getColoredIcons(this.props.type, value);
+		else if (key === 'icon') value = getColoredIcons(this.state.type, value);
 		else if (key === 'image') {
 			let src = null;
 			const isLink = value ? value.match(/^(http|data)/) : `http://localhost:5001/uploads/none.png`;
 			if (isLink) src = value;
 			else src = `http://localhost:5001/uploads/${value}`;
-			value = <img src={src} alt={`${this.props.type}`} />;
+			value = <img src={src} alt={`${this.state.type}`} />;
 		} else value = value.toString();
 		return value;
 	};
 
 	renderDetailer = () => {
-		const { type } = this.props;
-		const { data } = this.state;
-		const manipulatedData = data
+		const { data, type } = this.state;
+		const sectorizedData = data
 			? sectorizeData(data, type, {
 					authenticated: this.context.user,
 					singularSectorize: true,
 					purpose: 'detail'
 				})
 			: null;
-
-		if (manipulatedData) {
+		console.log(sectorizedData);
+		if (sectorizedData) {
 			return (
 				<Fragment>
 					{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (
 						<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
-							{Object.entries(manipulatedData[sector]).map(([ key, value ]) => (
+							{Object.entries(sectorizedData[sector]).map(([ key, value ]) => (
 								<div
 									className={`Detailer_container_item Detailer_container-${sector}_item Detailer_container_item-${key}`}
 									key={key}
@@ -114,13 +123,13 @@ class Detailer extends Component {
 						</div>
 					))}
 					<div className={`Detailer_container Detailer_container-refs`}>
-						{Object.keys(manipulatedData.refs).map((ref) => {
+						{Object.keys(sectorizedData.refs).map((ref) => {
 							return (
 								<Fragment key={ref}>
 									<div className={`Detailer_container-refs_item_key Detailer_container-refs_item-${ref}_key`}>
 										{ref}
 									</div>
-									{this.renderRefs(manipulatedData.refs[ref], ref)}
+									{this.renderRefs(sectorizedData.refs[ref], ref)}
 								</Fragment>
 							);
 						})}
