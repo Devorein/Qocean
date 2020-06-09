@@ -48,6 +48,7 @@ class Effector extends Component {
 			selectedIndex
 		});
 	}
+
 	refetchData = () => {
 		const { itemsPerPage, currentPage } = this.state;
 		this.props.refetchData(null, {
@@ -137,8 +138,10 @@ class Effector extends Component {
 				<div className="Effector_bottombar-itemcount">
 					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
 						totalCount
-					) : (
+					) : itemsPerPage * currentPage <= totalCount ? (
 						itemsPerPage * currentPage
+					) : (
+						totalCount
 					)}{' '}
 					of {totalCount}
 				</div>

@@ -1,5 +1,7 @@
 const ErrorResponse = require('../utils/errorResponse');
 const populateQuery = require('../utils/populateQuery');
+const paginateQuery = require('../utils/paginateQuery');
+const sortQuery = require('../utils/sortQuery');
 
 const advancedResults = (model, option = {}) =>
 	async function(req, res, next) {
@@ -70,6 +72,7 @@ const advancedResults = (model, option = {}) =>
 					};
 				reqQuery = { ...reqQuery, ...option.match };
 				query = model.find(reqQuery);
+
 				let fields = '';
 				if (req.query.select) {
 					fields = req.query.select.split(',');
@@ -77,34 +80,9 @@ const advancedResults = (model, option = {}) =>
 				} else fields = option && option.exclude ? option.exclude.map((field) => `-${field}`) : '';
 				query = query.select(fields);
 
-				if (req.query.sort) {
-					const sortBy = req.query.sort.split(',').join(' ');
-					query = query.sort(sortBy);
-				} else query = query.sort('-created_at');
-
-				const page = parseInt(req.query.page) || 1;
-				const limit = parseInt(req.query.limit) || 10;
-				const startIndex = (page - 1) * limit;
-				const endIndex = page * limit;
-				const total = await model.countDocuments();
-				query = query.skip(startIndex).limit(limit);
+				sortQuery(query, req);
 				populateQuery(query, req);
-
-				const pagination = {};
-				if (endIndex < total) {
-					pagination.next = {
-						page: page + 1,
-						limit
-					};
-				}
-
-				if (startIndex > 0) {
-					pagination.prev = {
-						page: page - 1,
-						limit
-					};
-				}
-
+				const pagination = await paginateQuery(query, req, model);
 				const results = await query;
 
 				res.advancedResults = {

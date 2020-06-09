@@ -38,6 +38,7 @@ class Self extends Component {
 					})
 					.then(({ data: { data } }) => {
 						this.setState({
+							type,
 							data,
 							totalCount
 						});
