@@ -22,11 +22,7 @@ router.route('/others').get(protect, advancedResults(Folder));
 
 router
 	.route('/')
-	.get(
-		advancedResults(Folder, {
-			exclude: [ 'favourite', 'public' ]
-		})
-	)
+	.get(advancedResults(Folder))
 	.post(protect, createFolder)
 	.put(protect, updateFolders)
 	.delete(protect, deleteFolders);

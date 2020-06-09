@@ -26,11 +26,7 @@ router.route('/current').get(protect, getCurrentEnvironment);
 
 router
 	.route('/')
-	.get(
-		advancedResults(Environment, {
-			exclude: [ 'favourite', 'public' ]
-		})
-	)
+	.get(advancedResults(Environment))
 	.post(protect, createEnvironment)
 	.put(protect, updateEnvironments)
 	.delete(protect, deleteEnvironments);

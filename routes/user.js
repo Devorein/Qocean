@@ -21,11 +21,7 @@ router.route('/others').get(protect, advancedResults(User));
 router.route('/tags/:id').get(getUserTags);
 router.route('/tags/_/me').post(protect, getMyTags);
 
-router.route('/').delete(protect, deleteUser).get(
-	advancedResults(User, {
-		exclude: [ 'quizzes', 'questions', 'email' ]
-	})
-);
+router.route('/').delete(protect, deleteUser).get(advancedResults(User));
 
 router.put('/updatedetails', protect, updateUserDetails);
 router.put('/updatepassword', protect, updateUserPassword);
