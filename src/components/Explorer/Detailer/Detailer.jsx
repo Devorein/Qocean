@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import { AppContext } from '../../../context/AppContext';
 import StarIcon from '@material-ui/icons/Star';
@@ -14,15 +14,23 @@ import sectorizeData from '../../../Utils/sectorizeData';
 import populateQueryParams from '../../../Utils/populateQueryParams';
 import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import './Detailer.scss';
+const headers = {
+	headers: {
+		Authorization: `Bearer ${localStorage.getItem('token')}`
+	}
+};
 class Detailer extends Component {
 	static contextType = AppContext;
 
 	state = {
 		stack: [],
 		type: null,
-		data: null
+		data: null,
+		currentIndex: null
 	};
 
 	fetchData = (type, id) => {
@@ -38,15 +46,34 @@ class Detailer extends Component {
 			: ''}?${queryString}`;
 		axios
 			.get(url, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+				...headers
 			})
 			.then(({ data: { data } }) => {
 				this.state.stack.push(url);
 				this.setState({
 					data,
 					stack: this.state.stack,
+					type,
+					currentIndex: this.state.currentIndex === null ? 0 : this.state.currentIndex + 1
+				});
+			});
+	};
+
+	refetchData = (currentIndex) => {
+		const { stack } = this.state;
+		const url = stack[currentIndex];
+		const [ uri ] = url.split('?');
+		const chunks = uri.split('/');
+		let type = chunks[chunks.length - 1];
+		if (type === 'me') type = chunks[chunks.length - 2];
+		axios
+			.get(url, {
+				...headers
+			})
+			.then(({ data: { data } }) => {
+				this.setState({
+					data,
+					currentIndex,
 					type
 				});
 			});
@@ -96,6 +123,28 @@ class Detailer extends Component {
 		return value;
 	};
 
+	renderDetailerStats = () => {
+		const { stack, currentIndex } = this.state;
+		return (
+			<div className="Detailer_stats">
+				<ChevronLeftIcon
+					className="Detailer_stats_left"
+					onClick={(e) => {
+						if (currentIndex !== 0) this.refetchData(currentIndex - 1);
+					}}
+				/>
+				<ChevronRightIcon
+					className="Detailer_stats_right"
+					onClick={(e) => {
+						if (currentIndex !== stack.length - 1) this.refetchData(currentIndex + 1);
+					}}
+				/>
+				<div className="Detailer_stats_count">
+					{currentIndex + 1}/{stack.length} Items
+				</div>
+			</div>
+		);
+	};
 	renderDetailer = () => {
 		const { data, type } = this.state;
 		const sectorizedData = data
@@ -107,55 +156,58 @@ class Detailer extends Component {
 			: null;
 		if (sectorizedData) {
 			return (
-				<Fragment>
-					{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (
-						<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
-							{Object.entries(sectorizedData[sector]).map(([ key, value ]) => (
-								<div
-									className={`Detailer_container_item Detailer_container-${sector}_item Detailer_container_item-${key}`}
-									key={key}
-								>
-									<span className={`Detailer_container_item_key Detailer_container-${sector}_item_key`}>
-										{key.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
-									</span>
-									<span className={`Detailer_container_item_value Detailer_container-${sector}_item_value`}>
-										{this.renderValue(key, value)}
-									</span>
-								</div>
-							))}
-						</div>
-					))}
-					{[ 'ref', 'refs' ].map((sector) => (
-						<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
-							{Object.keys(sectorizedData[sector]).map((ref) => {
-								return (
-									<div key={ref} className={`Detailer_container-${sector}_item Detailer_container_item`}>
-										<div
-											className={`Detailer_container-${sector}_item_key Detailer_container-${sector}_item-${ref}_key`}
-										>
-											{ref.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
-											{sector === 'refs' ? (
-												<div
-													className={`Detailer_container-${sector}_item_key_count Detailer_container-${sector}_item-${ref}_key_count`}
-												>
-													{sectorizedData[sector][ref].length}
-												</div>
-											) : null}
-										</div>
-										{this.renderRefs(sectorizedData[sector][ref], ref, sector)}
+				<div className={`Detailer ${this.props.classes.Detailer}`}>
+					{this.renderDetailerStats()}
+					<div className="Detailer_content">
+						{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (
+							<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
+								{Object.entries(sectorizedData[sector]).map(([ key, value ]) => (
+									<div
+										className={`Detailer_container_item Detailer_container-${sector}_item Detailer_container_item-${key}`}
+										key={key}
+									>
+										<span className={`Detailer_container_item_key Detailer_container-${sector}_item_key`}>
+											{key.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
+										</span>
+										<span className={`Detailer_container_item_value Detailer_container-${sector}_item_value`}>
+											{this.renderValue(key, value)}
+										</span>
 									</div>
-								);
-							})}
-						</div>
-					))}
-				</Fragment>
+								))}
+							</div>
+						))}
+						{[ 'ref', 'refs' ].map((sector) => (
+							<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
+								{Object.keys(sectorizedData[sector]).map((ref) => {
+									return (
+										<div key={ref} className={`Detailer_container-${sector}_item Detailer_container_item`}>
+											<div
+												className={`Detailer_container-${sector}_item_key Detailer_container-${sector}_item-${ref}_key`}
+											>
+												{ref.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
+												{sector === 'refs' ? (
+													<div
+														className={`Detailer_container-${sector}_item_key_count Detailer_container-${sector}_item-${ref}_key_count`}
+													>
+														{sectorizedData[sector][ref].length}
+													</div>
+												) : null}
+											</div>
+											{this.renderRefs(sectorizedData[sector][ref], ref, sector)}
+										</div>
+									);
+								})}
+							</div>
+						))}
+					</div>
+				</div>
 			);
 		}
 	};
 	render() {
 		return this.props.children({
 			fetchData: this.fetchData,
-			Detailer: <div className={`Detailer ${this.props.classes.Detailer}`}>{this.renderDetailer()}</div>
+			Detailer: this.renderDetailer()
 		});
 	}
 }
