@@ -9,7 +9,6 @@ module.exports = async function handleCountRoutes(filters, req, res, model) {
 				filters.user = { $ne: req.user._id };
 			} else filters._id = { $ne: req.user._id };
 		}
-		console.log(filters);
 		const count = await model.countDocuments(filters);
 		res.status(200).json({ success: true, data: count });
 		return false;

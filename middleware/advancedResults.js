@@ -6,10 +6,10 @@ const projectionQuery = require('../utils/projectionQuery');
 const filterQuery = require('../utils/filterQuery');
 const handleCountRoutes = require('../utils/handleCountRoutes');
 
-const advancedResults = (model, option = {}) =>
+const advancedResults = (model) =>
 	async function(req, res, next) {
-		let filters = {};
 		if (req.query._id) {
+			let filters = {};
 			if (!req.user) filters.public = true;
 			let query = model.findOne({ _id: req.query._id, ...filters });
 			populateQuery(query, req);
@@ -19,35 +19,10 @@ const advancedResults = (model, option = {}) =>
 			res.status(200).json({ success: true, data: result });
 		}
 
-		let queryFilters = filterQuery(req.query);
-		const processFurther = await handleCountRoutes(queryFilters, req, res, model);
+		let queryFilters = filterQuery(req, model);
+		let processFurther = await handleCountRoutes(queryFilters, req, res, model);
 		if (processFurther) {
-			option.match = { ...option.match };
-
-			if (model.modelName === 'User') {
-				if (req.route.path === '/others') option.match._id = { $ne: req.user._id };
-			} else {
-				if (req.route.path === '/me') option.match.user = req.user._id;
-				else if (req.route.path === '/others') {
-					option.match.user = { $ne: req.user._id };
-					option.match = {
-						...option.match,
-						public: true
-					};
-				} else if (req.route.path === '/')
-					option.match = {
-						...option.match,
-						public: true
-					};
-			}
-			if (req.baseUrl.includes('watchlist'))
-				option.match = {
-					...option.match,
-					watchers: { $in: [ req.user._id ] }
-				};
-
-			const query = model.find({ ...filters, ...option.match });
-
+			const query = model.find(queryFilters);
 			projectionQuery(query, req);
 			sortQuery(query, req);
 			populateQuery(query, req);
