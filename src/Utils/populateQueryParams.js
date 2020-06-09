@@ -1,9 +1,8 @@
 export default function(type, queryParams, authenticated) {
 	type = type.toLowerCase();
-
 	if (type.match(/(user|users)/)) {
-		queryParams.populate = 'user,quizzes,questions,folders,envrionments';
-		queryParams.populateFields = 'username-name-name-name-name';
+		queryParams.populate = 'quizzes,questions,folders,environments';
+		queryParams.populateFields = 'name-name-name-name';
 	} else if (type.match(/(folder|folders)/)) {
 		queryParams.populate = 'user,quizzes,watchers';
 		queryParams.populateFields = 'username-name-username';

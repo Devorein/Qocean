@@ -29,24 +29,32 @@ class Detailer extends Component {
 		let queryParams = {};
 		type = type.toLowerCase();
 		if (type === 'watchers') type = 'users';
-
+		else if (type === 'current_environments') type = 'environments';
 		populateQueryParams(type, queryParams, this.context.user);
+		if (!type.match(/(user|users)/)) queryParams._id = id;
 		const queryString = qs.stringify(queryParams);
-		const url = `http://localhost:5001/api/v1/${pluralize.isPlural(type)
-			? type
-			: pluralize(type, 2)}?_id=${id}&${queryString}`;
-		axios.get(url).then(({ data: { data } }) => {
-			this.state.stack.push(url);
-			this.setState({
-				data,
-				stack: this.state.stack,
-				type
+		const url = `http://localhost:5001/api/v1/${pluralize.isPlural(type) ? type : pluralize(type, 2)}${this.context.user
+			? '/me'
+			: ''}?${queryString}`;
+		axios
+			.get(url, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data } }) => {
+				this.state.stack.push(url);
+				this.setState({
+					data,
+					stack: this.state.stack,
+					type
+				});
 			});
-		});
 	};
 
 	renderRefs = (data, ref, sector) => {
 		const renderRefItems = (item) => {
+			const name = item.username || item.name;
 			return (
 				<div
 					className={`Detailer_container-${sector}_item_value_container_item Detailer_container-${sector}_item-${ref}_value_container_item`}
@@ -55,7 +63,7 @@ class Detailer extends Component {
 						this.fetchData(ref, item._id);
 					}}
 				>
-					{item.name || item.username}
+					{name}
 				</div>
 			);
 		};
@@ -72,7 +80,7 @@ class Detailer extends Component {
 	};
 
 	renderValue = (key, value) => {
-		if (key.match(/^(created_at|updated_at)$/)) value = moment(value).fromNow();
+		if (key.match(/^(created_at|updated_at|joined_at)$/)) value = moment(value).fromNow();
 		else if (key.match(/(tags)/)) value = <ChipContainer chips={value} type={'regular'} height={50} />;
 		else if (key === 'public') value = <PublicIcon style={{ fill: value ? '#00a3e6' : '#f4423c' }} />;
 		else if (key === 'favourite')
@@ -84,7 +92,7 @@ class Detailer extends Component {
 			if (isLink) src = value;
 			else src = `http://localhost:5001/uploads/${value}`;
 			value = <img src={src} alt={`${this.state.type}`} />;
-		} else if (value) value = value.toString();
+		} else if (value !== null) value = value.toString();
 		return value;
 	};
 
@@ -125,7 +133,14 @@ class Detailer extends Component {
 										<div
 											className={`Detailer_container-${sector}_item_key Detailer_container-${sector}_item-${ref}_key`}
 										>
-											{ref}
+											{ref.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
+											{sector === 'refs' ? (
+												<div
+													className={`Detailer_container-${sector}_item_key_count Detailer_container-${sector}_item-${ref}_key_count`}
+												>
+													{sectorizedData[sector][ref].length}
+												</div>
+											) : null}
 										</div>
 										{this.renderRefs(sectorizedData[sector][ref], ref, sector)}
 									</div>

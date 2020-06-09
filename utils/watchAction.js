@@ -14,7 +14,6 @@ module.exports = async function watchAction(rtype, body, user) {
 		op = body.op;
 	const watchlist = await mongoose.model('Watchlist').findById(user.watchlist);
 	let manipulated = 0;
-	console.log(watchlist);
 
 	function detectWatchStatus(resource) {
 		if (

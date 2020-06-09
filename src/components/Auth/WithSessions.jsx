@@ -10,7 +10,7 @@ class WithSessions extends React.Component {
 	}
 	refetch = () => {
 		return axios
-			.get('http://localhost:5001/api/v1/users/me', {
+			.get('http://localhost:5001/api/v1/users/me?populate=current_environment', {
 				headers: {
 					Authorization: `Bearer ${window.localStorage.getItem('token')}`
 				}

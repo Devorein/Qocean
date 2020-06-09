@@ -2,6 +2,7 @@ const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendTokenResponse = require('../utils/sendTokenResponse');
+const populateQuery = require('../utils/populateQuery');
 const fs = require('fs');
 const path = require('path');
 
@@ -67,16 +68,9 @@ exports.deleteUser = asyncHandler(async function(req, res, next) {
 // @route    GET /api/v1/users/me
 // @access   Private
 exports.getMe = asyncHandler(async (req, res, next) => {
-	const user = await User.findById(req.user._id).populate([
-		{
-			path: 'quizzes',
-			select: 'name'
-		},
-		{
-			path: 'current_environment',
-			select: '-created_at -favourite -public -user -__v'
-		}
-	]);
+	const query = User.findById(req.user._id);
+	populateQuery(query, req);
+	const user = await query;
 	res.status(200).json({
 		success: true,
 		data: user

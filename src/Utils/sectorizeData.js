@@ -10,8 +10,7 @@ export default function(
 		secondary = [],
 		tertiary = [],
 		refs = [],
-		ref = [ 'user' ];
-	if (authenticated) secondary.push('public', 'favourite');
+		ref = [];
 
 	if (type.match(/(quiz|quizzes)/)) {
 		secondary.push('subject', 'tags');
@@ -40,15 +39,31 @@ export default function(
 			primary.push('image');
 			tertiary.push('format', 'add_to_score');
 		} else if (type.match(/(user|users)/)) {
+			primary.push('image', 'email', 'username');
+			tertiary.push('joined_at');
+			ref.push('current_environment');
 			refs.push('quizzes', 'questions', 'environments', 'folders');
 		} else if (type.match(/(folder|folders)/)) {
 			refs.push('quizzes', 'watchers');
 		} else if (type.match(/(environment|environments)/)) {
+			tertiary.push(
+				...Object.keys(data).filter(
+					(key) =>
+						!primary.includes(key) &&
+						!secondary.includes(key) &&
+						!ref.includes(key) &&
+						!key.match(/^(id|_id|__v|name)$/)
+				)
+			);
 		}
 	}
 
 	primary.push('name');
-	tertiary.push('created_at', 'updated_at');
+	if (!type.match(/(user|users)/)) {
+		tertiary.push('created_at', 'updated_at');
+		ref.push('user');
+		if (authenticated) secondary.push('public', 'favourite');
+	}
 
 	if (flatten) {
 		return data.map((data) => {

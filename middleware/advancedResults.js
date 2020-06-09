@@ -3,11 +3,11 @@ const populateQuery = require('../utils/populateQuery');
 
 const advancedResults = (model, option = {}) =>
 	async function(req, res, next) {
+		let filters = {};
 		if (req.query._id) {
-			if (!req.user) option.match = { public: true };
-			let query = model.findOne({ _id: req.query._id, ...option.match });
+			if (!req.user) filters.public = true;
+			let query = model.findOne({ _id: req.query._id, ...filters });
 			populateQuery(query, req);
-
 			const result = await query;
 			if (!result)
 				return next(new ErrorResponse(`Resource not found with id of ${req.query._id} or is made private`, 404));
