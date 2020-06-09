@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { AppContext } from '../../context/AppContext';
 import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
 import Detailer from './Detailer/Detailer';
 import FormFiller from '../../pages/FormFiller/FormFiller';
+import filterSort from '../../Utils/filterSort';
 import './Explorer.scss';
 
 class Explorer extends Component {
 	static contextType = AppContext;
 	state = {
-		detailerIndex: null,
 		formFillerIndex: null,
 		isFormFillerOpen: false
 	};
@@ -31,27 +31,48 @@ class Explorer extends Component {
 		const { data, refetchData, totalCount, type, page } = this.props;
 		return (
 			<div className="Explorer">
-				<Detailer data={detailerIndex !== null ? data[detailerIndex] : null} type={type} />
-				<div className="Displayer_container">
-					<Manipulator onApply={refetchData} type={type} />
-					<Displayer
-						setDetailerIndex={(detailerIndex) => {
-							this.setState({ detailerIndex });
-						}}
-						refetchData={refetchData}
-						page={page}
-						data={data}
-						totalCount={totalCount}
-						type={type}
-						enableFormFiller={(formFillerIndex) => {
-							this.setState({
-								isFormFillerOpen: true,
-								formFillerIndex
-							});
-						}}
-						updateDataLocally={(data) => this.setState({ data })}
-					/>
-				</div>
+				<Detailer data={data[detailerIndex]} type={type}>
+					{({ fetchData, Detailer }) => {
+						return (
+							<Fragment>
+								{Detailer}
+								<div className="Displayer_container">
+									<Manipulator
+										onApply={(filterSorts) => {
+											refetchData(type, filterSort(filterSorts));
+										}}
+										type={type}
+									>
+										{({ Manipulator, filter_sort }) => {
+											return (
+												<Fragment>
+													{Manipulator}
+													<Displayer
+														filter_sort={filter_sort}
+														fetchData={fetchData}
+														refetchData={refetchData}
+														page={page}
+														data={data}
+														totalCount={totalCount}
+														type={type}
+														enableFormFiller={(formFillerIndex) => {
+															this.setState({
+																isFormFillerOpen: true,
+																formFillerIndex
+															});
+														}}
+														updateDataLocally={(data) => this.setState({ data })}
+													/>
+												</Fragment>
+											);
+										}}
+									</Manipulator>
+								</div>
+							</Fragment>
+						);
+					}}
+				</Detailer>
+
 				{formFillerIndex !== null ? (
 					<FormFiller
 						isOpen={isFormFillerOpen}

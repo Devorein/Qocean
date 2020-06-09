@@ -116,7 +116,6 @@ QuizSchema.pre('save', async function(next) {
 QuizSchema.pre('remove', async function(next) {
 	await this.model('User').remove(this.user, 'quizzes', this._id);
 	const questions = await this.model('Question').find({ quiz: this._id });
-	console.log(questions);
 	for (let i = 0; i < questions.length; i++) await questions[i].remove();
 	const folders = await this.model('Folder').find({ quizzes: this._id });
 	for (let i = 0; i < folders.length; i++) {

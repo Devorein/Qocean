@@ -36,7 +36,6 @@ function decideType(type) {
 module.exports = async function(type, id, user, next, body) {
 	const Type = decideType(type);
 	const resource = await Type.findById(id);
-	console.log(resource);
 	if (!resource) return next(new ErrorResponse(`Quiz not found with id of ${id}`, 404));
 	if (resource.user.toString() !== user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));

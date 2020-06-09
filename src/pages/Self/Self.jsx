@@ -4,6 +4,7 @@ import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import Explorer from '../../components/Explorer/Explorer';
+import populateQueryParams from '../../Utils/populateQueryParams';
 import qs from 'qs';
 
 import './Self.scss';
@@ -15,14 +16,9 @@ class Self extends Component {
 		totalCount: 0
 	};
 
-	refetchData = (type, queryParams, newState = {}) => {
-		type = type ? type : this.state.type;
-		if (type === 'Question') {
-			queryParams.populate = 'quiz';
-			queryParams.populateFields = 'name';
-			// queryParams.select = '%2Banswers';
-		}
-
+	refetchData = (type, queryParams) => {
+		type = type ? type.toLowerCase() : this.state.type.toLowerCase();
+		populateQueryParams(type, queryParams, this.props.user);
 		const queryString = qs.stringify(queryParams);
 		const headers = {
 			headers: {
@@ -30,7 +26,7 @@ class Self extends Component {
 			}
 		};
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine`, {
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine?${queryString}`, {
 				...headers
 			})
 			.then(({ data: { data: totalCount } }) => {
@@ -40,9 +36,9 @@ class Self extends Component {
 					})
 					.then(({ data: { data } }) => {
 						this.setState({
+							type,
 							data,
-							totalCount,
-							...newState
+							totalCount
 						});
 					});
 			})
@@ -73,6 +69,7 @@ class Self extends Component {
 				link: `self/${header}`
 			};
 		});
+
 		return (
 			<div className="Self page">
 				<CustomTabs

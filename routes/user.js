@@ -21,31 +21,7 @@ router.route('/others').get(protect, advancedResults(User));
 router.route('/tags/:id').get(getUserTags);
 router.route('/tags/_/me').post(protect, getMyTags);
 
-router.route('/').delete(protect, deleteUser).get(
-	advancedResults(User, null, {
-		exclude: [ 'quizzes', 'questions', 'email' ],
-		_id: {
-			populate: [
-				{
-					path: 'quizzes',
-					select: 'name total_questions'
-				},
-				{
-					path: 'questions',
-					select: 'name type'
-				},
-				{
-					path: 'folders',
-					select: 'name total_quizzes total_questions'
-				},
-				{
-					path: 'environments',
-					select: 'name total_quizzes total_questions'
-				}
-			]
-		}
-	})
-);
+router.route('/').delete(protect, deleteUser).get(advancedResults(User));
 
 router.put('/updatedetails', protect, updateUserDetails);
 router.put('/updatepassword', protect, updateUserPassword);

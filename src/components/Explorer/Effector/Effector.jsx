@@ -15,6 +15,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { difference } from 'lodash';
 import exportData from '../../../Utils/exportData';
+import filterSort from '../../../Utils/filterSort';
 
 import './Effector.scss';
 class Effector extends Component {
@@ -31,17 +32,31 @@ class Effector extends Component {
 	static contextType = AppContext;
 
 	UNSAFE_componentWillReceiveProps(props) {
-		if (props.cols.length > 0)
-			this.setState({
-				cols: props.cols,
-				selected_cols: props.cols
-			});
+		let cols = null,
+			selectedIndex = this.state.selectedIndex,
+			selected_cols = this.state.selected_cols;
+		if (props.cols.length > 0) {
+			cols = props.cols;
+			selected_cols = props.cols;
+		}
+		if (props.type !== this.props.type) {
+			selectedIndex = [];
+			selected_cols = [];
+		}
+		this.setState({
+			cols,
+			selected_cols,
+			selectedIndex
+		});
 	}
+
 	refetchData = () => {
 		const { itemsPerPage, currentPage } = this.state;
+		const filterSortQuery = filterSort(this.props.filter_sort);
 		this.props.refetchData(null, {
 			limit: itemsPerPage,
-			page: currentPage
+			page: currentPage,
+			...filterSortQuery
 		});
 	};
 
@@ -59,7 +74,7 @@ class Effector extends Component {
 					onChange={(e) => {
 						this.setState({ typedPage: e.target.value });
 					}}
-					inputProps={{ max: maxPage }}
+					inputProps={{ max: maxPage, min: 1 }}
 				/>
 				<GenericButton
 					className="Effector_bottombar-pagebutton"
@@ -126,8 +141,10 @@ class Effector extends Component {
 				<div className="Effector_bottombar-itemcount">
 					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
 						totalCount
-					) : (
+					) : itemsPerPage * currentPage <= totalCount ? (
 						itemsPerPage * currentPage
+					) : (
+						totalCount
 					)}{' '}
 					of {totalCount}
 				</div>
@@ -136,8 +153,7 @@ class Effector extends Component {
 	};
 
 	renderGlobalEffectors = () => {
-		const { data, page, refetchData, type, updateResource } = this.props;
-		const { itemsPerPage, currentPage } = this.state;
+		const { data, page, type, updateResource } = this.props;
 
 		if (page === 'Self') {
 			return (
@@ -147,10 +163,7 @@ class Effector extends Component {
 							this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
 						}}
 						onClick={(e) => {
-							refetchData(null, {
-								page: currentPage,
-								limit: itemsPerPage
-							});
+							this.refetchData();
 						}}
 					/>
 					<StarIcon
@@ -327,8 +340,8 @@ class Effector extends Component {
 				{({ setIsOpen }) =>
 					this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
-						view,
 						selectedIndex,
+						view,
 						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,

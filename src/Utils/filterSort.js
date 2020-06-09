@@ -10,8 +10,9 @@ export default function(filterSort) {
 	if (sort !== '') query.sort = sort;
 
 	filters.forEach(({ target, value, type, mod, disabled }) => {
-		if (!disabled && target !== 'none' && value && value !== '') {
+		if (!disabled && target !== 'none' && value !== undefined && value !== '') {
 			if (type === 'boolean') {
+				value = value.toString();
 				if (value === 'false' && mod === 'is_not') query[target] = true;
 				else if (value === 'false' && mod === 'is') query[target] = false;
 				else if (value === 'true' && mod === 'is') query[target] = true;

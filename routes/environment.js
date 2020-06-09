@@ -14,7 +14,7 @@ const {
 	updateEnvironments
 } = require('../controllers/environment');
 
-router.route('/me').get(protect, advancedResults(Environment, null));
+router.route('/me').get(protect, advancedResults(Environment));
 
 router.route('/countAll').get(advancedResults(Environment));
 router.route('/countMine').get(protect, advancedResults(Environment));
@@ -26,15 +26,7 @@ router.route('/current').get(protect, getCurrentEnvironment);
 
 router
 	.route('/')
-	.get(
-		advancedResults(
-			Environment,
-			{ path: 'user', select: 'username' },
-			{
-				exclude: [ 'favourite', 'public' ]
-			}
-		)
-	)
+	.get(advancedResults(Environment))
 	.post(protect, createEnvironment)
 	.put(protect, updateEnvironments)
 	.delete(protect, deleteEnvironments);

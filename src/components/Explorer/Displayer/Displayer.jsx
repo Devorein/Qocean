@@ -75,7 +75,10 @@ class Displayer extends Component {
 				this.props.updateDataLocally(
 					this.props.data.map((data) => {
 						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
-						if (updatedData) data[field] = updatedData[field];
+						if (updatedData) {
+							data[field] = updatedData[field];
+							data.updated_at = updatedData.updated_at;
+						}
 						return data;
 					})
 				);
@@ -141,7 +144,7 @@ class Displayer extends Component {
 					className="Displayer_actions-info"
 					key={'info'}
 					onClick={(e) => {
-						this.props.setDetailerIndex(index);
+						this.props.fetchData(this.props.type, item._id);
 					}}
 				/>,
 				<GetAppIcon
@@ -251,6 +254,7 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 					deleteResource={deleteResource}
+					filter_sort={this.props.filter_sort}
 				>
 					{({
 						EffectorTopBar,

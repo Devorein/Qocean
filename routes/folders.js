@@ -17,29 +17,12 @@ const {
 router.route('/countAll').get(advancedResults(Folder));
 router.route('/countMine').get(protect, advancedResults(Folder));
 router.route('/countOthers').get(protect, advancedResults(Folder));
-router.route('/me').get(protect, advancedResults(Folder, null));
+router.route('/me').get(protect, advancedResults(Folder));
 router.route('/others').get(protect, advancedResults(Folder));
 
 router
 	.route('/')
-	.get(
-		advancedResults(
-			Folder,
-			[
-				{
-					path: 'quizzes',
-					select: 'name total_questions'
-				},
-				{
-					path: 'user',
-					select: 'username'
-				}
-			],
-			{
-				exclude: [ 'favourite', 'public' ]
-			}
-		)
-	)
+	.get(advancedResults(Folder))
 	.post(protect, createFolder)
 	.put(protect, updateFolders)
 	.delete(protect, deleteFolders);

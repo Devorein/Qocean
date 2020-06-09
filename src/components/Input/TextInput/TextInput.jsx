@@ -19,6 +19,9 @@ class TextInput extends Component {
 		return (
 			<TextField
 				name={name}
+				inputRef={(r) => {
+					this.TextField = r;
+				}}
 				value={value}
 				type={type}
 				disabled={disabled}

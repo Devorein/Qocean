@@ -14,9 +14,9 @@ function getColouredIcons(icon, color) {
 		else if (color.match(/^(purple)/i)) return purple[500];
 		else return red[500];
 	}
-
-	if (icon === 'Folder') return <FolderIcon key={color} style={{ fill: detectColor(color) }} />;
-	else if (icon === 'Settings' || icon === 'Environment')
+	icon = icon.toLowerCase();
+	if (icon.match(/(folder|folders)/)) return <FolderIcon key={color} style={{ fill: detectColor(color) }} />;
+	else if (icon.match(/(settings|environment|environments)/))
 		return <SettingsIcon key={color} style={{ fill: detectColor(color) }} />;
 }
 
