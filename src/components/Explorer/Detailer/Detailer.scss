@@ -6,6 +6,28 @@
       padding: 5px;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      &_item{
+        &_key{
+          font-weight: bolder;
+          text-transform: capitalize;
+          font-size: 16px;
+        }
+        &_value_container{
+          max-height: 200px;
+          overflow-y: auto;
+          padding: 5px;
+          width: 100%;
+          &_item{
+            padding: 3px;
+            display: flex;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+          }
+        }
+      }
     }
     &-primary{
       &_item{
@@ -13,14 +35,14 @@
         font-weight: bolder;
         display: flex;
         justify-content: center !important;
-        &-key{
+        &_key{
           display: none;
         }
       }
     }
     &-secondary{
       &_item{
-        &-key,&-value{
+        &_key,&_value{
           font-size: 16px;
         }
       }
@@ -29,7 +51,8 @@
       margin-top: 10px;
       border-radius: 3px;
       &_item{
-        &-value{
+        align-items: center;
+        &_value{
           padding: 3px;
           margin: 3px;
         }

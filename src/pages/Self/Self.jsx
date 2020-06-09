@@ -21,6 +21,9 @@ class Self extends Component {
 			queryParams.populate = 'quiz';
 			queryParams.populateFields = 'name';
 			// queryParams.select = '%2Banswers';
+		} else if (type === 'Quiz') {
+			queryParams.populate = 'folders,questions,watchers';
+			queryParams.populateFields = 'name-name-username';
 		}
 
 		const queryString = qs.stringify(queryParams);

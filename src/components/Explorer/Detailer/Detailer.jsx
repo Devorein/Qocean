@@ -8,6 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Color from 'color';
 import convert from 'color-convert';
 import sectorizeData from '../../../Utils/sectorizeData';
+import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
 
 import './Detailer.scss';
@@ -15,7 +16,35 @@ class Detailer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		stack: []
+		stack: [],
+		data: this.props.data || null
+	};
+
+	UNSAFE_componentWillReceiveProps(props) {
+		if (props.data) {
+			this.setState({
+				data: props.data
+			});
+		}
+	}
+
+	renderRefs = (data, ref) => {
+		if (data.length === 0) return <div>N/A</div>;
+		else
+			return (
+				<div
+					className={`Detailer_container-refs_item_value_container Detailer_container-refs_item-${ref}_value_container`}
+				>
+					{data.map((item) => (
+						<div
+							className={`Detailer_container-refs_item_value_container_item Detailer_container-refs_item-${ref}_value_container_item`}
+							key={item._id}
+						>
+							{item.name}
+						</div>
+					))}
+				</div>
+			);
 	};
 
 	renderValue = (key, value) => {
@@ -24,18 +53,20 @@ class Detailer extends Component {
 		else if (key === 'public') value = <PublicIcon style={{ fill: value ? '#00a3e6' : '#f4423c' }} />;
 		else if (key === 'favourite')
 			value = value ? <StarIcon style={{ fill: '#f0e744' }} /> : <StarBorderIcon style={{ fill: '#ead50f' }} />;
+		else if (key === 'icon') value = getColoredIcons(this.props.type, value);
 		else if (key === 'image') {
 			let src = null;
-			const isLink = value.match(/^(http|data)/);
+			const isLink = value ? value.match(/^(http|data)/) : `http://localhost:5001/uploads/none.png`;
 			if (isLink) src = value;
 			else src = `http://localhost:5001/uploads/${value}`;
 			value = <img src={src} alt={`${this.props.type}`} />;
 		} else value = value.toString();
 		return value;
 	};
-	renderDetailer = () => {
-		const { type, data } = this.props;
 
+	renderDetailer = () => {
+		const { type } = this.props;
+		const { data } = this.state;
 		const manipulatedData = data
 			? sectorizeData(data, type, {
 					authenticated: this.context.user,
@@ -54,10 +85,10 @@ class Detailer extends Component {
 									className={`Detailer_container_item Detailer_container-${sector}_item Detailer_container_item-${key}`}
 									key={key}
 								>
-									<span className={`Detailer_container_item-key Detailer_container-${sector}_item-key`}>
+									<span className={`Detailer_container_item_key Detailer_container-${sector}_item_key`}>
 										{key.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
 									</span>
-									<span className={`Detailer_container_item-value Detailer_container-${sector}_item-value`}>
+									<span className={`Detailer_container_item_value Detailer_container-${sector}_item_value`}>
 										{this.renderValue(key, value)}
 									</span>
 								</div>
@@ -66,7 +97,14 @@ class Detailer extends Component {
 					))}
 					<div className={`Detailer_container Detailer_container-refs`}>
 						{Object.keys(manipulatedData.refs).map((ref) => {
-							return <div key={ref}>{ref}</div>;
+							return (
+								<Fragment key={ref}>
+									<div className={`Detailer_container-refs_item_key Detailer_container-refs_item-${ref}_key`}>
+										{ref}
+									</div>
+									{this.renderRefs(manipulatedData.refs[ref], ref)}
+								</Fragment>
+							);
 						})}
 					</div>
 				</Fragment>
@@ -83,8 +121,11 @@ export default withStyles((theme) => ({
 		'& .Detailer_container-tertiary': {
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
 		},
-		'& .Detailer_container-tertiary_item-value': {
+		'& .Detailer_container-tertiary_item_value': {
 			backgroundColor: theme.palette.background.light
+		},
+		'& .Detailer_container-refs_item_value_container_item': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
 		}
 	}
 }))(Detailer);
