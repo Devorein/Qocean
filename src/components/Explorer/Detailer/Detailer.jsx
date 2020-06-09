@@ -16,6 +16,8 @@ import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import TextInput from '../../Input/TextInput/TextInput';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 
 import './Detailer.scss';
 const headers = {
@@ -137,6 +139,23 @@ class Detailer extends Component {
 					className="Detailer_stats_right"
 					onClick={(e) => {
 						if (currentIndex !== stack.length - 1) this.refetchData(currentIndex + 1);
+					}}
+				/>
+				<TextInput
+					className="Detailer_stats_goto"
+					fullWidth={false}
+					name={'History'}
+					type="number"
+					inputProps={{
+						min: 1,
+						max: this.state.stack.length
+					}}
+					ref={(r) => (this.TextInput = r)}
+				/>
+				<PlayCircleFilledIcon
+					className="Detailer_stats_gotobutton"
+					onClick={(e) => {
+						this.refetchData(parseInt(this.TextInput.TextField.value) - 1);
 					}}
 				/>
 				<div className="Detailer_stats_count">

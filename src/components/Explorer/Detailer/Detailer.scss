@@ -4,6 +4,12 @@
   &_stats {
     display: flex;
     align-items: center;
+    &_goto {
+      width: 25%;
+      max-width: 75px;
+    }
+    &_gotobutton {
+    }
   }
   &_content {
     height: calc(100% - 10px);

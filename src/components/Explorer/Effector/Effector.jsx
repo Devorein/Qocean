@@ -70,7 +70,7 @@ class Effector extends Component {
 					onChange={(e) => {
 						this.setState({ typedPage: e.target.value });
 					}}
-					inputProps={{ max: maxPage }}
+					inputProps={{ max: maxPage, min: 1 }}
 				/>
 				<GenericButton
 					className="Effector_bottombar-pagebutton"
