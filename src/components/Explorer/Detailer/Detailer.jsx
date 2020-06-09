@@ -5,6 +5,8 @@ import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import { withStyles } from '@material-ui/core/styles';
+import axios from 'axios';
+import qs from 'qs';
 import Color from 'color';
 import convert from 'color-convert';
 import sectorizeData from '../../../Utils/sectorizeData';
@@ -28,6 +30,32 @@ class Detailer extends Component {
 		}
 	}
 
+	fetchData = (type, id) => {
+		let queryParams = {};
+		if (type === 'watchers') {
+			type = 'users';
+			queryParams.populate = 'quizzes,questions,folders,envrionments';
+			queryParams.populateFields = 'name-name-name-name';
+		} else if (type === 'folders') {
+			queryParams.populate = 'quizzes,watchers';
+			queryParams.populateFields = 'name-username';
+		} else if (type === 'quizzes') {
+			queryParams.populate = 'folders,questions,watchers';
+			queryParams.populateFields = 'name-name-username';
+		} else if (type === 'questions') {
+			queryParams.populate = 'quiz';
+			queryParams.populateFields = 'name';
+		} else if (type === 'environments') {
+			queryParams.populate = '';
+			queryParams.populateFields = '';
+		}
+		const queryString = qs.stringify(queryParams);
+
+		axios.get(`http://localhost:5001/api/v1/${type}?_id=${id}&${queryString}`).then(({ data: { data } }) => {
+			console.log(data);
+		});
+	};
+
 	renderRefs = (data, ref) => {
 		if (data.length === 0) return <div>N/A</div>;
 		else
@@ -39,6 +67,9 @@ class Detailer extends Component {
 						<div
 							className={`Detailer_container-refs_item_value_container_item Detailer_container-refs_item-${ref}_value_container_item`}
 							key={item._id}
+							onClick={(e) => {
+								this.fetchData(ref, item._id);
+							}}
 						>
 							{item.name}
 						</div>

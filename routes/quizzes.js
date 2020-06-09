@@ -27,22 +27,9 @@ router.route('/others').get(protect, advancedResults(Quiz));
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Quiz,
-			[
-				{
-					path: 'questions',
-					select: 'name'
-				},
-				{
-					path: 'user',
-					select: 'username'
-				}
-			],
-			{
-				exclude: [ 'favourite', 'public', '__v', 'folders', 'total_folders' ]
-			}
-		)
+		advancedResults(Quiz, {
+			exclude: [ 'favourite', 'public', '__v', 'folders', 'total_folders' ]
+		})
 	)
 	.post(protect, createQuiz)
 	.put(protect, updateQuizzes)

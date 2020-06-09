@@ -31,22 +31,9 @@ router.route('/_/answers').put(protect, sendAnswers);
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Question,
-			[
-				{
-					path: 'user',
-					select: 'username'
-				},
-				{
-					path: 'quiz',
-					select: 'name'
-				}
-			],
-			{
-				exclude: [ 'favourite', 'public', '__v', 'add_to_score', 'weight' ]
-			}
-		)
+		advancedResults(Question, {
+			exclude: [ 'favourite', 'public', '__v', 'add_to_score', 'weight' ]
+		})
 	)
 	.post(protect, createQuestion)
 	.put(protect, updateQuestions)

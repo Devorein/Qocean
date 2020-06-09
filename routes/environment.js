@@ -27,13 +27,9 @@ router.route('/current').get(protect, getCurrentEnvironment);
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Environment,
-			{ path: 'user', select: 'username' },
-			{
-				exclude: [ 'favourite', 'public' ]
-			}
-		)
+		advancedResults(Environment, {
+			exclude: [ 'favourite', 'public' ]
+		})
 	)
 	.post(protect, createEnvironment)
 	.put(protect, updateEnvironments)

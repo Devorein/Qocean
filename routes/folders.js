@@ -23,22 +23,9 @@ router.route('/others').get(protect, advancedResults(Folder));
 router
 	.route('/')
 	.get(
-		advancedResults(
-			Folder,
-			[
-				{
-					path: 'quizzes',
-					select: 'name total_questions'
-				},
-				{
-					path: 'user',
-					select: 'username'
-				}
-			],
-			{
-				exclude: [ 'favourite', 'public' ]
-			}
-		)
+		advancedResults(Folder, {
+			exclude: [ 'favourite', 'public' ]
+		})
 	)
 	.post(protect, createFolder)
 	.put(protect, updateFolders)

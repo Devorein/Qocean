@@ -1,19 +1,13 @@
 const ErrorResponse = require('../utils/errorResponse');
+const populateQuery = require('../utils/populateQuery');
 
-const advancedResults = (model, populate, option = {}) =>
+const advancedResults = (model, option = {}) =>
 	async function(req, res, next) {
 		if (req.query._id) {
-			option._id = { ...option._id };
-			option._id.exclude = option._id.exclude || [];
-			option._id.populate = option._id.populate || null;
 			if (!req.user) option.match = { public: true };
-			let query = model
-				.findOne({ _id: req.query._id, ...option.match })
-				.select(option._id.exclude.map((field) => `-${field}`).join(' '));
-			if (option._id.populate) {
-				if (Array.isArray(option._id.populate)) option._id.populate.forEach((pop) => (query = query.populate(pop)));
-				else query = query.populate(option._id.populate);
-			}
+			let query = model.findOne({ _id: req.query._id, ...option.match });
+			populateQuery(query, req);
+
 			const result = await query;
 			if (!result)
 				return next(new ErrorResponse(`Resource not found with id of ${req.query._id} or is made private`, 404));
@@ -50,7 +44,6 @@ const advancedResults = (model, populate, option = {}) =>
 				// const newValue = regex.exec(value)[1];
 
 				let reqQuery = { ...req.query };
-				console.log(reqQuery);
 				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
 				excludeFields.forEach((param) => delete reqQuery[param]);
 
@@ -94,29 +87,12 @@ const advancedResults = (model, populate, option = {}) =>
 				// Pagination
 				const page = parseInt(req.query.page) || 1;
 				const limit = parseInt(req.query.limit) || 10;
-				const shouldPopulate = req.query.populate ? true : false;
 				const startIndex = (page - 1) * limit;
 				const endIndex = page * limit;
 				const total = await model.countDocuments();
 				query = query.skip(startIndex).limit(limit);
-				if (shouldPopulate) {
-					const populations = [];
-					const populates = req.query.populate.split(',');
-					let { populateFields } = req.query;
-					if (populateFields) {
-						populateFields = populateFields.split('-');
-						populateFields.forEach((populateField, index) => {
-							populations.push({
-								path: populates[index],
-								select: populateField.split(',').join(' ')
-							});
-						});
-						query.populate(populations);
-					}
-				} else if (populate) {
-					if (Array.isArray(populate)) populate.forEach((pop) => (query = query.populate(pop)));
-					else query = query.populate(populate);
-				}
+				populateQuery(query, req);
+
 				// Pagination result
 				const pagination = {};
 				if (endIndex < total) {
