@@ -18,9 +18,7 @@ class Self extends Component {
 
 	refetchData = (type, queryParams) => {
 		type = type ? type.toLowerCase() : this.state.type.toLowerCase();
-
 		populateQueryParams(type, queryParams, this.props.user);
-
 		const queryString = qs.stringify(queryParams);
 		const headers = {
 			headers: {
@@ -28,7 +26,7 @@ class Self extends Component {
 			}
 		};
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine`, {
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine?${queryString}`, {
 				...headers
 			})
 			.then(({ data: { data: totalCount } }) => {
@@ -71,6 +69,7 @@ class Self extends Component {
 				link: `self/${header}`
 			};
 		});
+
 		return (
 			<div className="Self page">
 				<CustomTabs

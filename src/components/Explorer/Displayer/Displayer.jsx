@@ -254,6 +254,7 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 					deleteResource={deleteResource}
+					filter_sort={this.props.filter_sort}
 				>
 					{({
 						EffectorTopBar,

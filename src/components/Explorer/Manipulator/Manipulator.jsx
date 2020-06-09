@@ -4,10 +4,16 @@ import SSFilterSort from '../../FilterSort/SSFilterSort';
 class Manipulator extends Component {
 	render() {
 		const { onApply, type } = this.props;
+
 		return (
-			<div className="Manipulator">
-				<SSFilterSort passFSAsProp={false} onApply={onApply} type={type} />
-			</div>
+			<SSFilterSort passFSAsProp={true} onApply={onApply} type={type}>
+				{({ filterSort, filter_sort }) => {
+					return this.props.children({
+						Manipulator: <div className="Manipulator">{filterSort}</div>,
+						filter_sort
+					});
+				}}
+			</SSFilterSort>
 		);
 	}
 }

@@ -15,6 +15,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { difference } from 'lodash';
 import exportData from '../../../Utils/exportData';
+import filterSort from '../../../Utils/filterSort';
 
 import './Effector.scss';
 class Effector extends Component {
@@ -51,9 +52,11 @@ class Effector extends Component {
 
 	refetchData = () => {
 		const { itemsPerPage, currentPage } = this.state;
+		const filterSortQuery = filterSort(this.props.filter_sort);
 		this.props.refetchData(null, {
 			limit: itemsPerPage,
-			page: currentPage
+			page: currentPage,
+			...filterSortQuery
 		});
 	};
 
@@ -150,8 +153,7 @@ class Effector extends Component {
 	};
 
 	renderGlobalEffectors = () => {
-		const { data, page, refetchData, type, updateResource } = this.props;
-		const { itemsPerPage, currentPage } = this.state;
+		const { data, page, type, updateResource } = this.props;
 
 		if (page === 'Self') {
 			return (
@@ -161,10 +163,7 @@ class Effector extends Component {
 							this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
 						}}
 						onClick={(e) => {
-							refetchData(null, {
-								page: currentPage,
-								limit: itemsPerPage
-							});
+							this.refetchData();
 						}}
 					/>
 					<StarIcon
@@ -341,8 +340,8 @@ class Effector extends Component {
 				{({ setIsOpen }) =>
 					this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
-						view,
 						selectedIndex,
+						view,
 						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,
