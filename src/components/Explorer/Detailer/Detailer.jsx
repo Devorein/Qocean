@@ -25,11 +25,15 @@ class Detailer extends Component {
 	};
 
 	UNSAFE_componentWillReceiveProps(props) {
-		if (props.data) {
-			this.setState({
-				data: props.data
-			});
-		}
+		let data = null,
+			type = this.state.type;
+		if (props.data) data = props.data;
+		if (props.type !== this.state.type) type = props.type;
+
+		this.setState({
+			type,
+			data
+		});
 	}
 
 	fetchData = (type, id) => {
@@ -49,27 +53,25 @@ class Detailer extends Component {
 		});
 	};
 
-	renderRefs = (data, ref) => {
+	renderRefs = (data, ref, sector) => {
 		const renderRefItems = (item) => {
 			return (
 				<div
-					className={`Detailer_container-refs_item_value_container_item Detailer_container-refs_item-${ref}_value_container_item`}
+					className={`Detailer_container-${sector}_item_value_container_item Detailer_container-${sector}_item-${ref}_value_container_item`}
 					key={item._id}
 					onClick={(e) => {
 						this.fetchData(ref, item._id);
 					}}
 				>
-					{item.name}
+					{item.name || item.username}
 				</div>
 			);
 		};
-
-		if (data.length === 0) return <div>N/A</div>;
+		const className = `Detailer_container-${sector}_item_value_container Detailer_container-${sector}_item-${ref}_value_container`;
+		if (data.length === 0) return <div className={className}>N/A</div>;
 		else
 			return (
-				<div
-					className={`Detailer_container-refs_item_value_container Detailer_container-refs_item-${ref}_value_container`}
-				>
+				<div className={className}>
 					{Array.isArray(data) ? data.map((item) => renderRefItems(item)) : renderRefItems(data)}
 				</div>
 			);
@@ -88,7 +90,7 @@ class Detailer extends Component {
 			if (isLink) src = value;
 			else src = `http://localhost:5001/uploads/${value}`;
 			value = <img src={src} alt={`${this.state.type}`} />;
-		} else value = value.toString();
+		} else if (value) value = value.toString();
 		return value;
 	};
 
@@ -101,7 +103,6 @@ class Detailer extends Component {
 					purpose: 'detail'
 				})
 			: null;
-		console.log(sectorizedData);
 		if (sectorizedData) {
 			return (
 				<Fragment>
@@ -122,18 +123,22 @@ class Detailer extends Component {
 							))}
 						</div>
 					))}
-					<div className={`Detailer_container Detailer_container-refs`}>
-						{Object.keys(sectorizedData.refs).map((ref) => {
-							return (
-								<Fragment key={ref}>
-									<div className={`Detailer_container-refs_item_key Detailer_container-refs_item-${ref}_key`}>
-										{ref}
+					{[ 'ref', 'refs' ].map((sector) => (
+						<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
+							{Object.keys(sectorizedData[sector]).map((ref) => {
+								return (
+									<div key={ref} className={`Detailer_container-${sector}_item Detailer_container_item`}>
+										<div
+											className={`Detailer_container-${sector}_item_key Detailer_container-${sector}_item-${ref}_key`}
+										>
+											{ref}
+										</div>
+										{this.renderRefs(sectorizedData[sector][ref], ref, sector)}
 									</div>
-									{this.renderRefs(sectorizedData.refs[ref], ref)}
-								</Fragment>
-							);
-						})}
-					</div>
+								);
+							})}
+						</div>
+					))}
 				</Fragment>
 			);
 		}

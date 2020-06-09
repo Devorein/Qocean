@@ -9,7 +9,8 @@ export default function(
 	const primary = [],
 		secondary = [],
 		tertiary = [],
-		refs = [];
+		refs = [],
+		ref = [ 'user' ];
 	if (authenticated) secondary.push('public', 'favourite');
 
 	if (type.match(/(quiz|quizzes)/)) {
@@ -18,8 +19,9 @@ export default function(
 		if (authenticated) {
 		}
 	} else if (type.match(/(question|questions)/)) {
-		secondary.push('difficulty', 'quiz', 'type');
+		secondary.push('difficulty', 'type');
 		tertiary.push('weight', 'time_allocated');
+		ref.push('question');
 	} else if (type.match(/(user|users)/)) {
 	} else if (type.match(/(folder|folders)/)) {
 		primary.push('icon');
@@ -35,7 +37,6 @@ export default function(
 			tertiary.push('raters', 'ratings', 'total_folders');
 			refs.push('folders', 'questions', 'watchers');
 		} else if (type.match(/(question|questions)/)) {
-			refs.push('quiz');
 		} else if (type.match(/(user|users)/)) {
 			refs.push('quizzes', 'questions', 'environments', 'folders');
 		} else if (type.match(/(folder|folders)/)) {
@@ -71,10 +72,12 @@ export default function(
 		temp.secondary = {};
 		temp.tertiary = {};
 		temp.refs = {};
+		temp.ref = {};
 		primary.forEach((prop) => (temp['primary'][prop] = data[prop]));
 		secondary.forEach((prop) => (temp['secondary'][prop] = data[prop]));
 		tertiary.forEach((prop) => (temp['tertiary'][prop] = data[prop]));
 		refs.forEach((prop) => (temp['refs'][prop] = data[prop]));
+		ref.forEach((prop) => (temp['ref'][prop] = data[prop]));
 		temp._id = data._id;
 		return temp;
 	} else {

@@ -31,11 +31,22 @@ class Effector extends Component {
 	static contextType = AppContext;
 
 	UNSAFE_componentWillReceiveProps(props) {
-		if (props.cols.length > 0)
-			this.setState({
-				cols: props.cols,
-				selected_cols: props.cols
-			});
+		let cols = null,
+			selectedIndex = this.state.selectedIndex,
+			selected_cols = this.state.selected_cols;
+		if (props.cols.length > 0) {
+			cols = props.cols;
+			selected_cols = props.cols;
+		}
+		if (props.type !== this.props.type) {
+			selectedIndex = [];
+			selected_cols = [];
+		}
+		this.setState({
+			cols,
+			selected_cols,
+			selectedIndex
+		});
 	}
 	refetchData = () => {
 		const { itemsPerPage, currentPage } = this.state;
