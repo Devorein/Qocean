@@ -4,11 +4,24 @@
   &_stats {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 0px 5px;
+    &_deleteleft {
+      transform: rotateY(180deg);
+    }
     &_goto {
       width: 25%;
       max-width: 75px;
+      .MuiInputLabel-formControl {
+        transform: translate(0, 10px) scale(1);
+      }
+      & .MuiInput-root {
+        margin-top: 0px;
+      }
     }
     &_gotobutton {
+    }
+    &_removedup {
     }
   }
   &_content {

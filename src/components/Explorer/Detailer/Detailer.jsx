@@ -18,6 +18,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import TextInput from '../../Input/TextInput/TextInput';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import './Detailer.scss';
 const headers = {
@@ -125,6 +127,18 @@ class Detailer extends Component {
 		return value;
 	};
 
+	alterHistory = (dir) => {
+		let { stack, currentIndex } = this.state;
+		if (dir === 'left') {
+			stack.splice(0, stack.length - currentIndex);
+			currentIndex = 0;
+		} else if (dir === 'right') stack.splice(currentIndex + 1, stack.length - currentIndex);
+		this.setState({
+			stack,
+			currentIndex
+		});
+	};
+
 	renderDetailerStats = () => {
 		const { stack, currentIndex } = this.state;
 		return (
@@ -156,6 +170,28 @@ class Detailer extends Component {
 					className="Detailer_stats_gotobutton"
 					onClick={(e) => {
 						this.refetchData(parseInt(this.TextInput.TextField.value) - 1);
+					}}
+				/>
+				<DeleteSweepIcon
+					className="Detailer_stats_deleteleft"
+					onClick={(e) => {
+						this.alterHistory('left');
+					}}
+				/>
+				<DeleteSweepIcon
+					className="Detailer_stats_deleteright"
+					onClick={(e) => {
+						this.alterHistory('right');
+					}}
+				/>
+				<FileCopyIcon
+					className="Detailer_stats_removedup"
+					onClick={(e) => {
+						const { stack } = this.state;
+						this.setState({
+							stack: Array.from(new Set(stack)),
+							currentIndex: 0
+						});
 					}}
 				/>
 				<div className="Detailer_stats_count">
