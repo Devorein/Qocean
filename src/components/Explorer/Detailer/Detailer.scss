@@ -1,0 +1,53 @@
+.Detailer{
+  overflow-y: auto;
+  &_container{
+    padding: 5px;
+    &-refs{
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+    }
+    &-primary{
+      &_item{
+        font-size: 20px;
+        font-weight: bolder;
+        display: flex;
+        justify-content: center !important;
+        &-key{
+          display: none;
+        }
+      }
+    }
+    &-secondary{
+      &_item{
+        &-key,&-value{
+          font-size: 16px;
+        }
+      }
+    }
+    &-tertiary{
+      margin-top: 10px;
+      border-radius: 3px;
+      &_item{
+        &-value{
+          padding: 3px;
+          margin: 3px;
+        }
+      }
+    }
+    &_item{
+      display: flex;
+      justify-content: space-between;
+
+      &-image{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      &-tags{
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
