@@ -16,7 +16,7 @@ class Self extends Component {
 		totalCount: 0
 	};
 
-	refetchData = (type, queryParams, newState = {}) => {
+	refetchData = (type, queryParams) => {
 		type = type ? type.toLowerCase() : this.state.type.toLowerCase();
 
 		populateQueryParams(type, queryParams, this.props.user);
@@ -39,8 +39,7 @@ class Self extends Component {
 					.then(({ data: { data } }) => {
 						this.setState({
 							data,
-							totalCount,
-							...newState
+							totalCount
 						});
 					});
 			})

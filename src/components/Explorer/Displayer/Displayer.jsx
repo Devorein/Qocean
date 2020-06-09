@@ -144,7 +144,7 @@ class Displayer extends Component {
 					className="Displayer_actions-info"
 					key={'info'}
 					onClick={(e) => {
-						this.props.setDetailerIndex(index);
+						this.props.fetchData(this.props.type, item._id);
 					}}
 				/>,
 				<GetAppIcon

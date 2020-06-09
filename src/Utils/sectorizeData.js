@@ -21,7 +21,7 @@ export default function(
 	} else if (type.match(/(question|questions)/)) {
 		secondary.push('difficulty', 'type');
 		tertiary.push('weight', 'time_allocated');
-		ref.push('question');
+		ref.push('quiz');
 	} else if (type.match(/(user|users)/)) {
 	} else if (type.match(/(folder|folders)/)) {
 		primary.push('icon');
@@ -37,6 +37,8 @@ export default function(
 			tertiary.push('raters', 'ratings', 'total_folders');
 			refs.push('folders', 'questions', 'watchers');
 		} else if (type.match(/(question|questions)/)) {
+			primary.push('image');
+			tertiary.push('format', 'add_to_score');
 		} else if (type.match(/(user|users)/)) {
 			refs.push('quizzes', 'questions', 'environments', 'folders');
 		} else if (type.match(/(folder|folders)/)) {

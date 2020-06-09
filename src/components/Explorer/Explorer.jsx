@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { AppContext } from '../../context/AppContext';
 import Manipulator from './Manipulator/Manipulator';
 import Displayer from './Displayer/Displayer';
@@ -9,7 +9,6 @@ import './Explorer.scss';
 class Explorer extends Component {
 	static contextType = AppContext;
 	state = {
-		detailerIndex: null,
 		formFillerIndex: null,
 		isFormFillerOpen: false
 	};
@@ -31,27 +30,34 @@ class Explorer extends Component {
 		const { data, refetchData, totalCount, type, page } = this.props;
 		return (
 			<div className="Explorer">
-				{detailerIndex !== null ? <Detailer data={data[detailerIndex]} type={type} /> : null}
-				<div className="Displayer_container">
-					<Manipulator onApply={refetchData} type={type} />
-					<Displayer
-						setDetailerIndex={(detailerIndex) => {
-							this.setState({ detailerIndex });
-						}}
-						refetchData={refetchData}
-						page={page}
-						data={data}
-						totalCount={totalCount}
-						type={type}
-						enableFormFiller={(formFillerIndex) => {
-							this.setState({
-								isFormFillerOpen: true,
-								formFillerIndex
-							});
-						}}
-						updateDataLocally={(data) => this.setState({ data })}
-					/>
-				</div>
+				<Detailer data={data[detailerIndex]} type={type}>
+					{({ fetchData, Detailer }) => {
+						return (
+							<Fragment>
+								{Detailer}
+								<div className="Displayer_container">
+									<Manipulator onApply={refetchData} type={type} />
+									<Displayer
+										fetchData={fetchData}
+										refetchData={refetchData}
+										page={page}
+										data={data}
+										totalCount={totalCount}
+										type={type}
+										enableFormFiller={(formFillerIndex) => {
+											this.setState({
+												isFormFillerOpen: true,
+												formFillerIndex
+											});
+										}}
+										updateDataLocally={(data) => this.setState({ data })}
+									/>
+								</div>
+							</Fragment>
+						);
+					}}
+				</Detailer>
+
 				{formFillerIndex !== null ? (
 					<FormFiller
 						isOpen={isFormFillerOpen}

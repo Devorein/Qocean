@@ -6,6 +6,7 @@ import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import { withStyles } from '@material-ui/core/styles';
 import axios from 'axios';
+import pluralize from 'pluralize';
 import qs from 'qs';
 import Color from 'color';
 import convert from 'color-convert';
@@ -20,29 +21,20 @@ class Detailer extends Component {
 
 	state = {
 		stack: [],
-		type: this.props.type,
-		data: this.props.data
+		type: null,
+		data: null
 	};
-
-	UNSAFE_componentWillReceiveProps(props) {
-		let data = null,
-			type = this.state.type;
-		if (props.data) data = props.data;
-		if (props.type !== this.state.type) type = props.type;
-
-		this.setState({
-			type,
-			data
-		});
-	}
 
 	fetchData = (type, id) => {
 		let queryParams = {};
+		type = type.toLowerCase();
 		if (type === 'watchers') type = 'users';
 
 		populateQueryParams(type, queryParams, this.context.user);
 		const queryString = qs.stringify(queryParams);
-		const url = `http://localhost:5001/api/v1/${type}?_id=${id}&${queryString}`;
+		const url = `http://localhost:5001/api/v1/${pluralize.isPlural(type)
+			? type
+			: pluralize(type, 2)}?_id=${id}&${queryString}`;
 		axios.get(url).then(({ data: { data } }) => {
 			this.state.stack.push(url);
 			this.setState({
@@ -68,13 +60,15 @@ class Detailer extends Component {
 			);
 		};
 		const className = `Detailer_container-${sector}_item_value_container Detailer_container-${sector}_item-${ref}_value_container`;
-		if (data.length === 0) return <div className={className}>N/A</div>;
-		else
-			return (
-				<div className={className}>
-					{Array.isArray(data) ? data.map((item) => renderRefItems(item)) : renderRefItems(data)}
-				</div>
-			);
+		if (data) {
+			if (data.length === 0) return <div className={className}>N/A</div>;
+			else
+				return (
+					<div className={className}>
+						{Array.isArray(data) ? data.map((item) => renderRefItems(item)) : renderRefItems(data)}
+					</div>
+				);
+		}
 	};
 
 	renderValue = (key, value) => {
@@ -144,12 +138,16 @@ class Detailer extends Component {
 		}
 	};
 	render() {
-		return <div className={`Detailer ${this.props.classes.Detailer}`}>{this.renderDetailer()}</div>;
+		return this.props.children({
+			fetchData: this.fetchData,
+			Detailer: <div className={`Detailer ${this.props.classes.Detailer}`}>{this.renderDetailer()}</div>
+		});
 	}
 }
 
 export default withStyles((theme) => ({
 	Detailer: {
+		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.15).hex(),
 		'& .Detailer_container-tertiary': {
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
 		},
