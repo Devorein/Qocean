@@ -10,6 +10,7 @@ import qs from 'qs';
 import Color from 'color';
 import convert from 'color-convert';
 import sectorizeData from '../../../Utils/sectorizeData';
+import populateQueryParams from '../../../Utils/populateQueryParams';
 import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
 
@@ -32,23 +33,9 @@ class Detailer extends Component {
 
 	fetchData = (type, id) => {
 		let queryParams = {};
-		if (type === 'watchers') {
-			type = 'users';
-			queryParams.populate = 'quizzes,questions,folders,envrionments';
-			queryParams.populateFields = 'name-name-name-name';
-		} else if (type === 'folders') {
-			queryParams.populate = 'quizzes,watchers';
-			queryParams.populateFields = 'name-username';
-		} else if (type === 'quizzes') {
-			queryParams.populate = 'folders,questions,watchers';
-			queryParams.populateFields = 'name-name-username';
-		} else if (type === 'questions') {
-			queryParams.populate = 'quiz';
-			queryParams.populateFields = 'name';
-		} else if (type === 'environments') {
-			queryParams.populate = '';
-			queryParams.populateFields = '';
-		}
+		if (type === 'watchers') type = 'users';
+
+		populateQueryParams(type, queryParams, this.context.user);
 		const queryString = qs.stringify(queryParams);
 
 		axios.get(`http://localhost:5001/api/v1/${type}?_id=${id}&${queryString}`).then(({ data: { data } }) => {

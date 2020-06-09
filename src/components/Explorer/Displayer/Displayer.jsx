@@ -75,7 +75,10 @@ class Displayer extends Component {
 				this.props.updateDataLocally(
 					this.props.data.map((data) => {
 						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
-						if (updatedData) data[field] = updatedData[field];
+						if (updatedData) {
+							data[field] = updatedData[field];
+							data.updated_at = updatedData.updated_at;
+						}
 						return data;
 					})
 				);

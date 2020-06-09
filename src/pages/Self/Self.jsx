@@ -4,6 +4,7 @@ import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import Explorer from '../../components/Explorer/Explorer';
+import populateQueryParams from '../../Utils/populateQueryParams';
 import qs from 'qs';
 
 import './Self.scss';
@@ -16,15 +17,9 @@ class Self extends Component {
 	};
 
 	refetchData = (type, queryParams, newState = {}) => {
-		type = type ? type : this.state.type;
-		if (type === 'Question') {
-			queryParams.populate = 'quiz';
-			queryParams.populateFields = 'name';
-			// queryParams.select = '%2Banswers';
-		} else if (type === 'Quiz') {
-			queryParams.populate = 'folders,questions,watchers';
-			queryParams.populateFields = 'name-name-username';
-		}
+		type = type ? type.toLowerCase() : this.state.type.toLowerCase();
+
+		populateQueryParams(type, queryParams, this.props.user);
 
 		const queryString = qs.stringify(queryParams);
 		const headers = {

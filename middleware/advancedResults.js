@@ -40,8 +40,6 @@ const advancedResults = (model, option = {}) =>
 				res.status(200).json({ success: true, data: count });
 			} else {
 				let query;
-				// const regex = /^\/(\w+)\//g;
-				// const newValue = regex.exec(value)[1];
 
 				let reqQuery = { ...req.query };
 				const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
