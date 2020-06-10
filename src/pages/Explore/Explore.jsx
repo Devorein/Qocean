@@ -129,7 +129,7 @@ class Explore extends Component {
 
 	render() {
 		const { refetchData } = this;
-		const { data, totalCount } = this.state;
+		const { data, totalCount = 0 } = this.state;
 
 		return (
 			<PageSwitcher

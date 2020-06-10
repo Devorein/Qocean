@@ -30,7 +30,6 @@ class Explorer extends Component {
 		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
 		const { data, refetchData, totalCount, type, page } = this.props;
 		const formFillerMsg = page === 'Self' ? 'Update' : 'Create';
-
 		return (
 			<div className="Explorer">
 				<Detailer data={data[detailerIndex]} type={type}>

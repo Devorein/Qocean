@@ -24,6 +24,8 @@ import moment from 'moment';
 import { difference } from 'lodash';
 import { HotKeys } from 'react-hotkeys';
 import SettingsIcon from '@material-ui/icons/Settings';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import './Displayer.scss';
 
 const keyMap = {
@@ -138,8 +140,9 @@ class Displayer extends Component {
 	};
 
 	transformData = (data, selectedIndex, setSelectedIndex) => {
-		let { type } = this.props;
+		let { type, page } = this.props;
 		type = type.toLowerCase();
+		page = page.toLowerCase();
 
 		return data.map((item, index) => {
 			const actions = [
@@ -161,7 +164,8 @@ class Displayer extends Component {
 						}}
 					/>
 				);
-			if (this.props.page === 'Self') {
+
+			if (page === 'self') {
 				actions.push(
 					<UpdateIcon
 						className="Displayer_actions-update"
@@ -178,6 +182,29 @@ class Displayer extends Component {
 						}}
 					/>
 				);
+			} else if (page.match(/(watchlist|explore)/)) {
+				actions.push(
+					<NoteAddIcon
+						className="Displayer_actions-create"
+						key={'create'}
+						onClick={(e) => {
+							this.props.enableFormFiller(index);
+						}}
+					/>
+				);
+				if (type.match(/(folder|folders|quiz|quizzes)/)) {
+					actions.push(
+						<VisibilityIcon
+							key={'watch'}
+
+							// onClick={this.watchToggle.bind(
+							// 	null,
+							// 	pluralize(this.state.type, 2).toLowerCase(),
+							// 	selectedRows.data.map(({ index }) => this.state.data[index]._id)
+							// )}
+						/>
+					);
+				}
 			}
 
 			const temp = {
@@ -198,22 +225,28 @@ class Displayer extends Component {
 			if (item.quiz) temp.quiz = item.quiz.name;
 			if (item.user) temp.user = item.user.username;
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
-			if (item.public !== undefined)
-				temp.public = item.public ? (
-					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
-				) : (
-					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
-				);
+			if (page === 'self') {
+				if (item.public !== undefined)
+					temp.public = item.public ? (
+						<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
+					) : (
+						<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
+					);
+				if (item.favourite !== undefined)
+					temp.favourite = item.favourite ? (
+						<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
+					) : (
+						<StarBorderIcon
+							onClick={this.updateResource.bind(null, [ item ], 'favourite')}
+							style={{ fill: '#ead50f' }}
+						/>
+					);
+			}
 			if (item.watchers) temp.watchers = item.watchers.length;
-			if (item.favourite !== undefined)
-				temp.favourite = item.favourite ? (
-					<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
-				) : (
-					<StarBorderIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#ead50f' }} />
-				);
 
-			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
+			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
+			if (item.joined_at) temp.joined_at = moment(item.joined_at).fromNow();
 			if (this.props.type === 'Environment') {
 				const isCurrentEnv = item._id === this.context.user.current_environment._id;
 				temp.name = (
