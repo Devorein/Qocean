@@ -179,6 +179,7 @@ class Effector extends Component {
 				}}
 			/>
 		];
+		const array = Array(data.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
 				<StarIcon
@@ -187,7 +188,7 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
 					}}
 					onClick={(e) => {
-						updateResource(data, 'favourite');
+						updateResource(array, 'favourite');
 					}}
 				/>,
 				<PublicIcon
@@ -196,7 +197,7 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
 					}}
 					onClick={(e) => {
-						updateResource(data, 'public');
+						updateResource(array, 'public');
 					}}
 				/>
 			);
@@ -206,7 +207,7 @@ class Effector extends Component {
 					<VisibilityIcon
 						key={'watch'}
 						onClick={(e) => {
-							this.props.watchToggle(data.map(({ _id }) => _id));
+							this.props.watchToggle(array);
 						}}
 					/>
 				);
@@ -218,9 +219,10 @@ class Effector extends Component {
 	renderSelectedEffectors = (setDeleteModal) => {
 		const { data, updateResource } = this.props;
 		let { page, type } = this.props;
+		const { selectedIndex } = this.state;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
-		const selectedItems = this.state.selectedIndex.map((index) => data[index]);
+		const selectedItems = selectedIndex.map((index) => data[index]);
 		const effectors = [
 			<GetAppIcon
 				key={'export'}
@@ -234,7 +236,7 @@ class Effector extends Component {
 			<VisibilityIcon
 				key={'watch'}
 				onClick={(e) => {
-					this.props.watchToggle(selectedItems.map(({ _id }) => _id));
+					this.props.watchToggle(selectedIndex);
 				}}
 			/>
 		];
@@ -256,7 +258,7 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
 					}}
 					onClick={(e) => {
-						updateResource(selectedItems, 'favourite');
+						updateResource(selectedIndex, 'favourite');
 					}}
 				/>,
 				<PublicIcon
@@ -265,7 +267,7 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
 					}}
 					onClick={(e) => {
-						updateResource(selectedItems, 'public');
+						updateResource(selectedIndex, 'public');
 					}}
 				/>
 			);

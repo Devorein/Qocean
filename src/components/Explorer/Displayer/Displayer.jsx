@@ -63,15 +63,15 @@ class Displayer extends Component {
 		});
 	}
 
-	updateResource = (selectedRows, field) => {
-		selectedRows = selectedRows.map((row) => ({ id: row._id, body: { [field]: !row[field] } }));
-		let { type } = this.props;
+	updateResource = (selectedIndex, field) => {
+		let { type, data, updateDataLocally } = this.props;
+		const updatedRows = selectedIndex.map((index) => ({ id: data[index]._id, body: { [field]: !data[index][field] } }));
 		type = pluralize(type, 2).toLowerCase();
 		axios
 			.put(
 				`http://localhost:5001/api/v1/${type}`,
 				{
-					[type]: selectedRows
+					[type]: updatedRows
 				},
 				{
 					...headers
@@ -79,16 +79,10 @@ class Displayer extends Component {
 			)
 			.then(({ data: { data: updatedDatas } }) => {
 				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
-				this.props.updateDataLocally(
-					this.props.data.map((data) => {
-						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
-						if (updatedData) {
-							data[field] = updatedData[field];
-							data.updated_at = updatedData.updated_at;
-						}
-						return data;
-					})
-				);
+				selectedIndex.forEach((index, _index) => {
+					data[index] = updatedDatas[_index];
+				});
+				updateDataLocally(data);
 			});
 	};
 
@@ -132,8 +126,9 @@ class Displayer extends Component {
 			});
 	};
 
-	watchToggle = (ids) => {
-		let { type } = this.props;
+	watchToggle = (selectedIndex) => {
+		let { type, data } = this.props;
+		const ids = selectedIndex.map((index) => data[index]._id);
 		type = pluralize(type, 2).toLowerCase();
 		axios
 			.put(
@@ -147,7 +142,7 @@ class Displayer extends Component {
 			)
 			.then(({ data: { data } }) => {
 				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
-				this.props.refetchData(this.queryParams);
+				this.context.refetchUser();
 			});
 	};
 
@@ -224,7 +219,7 @@ class Displayer extends Component {
 							style={{ fill: isWatched ? this.props.theme.palette.success.main : this.props.theme.palette.error.main }}
 							key={'watch'}
 							onClick={(e) => {
-								this.watchToggle([ item._id ]);
+								this.watchToggle([ index ]);
 							}}
 						/>
 					);
@@ -252,16 +247,16 @@ class Displayer extends Component {
 			if (page === 'self') {
 				if (item.public !== undefined)
 					temp.public = item.public ? (
-						<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
+						<PublicIcon onClick={this.updateResource.bind(null, [ index ], 'public')} style={{ fill: '#00a3e6' }} />
 					) : (
-						<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
+						<PublicIcon onClick={this.updateResource.bind(null, [ index ], 'public')} style={{ fill: '#f4423c' }} />
 					);
 				if (item.favourite !== undefined)
 					temp.favourite = item.favourite ? (
-						<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
+						<StarIcon onClick={this.updateResource.bind(null, [ index ], 'favourite')} style={{ fill: '#f0e744' }} />
 					) : (
 						<StarBorderIcon
-							onClick={this.updateResource.bind(null, [ item ], 'favourite')}
+							onClick={this.updateResource.bind(null, [ index ], 'favourite')}
 							style={{ fill: '#ead50f' }}
 						/>
 					);
