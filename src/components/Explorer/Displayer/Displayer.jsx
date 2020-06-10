@@ -300,8 +300,10 @@ class Displayer extends Component {
 			Object.keys(
 				sectorizeData(data[0], this.props.type, { authenticated: this.context.user, singular: true })
 			).forEach((col) => {
-				cols.push(col);
+				if (this.props.page === 'Self' && col.match(/(favourite|public)/)) cols.push(col);
+				else if (this.props.page !== 'Self' && !col.match(/(favourite|public)/)) cols.push(col);
 			});
+
 		return cols;
 	};
 
