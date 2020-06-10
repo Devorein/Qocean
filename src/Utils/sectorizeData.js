@@ -52,7 +52,7 @@ export default function(
 						!primary.includes(key) &&
 						!secondary.includes(key) &&
 						!ref.includes(key) &&
-						!key.match(/^(id|_id|__v|name|public|favourite)$/)
+						!key.match(/^(id|_id|__v|user|name|public|favourite)$/)
 				)
 			);
 		}
