@@ -92,7 +92,6 @@ export default function(filterSort) {
 				} else if (mod === 'within') {
 					queryProp.$gte = moment(value[0]).format('YYYY-MM-DD');
 					queryProp.$lte = moment(value[1]).format('YYYY-MM-DD');
-					console.log(queryProp);
 				} else if (mod === 'last_week') {
 					queryProp.$gte = moment().subtract(7, 'days').format('YYYY-MM-DD');
 					queryProp.$lte = moment().subtract(6, 'days').format('YYYY-MM-DD');

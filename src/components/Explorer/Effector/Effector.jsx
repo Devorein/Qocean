@@ -281,16 +281,22 @@ class Effector extends Component {
 					useSwitch={true}
 					className="Effector_topbar_properties"
 					name="Toggle Properties"
-					selected={this.state.selected_cols}
+					selected={this.state.cols ? this.state.selected_cols : []}
 					handleChange={(e) => {
 						this.setState({
 							selected_cols: e.target.value
 						});
 					}}
-					items={this.state.cols.map((col) => ({
-						_id: col,
-						name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-					}))}
+					items={
+						this.state.cols ? (
+							this.state.cols.map((col) => ({
+								_id: col,
+								name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
+							}))
+						) : (
+							[]
+						)
+					}
 				/>
 				{selectedIndex.length > 0 ? this.renderSelectedEffectors(setDeleteModal) : this.renderGlobalEffectors()}
 			</Fragment>
