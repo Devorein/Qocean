@@ -44,14 +44,12 @@ class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		formFillerIndex: null,
-		isFormFillerOpen: false,
 		currentSelected: 0
 	};
 
 	componentDidMount() {
 		this.props.refetchData({
-			limit: this.context.user.current_environment.default_self_rpp,
+			limit: this.context.user ? this.context.user.current_environment.default_self_rpp : 15,
 			page: 1
 		});
 	}
@@ -140,6 +138,9 @@ class Displayer extends Component {
 	};
 
 	transformData = (data, selectedIndex, setSelectedIndex) => {
+		let { type } = this.props;
+		type = type.toLowerCase();
+
 		return data.map((item, index) => {
 			const actions = [
 				<InfoIcon
@@ -148,15 +149,18 @@ class Displayer extends Component {
 					onClick={(e) => {
 						this.props.fetchData(this.props.type, item._id);
 					}}
-				/>,
-				<GetAppIcon
-					className="Displayer_actions-export"
-					key={'export'}
-					onClick={(e) => {
-						exportData(this.props.type, [ item ]);
-					}}
 				/>
 			];
+			if (type !== 'user')
+				actions.push(
+					<GetAppIcon
+						className="Displayer_actions-export"
+						key={'export'}
+						onClick={(e) => {
+							exportData(this.props.type, [ item ]);
+						}}
+					/>
+				);
 			if (this.props.page === 'Self') {
 				actions.push(
 					<UpdateIcon

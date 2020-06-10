@@ -29,6 +29,8 @@ class Explorer extends Component {
 	render() {
 		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
 		const { data, refetchData, totalCount, type, page } = this.props;
+		const formFillerMsg = page === 'Self' ? 'Update' : 'Create';
+
 		return (
 			<div className="Explorer">
 				<Detailer data={data[detailerIndex]} type={type}>
@@ -80,7 +82,7 @@ class Explorer extends Component {
 						handleClose={() => {
 							this.setState({ isFormFillerOpen: false });
 						}}
-						submitMsg={'Update'}
+						submitMsg={formFillerMsg}
 						onSubmit={this.context.updateResource.bind(null, data[formFillerIndex]._id, refetchData)}
 						type={type}
 						data={data[formFillerIndex]}

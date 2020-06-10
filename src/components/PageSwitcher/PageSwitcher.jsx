@@ -7,7 +7,9 @@ class PageSwitcher extends Component {
 	static contextType = AppContext;
 
 	state = {
-		type: this.context.user ? this.context.user.current_environment.default_self_landing : 'Quiz'
+		type: this.context.user
+			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_landing`]
+			: 'Quiz'
 	};
 
 	switchPage = (page) => {

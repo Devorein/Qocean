@@ -25,26 +25,25 @@ class Explore extends Component {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
-		if (!type.startsWith('w_')) {
-			const [ count, endpoint, header ] = this.props.user
-				? [ `countOthers`, '/others/', headers ]
-				: [ 'countAll', '/', {} ];
-			axios
-				.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}`, { ...header })
-				.then(({ data: { data: totalCount } }) => {
-					axios
-						.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}${queryString}`, { ...header })
-						.then(({ data: { data } }) => {
-							this.setState({
-								data,
-								totalCount
-							});
+		const [ count, endpoint, header ] = this.props.user
+			? [ `countOthers`, '/others/', headers ]
+			: [ 'countAll', '/', {} ];
+		axios
+			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}?${queryString}`, { ...header })
+			.then(({ data: { data: totalCount } }) => {
+				axios
+					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}?${queryString}`, { ...header })
+					.then(({ data: { data } }) => {
+						this.setState({
+							data,
+							totalCount
 						});
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		} else {
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		/* else {
 			type = pluralize(type.split('_')[1], 2);
 			axios
 				.get(`http://localhost:5001/api/v1/watchlist/${type}/count`, { ...headers })
@@ -61,7 +60,7 @@ class Explore extends Component {
 				.catch((err) => {
 					console.log(err);
 				});
-		}
+		} */
 	};
 
 	/* 	genericTransformData = (data) => {
@@ -142,13 +141,13 @@ class Explore extends Component {
 				{({ CustomTabs, type }) => (
 					<div className="Explore page">
 						{CustomTabs}
-						{/* 						<Explorer
+						<Explorer
 							page={'Explore'}
 							data={data}
 							totalCount={totalCount}
 							type={type}
 							refetchData={refetchData.bind(null, type)}
-						/> */}
+						/>
 					</div>
 				)}
 			</PageSwitcher>
