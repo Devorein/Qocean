@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import CustomTabs from '../../components/Tab/Tabs';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import Explorer from '../../components/Explorer/Explorer';
 import populateQueryParams from '../../Utils/populateQueryParams';
+import PageSwitcher from '../../components/PageSwitcher/PageSwitcher';
 import qs from 'qs';
 
 import './Self.scss';
@@ -12,14 +11,13 @@ import './Self.scss';
 class Self extends Component {
 	state = {
 		data: [],
-		type: this.props.user.current_environment.default_self_landing,
 		totalCount: 0
 	};
 
 	refetchData = (type, queryParams) => {
-		type = type ? type.toLowerCase() : this.state.type.toLowerCase();
+		type = type.toLowerCase();
 		populateQueryParams(type, queryParams, this.props.user);
-		const queryString = qs.stringify(queryParams);
+		const queryString = qs.stringify(queryParams, { depth: 10 });
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -47,43 +45,32 @@ class Self extends Component {
 			});
 	};
 
-	switchPage = (page) => {
-		this.props.history.push(`/${page.link}`);
-		this.refetchData(
-			page.name,
-			{ page: 1, limit: this.props.user.current_environment.default_self_rpp },
-			{
-				type: page.name
-			}
-		);
-	};
-
 	render() {
 		const { refetchData } = this;
 		const { data, totalCount } = this.state;
-		const { match: { params: { type } } } = this.props;
-
-		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
-			return {
-				name: header,
-				link: `self/${header}`
-			};
-		});
 
 		return (
-			<div className="Self page">
-				<CustomTabs
-					against={type}
-					onChange={(e, value) => {
-						this.switchPage(headers[value]);
-					}}
-					height={50}
-					headers={headers}
-				/>
-				<Explorer page={'Self'} data={data} totalCount={totalCount} type={type} refetchData={refetchData} />
-			</div>
+			<PageSwitcher
+				page="self"
+				runAfterSwitch={(type) => {
+					refetchData(type, { page: 1, limit: this.props.user.current_environment.default_self_rpp });
+				}}
+			>
+				{({ CustomTabs, type }) => (
+					<div className="Self page">
+						{CustomTabs}
+						<Explorer
+							page={'Self'}
+							data={data}
+							totalCount={totalCount}
+							type={type}
+							refetchData={refetchData.bind(null, type)}
+						/>
+					</div>
+				)}
+			</PageSwitcher>
 		);
 	}
 }
 
-export default withRouter(Self);
+export default Self;

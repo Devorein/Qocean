@@ -15,6 +15,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import getColouredIcons from '../../../Utils/getColoredIcons';
 import exportData from '../../../Utils/exportData';
+import filterSort from '../../../Utils/filterSort';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import axios from 'axios';
@@ -22,6 +23,7 @@ import pluralize from 'pluralize';
 import moment from 'moment';
 import { difference } from 'lodash';
 import { HotKeys } from 'react-hotkeys';
+import SettingsIcon from '@material-ui/icons/Settings';
 import './Displayer.scss';
 
 const keyMap = {
@@ -48,7 +50,7 @@ class Displayer extends Component {
 	};
 
 	componentDidMount() {
-		this.props.refetchData(this.state.type, {
+		this.props.refetchData({
 			limit: this.context.user.current_environment.default_self_rpp,
 			page: 1
 		});
@@ -103,7 +105,7 @@ class Displayer extends Component {
 			let containsCurrent = false;
 			const temp = [];
 			selectedRows.forEach((selectedRow) => {
-				if (selectedRow === this.props.user.current_environment._id) containsCurrent = true;
+				if (selectedRow === this.context.user.current_environment._id) containsCurrent = true;
 				else temp.push(selectedRow);
 			});
 			if (containsCurrent) {
@@ -113,17 +115,17 @@ class Displayer extends Component {
 					'error'
 				);
 			}
-			if (selectedRows.length > 1)
+			if (selectedRows.length >= 1)
 				deleteResources(temp).then(({ data: { data } }) => {
 					setTimeout(() => {
 						this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
 					}, 2500);
-					this.props.refetchData();
+					this.props.refetchData(this.queryParams);
 				});
 		} else
 			deleteResources(selectedRows).then(({ data: { data } }) => {
 				this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
-				this.props.refetchData();
+				this.props.refetchData(this.queryParams);
 			});
 	};
 
@@ -208,7 +210,15 @@ class Displayer extends Component {
 
 			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
-
+			if (this.props.type === 'Environment') {
+				const isCurrentEnv = item._id === this.context.user.current_environment._id;
+				temp.name = (
+					<div style={{ display: 'flex', alignItems: 'center' }}>
+						{isCurrentEnv ? <SettingsIcon style={{ fill: '#f0e744', width: '.75em' }} /> : null}
+						{item.name}
+					</div>
+				);
+			}
 			return temp;
 		});
 	};
@@ -241,7 +251,7 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer, getCols, updateResource, deleteResource } = this;
-		const { data, totalCount, page, refetchData, type } = this.props;
+		const { data, totalCount, page, refetchData, type, filter_sort } = this.props;
 		const cols = getCols(data);
 		return (
 			<div className="Displayer">
@@ -254,7 +264,7 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 					deleteResource={deleteResource}
-					filter_sort={this.props.filter_sort}
+					filter_sort={filter_sort}
 				>
 					{({
 						EffectorTopBar,
@@ -263,8 +273,11 @@ class Displayer extends Component {
 						removed_cols,
 						setSelectedIndex,
 						selectedIndex,
-						GLOBAL_ICONS
+						GLOBAL_ICONS,
+						page,
+						limit
 					}) => {
+						this.queryParams = { page, limit, ...filterSort(filter_sort) };
 						let manipulatedData = null;
 						if (view !== 'table')
 							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
@@ -278,7 +291,6 @@ class Displayer extends Component {
 								flatten: true
 							});
 						}
-
 						const handlers = {
 							MOVE_UP: (event) => {
 								this.setState({

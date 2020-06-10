@@ -53,7 +53,7 @@ class Effector extends Component {
 	refetchData = () => {
 		const { itemsPerPage, currentPage } = this.state;
 		const filterSortQuery = filterSort(this.props.filter_sort);
-		this.props.refetchData(null, {
+		this.props.refetchData({
 			limit: itemsPerPage,
 			page: currentPage,
 			...filterSortQuery
@@ -281,16 +281,22 @@ class Effector extends Component {
 					useSwitch={true}
 					className="Effector_topbar_properties"
 					name="Toggle Properties"
-					selected={this.state.selected_cols}
+					selected={this.state.cols ? this.state.selected_cols : []}
 					handleChange={(e) => {
 						this.setState({
 							selected_cols: e.target.value
 						});
 					}}
-					items={this.state.cols.map((col) => ({
-						_id: col,
-						name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-					}))}
+					items={
+						this.state.cols ? (
+							this.state.cols.map((col) => ({
+								_id: col,
+								name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
+							}))
+						) : (
+							[]
+						)
+					}
 				/>
 				{selectedIndex.length > 0 ? this.renderSelectedEffectors(setDeleteModal) : this.renderGlobalEffectors()}
 			</Fragment>
@@ -325,7 +331,7 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { selected_cols, view, selectedIndex } = this.state;
+		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
 		return (
 			<ModalRP
 				onAccept={() => {
@@ -345,7 +351,9 @@ class Effector extends Component {
 						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,
-						GLOBAL_ICONS: this.GLOBAL_ICONS
+						GLOBAL_ICONS: this.GLOBAL_ICONS,
+						limit: itemsPerPage,
+						page: currentPage
 					})}
 			</ModalRP>
 		);

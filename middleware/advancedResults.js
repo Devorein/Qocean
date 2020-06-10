@@ -17,25 +17,25 @@ const advancedResults = (model) =>
 			if (!result)
 				return next(new ErrorResponse(`Resource not found with id of ${req.query._id} or is made private`, 404));
 			res.status(200).json({ success: true, data: result });
-		}
+		} else {
+			let queryFilters = filterQuery(req, model);
+			let processFurther = await handleCountRoutes(queryFilters, req, res, model);
+			if (processFurther) {
+				const query = model.find(queryFilters);
+				projectionQuery(query, req);
+				sortQuery(query, req);
+				populateQuery(query, req);
+				const pagination = await paginateQuery(query, req, model);
+				const results = await query;
 
-		let queryFilters = filterQuery(req, model);
-		let processFurther = await handleCountRoutes(queryFilters, req, res, model);
-		if (processFurther) {
-			const query = model.find(queryFilters);
-			projectionQuery(query, req);
-			sortQuery(query, req);
-			populateQuery(query, req);
-			const pagination = await paginateQuery(query, req, model);
-			const results = await query;
-
-			res.advancedResults = {
-				success: true,
-				count: results.length,
-				pagination,
-				data: results
-			};
-			res.status(200).json(res.advancedResults);
+				res.advancedResults = {
+					success: true,
+					count: results.length,
+					pagination,
+					data: results
+				};
+				res.status(200).json(res.advancedResults);
+			}
 		}
 	};
 
