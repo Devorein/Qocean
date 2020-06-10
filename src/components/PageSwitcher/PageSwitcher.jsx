@@ -20,10 +20,18 @@ class PageSwitcher extends Component {
 		});
 	};
 
+	decideHeaders = () => {
+		let { page } = this.props;
+		page = page.toLowerCase();
+		if (page === 'explore') return [ 'User', 'Quiz', 'Question', 'Folder', 'Environment' ];
+		else if (page === 'self') return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
+		else if (page === 'watchlist') return [ 'W_Quiz', 'W_Folder' ];
+	};
+
 	render() {
 		const { page, match: { params: { type } }, passTabsAsProps = true } = this.props;
 
-		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
+		const headers = this.decideHeaders().map((header) => {
 			return {
 				name: header,
 				link: `${page}/${header}`
