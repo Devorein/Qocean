@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withTheme } from '@material-ui/core';
 import TableDisplayer from './TableDisplayer/TableDisplayer';
 import ListDisplayer from './ListDisplayer/ListDisplayer';
 import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
@@ -213,9 +214,14 @@ class Displayer extends Component {
 						}}
 					/>
 				);
-				if (type.match(/(folder|folders|quiz|quizzes)/)) {
+				if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
+					type = pluralize(type, 2);
+					const isWatched = this.context.user.watchlist[
+						`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
+					].includes(item._id);
 					actions.push(
 						<VisibilityIcon
+							style={{ fill: isWatched ? this.props.theme.palette.success.main : this.props.theme.palette.error.main }}
 							key={'watch'}
 							onClick={(e) => {
 								this.watchToggle([ item._id ]);
@@ -402,4 +408,4 @@ class Displayer extends Component {
 	}
 }
 
-export default Displayer;
+export default withTheme(Displayer);
