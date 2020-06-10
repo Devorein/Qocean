@@ -80,7 +80,7 @@ export default function MultiSelect({
 										<Chip
 											className={classes.chip}
 											key={value}
-											label={items.find(({ _id, name }) => _id === value).name}
+											label={items ? items.find(({ _id, name }) => _id === value).name : ''}
 										/>
 									)
 							)}

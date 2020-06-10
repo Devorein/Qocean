@@ -200,15 +200,16 @@ class Displayer extends Component {
 					/>
 				);
 			} else if (page.match(/(watchlist|explore)/)) {
-				actions.push(
-					<NoteAddIcon
-						className="Displayer_actions-create"
-						key={'create'}
-						onClick={(e) => {
-							this.props.enableFormFiller(index);
-						}}
-					/>
-				);
+				if (type !== 'user')
+					actions.push(
+						<NoteAddIcon
+							className="Displayer_actions-create"
+							key={'create'}
+							onClick={(e) => {
+								this.props.enableFormFiller(index);
+							}}
+						/>
+					);
 				if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
 					type = pluralize(type, 2);
 					const isWatched = this.context.user.watchlist[
