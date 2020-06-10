@@ -65,6 +65,9 @@ class Self extends Component {
 							totalCount={totalCount}
 							type={type}
 							refetchData={refetchData.bind(null, type)}
+							updateDataLocally={(data) => {
+								this.setState({ data });
+							}}
 						/>
 					</div>
 				)}

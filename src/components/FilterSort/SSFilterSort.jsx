@@ -59,6 +59,19 @@ class SSFilterSort extends Component {
 		else if (type === 'folder')
 			selectItems = [ ...commonsorts, 'icon', 'watchers', 'total_quizzes', 'total_questions' ];
 		else if (type === 'environment') selectItems = [ ...commonsorts, 'icon' ];
+		else if (type === 'user')
+			selectItems = [
+				'none',
+				'name',
+				'username',
+				'gmail',
+				'joined_at',
+				'total_environments',
+				'total_folders',
+				'total_questions',
+				'total_quizzes',
+				'version'
+			];
 		return selectItems.map((name) => ({
 			value: name,
 			text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
@@ -124,13 +137,17 @@ class SSFilterSort extends Component {
 
 	decideTargetType = (target) => {
 		let targetType = null;
-		if (target.match(/^(name|subject|quiz)$/)) targetType = 'string';
+		if (target.match(/^(name|subject|quiz|email)$/)) targetType = 'string';
 		else if (target.match(/^(public|favourite)$/)) targetType = 'boolean';
-		else if (target.match(/^(created_at|updated_at)$/)) targetType = 'date';
-		else if (target.match(/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes)$/))
+		else if (target.match(/^(created_at|updated_at|joined_at)$/)) targetType = 'date';
+		else if (
+			target.match(
+				/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes|total_environments|total_folders)$/
+			)
+		)
 			targetType = 'number';
 		else if (target.match(/^(tags)$/)) targetType = 'array';
-		else if (target.match(/(difficulty|icon|type|average_difficulty)$/)) targetType = 'select';
+		else if (target.match(/(difficulty|icon|type|average_difficulty|version)$/)) targetType = 'select';
 		return targetType;
 	};
 

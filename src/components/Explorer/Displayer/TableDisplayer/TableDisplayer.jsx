@@ -17,7 +17,7 @@ class TableDisplayer extends Component {
 
 		return (
 			<div className={`TableDisplayer TableDisplayer-${type}`}>
-				<Table className={classes.table}>
+				<Table stickyHeader className={classes.table}>
 					<TableHead className={'TableDisplayer_header'}>
 						<TableRow className={`TableDisplayer_header_row TableDisplayer_row`}>
 							{cols.map((col, index) => (
@@ -59,7 +59,7 @@ class TableDisplayer extends Component {
 
 export default withStyles((theme) => ({
 	table: {
-		'& .TableDisplayer_header': {
+		'& .TableDisplayer_header,& .MuiTableCell-stickyHeader': {
 			background: theme.palette.background.dark
 		},
 		'& .TableDisplayer_body': {

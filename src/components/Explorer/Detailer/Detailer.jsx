@@ -260,10 +260,13 @@ class Detailer extends Component {
 		}
 	};
 	render() {
-		return this.props.children({
-			fetchData: this.fetchData,
-			Detailer: this.renderDetailer()
-		});
+		const Detailer = this.renderDetailer();
+		return this.props.children
+			? this.props.children({
+					fetchData: this.fetchData,
+					Detailer
+				})
+			: Detailer;
 	}
 }
 

@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { withTheme } from '@material-ui/core';
 import TableDisplayer from './TableDisplayer/TableDisplayer';
 import ListDisplayer from './ListDisplayer/ListDisplayer';
 import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
@@ -24,6 +25,8 @@ import moment from 'moment';
 import { difference } from 'lodash';
 import { HotKeys } from 'react-hotkeys';
 import SettingsIcon from '@material-ui/icons/Settings';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import './Displayer.scss';
 
 const keyMap = {
@@ -40,50 +43,46 @@ const keyMap = {
 	GLOBAL_ACTION_4: 'shift+4'
 };
 
+const headers = {
+	headers: {
+		Authorization: `Bearer ${localStorage.getItem('token')}`
+	}
+};
+
 class Displayer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		formFillerIndex: null,
-		isFormFillerOpen: false,
 		currentSelected: 0
 	};
 
 	componentDidMount() {
 		this.props.refetchData({
-			limit: this.context.user.current_environment.default_self_rpp,
+			limit: this.context.user ? this.context.user.current_environment.default_self_rpp : 15,
 			page: 1
 		});
 	}
 
-	updateResource = (selectedRows, field) => {
-		selectedRows = selectedRows.map((row) => ({ id: row._id, body: { [field]: !row[field] } }));
-		let { type } = this.props;
+	updateResource = (selectedIndex, field) => {
+		let { type, data, updateDataLocally } = this.props;
+		const updatedRows = selectedIndex.map((index) => ({ id: data[index]._id, body: { [field]: !data[index][field] } }));
 		type = pluralize(type, 2).toLowerCase();
 		axios
 			.put(
 				`http://localhost:5001/api/v1/${type}`,
 				{
-					[type]: selectedRows
+					[type]: updatedRows
 				},
 				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
+					...headers
 				}
 			)
 			.then(({ data: { data: updatedDatas } }) => {
 				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
-				this.props.updateDataLocally(
-					this.props.data.map((data) => {
-						const updatedData = updatedDatas.find((updatedData) => updatedData._id === data._id);
-						if (updatedData) {
-							data[field] = updatedData[field];
-							data.updated_at = updatedData.updated_at;
-						}
-						return data;
-					})
-				);
+				selectedIndex.forEach((index, _index) => {
+					data[index] = updatedDatas[_index];
+				});
+				updateDataLocally(data);
 			});
 	};
 
@@ -92,9 +91,7 @@ class Displayer extends Component {
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
 			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				},
+				...headers,
 				data: {
 					[target]: selectedRows
 				}
@@ -129,6 +126,26 @@ class Displayer extends Component {
 			});
 	};
 
+	watchToggle = (selectedIndex) => {
+		let { type, data } = this.props;
+		const ids = selectedIndex.map((index) => data[index]._id);
+		type = pluralize(type, 2).toLowerCase();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}/_/watch${type.charAt(0).toUpperCase() + type.substr(1)}`,
+				{
+					[type]: ids
+				},
+				{
+					...headers
+				}
+			)
+			.then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
+				this.context.refetchUser();
+			});
+	};
+
 	decideShortcut = (e, { selectedIndex, setSelectedIndex, index }) => {
 		const { altKey, shiftKey } = e.nativeEvent;
 		if (shiftKey && altKey) {
@@ -140,6 +157,10 @@ class Displayer extends Component {
 	};
 
 	transformData = (data, selectedIndex, setSelectedIndex) => {
+		let { type, page } = this.props;
+		type = type.toLowerCase();
+		page = page.toLowerCase();
+
 		return data.map((item, index) => {
 			const actions = [
 				<InfoIcon
@@ -148,16 +169,20 @@ class Displayer extends Component {
 					onClick={(e) => {
 						this.props.fetchData(this.props.type, item._id);
 					}}
-				/>,
-				<GetAppIcon
-					className="Displayer_actions-export"
-					key={'export'}
-					onClick={(e) => {
-						exportData(this.props.type, [ item ]);
-					}}
 				/>
 			];
-			if (this.props.page === 'Self') {
+			if (type !== 'user')
+				actions.push(
+					<GetAppIcon
+						className="Displayer_actions-export"
+						key={'export'}
+						onClick={(e) => {
+							exportData(this.props.type, [ item ]);
+						}}
+					/>
+				);
+
+			if (page === 'self') {
 				actions.push(
 					<UpdateIcon
 						className="Displayer_actions-update"
@@ -174,6 +199,32 @@ class Displayer extends Component {
 						}}
 					/>
 				);
+			} else if (page.match(/(watchlist|explore)/)) {
+				if (type !== 'user')
+					actions.push(
+						<NoteAddIcon
+							className="Displayer_actions-create"
+							key={'create'}
+							onClick={(e) => {
+								this.props.enableFormFiller(index);
+							}}
+						/>
+					);
+				if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
+					type = pluralize(type, 2);
+					const isWatched = this.context.user.watchlist[
+						`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
+					].includes(item._id);
+					actions.push(
+						<VisibilityIcon
+							style={{ fill: isWatched ? this.props.theme.palette.success.main : this.props.theme.palette.error.main }}
+							key={'watch'}
+							onClick={(e) => {
+								this.watchToggle([ index ]);
+							}}
+						/>
+					);
+				}
 			}
 
 			const temp = {
@@ -194,22 +245,28 @@ class Displayer extends Component {
 			if (item.quiz) temp.quiz = item.quiz.name;
 			if (item.user) temp.user = item.user.username;
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
-			if (item.public !== undefined)
-				temp.public = item.public ? (
-					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#00a3e6' }} />
-				) : (
-					<PublicIcon onClick={this.updateResource.bind(null, [ item ], 'public')} style={{ fill: '#f4423c' }} />
-				);
+			if (page === 'self') {
+				if (item.public !== undefined)
+					temp.public = item.public ? (
+						<PublicIcon onClick={this.updateResource.bind(null, [ index ], 'public')} style={{ fill: '#00a3e6' }} />
+					) : (
+						<PublicIcon onClick={this.updateResource.bind(null, [ index ], 'public')} style={{ fill: '#f4423c' }} />
+					);
+				if (item.favourite !== undefined)
+					temp.favourite = item.favourite ? (
+						<StarIcon onClick={this.updateResource.bind(null, [ index ], 'favourite')} style={{ fill: '#f0e744' }} />
+					) : (
+						<StarBorderIcon
+							onClick={this.updateResource.bind(null, [ index ], 'favourite')}
+							style={{ fill: '#ead50f' }}
+						/>
+					);
+			}
 			if (item.watchers) temp.watchers = item.watchers.length;
-			if (item.favourite !== undefined)
-				temp.favourite = item.favourite ? (
-					<StarIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#f0e744' }} />
-				) : (
-					<StarBorderIcon onClick={this.updateResource.bind(null, [ item ], 'favourite')} style={{ fill: '#ead50f' }} />
-				);
 
-			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
+			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
+			if (item.joined_at) temp.joined_at = moment(item.joined_at).fromNow();
 			if (this.props.type === 'Environment') {
 				const isCurrentEnv = item._id === this.context.user.current_environment._id;
 				temp.name = (
@@ -244,13 +301,15 @@ class Displayer extends Component {
 			Object.keys(
 				sectorizeData(data[0], this.props.type, { authenticated: this.context.user, singular: true })
 			).forEach((col) => {
-				cols.push(col);
+				if (this.props.page === 'Self' && col.match(/(favourite|public)/)) cols.push(col);
+				else if (this.props.page !== 'Self' && !col.match(/(favourite|public)/)) cols.push(col);
 			});
+
 		return cols;
 	};
 
 	render() {
-		const { decideDisplayer, getCols, updateResource, deleteResource } = this;
+		const { decideDisplayer, getCols, updateResource, deleteResource, watchToggle } = this;
 		const { data, totalCount, page, refetchData, type, filter_sort } = this.props;
 		const cols = getCols(data);
 		return (
@@ -264,6 +323,7 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 					deleteResource={deleteResource}
+					watchToggle={watchToggle}
 					filter_sort={filter_sort}
 				>
 					{({
@@ -346,4 +406,4 @@ class Displayer extends Component {
 	}
 }
 
-export default Displayer;
+export default withTheme(Displayer);

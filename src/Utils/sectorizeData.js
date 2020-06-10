@@ -22,6 +22,9 @@ export default function(
 		tertiary.push('weight', 'time_allocated');
 		ref.push('quiz');
 	} else if (type.match(/(user|users)/)) {
+		primary.push('username');
+		secondary.push('email', 'version');
+		tertiary.push('total_quizzes', 'total_questions', 'total_folders', 'total_environments', 'joined_at');
 	} else if (type.match(/(folder|folders)/)) {
 		primary.push('icon');
 		tertiary.push('ratings', 'total_questions', 'total_quizzes');

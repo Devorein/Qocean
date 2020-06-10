@@ -28,7 +28,12 @@ class Explorer extends Component {
 
 	render() {
 		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
-		const { data, refetchData, totalCount, type, page } = this.props;
+		const { data, refetchData, totalCount, type, page, updateDataLocally } = this.props;
+		const formFillerMsg = page === 'Self' ? 'Update' : 'Create';
+		const onSubmit =
+			page !== 'Self'
+				? this.context.submitForm
+				: this.context.updateResource.bind(null, formFillerIndex ? data[formFillerIndex]._id : '', refetchData);
 		return (
 			<div className="Explorer">
 				<Detailer data={data[detailerIndex]} type={type}>
@@ -61,7 +66,7 @@ class Explorer extends Component {
 																formFillerIndex
 															});
 														}}
-														updateDataLocally={(data) => this.setState({ data })}
+														updateDataLocally={updateDataLocally}
 													/>
 												</Fragment>
 											);
@@ -75,13 +80,14 @@ class Explorer extends Component {
 
 				{formFillerIndex !== null ? (
 					<FormFiller
+						page={page}
 						isOpen={isFormFillerOpen}
 						user={this.context.user}
 						handleClose={() => {
 							this.setState({ isFormFillerOpen: false });
 						}}
-						submitMsg={'Update'}
-						onSubmit={this.context.updateResource.bind(null, data[formFillerIndex]._id, refetchData)}
+						submitMsg={formFillerMsg}
+						onSubmit={onSubmit}
 						type={type}
 						data={data[formFillerIndex]}
 						onArrowClick={this.switchData}
