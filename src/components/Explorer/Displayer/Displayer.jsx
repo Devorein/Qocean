@@ -42,6 +42,12 @@ const keyMap = {
 	GLOBAL_ACTION_4: 'shift+4'
 };
 
+const headers = {
+	headers: {
+		Authorization: `Bearer ${localStorage.getItem('token')}`
+	}
+};
+
 class Displayer extends Component {
 	static contextType = AppContext;
 
@@ -67,9 +73,7 @@ class Displayer extends Component {
 					[type]: selectedRows
 				},
 				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
+					...headers
 				}
 			)
 			.then(({ data: { data: updatedDatas } }) => {
@@ -92,9 +96,7 @@ class Displayer extends Component {
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
 			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				},
+				...headers,
 				data: {
 					[target]: selectedRows
 				}
@@ -125,6 +127,25 @@ class Displayer extends Component {
 		} else
 			deleteResources(selectedRows).then(({ data: { data } }) => {
 				this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+				this.props.refetchData(this.queryParams);
+			});
+	};
+
+	watchToggle = (ids) => {
+		let { type } = this.props;
+		type = pluralize(type, 2).toLowerCase();
+		axios
+			.put(
+				`http://localhost:5001/api/v1/${type}/_/watch${type.charAt(0).toUpperCase() + type.substr(1)}`,
+				{
+					[type]: ids
+				},
+				{
+					...headers
+				}
+			)
+			.then(({ data: { data } }) => {
+				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
 				this.props.refetchData(this.queryParams);
 			});
 	};
@@ -196,12 +217,9 @@ class Displayer extends Component {
 					actions.push(
 						<VisibilityIcon
 							key={'watch'}
-
-							// onClick={this.watchToggle.bind(
-							// 	null,
-							// 	pluralize(this.state.type, 2).toLowerCase(),
-							// 	selectedRows.data.map(({ index }) => this.state.data[index]._id)
-							// )}
+							onClick={(e) => {
+								this.watchToggle([ item._id ]);
+							}}
 						/>
 					);
 				}
@@ -287,7 +305,7 @@ class Displayer extends Component {
 	};
 
 	render() {
-		const { decideDisplayer, getCols, updateResource, deleteResource } = this;
+		const { decideDisplayer, getCols, updateResource, deleteResource, watchToggle } = this;
 		const { data, totalCount, page, refetchData, type, filter_sort } = this.props;
 		const cols = getCols(data);
 		return (
@@ -301,6 +319,7 @@ class Displayer extends Component {
 					refetchData={refetchData}
 					cols={cols}
 					deleteResource={deleteResource}
+					watchToggle={watchToggle}
 					filter_sort={filter_sort}
 				>
 					{({

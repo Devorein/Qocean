@@ -16,6 +16,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { difference } from 'lodash';
 import exportData from '../../../Utils/exportData';
 import filterSort from '../../../Utils/filterSort';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import './Effector.scss';
 class Effector extends Component {
@@ -153,88 +154,123 @@ class Effector extends Component {
 	};
 
 	renderGlobalEffectors = () => {
-		const { data, page, type, updateResource } = this.props;
+		const { data, updateResource } = this.props;
+		let { page, type } = this.props;
+		page = page.toLowerCase();
+		type = type.toLowerCase();
 
-		if (page === 'Self') {
-			return (
-				<div className="Effector_topbar_globals">
-					<RotateLeftIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
-						}}
-						onClick={(e) => {
-							this.refetchData();
-						}}
-					/>
-					<StarIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
-						}}
-						onClick={(e) => {
-							updateResource(data, 'favourite');
-						}}
-					/>
-					<PublicIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
-						}}
-						onClick={(e) => {
-							updateResource(data, 'public');
-						}}
-					/>
-					<GetAppIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-						}}
-						onClick={(e) => {
-							exportData(type, data);
-						}}
-					/>
-				</div>
+		const effectors = [
+			<RotateLeftIcon
+				key={'refetch'}
+				ref={(ref) => {
+					this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
+				}}
+				onClick={(e) => {
+					this.refetchData();
+				}}
+			/>,
+			<GetAppIcon
+				key={'export'}
+				ref={(ref) => {
+					this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
+				}}
+				onClick={(e) => {
+					exportData(type, data);
+				}}
+			/>
+		];
+		if (page === 'self') {
+			effectors.push(
+				<StarIcon
+					key={'favourite'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
+					}}
+					onClick={(e) => {
+						updateResource(data, 'favourite');
+					}}
+				/>,
+				<PublicIcon
+					key={'public'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
+					}}
+					onClick={(e) => {
+						updateResource(data, 'public');
+					}}
+				/>
 			);
+		} else {
+			if (type.match(/(folders|folder|quiz|quizzes)/)) {
+				effectors.push(
+					<VisibilityIcon
+						key={'watch'}
+						onClick={(e) => {
+							this.props.watchToggle(data.map(({ _id }) => _id));
+						}}
+					/>
+				);
+			}
 		}
+		return <div className="Effector_topbar_globals">{effectors.map((eff) => eff)}</div>;
 	};
 
 	renderSelectedEffectors = (setDeleteModal) => {
-		const { data, page, type, updateResource } = this.props;
+		const { data, updateResource } = this.props;
+		let { page, type } = this.props;
+		page = page.toLowerCase();
+		type = type.toLowerCase();
 		const selectedItems = this.state.selectedIndex.map((index) => data[index]);
-		if (page === 'Self')
-			return (
-				<div className="Effector_topbar_selected">
-					<DeleteIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
-						}}
-						onClick={(e) => {
-							setDeleteModal(true);
-						}}
-					/>
-					<StarIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
-						}}
-						onClick={(e) => {
-							updateResource(selectedItems, 'favourite');
-						}}
-					/>
-					<PublicIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
-						}}
-						onClick={(e) => {
-							updateResource(selectedItems, 'public');
-						}}
-					/>
-					<GetAppIcon
-						ref={(ref) => {
-							this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-						}}
-						onClick={(e) => {
-							exportData(type, selectedItems);
-						}}
-					/>
-				</div>
+		const effectors = [
+			<GetAppIcon
+				key={'export'}
+				ref={(ref) => {
+					this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
+				}}
+				onClick={(e) => {
+					exportData(type, selectedItems);
+				}}
+			/>,
+			<VisibilityIcon
+				key={'watch'}
+				onClick={(e) => {
+					this.props.watchToggle(selectedItems.map(({ _id }) => _id));
+				}}
+			/>
+		];
+
+		if (page === 'self') {
+			effectors.push(
+				<DeleteIcon
+					key={'delete'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
+					}}
+					onClick={(e) => {
+						setDeleteModal(true);
+					}}
+				/>,
+				<StarIcon
+					key={'favourite'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
+					}}
+					onClick={(e) => {
+						updateResource(selectedItems, 'favourite');
+					}}
+				/>,
+				<PublicIcon
+					key={'public'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
+					}}
+					onClick={(e) => {
+						updateResource(selectedItems, 'public');
+					}}
+				/>
 			);
+		}
+		return <div className="Effector_topbar_selected">{effectors.map((eff) => eff)}</div>;
 	};
 
 	renderEffectorTopBar = (setDeleteModal) => {
