@@ -17,7 +17,7 @@ class Self extends Component {
 	refetchData = (type, queryParams) => {
 		type = type.toLowerCase();
 		populateQueryParams(type, queryParams, this.props.user);
-		const queryString = qs.stringify(queryParams);
+		const queryString = qs.stringify(queryParams, { depth: 10 });
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`

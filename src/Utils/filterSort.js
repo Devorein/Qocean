@@ -9,18 +9,22 @@ export default function(filterSort) {
 	const query = {};
 	if (sort !== '') query.sort = sort;
 
+	const { cond } = filters[0];
+	const filter = [];
+	query[`$${cond}`] = filter;
+
 	filters.forEach(({ target, value, type, mod, disabled }) => {
 		if (!disabled && target !== 'none' && value !== undefined && value !== '') {
+			let targetProp = {};
+
 			if (type === 'boolean') {
 				value = value.toString();
-				if (value === 'false' && mod === 'is_not') query[target] = true;
-				else if (value === 'false' && mod === 'is') query[target] = false;
-				else if (value === 'true' && mod === 'is') query[target] = true;
-				else if (value === 'true' && mod === 'is_not') query[target] = false;
+				if (value === 'false' && mod === 'is_not') targetProp.$eq = true;
+				else if (value === 'false' && mod === 'is') targetProp.$eq = false;
+				else if (value === 'true' && mod === 'is') targetProp.$eq = true;
+				else if (value === 'true' && mod === 'is_not') targetProp.$eq = false;
 			} else if (type === 'string') {
-				query[target] = {};
-				const targetProp = query[target];
-				if (mod === 'is') query[target] = value;
+				if (mod === 'is') targetProp.$eq = value;
 				else if (mod === 'starts_with') {
 					targetProp.$regex = `^${value}`;
 					targetProp.$options = 'i';
@@ -34,10 +38,7 @@ export default function(filterSort) {
 					targetProp.$regex = modifiers;
 				}
 			} else if (type === 'number') {
-				query[target] = {};
-				const targetProp = query[target];
-
-				if (mod === 'is') query[target] = value[0];
+				if (mod === 'is') targetProp.$eq = value[0];
 				else if (mod === 'is_not') targetProp.$ne = `${value[0]}`;
 				else if (mod === 'greater_than') targetProp.$gt = `${value[0]}`;
 				else if (mod === 'less_than') targetProp.$lt = `${value[0]}`;
@@ -52,59 +53,53 @@ export default function(filterSort) {
 					targetProp.$gt = Math.min(...transformedValue);
 					targetProp.$lt = Math.max(...transformedValue);
 				} else if (mod.match(/(not_between)/)) {
-					delete query[target];
 					const transformedValue = value.map((value) => parseFloat(value));
-					query.$or = [];
 					let op = null;
-					if (mod === 'not_between_exclusive') op = [ '$gt', '$lt' ];
-					else if (mod === 'not_between_inlcusive') op = [ '$gte', '$lte' ];
-
-					query.$or.push({
-						[target]: { [op[0]]: Math.max(...transformedValue) },
-						[target]: { [op[1]]: Math.max(...transformedValue) }
+					targetProp = [];
+					if (mod === 'not_between_exclusive') op = [ '$gte', '$lte' ];
+					else if (mod === 'not_between_inclusive') op = [ '$gt', '$lt' ];
+					targetProp.push({
+						[target]: { [op[0]]: Math.max(...transformedValue) }
 					});
+					targetProp.push({
+						[target]: { [op[1]]: Math.min(...transformedValue) }
+					});
+					target = '$or';
 				}
 			} else if (type === 'select') {
-				if (mod === 'is') {
-					query.$or = [];
-					value.forEach((val, index) => {
-						query.$or.push({ [target]: val });
-					});
-				} else if (mod === 'is_not') {
-					query.$and = [];
-					value.forEach((val, index) => {
-						query.$and.push({ [target]: { $ne: val } });
-					});
-				}
+				targetProp = [];
+				value.forEach((val, index) => {
+					targetProp.push({ [target]: { [mod === 'is' ? '$eq' : '$ne']: val } });
+				});
+				if (mod === 'is') target = '$or';
+				else if (mod === 'is_not') target = '$and';
 			} else if (type === 'date') {
-				query[target] = [];
-				const queryProp = query[target];
-
 				if (mod === 'exact') {
-					queryProp.$gte = moment(value[0]).format('YYYY-MM-DD');
-					queryProp.$lte = moment(value[0]).add(1, 'days').format('YYYY-MM-DD');
+					targetProp.$gte = moment(value[0]).format('YYYY-MM-DD');
+					targetProp.$lte = moment(value[0]).add(1, 'days').format('YYYY-MM-DD');
 				} else if (mod === 'today') {
-					queryProp.$gte = moment().format('YYYY-MM-DD');
-					queryProp.$lte = moment().add(1, 'days').format('YYYY-MM-DD');
+					targetProp.$gte = moment().format('YYYY-MM-DD');
+					targetProp.$lte = moment().add(1, 'days').format('YYYY-MM-DD');
 				} else if (mod === 'yesterday') {
-					queryProp.$gte = moment().subtract(1, 'days').format('YYYY-MM-DD');
-					queryProp.$lte = moment().format('YYYY-MM-DD');
+					targetProp.$gte = moment().subtract(1, 'days').format('YYYY-MM-DD');
+					targetProp.$lte = moment().format('YYYY-MM-DD');
 				} else if (mod === 'within') {
-					queryProp.$gte = moment(value[0]).format('YYYY-MM-DD');
-					queryProp.$lte = moment(value[1]).format('YYYY-MM-DD');
+					targetProp.$gte = moment(value[0]).format('YYYY-MM-DD');
+					targetProp.$lte = moment(value[1]).format('YYYY-MM-DD');
 				} else if (mod === 'last_week') {
-					queryProp.$gte = moment().subtract(7, 'days').format('YYYY-MM-DD');
-					queryProp.$lte = moment().subtract(6, 'days').format('YYYY-MM-DD');
-				} else if (mod === 'within_last_week') queryProp.$gte = moment().subtract(1, 'weeks').format('YYYY-MM-DD');
+					targetProp.$gte = moment().subtract(7, 'days').format('YYYY-MM-DD');
+					targetProp.$lte = moment().subtract(6, 'days').format('YYYY-MM-DD');
+				} else if (mod === 'within_last_week') targetProp.$gte = moment().subtract(1, 'weeks').format('YYYY-MM-DD');
 				else if (mod === 'last_month') {
-					queryProp.$gte = moment().subtract(31, 'days').format('YYYY-MM-DD');
-					queryProp.$lte = moment().subtract(30, 'days').format('YYYY-MM-DD');
-				} else if (mod === 'within_last_month') queryProp.$gte = moment().subtract(1, 'month').format('YYYY-MM-DD');
+					targetProp.$gte = moment().subtract(31, 'days').format('YYYY-MM-DD');
+					targetProp.$lte = moment().subtract(30, 'days').format('YYYY-MM-DD');
+				} else if (mod === 'within_last_month') targetProp.$gte = moment().subtract(1, 'month').format('YYYY-MM-DD');
 				else if (mod === 'last_year') {
-					queryProp.$gte = moment().subtract(365, 'days').format('YYYY-MM-DD');
-					queryProp.$lte = moment().subtract(364, 'days').format('YYYY-MM-DD');
-				} else if (mod === 'within_last_year') queryProp.$gte = moment().subtract(1, 'year').format('YYYY-MM-DD');
+					targetProp.$gte = moment().subtract(365, 'days').format('YYYY-MM-DD');
+					targetProp.$lte = moment().subtract(364, 'days').format('YYYY-MM-DD');
+				} else if (mod === 'within_last_year') targetProp.$gte = moment().subtract(1, 'year').format('YYYY-MM-DD');
 			}
+			filter.push({ [target]: targetProp });
 		}
 	});
 	return query;

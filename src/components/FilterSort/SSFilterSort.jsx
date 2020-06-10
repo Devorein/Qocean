@@ -332,7 +332,9 @@ class SSFilterSort extends Component {
 						name="Cond"
 						value={currentTarget.cond}
 						onChange={(e) => {
-							currentTarget.cond = e.target.value;
+							this.state.filters.forEach((filter) => {
+								filter.cond = e.target.value;
+							});
 							this.setState({
 								filters: this.state.filters
 							});
@@ -351,7 +353,7 @@ class SSFilterSort extends Component {
 
 						currentTarget.target = e.target.value;
 						currentTarget.type = targetType;
-						currentTarget.cond = 'and';
+						currentTarget.cond = this.state.filters[0].cond;
 						currentTarget.mod = modItems[0].value;
 						if (targetType === 'date') {
 							const currentDate = moment(Date.now()).toISOString();
@@ -446,12 +448,14 @@ class SSFilterSort extends Component {
 								</div>
 							);
 						})}
-						{items.length < 3 ? (
+						{items.length < 5 ? (
 							<div className="SSFilterSort_apply-button">
 								<AddBoxIcon
 									style={{ color: this.props.theme.palette.success.main }}
 									onClick={(e) => {
-										items.push(item === 'filters' ? { ...DEFAULT_FILTER } : { ...DEFAULT_SORT });
+										items.push(
+											item === 'filters' ? { ...DEFAULT_FILTER, cond: this.state.filters[0].cond } : { ...DEFAULT_SORT }
+										);
 										this.setState({
 											[item]: items
 										});
