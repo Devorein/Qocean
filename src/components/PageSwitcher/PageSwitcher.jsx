@@ -15,6 +15,9 @@ class PageSwitcher extends Component {
 		if (runBeforeSwitch) runBeforeSwitch();
 		this.props.history.push(`/${page.link}`);
 		if (runAfterSwitch) runAfterSwitch(page.name);
+		this.setState({
+			type: page.name
+		});
 	};
 
 	render() {

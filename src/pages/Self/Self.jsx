@@ -11,12 +11,11 @@ import './Self.scss';
 class Self extends Component {
 	state = {
 		data: [],
-		type: this.props.user.current_environment.default_self_landing,
 		totalCount: 0
 	};
 
 	refetchData = (type, queryParams) => {
-		type = type ? type.toLowerCase() : this.state.type.toLowerCase();
+		type = type.toLowerCase();
 		populateQueryParams(type, queryParams, this.props.user);
 		const queryString = qs.stringify(queryParams);
 		const headers = {
@@ -54,13 +53,19 @@ class Self extends Component {
 			<PageSwitcher
 				page="self"
 				runAfterSwitch={(type) => {
-					this.refetchData(type, { page: 1, limit: this.props.user.current_environment.default_self_rpp });
+					refetchData(type, { page: 1, limit: this.props.user.current_environment.default_self_rpp });
 				}}
 			>
 				{({ CustomTabs, type }) => (
 					<div className="Self page">
 						{CustomTabs}
-						<Explorer page={'Self'} data={data} totalCount={totalCount} type={type} refetchData={refetchData} />
+						<Explorer
+							page={'Self'}
+							data={data}
+							totalCount={totalCount}
+							type={type}
+							refetchData={refetchData.bind(null, type)}
+						/>
 					</div>
 				)}
 			</PageSwitcher>
