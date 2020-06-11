@@ -26,8 +26,8 @@ class PageSwitcher extends Component {
 		let { page } = this.props;
 		page = page.toLowerCase();
 		if (page === 'explore') return [ 'User', 'Quiz', 'Question', 'Folder', 'Environment' ];
-		else if (page === 'self') return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
-		else if (page === 'watchlist') return [ 'W_Quiz', 'W_Folder' ];
+		else if (page.match(/(self|create)/)) return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
+		else if (page === 'watchlist') return [ 'Quiz', 'Folder' ];
 	};
 
 	render() {

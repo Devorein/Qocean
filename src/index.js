@@ -136,6 +136,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
+					console.log(err);
 					this.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to update ${type}`,

@@ -79,94 +79,104 @@ mongoose.connect(process.env.MONGO_URI, {
 
 	if (createMode === 'specified') {
 		const username = args[userArg + 1];
-		const { email, password } = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8')).find(
+		const selectedUser = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8')).find(
 			(user) => user.username === username
 		);
+		if (selectedUser) {
+			const { email, password } = selectedUser;
 
-		const { data: { token, _id } } = await axios.post(`http://localhost:5001/api/v1/auth/login`, {
-			email,
-			password
-		});
-
-		const headers = {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		};
-
-		let { data: { data: quizzes } } = await axios.get(`http://localhost:5001/api/v1/quizzes/me?select=_id,questions`, {
-			...headers
-		});
-
-		let { data: { data: questions } } = await axios.get(`http://localhost:5001/api/v1/questions/me?select=_id`, {
-			...headers
-		});
-
-		let { data: { data: folders } } = await axios.get(`http://localhost:5001/api/v1/folders/me?select=_id`, {
-			...headers
-		});
-
-		let { data: { data: envs } } = await axios.get(`http://localhost:5001/api/v1/environments/me?select=_id`, {
-			...headers
-		});
-
-		quizzes = quizzes.map(({ _id, questions }) => ({ _id, questions }));
-		questions = questions.map(({ _id }) => _id);
-		folders = folders.map(({ _id }) => _id);
-		envs = envs.map(({ _id }) => _id);
-
-		let resources_tb_created = [];
-		const resourceType = args[args.indexOf('-rt') + 1];
-		if (!resourceType || resourceType.startsWith('-')) resources_tb_created = [ 2, 3, 4, 5 ];
-		else
-			resources_tb_created = resourceType
-				.split(',')
-				.map((type) => parseInt(type))
-				.filter((type) => type >= 2 && type <= 5);
-
-		const users = [
-			{
-				_id,
-				token,
-				quizzes: quizzes.map(({ _id }) => _id),
-				questions,
-				folders,
-				envs
-			}
-		];
-
-		if (resources_tb_created.includes(2))
-			await createQuizzes({
-				count: counts[0],
-				users,
-				total_users: 1,
-				quizzes
+			const { data: { token, _id } } = await axios.post(`http://localhost:5001/api/v1/auth/login`, {
+				email,
+				password
 			});
 
-		if (resources_tb_created.includes(3))
-			await createQuestions({
-				count: counts[1],
-				questions,
-				quizzes,
-				total_users: 1,
-				users
+			const headers = {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			};
+
+			let {
+				data: { data: quizzes }
+			} = await axios.get(
+				`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=_id&select=_id,questions`,
+				{
+					...headers
+				}
+			);
+
+			let { data: { data: questions } } = await axios.get(`http://localhost:5001/api/v1/questions/me?select=_id`, {
+				...headers
 			});
 
-		if (resources_tb_created.includes(4))
-			await createFolders({
-				count: counts[2],
-				folders,
-				total_users: 1,
-				users
+			let { data: { data: folders } } = await axios.get(`http://localhost:5001/api/v1/folders/me?select=_id`, {
+				...headers
 			});
 
-		if (resources_tb_created.includes(5))
-			await createEnvironments({
-				count: counts[3],
-				envs,
-				users,
-				total_users: 1
+			let { data: { data: envs } } = await axios.get(`http://localhost:5001/api/v1/environments/me?select=_id`, {
+				...headers
 			});
+
+			quizzes = quizzes.map(({ _id, questions }) => ({ _id, questions: questions.map(({ _id }) => _id) }));
+			questions = questions.map(({ _id }) => _id);
+			folders = folders.map(({ _id }) => _id);
+			envs = envs.map(({ _id }) => _id);
+
+			let resources_tb_created = [];
+			const resourceType = args[args.indexOf('-rt') + 1];
+			if (!resourceType || resourceType.startsWith('-')) resources_tb_created = [ 2, 3, 4, 5 ];
+			else
+				resources_tb_created = resourceType
+					.split(',')
+					.map((type) => parseInt(type))
+					.filter((type) => type >= 2 && type <= 5);
+
+			const users = [
+				{
+					_id,
+					token,
+					quizzes: quizzes.map(({ _id }) => _id),
+					questions,
+					folders,
+					envs
+				}
+			];
+
+			if (resources_tb_created.includes(2))
+				await createQuizzes({
+					count: counts[0],
+					users,
+					total_users: 1,
+					quizzes
+				});
+
+			if (resources_tb_created.includes(3))
+				await createQuestions({
+					count: counts[1],
+					questions,
+					quizzes,
+					total_users: 1,
+					users
+				});
+
+			if (resources_tb_created.includes(4))
+				await createFolders({
+					count: counts[2],
+					folders,
+					total_users: 1,
+					users
+				});
+
+			if (resources_tb_created.includes(5))
+				await createEnvironments({
+					count: counts[3],
+					envs,
+					users,
+					total_users: 1
+				});
+		} else {
+			console.error('User doesnt exist in the json data'.red);
+		}
 	} else if (createMode === 'all') {
 		const users = [],
 			quizzes = [],

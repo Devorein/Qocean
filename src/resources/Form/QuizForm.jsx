@@ -6,6 +6,7 @@ import MultiSelect from '../../components/Input/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TagCreatorRP from '../../RP/TagCreatorRP';
 import FileInputRP from '../../RP/FileInputRP';
+import { isEqual } from 'lodash';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -26,6 +27,17 @@ class QuizForm extends Component {
 		loading: true,
 		selected_folders: this.props.selected_folders || []
 	};
+
+	UNSAFE_componentWillReceiveProps(props) {
+		let isAllSame = true;
+		if (props.selected_folders.length !== this.state.selected_folders.length) isAllSame = false;
+		isAllSame = isAllSame && isEqual([ ...this.state.selected_folders ].sort(), [ ...props.selected_folders ].sort());
+		if (!isAllSame) {
+			this.setState({
+				selected_folders: props.selected_folders
+			});
+		}
+	}
 
 	componentDidMount() {
 		axios

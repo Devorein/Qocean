@@ -43,12 +43,6 @@ const keyMap = {
 	GLOBAL_ACTION_4: 'shift+4'
 };
 
-const headers = {
-	headers: {
-		Authorization: `Bearer ${localStorage.getItem('token')}`
-	}
-};
-
 class Displayer extends Component {
 	static contextType = AppContext;
 
@@ -63,6 +57,12 @@ class Displayer extends Component {
 		});
 	}
 
+	headers = {
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem('token')}`
+		}
+	};
+
 	updateResource = (selectedIndex, field) => {
 		let { type, data, updateDataLocally } = this.props;
 		const updatedRows = selectedIndex.map((index) => ({ id: data[index]._id, body: { [field]: !data[index][field] } }));
@@ -74,7 +74,7 @@ class Displayer extends Component {
 					[type]: updatedRows
 				},
 				{
-					...headers
+					...this.headers
 				}
 			)
 			.then(({ data: { data: updatedDatas } }) => {
@@ -91,7 +91,7 @@ class Displayer extends Component {
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
 			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
-				...headers,
+				...this.headers,
 				data: {
 					[target]: selectedRows
 				}
@@ -137,7 +137,7 @@ class Displayer extends Component {
 					[type]: ids
 				},
 				{
-					...headers
+					...this.headers
 				}
 			)
 			.then(({ data: { data } }) => {
@@ -200,7 +200,7 @@ class Displayer extends Component {
 					/>
 				);
 			} else if (page.match(/(watchlist|explore)/)) {
-				if (type !== 'user')
+				if (type !== 'user' && this.context.user)
 					actions.push(
 						<NoteAddIcon
 							className="Displayer_actions-create"
@@ -267,7 +267,7 @@ class Displayer extends Component {
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
 			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
 			if (item.joined_at) temp.joined_at = moment(item.joined_at).fromNow();
-			if (this.props.type === 'Environment') {
+			if (this.props.type === 'Environment' && this.context.user) {
 				const isCurrentEnv = item._id === this.context.user.current_environment._id;
 				temp.name = (
 					<div style={{ display: 'flex', alignItems: 'center' }}>

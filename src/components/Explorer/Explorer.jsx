@@ -30,13 +30,10 @@ class Explorer extends Component {
 		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
 		const { data, refetchData, totalCount, type, page, updateDataLocally } = this.props;
 		const formFillerMsg = page === 'Self' ? 'Update' : 'Create';
-		const onSubmit =
-			page !== 'Self'
-				? this.context.submitForm
-				: this.context.updateResource.bind(null, formFillerIndex ? data[formFillerIndex]._id : '', refetchData);
+
 		return (
 			<div className="Explorer">
-				<Detailer data={data[detailerIndex]} type={type}>
+				<Detailer page={page} data={data[detailerIndex]} type={type}>
 					{({ fetchData, Detailer }) => {
 						return (
 							<Fragment>
@@ -44,11 +41,19 @@ class Explorer extends Component {
 								<div className="Displayer_container">
 									<Manipulator
 										onApply={(filterSorts) => {
-											refetchData(filterSort(filterSorts));
+											refetchData(type, filterSort(filterSorts));
 										}}
 										type={type}
 									>
 										{({ Manipulator, filter_sort }) => {
+											let onSubmit =
+												page !== 'Self'
+													? this.context.submitForm
+													: this.context.updateResource.bind(
+															null,
+															formFillerIndex !== null ? data[formFillerIndex]._id : '',
+															refetchData.bind(null, filterSort(filter_sort))
+														);
 											return (
 												<Fragment>
 													{Manipulator}
@@ -68,6 +73,21 @@ class Explorer extends Component {
 														}}
 														updateDataLocally={updateDataLocally}
 													/>
+													{formFillerIndex !== null ? (
+														<FormFiller
+															page={page}
+															isOpen={isFormFillerOpen}
+															user={this.context.user}
+															handleClose={() => {
+																this.setState({ isFormFillerOpen: false });
+															}}
+															submitMsg={formFillerMsg}
+															onSubmit={onSubmit}
+															type={type}
+															data={data[formFillerIndex]}
+															onArrowClick={this.switchData}
+														/>
+													) : null}
 												</Fragment>
 											);
 										}}
@@ -77,22 +97,6 @@ class Explorer extends Component {
 						);
 					}}
 				</Detailer>
-
-				{formFillerIndex !== null ? (
-					<FormFiller
-						page={page}
-						isOpen={isFormFillerOpen}
-						user={this.context.user}
-						handleClose={() => {
-							this.setState({ isFormFillerOpen: false });
-						}}
-						submitMsg={formFillerMsg}
-						onSubmit={onSubmit}
-						type={type}
-						data={data[formFillerIndex]}
-						onArrowClick={this.switchData}
-					/>
-				) : null}
 			</div>
 		);
 	}

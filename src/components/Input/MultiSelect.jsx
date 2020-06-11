@@ -10,6 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 import RegularChip from '../../components/Chip/RegularChip';
 import Switch from '@material-ui/core/Switch';
+import shortid from 'shortid';
 
 const useStyles = makeStyles(() => ({
 	chips: {
@@ -64,7 +65,7 @@ export default function MultiSelect({
 				multiple
 				value={selected}
 				onChange={handleChange}
-				input={<Input id="select-multiple-chip" />}
+				input={<Input id={shortid.generate()} />}
 				renderValue={(selected) => {
 					return customRenderValue ? (
 						customRenderValue(selected)
@@ -80,7 +81,17 @@ export default function MultiSelect({
 										<Chip
 											className={classes.chip}
 											key={value}
-											label={items ? items.find(({ _id, name }) => _id === value).name : ''}
+											label={
+												items.length !== 0 ? (
+													(() => {
+														const targetItem = items.find(({ _id, name }) => _id === value);
+														if (targetItem) return targetItem.name;
+														else return '';
+													})()
+												) : (
+													''
+												)
+											}
 										/>
 									)
 							)}

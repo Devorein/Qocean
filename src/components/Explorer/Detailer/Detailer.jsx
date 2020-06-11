@@ -38,14 +38,16 @@ class Detailer extends Component {
 	};
 
 	fetchData = (type, id) => {
+		const page = this.props.page.toLowerCase();
 		let queryParams = {};
 		type = type.toLowerCase();
 		if (type === 'watchers') type = 'users';
 		else if (type === 'current_environments') type = 'environments';
 		populateQueryParams(type, queryParams, this.context.user);
 		if (!type.match(/(user|users)/)) queryParams._id = id;
+		if (page !== 'self') queryParams._id = id;
 		const queryString = qs.stringify(queryParams);
-		const url = `http://localhost:5001/api/v1/${pluralize.isPlural(type) ? type : pluralize(type, 2)}${this.context.user
+		const url = `http://localhost:5001/api/v1/${pluralize.isPlural(type) ? type : pluralize(type, 2)}${page === 'self'
 			? '/me'
 			: ''}?${queryString}`;
 		axios

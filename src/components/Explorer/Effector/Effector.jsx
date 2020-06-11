@@ -169,15 +169,17 @@ class Effector extends Component {
 					this.refetchData();
 				}}
 			/>,
-			<GetAppIcon
-				key={'export'}
-				ref={(ref) => {
-					this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-				}}
-				onClick={(e) => {
-					exportData(type, data);
-				}}
-			/>
+			type !== 'user' ? (
+				<GetAppIcon
+					key={'export'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
+					}}
+					onClick={(e) => {
+						exportData(type, data);
+					}}
+				/>
+			) : null
 		];
 		const array = Array(data.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
@@ -202,7 +204,7 @@ class Effector extends Component {
 				/>
 			);
 		} else {
-			if (type.match(/(folders|folder|quiz|quizzes)/)) {
+			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user) {
 				effectors.push(
 					<VisibilityIcon
 						key={'watch'}
@@ -224,21 +226,25 @@ class Effector extends Component {
 		type = type.toLowerCase();
 		const selectedItems = selectedIndex.map((index) => data[index]);
 		const effectors = [
-			<GetAppIcon
-				key={'export'}
-				ref={(ref) => {
-					this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-				}}
-				onClick={(e) => {
-					exportData(type, selectedItems);
-				}}
-			/>,
-			<VisibilityIcon
-				key={'watch'}
-				onClick={(e) => {
-					this.props.watchToggle(selectedIndex);
-				}}
-			/>
+			type !== 'user' ? (
+				<GetAppIcon
+					key={'export'}
+					ref={(ref) => {
+						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
+					}}
+					onClick={(e) => {
+						exportData(type, selectedItems);
+					}}
+				/>
+			) : null,
+			this.context.user ? (
+				<VisibilityIcon
+					key={'watch'}
+					onClick={(e) => {
+						this.props.watchToggle(selectedIndex);
+					}}
+				/>
+			) : null
 		];
 
 		if (page === 'self') {

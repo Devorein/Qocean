@@ -15,6 +15,7 @@ const imageUpload = require('../middleware/imageUpload');
 
 const router = express.Router();
 
+router.route('/').get(advancedResults(User));
 router.route('/countAll').get(advancedResults(User));
 router.route('/countOthers').get(protect, advancedResults(User));
 router.route('/others').get(protect, advancedResults(User));
