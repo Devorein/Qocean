@@ -113,11 +113,9 @@ class Detailer extends Component {
 	};
 
 	renderValue = (key, value) => {
+		const page = this.props.page.toLowerCase();
 		if (key.match(/^(created_at|updated_at|joined_at)$/)) value = moment(value).fromNow();
 		else if (key.match(/(tags)/)) value = <ChipContainer chips={value} type={'regular'} height={50} />;
-		else if (key === 'public') value = <PublicIcon style={{ fill: value ? '#00a3e6' : '#f4423c' }} />;
-		else if (key === 'favourite')
-			value = value ? <StarIcon style={{ fill: '#f0e744' }} /> : <StarBorderIcon style={{ fill: '#ead50f' }} />;
 		else if (key === 'icon') value = getColoredIcons(this.state.type, value);
 		else if (key === 'image') {
 			let src = null;
@@ -126,6 +124,12 @@ class Detailer extends Component {
 			else src = `http://localhost:5001/uploads/${value}`;
 			value = <img src={src} alt={`${this.state.type}`} />;
 		} else if (value !== null) value = value.toString();
+
+		if (page === 'self') {
+			if (key === 'public') value = <PublicIcon style={{ fill: value ? '#00a3e6' : '#f4423c' }} />;
+			else if (key === 'favourite')
+				value = value ? <StarIcon style={{ fill: '#f0e744' }} /> : <StarBorderIcon style={{ fill: '#ead50f' }} />;
+		}
 		return value;
 	};
 
@@ -203,12 +207,14 @@ class Detailer extends Component {
 		);
 	};
 	renderDetailer = () => {
+		const { page } = this.props;
 		const { data, type } = this.state;
 		const sectorizedData = data
 			? sectorizeData(data, type, {
 					authenticated: this.context.user,
 					singularSectorize: true,
-					purpose: 'detail'
+					purpose: 'detail',
+					page
 				})
 			: null;
 		if (sectorizedData) {

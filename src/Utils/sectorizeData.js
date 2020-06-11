@@ -3,9 +3,18 @@ import { difference } from 'lodash';
 export default function(
 	data,
 	type,
-	{ authenticated, flatten = false, singular = false, blacklist = [], purpose, singularSectorize = false }
+	{
+		authenticated,
+		flatten = false,
+		singular = false,
+		blacklist = [],
+		purpose,
+		singularSectorize = false,
+		page = 'self'
+	}
 ) {
 	type = type.toLowerCase();
+	page = page.toLowerCase();
 	const primary = [],
 		secondary = [],
 		tertiary = [],
@@ -65,7 +74,7 @@ export default function(
 	if (!type.match(/(user|users)/)) {
 		tertiary.push('created_at', 'updated_at');
 		ref.push('user');
-		if (authenticated) secondary.push('public', 'favourite');
+		if (authenticated && page === 'self') secondary.push('public', 'favourite');
 	}
 
 	if (flatten) {

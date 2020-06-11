@@ -127,7 +127,8 @@ class Displayer extends Component {
 	};
 
 	watchToggle = (selectedIndex) => {
-		let { type, data } = this.props;
+		let { type, data, page } = this.props;
+		page = page.toLowerCase();
 		const ids = selectedIndex.map((index) => data[index]._id);
 		type = pluralize(type, 2).toLowerCase();
 		axios
@@ -142,7 +143,6 @@ class Displayer extends Component {
 			)
 			.then(({ data: { data } }) => {
 				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
-				this.context.refetchUser();
 			});
 	};
 
