@@ -4,15 +4,17 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import InputSelect from '../Input/InputSelect';
 import Menu from '@material-ui/core/Menu';
 import AddBoxIcon from '@material-ui/icons/AddBox';
-import { withTheme } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
 import Switch from '@material-ui/core/Switch';
 import moment from 'moment';
 import shortid from 'shortid';
-import './SSFilterSort.scss';
 import MultiSelect from '../Input/MultiSelect';
+import Color from 'color';
+import convert from 'color-convert';
+import './SSFilterSort.scss';
 
 const DEFAULT_FILTER = {
 	target: 'none',
@@ -34,14 +36,14 @@ function capitalize(item) {
 
 class SSFilterSort extends Component {
 	state = {
-		filters: [ { ...DEFAULT_FILTER } ],
+		filters: [ { ...DEFAULT_FILTER, children: [] } ],
 		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
 	UNSAFE_componentWillReceiveProps(props) {
 		if (props.type !== this.props.type) {
 			this.setState({
-				filters: [ { ...DEFAULT_FILTER } ],
+				filters: [ { ...DEFAULT_FILTER, children: [] } ],
 				sorts: [ { ...DEFAULT_SORT } ]
 			});
 		}
@@ -334,92 +336,135 @@ class SSFilterSort extends Component {
 			];
 		} else return [ [ { value: 'none', text: 'None' } ], null ];
 	};
-	renderFilterItem = (index) => {
-		const selectItems = this.getPropsBasedOnType();
-		const currentTarget = this.state.filters[index];
-		const { target, mod, disabled } = currentTarget;
 
-		const targetType = this.decideTargetType(target);
-		const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
-		const modValue = mod !== 'none' ? mod : modItems[0].value;
-		return (
-			<Fragment>
-				<div className="FilterSortItem_select_switch">
-					<Switch
-						name={`${targetType}${index}`}
-						checked={!disabled}
-						color="primary"
-						onChange={(e) => {
-							currentTarget.disabled = !disabled;
-							this.setState({
-								filters: this.state.filters
-							});
-						}}
-					/>
-				</div>
-				{index >= 1 ? (
+	renderFilterItem = (parentIndex, { isChild, childIndex, child }) => {
+		let currentTarget = null,
+			index = null;
+		if (parentIndex !== null) {
+			index = parentIndex;
+			currentTarget = this.state.filters[index];
+		} else {
+			index = childIndex;
+			currentTarget = child;
+		}
+		debugger;
+		if (currentTarget) {
+			const { target, mod, disabled } = currentTarget;
+			const selectItems = this.getPropsBasedOnType();
+			const targetType = this.decideTargetType(target);
+			const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
+			const modValue = mod !== 'none' ? mod : modItems[0].value;
+
+			return (
+				<div
+					key={isChild ? `filter${index}_child${childIndex}` : `filter${index}`}
+					className={`FilterSortItem_select_item ${disabled}`}
+				>
+					<div className="FilterSortItem_select_switch">
+						<Switch
+							name={`${targetType}${index}`}
+							checked={!disabled}
+							color="primary"
+							onChange={(e) => {
+								currentTarget.disabled = !disabled;
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+						/>
+					</div>
+					{index >= 1 ? (
+						<InputSelect
+							className="FilterSortItem_select_cond"
+							name="Cond"
+							value={currentTarget.cond}
+							onChange={(e) => {
+								this.state.filters.forEach((filter) => {
+									filter.cond = e.target.value;
+								});
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+							disabledSelect={disabled}
+							selectItems={[ { value: 'and', text: 'AND' }, { value: 'or', text: 'OR' } ]}
+						/>
+					) : null}
 					<InputSelect
-						className="FilterSortItem_select_cond"
-						name="Cond"
-						value={currentTarget.cond}
+						className="FilterSortItem_select_target"
+						name="Target"
+						value={target}
 						onChange={(e) => {
-							this.state.filters.forEach((filter) => {
-								filter.cond = e.target.value;
-							});
+							const targetType = this.decideTargetType(e.target.value);
+							const [ modItems ] = this.decideFilterItem(targetType, index);
+
+							currentTarget.target = e.target.value;
+							currentTarget.type = targetType;
+							currentTarget.cond = this.state.filters[0].cond;
+							currentTarget.mod = modItems[0].value;
+							if (targetType === 'date') {
+								const currentDate = moment(Date.now()).toISOString();
+								if (currentTarget.mod === 'exact') currentTarget.value = [ currentDate ];
+								else if (currentTarget.mod === 'within') currentTarget.value = [ currentDate, currentDate ];
+							} else {
+								currentTarget.value = (() => {
+									if (targetType === 'string') return '';
+									else if (targetType === 'number') return [ 0 ];
+									else if (targetType === 'boolean') return true;
+								})();
+							}
 							this.setState({
 								filters: this.state.filters
 							});
 						}}
 						disabledSelect={disabled}
-						selectItems={[ { value: 'and', text: 'AND' }, { value: 'or', text: 'OR' } ]}
+						selectItems={selectItems}
 					/>
-				) : null}
-				<InputSelect
-					className="FilterSortItem_select_target"
-					name="Target"
-					value={target}
-					onChange={(e) => {
-						const targetType = this.decideTargetType(e.target.value);
-						const [ modItems ] = this.decideFilterItem(targetType, index);
-
-						currentTarget.target = e.target.value;
-						currentTarget.type = targetType;
-						currentTarget.cond = this.state.filters[0].cond;
-						currentTarget.mod = modItems[0].value;
-						if (targetType === 'date') {
-							const currentDate = moment(Date.now()).toISOString();
-							if (currentTarget.mod === 'exact') currentTarget.value = [ currentDate ];
-							else if (currentTarget.mod === 'within') currentTarget.value = [ currentDate, currentDate ];
-						} else {
-							currentTarget.value = (() => {
-								if (targetType === 'string') return '';
-								else if (targetType === 'number') return [ 0 ];
-								else if (targetType === 'boolean') return true;
-							})();
-						}
-						this.setState({
-							filters: this.state.filters
-						});
-					}}
-					disabledSelect={disabled}
-					selectItems={selectItems}
-				/>
-				<InputSelect
-					className="FilterSortItem_select_mod"
-					name="Mod"
-					value={modValue}
-					onChange={(e) => {
-						currentTarget.mod = e.target.value;
-						this.setState({
-							filters: this.state.filters
-						});
-					}}
-					disabledSelect={disabled}
-					selectItems={modItems}
-				/>
-				<div className="FilterSortItem_select_value">{valueItem}</div>
-			</Fragment>
-		);
+					<InputSelect
+						className="FilterSortItem_select_mod"
+						name="Mod"
+						value={modValue}
+						onChange={(e) => {
+							currentTarget.mod = e.target.value;
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+						disabledSelect={disabled}
+						selectItems={modItems}
+					/>
+					<div className="FilterSortItem_select_value">{valueItem}</div>
+					{index !== 0 || isChild ? (
+						<div className="FilterSortItem_select_delete">
+							<CancelIcon
+								onClick={() => {
+									if (!disabled) {
+										const { filters } = this.state;
+										filters.splice(index, 1);
+										this.setState({
+											filters
+										});
+									}
+								}}
+							/>
+						</div>
+					) : null}
+					{!isChild && currentTarget.children.length < 3 ? (
+						<AddBoxIcon
+							className="FilterSortItem_select_add"
+							onClick={(e) => {
+								const newTarget = { ...DEFAULT_FILTER };
+								delete newTarget.children;
+								this.state.filters[index].children.push(newTarget);
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+						/>
+					) : null}
+				</div>
+			);
+		}
 	};
 
 	renderFilterSortItem = () => {
@@ -451,7 +496,7 @@ class SSFilterSort extends Component {
 							});
 						}}
 						PopoverClasses={{
-							paper: 'SSFilterSort-popover'
+							paper: `SSFilterSort-popover ${this.props.classes.root}`
 						}}
 					>
 						{items.map(({ disabled, target }, index) => {
@@ -462,30 +507,49 @@ class SSFilterSort extends Component {
 										: ''}`}
 									key={`${target}${index}`}
 								>
-									{item === 'filters' ? this.renderFilterItem(index) : this.renderSortItem(index)}
-									{index !== 0 ? (
-										<CancelIcon
-											onClick={() => {
-												if (!disabled) {
-													items.splice(index, 1);
-													this.setState({
-														[item]: items
-													});
-												}
-											}}
-											style={{ color: this.props.theme.palette.error.main }}
-										/>
-									) : null}
+									{item === 'filters' ? (
+										<div
+											className={`FilterSortItem_select_${item}_parent ${disabled
+												? 'FilterSortItem_select--disabled'
+												: ''}`}
+										>
+											{' '}
+											{this.renderFilterItem(index, { isChild: false, childIndex: null })}
+										</div>
+									) : (
+										this.renderSortItem(index)
+									)}
+									<div
+										className={`FilterSortItem_select_${item}_childcontainer ${disabled
+											? 'FilterSortItem_select--disabled'
+											: ''}`}
+									>
+										{item === 'filters' ? this.state.filters[index].children.length !== 0 ? (
+											this.state.filters[index].children.map((child, childIndex) => {
+												return (
+													<div
+														className={`FilterSortItem_select_${item}_child ${disabled
+															? 'FilterSortItem_select--disabled'
+															: ''}`}
+														key={`filter${index}_child${childIndex}`}
+													>
+														{this.renderFilterItem(null, { child, isChild: true, childIndex })}
+													</div>
+												);
+											})
+										) : null : null}
+									</div>
 								</div>
 							);
 						})}
 						{items.length < 5 ? (
 							<div className="SSFilterSort_apply-button">
 								<AddBoxIcon
-									style={{ color: this.props.theme.palette.success.main }}
 									onClick={(e) => {
 										items.push(
-											item === 'filters' ? { ...DEFAULT_FILTER, cond: this.state.filters[0].cond } : { ...DEFAULT_SORT }
+											item === 'filters'
+												? { ...DEFAULT_FILTER, children: [], cond: this.state.filters[0].cond }
+												: { ...DEFAULT_SORT }
 										);
 										this.setState({
 											[item]: items
@@ -502,7 +566,7 @@ class SSFilterSort extends Component {
 
 	renderFilterSort = () => {
 		return (
-			<div className="FilterSort">
+			<div className={`FilterSort`}>
 				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
 				<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
 			</div>
@@ -520,4 +584,19 @@ class SSFilterSort extends Component {
 	}
 }
 
-export default withTheme(SSFilterSort);
+export default withStyles((theme) => ({
+	root: {
+		'& .FilterSortItem_select_delete': {
+			color: theme.palette.error.main
+		},
+		'& .FilterSortItem_select_add': {
+			color: theme.palette.success.main
+		},
+		'& .SSFilterSort_apply-button': {
+			color: theme.palette.success.main
+		},
+		'& .FilterSortItem_select_filters_childcontainer': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex()
+		}
+	}
+}))(SSFilterSort);

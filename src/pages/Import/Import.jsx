@@ -126,8 +126,8 @@ class Import extends Component {
 											useModal={false}
 											user={this.props.user}
 											submitMsg={'Import'}
-											onSubmit={this.context.submitForm}
 											type={type}
+											page={'Import'}
 											data={this.state.data[selectedIndex]}
 										/>
 									</Fragment>

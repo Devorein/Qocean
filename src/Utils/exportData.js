@@ -24,11 +24,11 @@ export default function(type, data) {
 				return shaveData(dataWithAnswers, type, { purpose: 'download' });
 			})
 			.then((data) => {
-				download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
+				download(`${type}_${Date.now()}_${shortid.generate()}.json`, JSON.stringify(data));
 			});
 	} else
 		download(
-			`${Date.now()}_${shortid.generate()}.json`,
+			`${type}_${Date.now()}_${shortid.generate()}.json`,
 			JSON.stringify(shaveData(data, type, { purpose: 'download' }))
 		);
 }

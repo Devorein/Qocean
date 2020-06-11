@@ -19,7 +19,6 @@ class Create extends Component {
 							data={null}
 							type={type}
 							page={'Create'}
-							onSubmit={this.context.submitForm}
 						/>
 					</div>
 				)}

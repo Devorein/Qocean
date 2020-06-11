@@ -15,7 +15,6 @@ import ExploreIcon from '@material-ui/icons/Explore';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import ImageIcon from '@material-ui/icons/Image';
 import FaceIcon from '@material-ui/icons/Face';
-import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import PublishRoundedIcon from '@material-ui/icons/PublishRounded';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -84,7 +83,7 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 		},
 		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> },
 		{ name: 'import', link: 'import/quiz', icon: <PublishRoundedIcon /> },
-		{ name: 'export', link: 'export/quiz', icon: <GetAppRoundedIcon /> }
+		{ name: 'self', link: `self/${user.current_environment.default_self_landing}`, icon: <FaceIcon /> }
 	];
 	const index = headers.findIndex(({ name }) => name === location.pathname.replace(/\//g, '\\').split('\\')[1]);
 	return (
@@ -138,10 +137,7 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 					<EqualizerIcon />
 					Stats
 				</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, `self/${user.current_environment.default_self_landing}`)}>
-					<FaceIcon />
-					Self
-				</MenuItem>
+
 				<MenuItem onClick={switchPage.bind(null, `report`)}>
 					<AssessmentIcon />Report
 				</MenuItem>

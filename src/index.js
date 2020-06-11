@@ -15,7 +15,6 @@ import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
 import Watchlist from './pages/Watchlist/Watchlist';
 import Home from './pages/Home/Home';
-import Export from './pages/Export/Export';
 import Import from './pages/Import/Import';
 import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
@@ -29,109 +28,12 @@ import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
-import submitForm from './operations/submitForm';
-import updateResource from './operations/updateResource';
-import setEnvAsCurrent from './operations/setEnvAsCurrent';
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
 
 class App extends Component {
-	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
-		type = type.toLowerCase();
-		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
-		let canSubmit = true;
-		if (preSubmit) {
-			let [ transformedValue, shouldSubmit ] = preSubmit(values);
-			values = transformedValue;
-			canSubmit = shouldSubmit;
-		}
-		if (canSubmit) {
-			submitForm(type, values)
-				.then((data) => {
-					if (reset_on_success) resetForm();
-					setSubmitting(true);
-					setTimeout(() => {
-						setSubmitting(false);
-					}, 2500);
-					// this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
-					if (postSubmit) postSubmit(data);
-					if (type.toLowerCase() === 'environment' && values.set_as_current) {
-						setEnvAsCurrent(data.data.data._id).then(() => {
-							this.props.refetch();
-						});
-					}
-				})
-				.catch((err) => {
-					if (reset_on_error) resetForm();
-					setSubmitting(true);
-					setTimeout(() => {
-						setSubmitting(false);
-					}, 2500);
-					/* 					this.changeResponse(
-						`An error occurred`,
-						err.response.data ? err.response.data.error : `Failed to create ${type}`,
-						'error'
-					); */
-					if (postSubmit) postSubmit(err);
-				});
-		} else {
-			setSubmitting(true);
-			setTimeout(() => {
-				setSubmitting(false);
-			}, 2500);
-		}
-	};
-
-	updateResource = (id, refetchData, [ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
-		type = type.toLowerCase();
-		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
-		let canSubmit = true;
-		if (preSubmit) {
-			let [ transformedValue, shouldSubmit ] = preSubmit(values);
-			values = transformedValue;
-			canSubmit = shouldSubmit;
-		}
-		if (canSubmit) {
-			updateResource(type, id, values)
-				.then((data) => {
-					if (reset_on_success) resetForm();
-					setSubmitting(true);
-					setTimeout(() => {
-						setSubmitting(false);
-					}, 2500);
-					// this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
-					if (postSubmit) postSubmit(data);
-					if (type.toLowerCase() === 'environment' && values.set_as_current) {
-						setEnvAsCurrent(data.data.data._id).then(() => {
-							this.props.refetch();
-						});
-					}
-					refetchData();
-				})
-				.catch((err) => {
-					if (reset_on_error) resetForm();
-					setSubmitting(true);
-					setTimeout(() => {
-						setSubmitting(false);
-					}, 2500);
-					/* 					this.changeResponse(
-						`An error occurred`,
-						err.response.data ? err.response.data.error : `Failed to update ${type}`,
-						'error'
-					); */
-					if (postSubmit) postSubmit(err);
-				});
-		} else {
-			setSubmitting(true);
-			setTimeout(() => {
-				setSubmitting(false);
-			}, 2500);
-		}
-	};
-
 	render() {
-		const { submitForm, updateResource } = this;
 		const { session, location, refetch, updateUserLocally } = this.props;
 		return (
 			<Fragment>
@@ -139,8 +41,6 @@ class App extends Component {
 				<div className="App">
 					<AppContext.Provider
 						value={{
-							submitForm,
-							updateResource,
 							user: session.data ? session.data.data : null,
 							refetchUser: this.props.refetch,
 							updateUserLocally
@@ -180,17 +80,6 @@ class App extends Component {
 								render={({ history, match }) => {
 									return session.data ? (
 										<Import user={session.data.data} match={match} history={history} />
-									) : (
-										<Redirect to="/401" />
-									);
-								}}
-							/>
-							<Route
-								path="/export/:type"
-								exact
-								render={({ history, match }) => {
-									return session.data ? (
-										<Export user={session.data.data} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
