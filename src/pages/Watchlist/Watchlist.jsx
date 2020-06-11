@@ -55,7 +55,7 @@ class Watchlist extends Component {
 				{({ CustomTabs, type }) => (
 					<div className="Explore page">
 						{CustomTabs}
-						<Explorer
+						{/* 						<Explorer
 							page={'Watchlist'}
 							data={data}
 							totalCount={totalCount}
@@ -64,7 +64,7 @@ class Watchlist extends Component {
 							updateDataLocally={(data) => {
 								this.setState({ data });
 							}}
-						/>
+						/> */}
 					</div>
 				)}
 			</PageSwitcher>
