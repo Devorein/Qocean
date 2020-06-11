@@ -202,7 +202,7 @@ class Effector extends Component {
 				/>
 			);
 		} else {
-			if (type.match(/(folders|folder|quiz|quizzes)/)) {
+			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user) {
 				effectors.push(
 					<VisibilityIcon
 						key={'watch'}
@@ -233,12 +233,14 @@ class Effector extends Component {
 					exportData(type, selectedItems);
 				}}
 			/>,
-			<VisibilityIcon
-				key={'watch'}
-				onClick={(e) => {
-					this.props.watchToggle(selectedIndex);
-				}}
-			/>
+			this.context.user ? (
+				<VisibilityIcon
+					key={'watch'}
+					onClick={(e) => {
+						this.props.watchToggle(selectedIndex);
+					}}
+				/>
+			) : null
 		];
 
 		if (page === 'self') {

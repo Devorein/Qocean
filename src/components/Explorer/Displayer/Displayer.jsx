@@ -200,7 +200,7 @@ class Displayer extends Component {
 					/>
 				);
 			} else if (page.match(/(watchlist|explore)/)) {
-				if (type !== 'user')
+				if (type !== 'user' && this.context.user)
 					actions.push(
 						<NoteAddIcon
 							className="Displayer_actions-create"
@@ -267,7 +267,7 @@ class Displayer extends Component {
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
 			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();
 			if (item.joined_at) temp.joined_at = moment(item.joined_at).fromNow();
-			if (this.props.type === 'Environment') {
+			if (this.props.type === 'Environment' && this.context.user) {
 				const isCurrentEnv = item._id === this.context.user.current_environment._id;
 				temp.name = (
 					<div style={{ display: 'flex', alignItems: 'center' }}>

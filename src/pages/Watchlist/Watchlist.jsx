@@ -7,9 +7,7 @@ import Explorer from '../../components/Explorer/Explorer';
 import populateQueryParams from '../../Utils/populateQueryParams';
 import PageSwitcher from '../../components/PageSwitcher/PageSwitcher';
 
-import './Explore.scss';
-
-class Explore extends Component {
+class Watchlist extends Component {
 	state = {
 		data: [],
 		totaCount: 0
@@ -25,14 +23,13 @@ class Explore extends Component {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
-		const [ count, endpoint, header ] = this.props.user
-			? [ `countOthers`, '/others/', headers ]
-			: [ 'countAll', '/', {} ];
+
+		type = pluralize(type.split('_')[1], 2);
 		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}?${queryString}`, { ...header })
+			.get(`http://localhost:5001/api/v1/watchlist/${type}/count`, { ...headers })
 			.then(({ data: { data: totalCount } }) => {
 				axios
-					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}?${queryString}`, { ...header })
+					.get(`http://localhost:5001/api/v1/watchlist/${type}${queryString}`, { ...headers })
 					.then(({ data: { data } }) => {
 						this.setState({
 							data,
@@ -48,22 +45,18 @@ class Explore extends Component {
 	render() {
 		const { refetchData } = this;
 		const { data, totalCount = 0 } = this.state;
-
 		return (
 			<PageSwitcher
-				page="explore"
+				page="watchlist"
 				runAfterSwitch={(type) => {
-					refetchData(type, {
-						page: 1,
-						limit: this.props.user ? this.props.user.current_environment.default_self_rpp : 15
-					});
+					refetchData(type, { page: 1, limit: this.props.user.current_environment.default_watchlist_rpp });
 				}}
 			>
 				{({ CustomTabs, type }) => (
 					<div className="Explore page">
 						{CustomTabs}
 						<Explorer
-							page={'Explore'}
+							page={'Watchlist'}
 							data={data}
 							totalCount={totalCount}
 							type={type}
@@ -79,4 +72,4 @@ class Explore extends Component {
 	}
 }
 
-export default Explore;
+export default Watchlist;

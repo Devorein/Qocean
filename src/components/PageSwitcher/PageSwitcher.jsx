@@ -27,7 +27,7 @@ class PageSwitcher extends Component {
 		page = page.toLowerCase();
 		if (page === 'explore') return [ 'User', 'Quiz', 'Question', 'Folder', 'Environment' ];
 		else if (page === 'self') return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
-		else if (page === 'watchlist') return [ 'W_Quiz', 'W_Folder' ];
+		else if (page === 'watchlist') return [ 'Quiz', 'Folder' ];
 	};
 
 	render() {
