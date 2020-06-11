@@ -41,7 +41,7 @@ class Explorer extends Component {
 								<div className="Displayer_container">
 									<Manipulator
 										onApply={(filterSorts) => {
-											refetchData(type, filterSort(filterSorts));
+											refetchData(filterSort(filterSorts));
 										}}
 										type={type}
 									>
@@ -72,6 +72,7 @@ class Explorer extends Component {
 															});
 														}}
 														updateDataLocally={updateDataLocally}
+														resetFilterSort={resetFilterSort}
 													/>
 													{formFillerIndex !== null ? (
 														<FormFiller

@@ -38,6 +38,15 @@ class SSFilterSort extends Component {
 		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
+	UNSAFE_componentWillReceiveProps(props) {
+		if (props.type !== this.props.type) {
+			this.setState({
+				filters: [ { ...DEFAULT_FILTER } ],
+				sorts: [ { ...DEFAULT_SORT } ]
+			});
+		}
+	}
+
 	getPropsBasedOnType = () => {
 		let { type } = this.props;
 		type = type.toLowerCase();
@@ -240,6 +249,36 @@ class SSFilterSort extends Component {
 			];
 		} else if (targetType === 'select') {
 			const { target, value = [] } = this.state.filters[index];
+			let selectItems = null;
+			if (target.match(/(difficulty|average_difficulty)/))
+				selectItems = [ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
+					name: item,
+					_id: item
+				}));
+			else if (target.match(/(type)/)) {
+				selectItems = [
+					{ name: 'Multi Select', _id: 'MS' },
+					{ name: 'Multi Choice Question', _id: 'MCQ' },
+					{ name: 'Fill in Blanks', _id: 'FIB' },
+					{ name: 'Flashcard', _id: 'FC' },
+					{ name: 'True/False', _id: 'TF' },
+					{ name: 'Snippet', _id: 'Snippet' }
+				];
+			} else if (target === 'icon') {
+				selectItems = [ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
+					const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
+					return {
+						text: capitalized,
+						_id: `${capitalized}_${this.props.type.toLowerCase()}.svg`,
+						customText: getColoredIcons(this.props.type, color)
+					};
+				});
+			} else if (target === 'version') {
+				selectItems = [ 'Rower', 'Sailor', 'Captain' ].map((item) => ({
+					name: item,
+					_id: item
+				}));
+			}
 			return [
 				[ 'is', 'is_not' ].map((name) => ({
 					value: name,
@@ -249,32 +288,7 @@ class SSFilterSort extends Component {
 					disabled={disabled}
 					label={capitalize(target)}
 					selected={Array.isArray(value) ? value : []}
-					items={
-						target.match(/(difficulty|average_difficulty)/) ? (
-							[ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
-								name: item,
-								_id: item
-							}))
-						) : target.match(/(type)/) ? (
-							[
-								{ name: 'Multi Select', _id: 'MS' },
-								{ name: 'Multi Choice Question', _id: 'MCQ' },
-								{ name: 'Fill in Blanks', _id: 'FIB' },
-								{ name: 'Flashcard', _id: 'FC' },
-								{ name: 'True/False', _id: 'TF' },
-								{ name: 'Snippet', _id: 'Snippet' }
-							]
-						) : (
-							[ 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple' ].map((color) => {
-								const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
-								return {
-									text: capitalized,
-									_id: `${capitalized}_${this.props.type.toLowerCase()}.svg`,
-									customText: getColoredIcons(this.props.type, color)
-								};
-							})
-						)
-					}
+					items={selectItems}
 					customChipRenderer={target.match(/(icon)/) ? getColoredIcons.bind(null, this.props.type) : null}
 					handleChange={(e) => {
 						const target = this.state.filters[index];
@@ -499,7 +513,7 @@ class SSFilterSort extends Component {
 		const { passFSAsProp = true } = this.props;
 		if (this.props.children) {
 			return this.props.children({
-				filterSort: passFSAsProp ? this.renderFilterSort() : null,
+				SSFilterSort: passFSAsProp ? this.renderFilterSort() : null,
 				filter_sort: this.state
 			});
 		} else return this.renderFilterSort();
