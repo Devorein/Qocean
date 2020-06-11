@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { isStrongPassword, isAlphaNumericOnly } from '../../Utils/validation';
 import FileInput from '../../RP/FileInputRP';
 import { AppContext } from '../../context/AppContext';
+import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import './Signup.scss';
 
 const validationSchema = Yup.object({
@@ -41,13 +42,13 @@ class SignIn extends Component {
 				})
 				.then((data) => {
 					setTimeout(() => {
-						this.context.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
+						this.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
 						this.props.refetch();
 					}, 500);
 				})
 				.catch((err) => {
 					setTimeout(() => {
-						this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						this.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, 500);
 				});
 		} else this.props.refetch();
@@ -68,10 +69,10 @@ class SignIn extends Component {
 				localStorage.setItem('token', token);
 				this.props.history.push('/');
 				this.postSubmit(_id, image, file);
-				this.context.changeResponse(`Success`, 'Successfully signed up', 'success');
+				this.changeResponse(`Success`, 'Successfully signed up', 'success');
 			})
 			.catch((err) => {
-				this.context.changeResponse(`An error occurred`, err.response.data.error, 'error');
+				this.changeResponse(`An error occurred`, err.response.data.error, 'error');
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
@@ -80,26 +81,33 @@ class SignIn extends Component {
 
 	render() {
 		return (
-			<FileInput src="">
-				{({ FileInput, getFileData }) => {
+			<CustomSnackbars>
+				{({ changeResponse }) => {
+					this.changeResponse = changeResponse;
 					return (
-						<div className="signup pages">
-							<InputForm
-								onSubmit={this.submitForm.bind(null, getFileData)}
-								validationSchema={validationSchema}
-								inputs={[
-									{ name: 'name', startAdornment: 'person' },
-									{ name: 'username', startAdornment: 'person' },
-									{ name: 'email', startAdornment: 'email' },
-									{ name: 'password' },
-									{ name: 'confirm_password' }
-								]}
-							/>
-							{FileInput}
-						</div>
+						<FileInput src="">
+							{({ FileInput, getFileData }) => {
+								return (
+									<div className="signup pages">
+										<InputForm
+											onSubmit={this.submitForm.bind(null, getFileData)}
+											validationSchema={validationSchema}
+											inputs={[
+												{ name: 'name', startAdornment: 'person' },
+												{ name: 'username', startAdornment: 'person' },
+												{ name: 'email', startAdornment: 'email' },
+												{ name: 'password' },
+												{ name: 'confirm_password' }
+											]}
+										/>
+										{FileInput}
+									</div>
+								);
+							}}
+						</FileInput>
 					);
 				}}
-			</FileInput>
+			</CustomSnackbars>
 		);
 	}
 }

@@ -6,7 +6,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme';
-
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './pages/Signin/SignIn.jsx';
@@ -28,7 +27,6 @@ import Upgrade from './pages/Upgrade/Upgrade';
 import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
-import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
 import submitForm from './operations/submitForm';
@@ -39,26 +37,6 @@ import './index.css';
 import './pages/Pages.scss';
 
 class App extends Component {
-	state = {
-		response: {
-			severity: null,
-			message: null,
-			title: null,
-			isOpen: false
-		}
-	};
-
-	changeResponse = (title, message, severity, isOpen = true) => {
-		this.setState({
-			response: {
-				title,
-				message,
-				severity,
-				isOpen
-			}
-		});
-	};
-
 	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		type = type.toLowerCase();
 		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
@@ -76,7 +54,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
+					// this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
@@ -90,11 +68,11 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(
+					/* 					this.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to create ${type}`,
 						'error'
-					);
+					); */
 					if (postSubmit) postSubmit(err);
 				});
 		} else {
@@ -122,7 +100,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
+					// this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
@@ -137,12 +115,11 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					console.log(err);
-					this.changeResponse(
+					/* 					this.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to update ${type}`,
 						'error'
-					);
+					); */
 					if (postSubmit) postSubmit(err);
 				});
 		} else {
@@ -154,16 +131,14 @@ class App extends Component {
 	};
 
 	render() {
-		const { changeResponse, submitForm, updateResource } = this;
+		const { submitForm, updateResource } = this;
 		const { session, location, refetch, updateUserLocally } = this.props;
-		const { response: { isOpen, message, severity, title } } = this.state;
 		return (
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
 					<AppContext.Provider
 						value={{
-							changeResponse,
 							submitForm,
 							updateResource,
 							user: session.data ? session.data.data : null,
@@ -287,14 +262,6 @@ class App extends Component {
 							<Route path="/404" exact component={NotFound} />
 							<Redirect to="/404" />
 						</Switch>
-						<CustomSnackbars
-							title={title}
-							message={message}
-							severity={severity}
-							isOpen={isOpen}
-							changeResponse={this.changeResponse}
-							timing={session.data ? session.data.data.current_environment.notification_timing : 2500}
-						/>
 					</AppContext.Provider>
 				</div>
 			</Fragment>

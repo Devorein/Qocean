@@ -72,7 +72,6 @@ class Explorer extends Component {
 															});
 														}}
 														updateDataLocally={updateDataLocally}
-														resetFilterSort={resetFilterSort}
 													/>
 													{formFillerIndex !== null ? (
 														<FormFiller
