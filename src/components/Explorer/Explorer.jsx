@@ -33,7 +33,7 @@ class Explorer extends Component {
 
 		return (
 			<div className="Explorer">
-				<Detailer data={data[detailerIndex]} type={type}>
+				<Detailer page={page} data={data[detailerIndex]} type={type}>
 					{({ fetchData, Detailer }) => {
 						return (
 							<Fragment>
