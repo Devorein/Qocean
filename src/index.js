@@ -35,7 +35,6 @@ import './pages/Pages.scss';
 
 class App extends Component {
 	render() {
-		const { submitForm, updateResource } = this;
 		const { session, location, refetch, updateUserLocally } = this.props;
 		return (
 			<Fragment>
@@ -43,8 +42,6 @@ class App extends Component {
 				<div className="App">
 					<AppContext.Provider
 						value={{
-							submitForm,
-							updateResource,
 							user: session.data ? session.data.data : null,
 							refetchUser: this.props.refetch,
 							updateUserLocally
