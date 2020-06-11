@@ -5,14 +5,11 @@ import QuizForm from '../../resources/Form/QuizForm';
 import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
 import CustomTabs from '../../components/Tab/Tabs';
+import PageSwitcher from '../../components/PageSwitcher/PageSwitcher';
 import './Create.scss';
 
 class Create extends Component {
 	static contextType = AppContext;
-
-	changeForm = (type) => {
-		this.props.history.push(`/${type.link}`);
-	};
 
 	decideForm = (type) => {
 		type = type.toLowerCase();
@@ -28,27 +25,15 @@ class Create extends Component {
 	};
 
 	render() {
-		const { match: { params: { type } } } = this.props;
-
-		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
-			return {
-				name: header,
-				link: `create/${header}`
-			};
-		});
-
 		return (
-			<div className="Create page">
-				<CustomTabs
-					against={type}
-					onChange={(e, value) => {
-						this.changeForm(headers[value]);
-					}}
-					height={50}
-					headers={headers}
-				/>
-				{this.decideForm(type)}
-			</div>
+			<PageSwitcher page="create">
+				{({ CustomTabs, type }) => (
+					<div className="Create page">
+						{CustomTabs}
+						{this.decideForm(type)}
+					</div>
+				)}
+			</PageSwitcher>
 		);
 	}
 }
