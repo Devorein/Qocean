@@ -141,8 +141,21 @@ class Displayer extends Component {
 					...this.headers
 				}
 			)
-			.then(({ data: { data } }) => {
-				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
+			.then(({ data: { data: count } }) => {
+				this.context.changeResponse('Success', `Successfully toggled watch for ${count} ${type}`, 'success');
+				if (page === 'watchlist') {
+					data = data.filter(({ _id }) => !ids.includes(_id));
+					this.props.updateDataLocally(data);
+				} else {
+					const { user } = this.context;
+					const targetWatchlist = user.watchlist[`watched_${pluralize(type, 2)}`];
+					ids.forEach((id) => {
+						const index = targetWatchlist.indexOf(id);
+						if (index === -1) targetWatchlist.push(id);
+						else targetWatchlist.splice(index, 1);
+					});
+					this.context.updateUserLocally(user);
+				}
 			});
 	};
 

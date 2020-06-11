@@ -155,7 +155,7 @@ class App extends Component {
 
 	render() {
 		const { changeResponse, submitForm, updateResource } = this;
-		const { session, location, refetch } = this.props;
+		const { session, location, refetch, updateUserLocally } = this.props;
 		const { response: { isOpen, message, severity, title } } = this.state;
 		return (
 			<Fragment>
@@ -167,7 +167,8 @@ class App extends Component {
 							submitForm,
 							updateResource,
 							user: session.data ? session.data.data : null,
-							refetchUser: this.props.refetch
+							refetchUser: this.props.refetch,
+							updateUserLocally
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />
@@ -303,7 +304,7 @@ class App extends Component {
 
 const RoutedApp = withRouter(App);
 
-const Snackbar = ({ session, refetch }) => {
+const Snackbar = ({ session, refetch, updateUserLocally }) => {
 	const userStyles = makeStyles((theme) => {
 		return {
 			variantError: {
@@ -331,18 +332,18 @@ const Snackbar = ({ session, refetch }) => {
 			}}
 		>
 			<CssBaseline />
-			<RoutedApp session={session} refetch={refetch} />
+			<RoutedApp session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
 		</SnackbarProvider>
 	);
 };
 
 ReactDOM.render(
 	<WithSessions>
-		{({ session, refetch }) => {
+		{({ session, refetch, updateUserLocally }) => {
 			return (
 				<Router>
 					<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
-						<Snackbar session={session} refetch={refetch} />
+						<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
 					</ThemeProvider>
 				</Router>
 			);
