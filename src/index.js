@@ -15,7 +15,6 @@ import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
 import Watchlist from './pages/Watchlist/Watchlist';
 import Home from './pages/Home/Home';
-import Export from './pages/Export/Export';
 import Import from './pages/Import/Import';
 import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
@@ -81,17 +80,6 @@ class App extends Component {
 								render={({ history, match }) => {
 									return session.data ? (
 										<Import user={session.data.data} match={match} history={history} />
-									) : (
-										<Redirect to="/401" />
-									);
-								}}
-							/>
-							<Route
-								path="/export/:type"
-								exact
-								render={({ history, match }) => {
-									return session.data ? (
-										<Export user={session.data.data} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
