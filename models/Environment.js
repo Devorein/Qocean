@@ -63,6 +63,14 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 15
 	},
+	default_watchlist_landing: {
+		type: String,
+		default: 'Quiz'
+	},
+	default_watchlist_rpp: {
+		type: Number,
+		default: 15
+	},
 	default_create_landing: {
 		type: String,
 		default: 'Quiz'

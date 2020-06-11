@@ -6,7 +6,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme';
-
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './pages/Signin/SignIn.jsx';
@@ -14,6 +13,7 @@ import SignUp from './pages/Signup/SignUp.jsx';
 import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
+import Watchlist from './pages/Watchlist/Watchlist';
 import Home from './pages/Home/Home';
 import Export from './pages/Export/Export';
 import Import from './pages/Import/Import';
@@ -27,7 +27,6 @@ import Upgrade from './pages/Upgrade/Upgrade';
 import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
-import CustomSnackbars from './components/Snackbars/CustomSnackbars';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
 import submitForm from './operations/submitForm';
@@ -38,26 +37,6 @@ import './index.css';
 import './pages/Pages.scss';
 
 class App extends Component {
-	state = {
-		response: {
-			severity: null,
-			message: null,
-			title: null,
-			isOpen: false
-		}
-	};
-
-	changeResponse = (title, message, severity, isOpen = true) => {
-		this.setState({
-			response: {
-				title,
-				message,
-				severity,
-				isOpen
-			}
-		});
-	};
-
 	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		type = type.toLowerCase();
 		const { reset_on_success, reset_on_error } = this.props.session.data.data.current_environment;
@@ -75,7 +54,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
+					// this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
@@ -89,11 +68,11 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(
+					/* 					this.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to create ${type}`,
 						'error'
-					);
+					); */
 					if (postSubmit) postSubmit(err);
 				});
 		} else {
@@ -121,7 +100,7 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
+					// this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
 					if (postSubmit) postSubmit(data);
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
@@ -136,12 +115,11 @@ class App extends Component {
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
-					console.log(err);
-					this.changeResponse(
+					/* 					this.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to update ${type}`,
 						'error'
-					);
+					); */
 					if (postSubmit) postSubmit(err);
 				});
 		} else {
@@ -153,20 +131,19 @@ class App extends Component {
 	};
 
 	render() {
-		const { changeResponse, submitForm, updateResource } = this;
-		const { session, location, refetch } = this.props;
-		const { response: { isOpen, message, severity, title } } = this.state;
+		const { submitForm, updateResource } = this;
+		const { session, location, refetch, updateUserLocally } = this.props;
 		return (
 			<Fragment>
 				<GlobalCss />
 				<div className="App">
 					<AppContext.Provider
 						value={{
-							changeResponse,
 							submitForm,
 							updateResource,
 							user: session.data ? session.data.data : null,
-							refetchUser: this.props.refetch
+							refetchUser: this.props.refetch,
+							updateUserLocally
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />
@@ -214,6 +191,17 @@ class App extends Component {
 								render={({ history, match }) => {
 									return session.data ? (
 										<Export user={session.data.data} match={match} history={history} />
+									) : (
+										<Redirect to="/401" />
+									);
+								}}
+							/>
+							<Route
+								path="/watchlist/:type"
+								exact
+								render={({ history, match }) => {
+									return session.data ? (
+										<Watchlist user={session.data.data} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
@@ -274,14 +262,6 @@ class App extends Component {
 							<Route path="/404" exact component={NotFound} />
 							<Redirect to="/404" />
 						</Switch>
-						<CustomSnackbars
-							title={title}
-							message={message}
-							severity={severity}
-							isOpen={isOpen}
-							changeResponse={this.changeResponse}
-							timing={session.data ? session.data.data.current_environment.notification_timing : 2500}
-						/>
 					</AppContext.Provider>
 				</div>
 			</Fragment>
@@ -291,7 +271,7 @@ class App extends Component {
 
 const RoutedApp = withRouter(App);
 
-const Snackbar = ({ session, refetch }) => {
+const Snackbar = ({ session, refetch, updateUserLocally }) => {
 	const userStyles = makeStyles((theme) => {
 		return {
 			variantError: {
@@ -319,18 +299,18 @@ const Snackbar = ({ session, refetch }) => {
 			}}
 		>
 			<CssBaseline />
-			<RoutedApp session={session} refetch={refetch} />
+			<RoutedApp session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
 		</SnackbarProvider>
 	);
 };
 
 ReactDOM.render(
 	<WithSessions>
-		{({ session, refetch }) => {
+		{({ session, refetch, updateUserLocally }) => {
 			return (
 				<Router>
 					<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
-						<Snackbar session={session} refetch={refetch} />
+						<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
 					</ThemeProvider>
 				</Router>
 			);

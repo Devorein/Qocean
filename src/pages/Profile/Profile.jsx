@@ -10,6 +10,7 @@ import ModalRP from '../../RP/ModalRP';
 import ExportAll from './ExportAll';
 import FileInputRP from '../../RP/FileInputRP';
 import ChangePassword from '../../RP/ChangePassword';
+import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import './Profile.scss';
 
 class Profile extends Component {
@@ -61,7 +62,7 @@ class Profile extends Component {
 							...headers
 						})
 						.then((res) => {
-							this.context.changeResponse('Success', 'Successfully updated profile', 'success');
+							this.changeResponse('Success', 'Successfully updated profile', 'success');
 							setTimeout(() => {
 								setSubmitting(false);
 							}, 2500);
@@ -69,14 +70,14 @@ class Profile extends Component {
 							this.postSubmit(image, file);
 						})
 						.catch((err) => {
-							this.context.changeResponse('An error occurred', err.response.data.error, 'error');
+							this.changeResponse('An error occurred', err.response.data.error, 'error');
 							setTimeout(() => {
 								setSubmitting(false);
 							}, 2500);
 						});
 				})
 				.catch((err) => {
-					this.context.changeResponse('An error occurred', err.response.data.error, 'error');
+					this.changeResponse('An error occurred', err.response.data.error, 'error');
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
@@ -98,7 +99,7 @@ class Profile extends Component {
 		};
 
 		if (showChangePasswordForm && !isValid) {
-			this.context.changeResponse('Error', errors[Object.keys(errors)[0]], 'error');
+			this.changeResponse('Error', errors[Object.keys(errors)[0]], 'error');
 			setTimeout(() => {
 				setSubmitting(false);
 			}, 2500);
@@ -113,7 +114,7 @@ class Profile extends Component {
 					{ ...headers }
 				)
 				.then((data) => {
-					this.context.changeResponse('Success', 'Successfully updated password', 'success');
+					this.changeResponse('Success', 'Successfully updated password', 'success');
 					setTimeout(() => {
 						setSubmitting(false);
 					}, 2500);
@@ -142,12 +143,12 @@ class Profile extends Component {
 						localStorage.removeItem('token');
 						this.props.history.push('/signup');
 						this.props.refetch();
-						this.context.changeResponse('Success', 'Successfully delete your account', 'success');
+						this.changeResponse('Success', 'Successfully delete your account', 'success');
 					});
 				setSubmitting(false);
 			})
 			.catch((err) => {
-				this.context.changeResponse('Invalid credentials', 'You provided the wrong password', 'error');
+				this.changeResponse('Invalid credentials', 'You provided the wrong password', 'error');
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
@@ -194,47 +195,54 @@ class Profile extends Component {
 			name: Yup.string('Enter a name').default(user.name),
 			username: Yup.string('Enter a username')
 				.min(3, 'Username mustbe atleast 3 characters long')
-				.max(10, 'Username cannot be more than 10 characters long')
+				.max(15, 'Username cannot be more than 15 characters long')
 				.test('isAlphaNumericOnly', 'Username should be alphanumeric only', isAlphaNumericOnly)
 				.default(user.username),
 			email: Yup.string('Enter your email').email('Enter a valid email').default(user.email)
 		});
 
 		return (
-			<FileInputRP src={decideImage()}>
-				{({ FileInput, getFileData }) => {
+			<CustomSnackbars>
+				{({ changeResponse }) => {
+					this.changeResponse = changeResponse;
 					return (
-						<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
-							{({ setIsOpen }) => (
-								<ChangePassword>
-									{({ formData, inputs, button, passwordInput, disabled }) => {
-										formInputs[3] = passwordInput;
-										return (
-											<div className="profile pages">
-												<InputForm
-													classNames={'profile_form'}
-													validationSchema={validationSchema}
-													inputs={formInputs}
-													onSubmit={this.submitForm.bind(null, getFileData, formData)}
-													submitMsg={'update'}
-													disabled={disabled}
-												/>
-												{inputs}
-												<div className="profile_buttons">
-													{button}
-													<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
-													<ExportAll />
-												</div>
-												{FileInput}
-											</div>
-										);
-									}}
-								</ChangePassword>
-							)}
-						</ModalRP>
+						<FileInputRP src={decideImage()}>
+							{({ FileInput, getFileData }) => {
+								return (
+									<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
+										{({ setIsOpen }) => (
+											<ChangePassword>
+												{({ formData, inputs, button, passwordInput, disabled }) => {
+													formInputs[3] = passwordInput;
+													return (
+														<div className="profile pages">
+															<InputForm
+																classNames={'profile_form'}
+																validationSchema={validationSchema}
+																inputs={formInputs}
+																onSubmit={this.submitForm.bind(null, getFileData, formData)}
+																submitMsg={'update'}
+																disabled={disabled}
+															/>
+															{inputs}
+															<div className="profile_buttons">
+																{button}
+																<GenericButton text="Delete account" onClick={(e) => setIsOpen(true)} />
+																<ExportAll />
+															</div>
+															{FileInput}
+														</div>
+													);
+												}}
+											</ChangePassword>
+										)}
+									</ModalRP>
+								);
+							}}
+						</FileInputRP>
 					);
 				}}
-			</FileInputRP>
+			</CustomSnackbars>
 		);
 	}
 }

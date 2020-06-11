@@ -7,9 +7,9 @@ class Manipulator extends Component {
 
 		return (
 			<SSFilterSort passFSAsProp={true} onApply={onApply} type={type}>
-				{({ filterSort, filter_sort }) => {
+				{({ SSFilterSort, filter_sort }) => {
 					return this.props.children({
-						Manipulator: <div className="Manipulator">{filterSort}</div>,
+						Manipulator: <div className="Manipulator">{SSFilterSort}</div>,
 						filter_sort
 					});
 				}}

@@ -27,6 +27,7 @@ import { HotKeys } from 'react-hotkeys';
 import SettingsIcon from '@material-ui/icons/Settings';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import CustomSnackbars from '../../Snackbars/CustomSnackbars';
 import './Displayer.scss';
 
 const keyMap = {
@@ -78,7 +79,7 @@ class Displayer extends Component {
 				}
 			)
 			.then(({ data: { data: updatedDatas } }) => {
-				this.context.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
+				this.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
 				selectedIndex.forEach((index, _index) => {
 					data[index] = updatedDatas[_index];
 				});
@@ -106,28 +107,25 @@ class Displayer extends Component {
 				else temp.push(selectedRow);
 			});
 			if (containsCurrent) {
-				this.context.changeResponse(
-					'Cant delete',
-					'You are trying to delete a currently activated environment',
-					'error'
-				);
+				this.changeResponse('Cant delete', 'You are trying to delete a currently activated environment', 'error');
 			}
 			if (selectedRows.length >= 1)
 				deleteResources(temp).then(({ data: { data } }) => {
 					setTimeout(() => {
-						this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+						this.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
 					}, 2500);
 					this.props.refetchData(this.queryParams);
 				});
 		} else
 			deleteResources(selectedRows).then(({ data: { data } }) => {
-				this.context.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
+				this.changeResponse('Success', `Successfully deleted ${data} items`, 'success');
 				this.props.refetchData(this.queryParams);
 			});
 	};
 
 	watchToggle = (selectedIndex) => {
-		let { type, data } = this.props;
+		let { type, data, page } = this.props;
+		page = page.toLowerCase();
 		const ids = selectedIndex.map((index) => data[index]._id);
 		type = pluralize(type, 2).toLowerCase();
 		axios
@@ -140,9 +138,21 @@ class Displayer extends Component {
 					...this.headers
 				}
 			)
-			.then(({ data: { data } }) => {
-				this.context.changeResponse('Success', `Successfully toggled watch for ${data} ${type}`, 'success');
-				this.context.refetchUser();
+			.then(({ data: { data: count } }) => {
+				this.changeResponse('Success', `Successfully toggled watch for ${count} ${type}`, 'success');
+				if (page === 'watchlist') {
+					data = data.filter(({ _id }) => !ids.includes(_id));
+					this.props.updateDataLocally(data);
+				} else {
+					const { user } = this.context;
+					const targetWatchlist = user.watchlist[`watched_${pluralize(type, 2)}`];
+					ids.forEach((id) => {
+						const index = targetWatchlist.indexOf(id);
+						if (index === -1) targetWatchlist.push(id);
+						else targetWatchlist.splice(index, 1);
+					});
+					this.context.updateUserLocally(user);
+				}
 			});
 	};
 
@@ -314,93 +324,102 @@ class Displayer extends Component {
 		const cols = getCols(data);
 		return (
 			<div className="Displayer">
-				<Effector
-					updateResource={updateResource}
-					type={type}
-					page={page}
-					data={data}
-					totalCount={totalCount}
-					refetchData={refetchData}
-					cols={cols}
-					deleteResource={deleteResource}
-					watchToggle={watchToggle}
-					filter_sort={filter_sort}
-				>
-					{({
-						EffectorTopBar,
-						EffectorBottomBar,
-						view,
-						removed_cols,
-						setSelectedIndex,
-						selectedIndex,
-						GLOBAL_ICONS,
-						page,
-						limit
-					}) => {
-						this.queryParams = { page, limit, ...filterSort(filter_sort) };
-						let manipulatedData = null;
-						if (view !== 'table')
-							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
-								authenticated: this.context.user,
-								blacklist: removed_cols
-							});
-						else {
-							manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
-								authenticated: this.context.user,
-								blacklist: removed_cols,
-								flatten: true
-							});
-						}
-						const handlers = {
-							MOVE_UP: (event) => {
-								this.setState({
-									currentSelected: this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
-								});
-							},
-							MOVE_DOWN: (event) => {
-								this.setState({
-									currentSelected: this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
-								});
-							},
-							SELECT: (e) => {
-								this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
-							},
-							ACTION_1: (e) => {
-								this.props.setDetailerIndex(this.state.currentSelected);
-							},
-							ACTION_2: (e) => {
-								exportData(type, [ data[this.state.currentSelected] ]);
-							},
-							ACTION_3: (e) => {
-								this.props.enableFormFiller(this.state.currentSelected);
-							},
-							ACTION_4: (e) => {
-								this.deleteResource([ data[this.state.currentSelected]._id ]);
-							}
-						};
-						[ 1, 2, 3, 4 ].forEach((item) => {
-							handlers[`GLOBAL_ACTION_${item}`] = (e) => {
-								const evt = new MouseEvent('click', {
-									bubbles: true,
-									cancelable: true,
-									view: window
-								});
-								GLOBAL_ICONS[`GLOBAL_ACTION_${item}`].dispatchEvent(evt);
-							};
-						});
+				<CustomSnackbars>
+					{({ changeResponse }) => {
+						this.changeResponse = changeResponse;
 						return (
-							<Fragment>
-								{EffectorTopBar}
-								<div className={`Displayer_data Displayer_data-${view}`}>
-									<HotKeys keyMap={keyMap} handlers={handlers}>
-										{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
-									</HotKeys>
-								</div>
-								{EffectorBottomBar}
-							</Fragment>
+							<Effector
+								updateResource={updateResource}
+								type={type}
+								page={page}
+								data={data}
+								totalCount={totalCount}
+								refetchData={refetchData}
+								cols={cols}
+								deleteResource={deleteResource}
+								watchToggle={watchToggle}
+								filter_sort={filter_sort}
+							>
+								{({
+									EffectorTopBar,
+									EffectorBottomBar,
+									view,
+									removed_cols,
+									setSelectedIndex,
+									selectedIndex,
+									GLOBAL_ICONS,
+									page,
+									limit
+								}) => {
+									this.queryParams = { page, limit, ...filterSort(filter_sort) };
+									let manipulatedData = null;
+									if (view !== 'table')
+										manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
+											authenticated: this.context.user,
+											blacklist: removed_cols
+										});
+									else {
+										manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
+											authenticated: this.context.user,
+											blacklist: removed_cols,
+											flatten: true
+										});
+									}
+									const handlers = {
+										MOVE_UP: (event) => {
+											this.setState({
+												currentSelected:
+													this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
+											});
+										},
+										MOVE_DOWN: (event) => {
+											this.setState({
+												currentSelected:
+													this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
+											});
+										},
+										SELECT: (e) => {
+											this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
+										},
+										ACTION_1: (e) => {
+											this.props.setDetailerIndex(this.state.currentSelected);
+										},
+										ACTION_2: (e) => {
+											exportData(type, [ data[this.state.currentSelected] ]);
+										},
+										ACTION_3: (e) => {
+											this.props.enableFormFiller(this.state.currentSelected);
+										},
+										ACTION_4: (e) => {
+											this.deleteResource([ data[this.state.currentSelected]._id ]);
+										}
+									};
+									[ 1, 2, 3, 4 ].forEach((item) => {
+										handlers[`GLOBAL_ACTION_${item}`] = (e) => {
+											const evt = new MouseEvent('click', {
+												bubbles: true,
+												cancelable: true,
+												view: window
+											});
+											GLOBAL_ICONS[`GLOBAL_ACTION_${item}`].dispatchEvent(evt);
+										};
+									});
+									return (
+										<Fragment>
+											{EffectorTopBar}
+											<div className={`Displayer_data Displayer_data-${view}`}>
+												<HotKeys keyMap={keyMap} handlers={handlers}>
+													{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
+												</HotKeys>
+											</div>
+											{EffectorBottomBar}
+										</Fragment>
+									);
+								}}
+							</Effector>
 						);
 					}}
-				</Effector>
+				</CustomSnackbars>
 			</div>
 		);
 	}

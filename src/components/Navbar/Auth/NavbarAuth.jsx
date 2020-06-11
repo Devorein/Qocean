@@ -145,7 +145,7 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 				<MenuItem onClick={switchPage.bind(null, `report`)}>
 					<AssessmentIcon />Report
 				</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, `watchlist/quiz`)}>
+				<MenuItem onClick={switchPage.bind(null, `watchlist/${user.current_environment.default_watchlist_landing}`)}>
 					<ListAltIcon />Watchlist
 				</MenuItem>
 				<MenuItem onClick={switchPage.bind(null, `inbox`)}>

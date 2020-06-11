@@ -14,7 +14,7 @@ class Watchlist extends Component {
 	};
 
 	refetchData = (type, queryParams) => {
-		type = type.toLowerCase();
+		type = pluralize(type.toLowerCase(), 2);
 		populateQueryParams(type, queryParams, this.props.user);
 		const queryString = qs.stringify(queryParams, { depth: 10 });
 
@@ -23,13 +23,11 @@ class Watchlist extends Component {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
-
-		type = pluralize(type.split('_')[1], 2);
 		axios
-			.get(`http://localhost:5001/api/v1/watchlist/${type}/count`, { ...headers })
+			.get(`http://localhost:5001/api/v1/watchlist/${type}/count?${queryString}`, { ...headers })
 			.then(({ data: { data: totalCount } }) => {
 				axios
-					.get(`http://localhost:5001/api/v1/watchlist/${type}${queryString}`, { ...headers })
+					.get(`http://localhost:5001/api/v1/watchlist/${type}?${queryString}`, { ...headers })
 					.then(({ data: { data } }) => {
 						this.setState({
 							data,

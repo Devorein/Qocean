@@ -113,6 +113,37 @@ class EnvironmentForm extends Component {
 				]
 			},
 			{
+				type: 'group',
+				name: 'Watchlist_group',
+				extra: { treeView: true },
+				children: [
+					{
+						name: 'default_watchlist_landing',
+						type: 'select',
+						extra: {
+							selectItems: [ 'quiz', 'folder' ].map((land) => {
+								return {
+									text: land.charAt(0).toUpperCase() + land.substr(1)
+								};
+							})
+						},
+						defaultValue: 'Quiz'
+					},
+					{
+						name: 'default_watchlist_rpp',
+						type: 'select',
+						extra: {
+							selectItems: [ 10, 15, 20, 30, 40, 50 ].map((rpp) => {
+								return {
+									text: rpp
+								};
+							})
+						},
+						defaultValue: 15
+					}
+				]
+			},
+			{
 				name: 'default_create_landing',
 				type: 'select',
 				extra: {

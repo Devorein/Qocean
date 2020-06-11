@@ -31,7 +31,17 @@ class WithSessions extends React.Component {
 			});
 	};
 	render() {
-		return this.props.children({ session: this.state.session, refetch: this.refetch });
+		return this.props.children({
+			session: this.state.session,
+			refetch: this.refetch,
+			updateUserLocally: (user) => {
+				const { session } = this.state;
+				session.data.user = user;
+				this.setState({
+					session
+				});
+			}
+		});
 	}
 }
 
