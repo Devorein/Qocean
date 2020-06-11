@@ -38,7 +38,8 @@ class FormFiller extends Component {
 			customInputs: transformValue
 		};
 		if (data) {
-			if (type === 'folder') return <FolderForm {...props} selected_quizzes={page === 'Self' ? data.quizzes : []} />;
+			if (type === 'folder')
+				return <FolderForm {...props} selected_quizzes={page === 'Self' ? data.quizzes.map(({ _id }) => _id) : []} />;
 			else if (type === 'question')
 				return (
 					<QuestionForm
@@ -51,7 +52,14 @@ class FormFiller extends Component {
 					/>
 				);
 			else if (type === 'quiz')
-				return <QuizForm {...props} tags={data.tags} src={data.image} selected_folders={data.folders} />;
+				return (
+					<QuizForm
+						{...props}
+						tags={data.tags}
+						src={data.image}
+						selected_folders={page === 'Self' ? data.folders.map(({ _id }) => _id) : []}
+					/>
+				);
 			else if (type === 'environment') return <EnvironmentForm {...props} />;
 		} else return <div>N/A</div>;
 	};

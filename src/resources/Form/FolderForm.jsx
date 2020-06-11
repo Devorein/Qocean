@@ -5,6 +5,7 @@ import InputForm from '../../components/Form/InputForm';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import MultiSelect from '../../components/Input/MultiSelect';
 import getColoredIcons from '../../Utils/getColoredIcons';
+import { isEqual } from 'lodash';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter folder name').required('Folder name is required'),
@@ -20,6 +21,17 @@ class FolderForm extends Component {
 		selected_quizzes: this.props.selected_quizzes || [],
 		quizzes: []
 	};
+
+	UNSAFE_componentWillReceiveProps(props) {
+		let isAllSame = true;
+		if (props.selected_quizzes.length !== this.state.selected_quizzes.length) isAllSame = false;
+		isAllSame = isAllSame && isEqual([ ...this.state.selected_quizzes ].sort(), [ ...props.selected_quizzes ].sort());
+		if (!isAllSame) {
+			this.setState({
+				selected_quizzes: props.selected_quizzes
+			});
+		}
+	}
 
 	componentDidMount() {
 		axios
@@ -85,7 +97,7 @@ class FolderForm extends Component {
 				component: loading ? (
 					<FormHelperText key={'select_folder'}>Loading your quizzes</FormHelperText>
 				) : quizzes.length < 1 ? (
-					<FormHelperText key={'select_folder'}>Loading your quizzes</FormHelperText>
+					<FormHelperText key={'select_folder'}>You have not created any quizzes yet</FormHelperText>
 				) : (
 					<MultiSelect
 						key={'select_folder'}

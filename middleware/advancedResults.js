@@ -20,7 +20,6 @@ const advancedResults = (model) =>
 		} else {
 			let queryFilters = filterQuery(req, model);
 			let processFurther = await handleCountRoutes(queryFilters, req, res, model);
-
 			if (processFurther) {
 				const query = model.find(queryFilters);
 				projectionQuery(query, req);

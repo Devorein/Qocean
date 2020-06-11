@@ -43,12 +43,6 @@ const keyMap = {
 	GLOBAL_ACTION_4: 'shift+4'
 };
 
-const headers = {
-	headers: {
-		Authorization: `Bearer ${localStorage.getItem('token')}`
-	}
-};
-
 class Displayer extends Component {
 	static contextType = AppContext;
 
@@ -63,6 +57,12 @@ class Displayer extends Component {
 		});
 	}
 
+	headers = {
+		headers: {
+			Authorization: `Bearer ${localStorage.getItem('token')}`
+		}
+	};
+
 	updateResource = (selectedIndex, field) => {
 		let { type, data, updateDataLocally } = this.props;
 		const updatedRows = selectedIndex.map((index) => ({ id: data[index]._id, body: { [field]: !data[index][field] } }));
@@ -74,7 +74,7 @@ class Displayer extends Component {
 					[type]: updatedRows
 				},
 				{
-					...headers
+					...this.headers
 				}
 			)
 			.then(({ data: { data: updatedDatas } }) => {
@@ -91,7 +91,7 @@ class Displayer extends Component {
 		const deleteResources = (selectedRows) => {
 			const target = pluralize(type, 2).toLowerCase();
 			return axios.delete(`http://localhost:5001/api/v1/${target}`, {
-				...headers,
+				...this.headers,
 				data: {
 					[target]: selectedRows
 				}
@@ -137,7 +137,7 @@ class Displayer extends Component {
 					[type]: ids
 				},
 				{
-					...headers
+					...this.headers
 				}
 			)
 			.then(({ data: { data } }) => {
