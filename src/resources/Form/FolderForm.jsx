@@ -24,12 +24,14 @@ class FolderForm extends Component {
 
 	UNSAFE_componentWillReceiveProps(props) {
 		let isAllSame = true;
-		if (props.selected_quizzes.length !== this.state.selected_quizzes.length) isAllSame = false;
-		isAllSame = isAllSame && isEqual([ ...this.state.selected_quizzes ].sort(), [ ...props.selected_quizzes ].sort());
-		if (!isAllSame) {
-			this.setState({
-				selected_quizzes: props.selected_quizzes
-			});
+		if (props.selected_quizzes) {
+			if (props.selected_quizzes.length !== this.state.selected_quizzes.length) isAllSame = false;
+			isAllSame = isAllSame && isEqual([ ...this.state.selected_quizzes ].sort(), [ ...props.selected_quizzes ].sort());
+			if (!isAllSame) {
+				this.setState({
+					selected_quizzes: props.selected_quizzes
+				});
+			}
 		}
 	}
 

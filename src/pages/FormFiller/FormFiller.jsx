@@ -5,9 +5,108 @@ import QuestionForm from '../../resources/Form/QuestionForm';
 import QuizForm from '../../resources/Form/QuizForm';
 import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
+import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
+import submitForm from '../../operations/submitForm';
+import setEnvAsCurrent from '../../operations/setEnvAsCurrent';
+import updateResource from '../../operations/updateResource';
 
 class FormFiller extends Component {
 	static contextType = AppContext;
+
+	updateResource = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+		type = type.toLowerCase();
+		const { refetchData, data } = this.props;
+		const id = data._id;
+		const { reset_on_success, reset_on_error } = this.context.user.current_environment;
+		let canSubmit = true;
+		if (preSubmit) {
+			let [ transformedValue, shouldSubmit ] = preSubmit(values);
+			values = transformedValue;
+			canSubmit = shouldSubmit;
+		}
+		if (canSubmit) {
+			updateResource(type, id, values)
+				.then((data) => {
+					if (reset_on_success) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
+					if (postSubmit) postSubmit(data);
+					if (type.toLowerCase() === 'environment' && values.set_as_current) {
+						setEnvAsCurrent(data.data.data._id).then(() => {
+							this.props.refetch();
+						});
+					}
+					if (refetchData) refetchData();
+				})
+				.catch((err) => {
+					if (reset_on_error) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(
+						`An error occurred`,
+						err.response.data ? err.response.data.error : `Failed to update ${type}`,
+						'error'
+					);
+					if (postSubmit) postSubmit(err);
+				});
+		} else {
+			setSubmitting(true);
+			setTimeout(() => {
+				setSubmitting(false);
+			}, 2500);
+		}
+	};
+
+	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+		type = type.toLowerCase();
+		const { reset_on_success, reset_on_error } = this.context.user.current_environment;
+		let canSubmit = true;
+		if (preSubmit) {
+			let [ transformedValue, shouldSubmit ] = preSubmit(values);
+			values = transformedValue;
+			canSubmit = shouldSubmit;
+		}
+		if (canSubmit) {
+			submitForm(type, values)
+				.then((data) => {
+					if (reset_on_success) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
+					if (postSubmit) postSubmit(data);
+					if (type.toLowerCase() === 'environment' && values.set_as_current) {
+						setEnvAsCurrent(data.data.data._id).then(() => {
+							this.props.refetch();
+						});
+					}
+				})
+				.catch((err) => {
+					if (reset_on_error) resetForm();
+					setSubmitting(true);
+					setTimeout(() => {
+						setSubmitting(false);
+					}, 2500);
+					this.changeResponse(
+						`An error occurred`,
+						err.response.data ? err.response.data.error : `Failed to create ${type}`,
+						'error'
+					);
+					if (postSubmit) postSubmit(err);
+				});
+		} else {
+			setSubmitting(true);
+			setTimeout(() => {
+				setSubmitting(false);
+			}, 2500);
+		}
+	};
 
 	transformValue = (defaultInputs) => {
 		let { data: target } = this.props;
@@ -29,13 +128,13 @@ class FormFiller extends Component {
 
 	decideForm = () => {
 		const { transformValue } = this;
-		const { data, user, submitMsg, onSubmit } = this.props;
+		const { data, user, submitMsg } = this.props;
 		const page = this.props.page.toLowerCase();
 		const type = this.props.type.toLowerCase();
 		const props = {
 			user,
 			submitMsg,
-			onSubmit,
+			onSubmit: page !== 'self' ? this.submitForm : this.updateResource,
 			customInputs: page !== 'create' ? transformValue : null
 		};
 		if (data) {
@@ -64,15 +163,22 @@ class FormFiller extends Component {
 		const { isOpen, handleClose, useModal = true, onArrowClick } = this.props;
 
 		return (
-			<div className="FormFiller">
-				{useModal ? (
-					<CustomModal handleClose={handleClose} isOpen={isOpen} onArrowClick={onArrowClick}>
-						{decideForm()}
-					</CustomModal>
-				) : (
-					decideForm()
-				)}
-			</div>
+			<CustomSnackbars>
+				{({ changeResponse }) => {
+					this.changeResponse = changeResponse;
+					return (
+						<div className="FormFiller">
+							{useModal ? (
+								<CustomModal handleClose={handleClose} isOpen={isOpen} onArrowClick={onArrowClick}>
+									{decideForm()}
+								</CustomModal>
+							) : (
+								decideForm()
+							)}
+						</div>
+					);
+				}}
+			</CustomSnackbars>
 		);
 	}
 }

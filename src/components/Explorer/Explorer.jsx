@@ -46,14 +46,6 @@ class Explorer extends Component {
 										type={type}
 									>
 										{({ Manipulator, filter_sort }) => {
-											let onSubmit =
-												page !== 'Self'
-													? this.context.submitForm
-													: this.context.updateResource.bind(
-															null,
-															formFillerIndex !== null ? data[formFillerIndex]._id : '',
-															refetchData.bind(null, filterSort(filter_sort))
-														);
 											return (
 												<Fragment>
 													{Manipulator}
@@ -82,7 +74,7 @@ class Explorer extends Component {
 																this.setState({ isFormFillerOpen: false });
 															}}
 															submitMsg={formFillerMsg}
-															onSubmit={onSubmit}
+															refetchData={refetchData.bind(null, filterSort(filter_sort))}
 															type={type}
 															data={data[formFillerIndex]}
 															onArrowClick={this.switchData}

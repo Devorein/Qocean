@@ -105,7 +105,7 @@ class Export extends Component {
 								checked.forEach((checked) => {
 									exports.push(this.state.data[checked]);
 								});
-								download(`${Date.now()}_${shortid.generate()}.json`, JSON.stringify(exports));
+								download(`${type}_${Date.now()}_${shortid.generate()}.json`, JSON.stringify(exports));
 							}
 						}
 					]}

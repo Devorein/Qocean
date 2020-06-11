@@ -3,6 +3,7 @@ import axios from 'axios';
 import download from '../../Utils/download';
 import GenericButton from '../../components/Buttons/GenericButton';
 import { withSnackbar } from 'notistack';
+import shortid from 'shortid';
 
 class ExportAll extends Component {
 	getData = (type) => {
@@ -43,7 +44,7 @@ class ExportAll extends Component {
 				return chain.then((_) => {
 					this.getData(type).then(({ data: { data } }) => {
 						const json = JSON.stringify(this.transformData(data, type));
-						download(`${type}_${Date.now()}`, json);
+						download(`${type}_${Date.now()}_${shortid.generate()}`, json);
 						enqueueSnackbar(`${type} has been exported`, {
 							variant: 'success'
 						});
