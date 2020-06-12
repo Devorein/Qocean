@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import axios from 'axios';
 import moment from 'moment';
 import shortid from 'shortid';
 import Color from 'color';
@@ -10,7 +9,6 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withStyles } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import NoteAddIcon from '@material-ui/icons/NoteAdd';
 
 import GenericButton from '../Buttons/GenericButton';
 import InputSelect from '../Input/InputSelect';
@@ -20,6 +18,7 @@ import DatePicker from '../Input/DatePicker';
 import MultiSelect from '../Input/MultiSelect';
 import decideTargetType from '../../Utils/decideTargetType';
 import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
+import FSManip from './FSManip';
 
 import './SSFilterSort.scss';
 
@@ -44,49 +43,20 @@ function capitalize(item) {
 
 class SSFilterSort extends Component {
 	state = {
-		filtersorts: [],
 		filters: [ { ...DEFAULT_FILTER, children: [] } ],
-		sorts: [ { ...DEFAULT_SORT } ],
-		currentPreset: null
+		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
-	selectItems = [ { vaule: 'none', text: 'none' } ];
-
-	fetchPreset = (newState) => {
-		let { type } = this.props;
-		type = type.charAt(0).toUpperCase() + type.substr(1);
-		axios
-			.get(`http://localhost:5001/api/v1/filtersort/me?type=${type}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
-			})
-			.then(({ data: { data: filtersorts } }) => {
-				this.setState({
-					filtersorts,
-					...newState
-				});
-			});
-	};
-
-	componentDidMount() {
-		this.fetchPreset();
-	}
+	selectItems = [ { value: 'none', text: 'none' } ];
 
 	UNSAFE_componentWillReceiveProps(props) {
 		this.selectItems = getPropsBasedOnType(props.type);
 
 		if (props.type !== this.props.type) {
-			this.setState(
-				{
-					filters: [ { ...DEFAULT_FILTER, children: [] } ],
-					sorts: [ { ...DEFAULT_SORT } ],
-					currentPreset: null
-				},
-				() => {
-					this.fetchPreset();
-				}
-			);
+			this.setState({
+				filters: [ { ...DEFAULT_FILTER, children: [] } ],
+				sorts: [ { ...DEFAULT_SORT } ]
+			});
 		}
 	}
 
@@ -514,86 +484,30 @@ class SSFilterSort extends Component {
 		});
 	};
 
-	setFilterSort = (e) => {
-		const { filters, sorts } = this.state.filtersorts.find(({ _id }) => _id === e.target.value);
-		this.setState({
-			currentPreset: e.target.value,
-			filters,
-			sorts
-		});
-	};
-
-	createFilterSortPreset = (e) => {
-		const { filters, sorts, presetName } = this.state;
-		axios
-			.post(
-				`http://localhost:5001/api/v1/filtersort`,
-				{
-					filters,
-					sorts,
-					type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
-					name: presetName
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				}
-			)
-			.then((data) => {
-				this.fetchPreset();
-			});
-	};
-
-	deletePreset = () => {
-		const { currentPreset } = this.state;
-
-		if (currentPreset) {
-			axios
-				.delete(`http://localhost:5001/api/v1/filtersort/${currentPreset}`, {
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
-				})
-				.then((data) => {
-					this.fetchPreset({
-						currentPreset: null
-					});
-				});
-		}
-	};
-
 	renderFilterSort = () => {
-		const { filtersorts, currentPreset, presetName } = this.state;
+		const { filters, sorts } = this.state;
 		return (
-			<div className={`FilterSort`}>
-				<NoteAddIcon className="FilterSort_add" onClick={this.createFilterSortPreset} />
-				<CancelIcon onClick={this.deletePreset} />
-				<InputSelect
-					className="FilterSort_preset"
-					name="Preset"
-					onChange={(e) => {
-						this.setFilterSort(e);
-					}}
-					selectItems={filtersorts.map(({ name, _id }) => ({
-						value: _id,
-						text: name
-					}))}
-					value={currentPreset}
-				/>
-				<TextInput
-					className="FilterSort_name"
-					value={presetName}
-					name={`Name`}
-					onChange={(e) => {
-						this.setState({
-							presetName: e.target.value
-						});
-					}}
-				/>
-				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
-				<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
-			</div>
+			<FSManip
+				type={this.props.type}
+				filters={filters}
+				sorts={sorts}
+				setFilterSort={({ filters, sorts }) => {
+					this.setState({
+						filters,
+						sorts
+					});
+				}}
+			>
+				{({ FSManip }) => {
+					return (
+						<div className={`FilterSort`}>
+							{FSManip}
+							<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
+							<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
+						</div>
+					);
+				}}
+			</FSManip>
 		);
 	};
 

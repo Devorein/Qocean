@@ -9,6 +9,9 @@
   &_preset {
     margin: 5px;
   }
+  &_name {
+    max-width: 150px;
+  }
   .FilterSortContainer {
     display: flex;
     width: 80%;
