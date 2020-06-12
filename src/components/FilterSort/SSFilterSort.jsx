@@ -112,13 +112,13 @@ class SSFilterSort extends Component {
 	};
 
 	renderTargetValue = (targetType, targetItem) => {
-		const { disabled, value, mod, target } = targetItem;
+		const { disabled, value, mod, target, shutdown } = targetItem;
 		if (targetType === 'string')
 			return (
 				<TextInput
 					value={value}
 					name={`value`}
-					disabled={disabled}
+					disabled={disabled || shutdown}
 					onChange={(e) => {
 						targetItem.value = e.target.value;
 						this.setState({
@@ -139,7 +139,7 @@ class SSFilterSort extends Component {
 						});
 					}}
 					selectItems={[ { value: 'true', text: 'True' }, { value: 'false', text: 'False' } ]}
-					disabledSelect={disabled}
+					disabledSelect={disabled || shutdown}
 				/>
 			);
 		else if (targetType === 'number') {
@@ -151,7 +151,7 @@ class SSFilterSort extends Component {
 						.fill(0)
 						.map((_, _index) => (
 							<TextInput
-								disabled={disabled}
+								disabled={disabled || shutdown}
 								key={`${_index}_${targetType}_${mod}`}
 								value={Array.isArray(value) && value[_index] ? value[_index] : []}
 								name={`value`}
@@ -200,7 +200,7 @@ class SSFilterSort extends Component {
 			}
 			return (
 				<MultiSelect
-					disabled={disabled}
+					disabled={disabled || shutdown}
 					label={capitalize(target)}
 					selected={Array.isArray(value) ? value : []}
 					items={selectItems}
@@ -218,7 +218,7 @@ class SSFilterSort extends Component {
 			return mod.match(/^(exact|within)$/)
 				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
 						<DatePicker
-							disabled={disabled}
+							disabled={disabled || shutdown}
 							key={`datepicker_${_index}${shortid.generate()}`}
 							value={value[_index]}
 							onChange={(date) => {
@@ -276,7 +276,7 @@ class SSFilterSort extends Component {
 							}
 						/>
 					</div>
-					{index >= 1 ? (
+					{(!isChild && index >= 1) || isChild ? (
 						<InputSelect
 							className="FilterSortItem_select_cond"
 							name="Cond"
@@ -353,7 +353,7 @@ class SSFilterSort extends Component {
 							/>
 						</div>
 					) : null}
-					{!isChild && currentTarget.children.length < 3 ? (
+					{!isChild && currentTarget.children.length < 2 ? (
 						<AddBoxIcon
 							className="FilterSortItem_select_add"
 							onClick={(e) => {

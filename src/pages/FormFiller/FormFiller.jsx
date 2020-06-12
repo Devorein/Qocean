@@ -40,10 +40,9 @@ class FormFiller extends Component {
 					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
-							this.props.refetch();
+							if (refetchData) refetchData();
 						});
-					}
-					if (refetchData) refetchData();
+					} else if (refetchData) refetchData();
 				})
 				.catch((err) => {
 					formSubmitUtil({ reset: reset_on_error, resetForm, setSubmitting, postSubmit, data: err });
