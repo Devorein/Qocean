@@ -4,6 +4,7 @@ import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 
 class FSManip extends Component {
 	state = {
@@ -36,11 +37,11 @@ class FSManip extends Component {
 			sorts
 		});
 		this.setState({
-			currentPreset: e.target.value
+			currentPreset: this.state.filtersorts.find(({ _id }) => _id === e.target.value)
 		});
 	};
 
-	createFilterSortPreset = (e) => {
+	createPreset = (e) => {
 		const { presetName } = this.state;
 		const { filters, sorts } = this.props;
 		axios
@@ -58,8 +59,12 @@ class FSManip extends Component {
 					}
 				}
 			)
-			.then((data) => {
+			.then(({ data: { data } }) => {
+				this.changeResponse('Success', `Successfully created preset ${data.name}`, 'success');
 				this.fetchPreset();
+			})
+			.catch((err) => {
+				this.changeResponse('An error occurred', `${err.message}`, 'error');
 			});
 	};
 
@@ -68,12 +73,13 @@ class FSManip extends Component {
 
 		if (currentPreset) {
 			axios
-				.delete(`http://localhost:5001/api/v1/filtersort/${currentPreset}`, {
+				.delete(`http://localhost:5001/api/v1/filtersort/${currentPreset._id}`, {
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem('token')}`
 					}
 				})
-				.then((data) => {
+				.then(({ data: { data } }) => {
+					this.changeResponse('Success', `Successfully deleted preset ${currentPreset.name}`, 'success');
 					this.fetchPreset({
 						currentPreset: null
 					});
@@ -103,7 +109,7 @@ class FSManip extends Component {
 
 		return (
 			<Fragment>
-				<NoteAddIcon className="FilterSort_add" onClick={this.createFilterSortPreset} />
+				<NoteAddIcon className="FilterSort_add" onClick={this.createPreset} />
 				<CancelIcon onClick={this.deletePreset} />
 				<InputSelect
 					className="FilterSort_preset"
@@ -115,7 +121,7 @@ class FSManip extends Component {
 						value: _id,
 						text: name
 					}))}
-					value={currentPreset}
+					value={currentPreset ? currentPreset._id : null}
 				/>
 				<TextInput
 					className="FilterSort_name"
@@ -131,9 +137,16 @@ class FSManip extends Component {
 		);
 	};
 	render() {
-		return this.props.children({
-			FSManip: this.renderFSManip()
-		});
+		return (
+			<CustomSnackbars>
+				{({ changeResponse }) => {
+					this.changeResponse = changeResponse;
+					return this.props.children({
+						FSManip: this.renderFSManip()
+					});
+				}}
+			</CustomSnackbars>
+		);
 	}
 }
 
