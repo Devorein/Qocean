@@ -14,6 +14,8 @@ import shortid from 'shortid';
 import MultiSelect from '../Input/MultiSelect';
 import Color from 'color';
 import convert from 'color-convert';
+import decideTargetType from '../../Utils/decideTargetType';
+import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
 import './SSFilterSort.scss';
 
 const DEFAULT_FILTER = {
@@ -40,6 +42,8 @@ class SSFilterSort extends Component {
 		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
+	selectItems = getPropsBasedOnType(this.props.type);
+
 	UNSAFE_componentWillReceiveProps(props) {
 		if (props.type !== this.props.type) {
 			this.setState({
@@ -49,48 +53,7 @@ class SSFilterSort extends Component {
 		}
 	}
 
-	getPropsBasedOnType = () => {
-		let { type } = this.props;
-		type = type.toLowerCase();
-		const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at' ];
-
-		let selectItems = null;
-		if (type === 'quiz')
-			selectItems = [
-				...commonsorts,
-				'ratings',
-				'subject',
-				'average_quiz_time',
-				'average_difficulty',
-				'tags',
-				'watchers',
-				'total_questions'
-			];
-		else if (type === 'question') selectItems = [ ...commonsorts, 'difficulty', 'type', 'time_allocated', 'quiz' ];
-		else if (type === 'folder')
-			selectItems = [ ...commonsorts, 'icon', 'watchers', 'total_quizzes', 'total_questions' ];
-		else if (type === 'environment') selectItems = [ ...commonsorts, 'icon' ];
-		else if (type === 'user')
-			selectItems = [
-				'none',
-				'name',
-				'username',
-				'gmail',
-				'joined_at',
-				'total_environments',
-				'total_folders',
-				'total_questions',
-				'total_quizzes',
-				'version'
-			];
-		return selectItems.map((name) => ({
-			value: name,
-			text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-		}));
-	};
-
 	renderSortItem = (index) => {
-		const selectItems = this.getPropsBasedOnType();
 		const currentTarget = this.state.sorts[index];
 		const { disabled } = currentTarget;
 		return (
@@ -119,7 +82,7 @@ class SSFilterSort extends Component {
 							sorts: this.state.sorts
 						});
 					}}
-					selectItems={selectItems}
+					selectItems={this.selectItems}
 					disabledSelect={disabled}
 					value={this.state.sorts[index].target}
 				/>
@@ -146,30 +109,10 @@ class SSFilterSort extends Component {
 		);
 	};
 
-	decideTargetType = (target) => {
-		let targetType = null;
-		if (target.match(/^(name|subject|quiz|email)$/)) targetType = 'string';
-		else if (target.match(/^(public|favourite)$/)) targetType = 'boolean';
-		else if (target.match(/^(created_at|updated_at|joined_at)$/)) targetType = 'date';
-		else if (
-			target.match(
-				/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes|total_environments|total_folders)$/
-			)
-		)
-			targetType = 'number';
-		else if (target.match(/^(tags)$/)) targetType = 'array';
-		else if (target.match(/(difficulty|icon|type|average_difficulty|version)$/)) targetType = 'select';
-		return targetType;
-	};
-
-	decideFilterItem = (targetType, index) => {
+	renderTargetValue = (targetType, index) => {
 		const { disabled } = this.state.filters[index];
 		if (targetType === 'string')
-			return [
-				[ 'is', 'starts_with', 'ends_with', 'contains', 'regex' ].map((name) => ({
-					value: name,
-					text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-				})),
+			return (
 				<TextInput
 					value={this.state.filters[index].value}
 					name={`value`}
@@ -182,10 +125,9 @@ class SSFilterSort extends Component {
 						});
 					}}
 				/>
-			];
+			);
 		else if (targetType === 'boolean')
-			return [
-				[ { value: 'is', text: 'Is' }, { value: 'is_not', text: 'Is not' } ],
+			return (
 				<InputSelect
 					name="Value"
 					value={this.state.filters[index].value ? this.state.filters[index].value : ''}
@@ -200,25 +142,10 @@ class SSFilterSort extends Component {
 					selectItems={[ { value: 'true', text: 'True' }, { value: 'false', text: 'False' } ]}
 					disabledSelect={disabled}
 				/>
-			];
+			);
 		else if (targetType === 'number') {
 			const { mod } = this.state.filters[index];
-			return [
-				[
-					'is',
-					'is_not',
-					'greater_than',
-					'less_than',
-					'greater_than_equal',
-					'less_than_equal',
-					'between_inclusive',
-					'between_exclusive',
-					'not_between_inclusive',
-					'not_between_exclusive'
-				].map((name) => ({
-					value: name,
-					text: capitalize(name)
-				})),
+			return (
 				<Fragment>
 					{Array(
 						mod.match(/^(between_exclusive|not_between_exclusive|between_inclusive|not_between_inclusive)$/g) ? 2 : 1
@@ -248,7 +175,7 @@ class SSFilterSort extends Component {
 							/>
 						))}
 				</Fragment>
-			];
+			);
 		} else if (targetType === 'select') {
 			const { target, value = [] } = this.state.filters[index];
 			let selectItems = null;
@@ -281,11 +208,7 @@ class SSFilterSort extends Component {
 					_id: item
 				}));
 			}
-			return [
-				[ 'is', 'is_not' ].map((name) => ({
-					value: name,
-					text: capitalize(name)
-				})),
+			return (
 				<MultiSelect
 					disabled={disabled}
 					label={capitalize(target)}
@@ -301,64 +224,48 @@ class SSFilterSort extends Component {
 						});
 					}}
 				/>
-			];
+			);
 		} else if (targetType === 'date') {
 			const { mod } = this.state.filters[index];
-			return [
-				[
-					'exact',
-					'today',
-					'yesterday',
-					'within',
-					'last_week',
-					'within_last_week',
-					'last_month',
-					'within_last_month',
-					'last_year',
-					'within_last_year'
-				].map((item) => ({ value: item, text: capitalize(item) })),
-				mod.match(/^(exact|within)$/)
-					? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
-							<DatePicker
-								disabled={disabled}
-								key={`datepicker_${_index}${shortid.generate()}`}
-								value={this.state.filters[index].value[_index]}
-								onChange={(date) => {
-									const target = this.state.filters[index];
-									target.value[_index] = date.toISOString();
-									this.setState({
-										filters: this.state.filters
-									});
-								}}
-							/>
-						))
-					: null
-			];
-		} else return [ [ { value: 'none', text: 'None' } ], null ];
+			return mod.match(/^(exact|within)$/)
+				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
+						<DatePicker
+							disabled={disabled}
+							key={`datepicker_${_index}${shortid.generate()}`}
+							value={this.state.filters[index].value[_index]}
+							onChange={(date) => {
+								const target = this.state.filters[index];
+								target.value[_index] = date.toISOString();
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+						/>
+					))
+				: null;
+		} else return null;
 	};
 
 	renderFilterItem = (parentIndex, { isChild, childIndex, child }) => {
 		let currentTarget = null,
 			index = null;
-		if (parentIndex !== null) {
+		if (!isChild) {
 			index = parentIndex;
 			currentTarget = this.state.filters[index];
 		} else {
 			index = childIndex;
 			currentTarget = child;
 		}
-		debugger;
+
 		if (currentTarget) {
 			const { target, mod, disabled } = currentTarget;
-			const selectItems = this.getPropsBasedOnType();
-			const targetType = this.decideTargetType(target);
-			const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
-			const modValue = mod !== 'none' ? mod : modItems[0].value;
+			const [ targetType, modItems ] = decideTargetType(target);
+			const valueItem = this.renderTargetValue(targetType, index);
 
 			return (
 				<div
 					key={isChild ? `filter${index}_child${childIndex}` : `filter${index}`}
-					className={`FilterSortItem_select_item ${disabled}`}
+					className={`FilterSortItem_select_item`}
 				>
 					<div className="FilterSortItem_select_switch">
 						<Switch
@@ -395,9 +302,7 @@ class SSFilterSort extends Component {
 						name="Target"
 						value={target}
 						onChange={(e) => {
-							const targetType = this.decideTargetType(e.target.value);
-							const [ modItems ] = this.decideFilterItem(targetType, index);
-
+							const [ targetType, modItems ] = decideTargetType(e.target.value);
 							currentTarget.target = e.target.value;
 							currentTarget.type = targetType;
 							currentTarget.cond = this.state.filters[0].cond;
@@ -418,12 +323,12 @@ class SSFilterSort extends Component {
 							});
 						}}
 						disabledSelect={disabled}
-						selectItems={selectItems}
+						selectItems={this.selectItems}
 					/>
 					<InputSelect
 						className="FilterSortItem_select_mod"
 						name="Mod"
-						value={modValue}
+						value={mod}
 						onChange={(e) => {
 							currentTarget.mod = e.target.value;
 							this.setState({
@@ -465,6 +370,18 @@ class SSFilterSort extends Component {
 				</div>
 			);
 		}
+	};
+
+	renderFilterChildrens = (index) => {
+		return this.state.filters[index].children.length !== 0
+			? this.state.filters[index].children.map((child, childIndex) => {
+					return (
+						<div className={`FilterSortItem_select_filters_child`} key={`filter${index}_child${childIndex}`}>
+							{this.renderFilterItem(index, { child, isChild: true, childIndex })}
+						</div>
+					);
+				})
+			: null;
 	};
 
 	renderFilterSortItem = () => {
@@ -524,20 +441,7 @@ class SSFilterSort extends Component {
 											? 'FilterSortItem_select--disabled'
 											: ''}`}
 									>
-										{item === 'filters' ? this.state.filters[index].children.length !== 0 ? (
-											this.state.filters[index].children.map((child, childIndex) => {
-												return (
-													<div
-														className={`FilterSortItem_select_${item}_child ${disabled
-															? 'FilterSortItem_select--disabled'
-															: ''}`}
-														key={`filter${index}_child${childIndex}`}
-													>
-														{this.renderFilterItem(null, { child, isChild: true, childIndex })}
-													</div>
-												);
-											})
-										) : null : null}
+										{item === 'filters' ? this.renderFilterChildrens(index) : null}
 									</div>
 								</div>
 							);
