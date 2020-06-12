@@ -483,6 +483,12 @@ class SSFilterSort extends Component {
 	renderFilterSort = () => {
 		return (
 			<div className={`FilterSort`}>
+				<NoteAddIcon
+					className="FilterSort_add"
+					onClick={(e) => {
+						console.log(this.state);
+					}}
+				/>
 				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
 				<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
 			</div>

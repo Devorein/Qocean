@@ -96,6 +96,10 @@ const UserSchema = new mongoose.Schema({
 	watchlist: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist'
+	},
+	filtersort: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'FilterSort'
 	}
 });
 

@@ -1,5 +1,9 @@
 .FilterSort {
+  align-items: center;
   display: flex;
+  &_add {
+    cursor: pointer;
+  }
   .FilterSortContainer {
     display: flex;
     width: 80%;
