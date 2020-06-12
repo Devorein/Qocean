@@ -6,6 +6,7 @@ import TextInput from '../Input/TextInput/TextInput';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import UpdateIcon from '@material-ui/icons/Update';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
 class FSManip extends Component {
 	state = {
@@ -144,20 +145,51 @@ class FSManip extends Component {
 		}
 	};
 
+	resetFS = () => {
+		this.setState(
+			{
+				currentPreset: null,
+				presetName: ''
+			},
+			() => {
+				this.props.setFilterSort({
+					filters: [
+						{
+							target: 'none',
+							mod: 'none',
+							value: '',
+							disabled: false,
+							cond: 'and',
+							shutdown: false,
+							children: []
+						}
+					],
+					sorts: [
+						{
+							target: 'none',
+							order: 'none',
+							disabled: false
+						}
+					]
+				});
+			}
+		);
+	};
+
 	renderFSManip = () => {
 		const { filtersorts, currentPreset, presetName } = this.state;
-		const { filters, sorts } = this.props;
 		return (
 			<Fragment>
-				<NoteAddIcon className="FilterSort_add" onClick={this.createPreset} />
-				<UpdateIcon className="FilterSort_update" onClick={this.updatePreset} />
-				<CancelIcon className="FilterSort_delete" onClick={this.deletePreset} />
+				<div className="FilterSort_icons">
+					<RotateLeftIcon className="FilterSort_reset" onClick={this.resetFS} />
+					<NoteAddIcon className="FilterSort_add" onClick={this.createPreset} />
+					<UpdateIcon className="FilterSort_update" onClick={this.updatePreset} />
+					<CancelIcon className="FilterSort_delete" onClick={this.deletePreset} />
+				</div>
 				<InputSelect
 					className="FilterSort_preset"
 					name="Preset"
-					onChange={(e) => {
-						this.setFilterSort(e);
-					}}
+					onChange={this.setFilterSort}
 					selectItems={filtersorts.map(({ name, _id }) => ({
 						value: _id,
 						text: name

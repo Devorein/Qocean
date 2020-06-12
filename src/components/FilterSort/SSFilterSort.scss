@@ -1,6 +1,10 @@
 .FilterSort {
   align-items: center;
   display: flex;
+
+  &_icons {
+    height: 100%;
+  }
   &_add,
   .MuiSvgIcon-root {
     cursor: pointer;
@@ -8,15 +12,23 @@
   }
   &_preset {
     margin: 5px;
+    width: 200px;
   }
   &_name {
-    max-width: 150px;
+    max-width: 250px;
+  }
+  &Manip {
+    display: flex;
+    align-items: center;
+    width: 60%;
   }
   .FilterSortContainer {
     display: flex;
-    width: 80%;
     .FilterSortItem {
+      max-width: 150px;
       flex-grow: 1;
+      display: flex;
+      align-items: center;
       &_name {
         display: flex;
         padding: 5px;

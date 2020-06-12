@@ -10,6 +10,7 @@ import { withStyles } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import GenericButton from '../Buttons/GenericButton';
 import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
@@ -419,6 +420,28 @@ class SSFilterSort extends Component {
 						{totalActive}/{this.state[item].length} {`${item}`}{' '}
 						<span style={{ fontSize: 12, marginLeft: 5 }}>{'Active'}</span>
 					</div>
+					<RotateLeftIcon
+						onClick={(e) => {
+							if (item === 'filters') {
+								this.setState({
+									filters: [
+										{
+											...DEFAULT_FILTER,
+											children: []
+										}
+									]
+								});
+							} else if (item === 'sorts') {
+								this.setState({
+									sorts: [
+										{
+											...DEFAULT_SORT
+										}
+									]
+								});
+							}
+						}}
+					/>
 					<Menu
 						anchorEl={this.state[`anchorEl${item}`]}
 						keepMounted
@@ -501,7 +524,7 @@ class SSFilterSort extends Component {
 				{({ FSManip }) => {
 					return (
 						<div className={`FilterSort`}>
-							{FSManip}
+							<div className="FilterSortManip">{FSManip}</div>
 							<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
 							<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
 						</div>
