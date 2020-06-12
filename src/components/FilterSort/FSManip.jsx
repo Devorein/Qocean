@@ -5,6 +5,7 @@ import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
+import UpdateIcon from '@material-ui/icons/Update';
 
 class FSManip extends Component {
 	state = {
@@ -41,9 +42,9 @@ class FSManip extends Component {
 		});
 	};
 
-	createPreset = (e) => {
+	createPreset = (filters, sorts, e) => {
 		const { presetName } = this.state;
-		const { filters, sorts } = this.props;
+
 		axios
 			.post(
 				`http://localhost:5001/api/v1/filtersort`,
@@ -51,7 +52,7 @@ class FSManip extends Component {
 					filters,
 					sorts,
 					type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
-					name: presetName
+					name: presetName !== '' ? presetName : Date.now()
 				},
 				{
 					headers: {
@@ -60,7 +61,11 @@ class FSManip extends Component {
 				}
 			)
 			.then(({ data: { data } }) => {
-				this.changeResponse('Success', `Successfully created preset ${data.name}`, 'success');
+				if (presetName === '')
+					this.changeResponse('Warning', 'You provided no value for preset name. Using current timestamp', 'warning');
+				setTimeout(() => {
+					this.changeResponse('Success', `Successfully created preset ${data.name}`, 'success');
+				}, 1250);
 				this.fetchPreset();
 			})
 			.catch((err) => {
@@ -104,13 +109,23 @@ class FSManip extends Component {
 			});
 	};
 
+	updatePreset = (e) => {
+		const { currentPreset } = this.state;
+		const { filters, sorts } = this.props;
+
+		if (currentPreset) {
+			this.createPreset(filters, sorts, e);
+		}
+	};
+
 	renderFSManip = () => {
 		const { filtersorts, currentPreset, presetName } = this.state;
-
+		const { filters, sorts } = this.props;
 		return (
 			<Fragment>
-				<NoteAddIcon className="FilterSort_add" onClick={this.createPreset} />
-				<CancelIcon onClick={this.deletePreset} />
+				<NoteAddIcon className="FilterSort_add" onClick={this.createPreset.bind(null, filters, sorts)} />
+				<UpdateIcon className="FilterSort_update" onClick={this.updatePreset} />
+				<CancelIcon className="FilterSort_delete" onClick={this.deletePreset} />
 				<InputSelect
 					className="FilterSort_preset"
 					name="Preset"
