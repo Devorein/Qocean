@@ -10,6 +10,9 @@ const filterItem = {
 	cond: {
 		type: String,
 		enum: [ 'and', 'or' ]
+	},
+	type: {
+		type: String
 	}
 };
 

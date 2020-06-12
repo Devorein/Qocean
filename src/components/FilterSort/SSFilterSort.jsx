@@ -507,33 +507,48 @@ class SSFilterSort extends Component {
 		});
 	};
 
+	setFilterSort = (e) => {
+		const { filters, sorts } = this.state.filtersorts.find(({ _id }) => _id === e.target.value);
+		this.setState({
+			currentFilterSort: e.target.value,
+			filters,
+			sorts
+		});
+	};
+
+	createFilterSortPreset = (e) => {
+		const { filters, sorts } = this.state;
+		axios
+			.post(
+				`http://localhost:5001/api/v1/filtersort`,
+				{
+					filters,
+					sorts,
+					type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
+					name: Date.now()
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then((data) => {
+				this.fetchPreset();
+			});
+	};
+
 	renderFilterSort = () => {
-		const { filters, sorts, filtersorts, currentFilterSort } = this.state;
+		const { filtersorts, currentFilterSort } = this.state;
 		return (
 			<div className={`FilterSort`}>
-				<NoteAddIcon
-					className="FilterSort_add"
-					onClick={(e) => {
-						axios.post(
-							`http://localhost:5001/api/v1/filtersort`,
-							{
-								filters,
-								sorts,
-								type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
-								name: Date.now()
-							},
-							{
-								headers: {
-									Authorization: `Bearer ${localStorage.getItem('token')}`
-								}
-							}
-						);
-					}}
-				/>
+				<NoteAddIcon className="FilterSort_add" onClick={this.createFilterSortPreset} />
 				<InputSelect
-					className="Filtersort_preset"
+					className="FilterSort_preset"
 					name="Preset"
-					onChange={(e) => {}}
+					onChange={(e) => {
+						this.setFilterSort(e);
+					}}
 					selectItems={filtersorts.map(({ name, _id }) => ({
 						value: _id,
 						text: name
