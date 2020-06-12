@@ -13,6 +13,19 @@ exports.createFilterSort = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: filtersort });
 });
 
+exports.updateFilterSort = asyncHandler(async (req, res, next) => {
+	let filtersort = await FilterSort.findById(req.params.id);
+	if (!filtersort) return next(new ErrorResponse(`Filtersort not found with id of ${req.params.id}`, 404));
+	if (filtersort.user.toString() !== req.user._id.toString())
+		return next(new ErrorResponse(`User not authorized to delete filtersort`, 401));
+	filtersort.filters = req.body.filters;
+	filtersort.sorts = req.body.sorts;
+	filtersort.type = req.body.type;
+	filtersort.name = req.body.name;
+	await filtersort.save();
+	res.status(200).json({ success: true, data: filtersort });
+});
+
 exports.deleteFilterSort = asyncHandler(async (req, res, next) => {
 	const filtersort = await FilterSort.findById(req.params.id);
 	if (!filtersort) return next(new ErrorResponse(`Filtersort not found with id of ${req.params.id}`, 404));

@@ -9,7 +9,7 @@ function Alert(props) {
 	return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-class CustomizedSnackbars extends React.Component {
+class CustomSnackbars extends React.Component {
 	static contextType = AppContext;
 
 	state = {
@@ -65,4 +65,4 @@ export default withStyles((theme) => ({
 			marginTop: theme.spacing(2)
 		}
 	}
-}))(CustomizedSnackbars);
+}))(CustomSnackbars);
