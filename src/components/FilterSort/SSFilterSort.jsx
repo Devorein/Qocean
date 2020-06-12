@@ -47,7 +47,7 @@ class SSFilterSort extends Component {
 		filtersorts: [],
 		filters: [ { ...DEFAULT_FILTER, children: [] } ],
 		sorts: [ { ...DEFAULT_SORT } ],
-		currentFilterSort: null
+		currentPreset: null
 	};
 
 	selectItems = [ { vaule: 'none', text: 'none' } ];
@@ -76,10 +76,16 @@ class SSFilterSort extends Component {
 		this.selectItems = getPropsBasedOnType(props.type);
 
 		if (props.type !== this.props.type) {
-			this.setState({
-				filters: [ { ...DEFAULT_FILTER, children: [] } ],
-				sorts: [ { ...DEFAULT_SORT } ]
-			});
+			this.setState(
+				{
+					filters: [ { ...DEFAULT_FILTER, children: [] } ],
+					sorts: [ { ...DEFAULT_SORT } ],
+					currentPreset: null
+				},
+				() => {
+					this.fetchPreset();
+				}
+			);
 		}
 	}
 
@@ -510,14 +516,14 @@ class SSFilterSort extends Component {
 	setFilterSort = (e) => {
 		const { filters, sorts } = this.state.filtersorts.find(({ _id }) => _id === e.target.value);
 		this.setState({
-			currentFilterSort: e.target.value,
+			currentPreset: e.target.value,
 			filters,
 			sorts
 		});
 	};
 
 	createFilterSortPreset = (e) => {
-		const { filters, sorts } = this.state;
+		const { filters, sorts, presetName } = this.state;
 		axios
 			.post(
 				`http://localhost:5001/api/v1/filtersort`,
@@ -525,7 +531,7 @@ class SSFilterSort extends Component {
 					filters,
 					sorts,
 					type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
-					name: Date.now()
+					name: presetName
 				},
 				{
 					headers: {
@@ -539,7 +545,7 @@ class SSFilterSort extends Component {
 	};
 
 	renderFilterSort = () => {
-		const { filtersorts, currentFilterSort } = this.state;
+		const { filtersorts, currentPreset, presetName } = this.state;
 		return (
 			<div className={`FilterSort`}>
 				<NoteAddIcon className="FilterSort_add" onClick={this.createFilterSortPreset} />
@@ -553,7 +559,17 @@ class SSFilterSort extends Component {
 						value: _id,
 						text: name
 					}))}
-					value={currentFilterSort}
+					value={currentPreset}
+				/>
+				<TextInput
+					className="FilterSort_name"
+					value={presetName}
+					name={`Name`}
+					onChange={(e) => {
+						this.setState({
+							presetName: e.target.value
+						});
+					}}
 				/>
 				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
 				<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />

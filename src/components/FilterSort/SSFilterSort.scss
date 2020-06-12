@@ -7,13 +7,7 @@
     width: 0.75em;
   }
   &_preset {
-    min-width: 150px;
-    label + .MuiInput-formControl {
-      margin-top: 0px;
-    }
-    .MuiInputLabel-formControl {
-      transform: translate(0, 10px) scale(1);
-    }
+    margin: 5px;
   }
   .FilterSortContainer {
     display: flex;
