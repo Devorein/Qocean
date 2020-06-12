@@ -9,6 +9,7 @@ import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
 import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import moment from 'moment';
 import shortid from 'shortid';
 import MultiSelect from '../Input/MultiSelect';
@@ -23,7 +24,8 @@ const DEFAULT_FILTER = {
 	mod: 'none',
 	value: '',
 	disabled: false,
-	cond: 'and'
+	cond: 'and',
+	shutdown: false
 };
 
 const DEFAULT_SORT = {
@@ -243,7 +245,7 @@ class SSFilterSort extends Component {
 		}
 
 		if (currentTarget) {
-			const { target, mod, disabled } = currentTarget;
+			const { target, mod, disabled, shutdown } = currentTarget;
 			const [ targetType, modItems ] = decideTargetType(target);
 			const valueItem = this.renderTargetValue(targetType, currentTarget);
 
@@ -253,16 +255,25 @@ class SSFilterSort extends Component {
 					className={`FilterSortItem_select_item`}
 				>
 					<div className="FilterSortItem_select_switch">
-						<Switch
-							name={`${targetType}${index}`}
-							checked={!disabled}
-							color="primary"
-							onChange={(e) => {
-								currentTarget.disabled = !disabled;
-								this.setState({
-									filters: this.state.filters
-								});
-							}}
+						<FormControlLabel
+							disabled={shutdown}
+							control={
+								<Switch
+									name={`${targetType}${index}`}
+									checked={!disabled}
+									color="primary"
+									onChange={(e) => {
+										currentTarget.disabled = !disabled;
+										if (!isChild)
+											currentTarget.children.forEach((child) => {
+												child.shutdown = currentTarget.disabled;
+											});
+										this.setState({
+											filters: this.state.filters
+										});
+									}}
+								/>
+							}
 						/>
 					</div>
 					{index >= 1 ? (
@@ -278,7 +289,7 @@ class SSFilterSort extends Component {
 									filters: this.state.filters
 								});
 							}}
-							disabledSelect={disabled}
+							disabledSelect={disabled || shutdown}
 							selectItems={[ { value: 'and', text: 'AND' }, { value: 'or', text: 'OR' } ]}
 						/>
 					) : null}
@@ -307,7 +318,7 @@ class SSFilterSort extends Component {
 								filters: this.state.filters
 							});
 						}}
-						disabledSelect={disabled}
+						disabledSelect={disabled || shutdown}
 						selectItems={this.selectItems}
 					/>
 					<InputSelect
@@ -320,7 +331,7 @@ class SSFilterSort extends Component {
 								filters: this.state.filters
 							});
 						}}
-						disabledSelect={disabled}
+						disabledSelect={disabled || shutdown}
 						selectItems={modItems}
 					/>
 					<div className="FilterSortItem_select_value">{valueItem}</div>
@@ -328,11 +339,11 @@ class SSFilterSort extends Component {
 						<div className="FilterSortItem_select_delete">
 							<CancelIcon
 								onClick={() => {
-									if (!disabled) {
-										const { filters } = this.state;
-										filters.splice(index, 1);
+									if (!disabled && !shutdown) {
+										if (isChild) currentTarget.children.splice(index, 1);
+										else this.state.filters.splice(index, 1);
 										this.setState({
-											filters
+											filters: this.state.filters
 										});
 									}
 								}}
@@ -343,12 +354,14 @@ class SSFilterSort extends Component {
 						<AddBoxIcon
 							className="FilterSortItem_select_add"
 							onClick={(e) => {
-								const newTarget = { ...DEFAULT_FILTER };
-								delete newTarget.children;
-								this.state.filters[index].children.push(newTarget);
-								this.setState({
-									filters: this.state.filters
-								});
+								if (!disabled && !shutdown) {
+									const newTarget = { ...DEFAULT_FILTER };
+									delete newTarget.children;
+									this.state.filters[index].children.push(newTarget);
+									this.setState({
+										filters: this.state.filters
+									});
+								}
 							}}
 						/>
 					) : null}
