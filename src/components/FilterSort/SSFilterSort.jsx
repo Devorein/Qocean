@@ -52,7 +52,7 @@ class SSFilterSort extends Component {
 
 	selectItems = [ { vaule: 'none', text: 'none' } ];
 
-	fetchPreset = () => {
+	fetchPreset = (newState) => {
 		let { type } = this.props;
 		type = type.charAt(0).toUpperCase() + type.substr(1);
 		axios
@@ -63,7 +63,8 @@ class SSFilterSort extends Component {
 			})
 			.then(({ data: { data: filtersorts } }) => {
 				this.setState({
-					filtersorts
+					filtersorts,
+					...newState
 				});
 			});
 	};
@@ -544,11 +545,30 @@ class SSFilterSort extends Component {
 			});
 	};
 
+	deletePreset = () => {
+		const { currentPreset } = this.state;
+
+		if (currentPreset) {
+			axios
+				.delete(`http://localhost:5001/api/v1/filtersort/${currentPreset}`, {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					this.fetchPreset({
+						currentPreset: null
+					});
+				});
+		}
+	};
+
 	renderFilterSort = () => {
 		const { filtersorts, currentPreset, presetName } = this.state;
 		return (
 			<div className={`FilterSort`}>
 				<NoteAddIcon className="FilterSort_add" onClick={this.createFilterSortPreset} />
+				<CancelIcon onClick={this.deletePreset} />
 				<InputSelect
 					className="FilterSort_preset"
 					name="Preset"
