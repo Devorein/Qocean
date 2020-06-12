@@ -1,5 +1,18 @@
 const mongoose = require('mongoose');
 
+const filterItem = {
+	target: {
+		type: String,
+		required: 'Target is required'
+	},
+	mod: String,
+	value: String,
+	cond: {
+		type: String,
+		enum: [ 'and', 'or' ]
+	}
+};
+
 const FilterSortSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
@@ -7,29 +20,25 @@ const FilterSortSchema = new mongoose.Schema({
 	},
 	type: {
 		type: String,
-		enum: [ 'User', 'Folder', 'Quiz', 'Question', 'Environment' ]
+		enum: [ 'User', 'Folder', 'Quiz', 'Question', 'Environment' ],
+		required: [ true, 'Provide the filtersort type' ]
 	},
 	name: {
 		type: String,
 		required: [ true, 'Name is required' ]
 	},
-	filter: [
+	filters: [
+		{
+			...filterItem,
+			children: [ { ...filterItem } ]
+		}
+	],
+	sorts: [
 		{
 			target: {
 				type: String,
 				required: 'Target is required'
 			},
-			mod: String,
-			value: String,
-			cond: {
-				type: String,
-				enum: [ 'and', 'or' ]
-			}
-		}
-	],
-	sort: [
-		{
-			target: String,
 			order: {
 				type: String,
 				enum: [ 'asc', 'desc' ]

@@ -97,10 +97,12 @@ const UserSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist'
 	},
-	filtersort: {
-		type: mongoose.Schema.ObjectId,
-		ref: 'FilterSort'
-	}
+	filtersort: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'FilterSort'
+		}
+	]
 });
 
 UserSchema.methods.getSignedJwtToken = function() {

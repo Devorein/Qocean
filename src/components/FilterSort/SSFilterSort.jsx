@@ -45,9 +45,11 @@ class SSFilterSort extends Component {
 		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
-	selectItems = getPropsBasedOnType(this.props.type);
+	selectItems = [ { vaule: 'none', text: 'none' } ];
 
 	UNSAFE_componentWillReceiveProps(props) {
+		this.selectItems = getPropsBasedOnType(props.type);
+
 		if (props.type !== this.props.type) {
 			this.setState({
 				filters: [ { ...DEFAULT_FILTER, children: [] } ],
