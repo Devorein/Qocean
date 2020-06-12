@@ -9,11 +9,14 @@ import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
 import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import moment from 'moment';
 import shortid from 'shortid';
 import MultiSelect from '../Input/MultiSelect';
 import Color from 'color';
 import convert from 'color-convert';
+import decideTargetType from '../../Utils/decideTargetType';
+import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
 import './SSFilterSort.scss';
 
 const DEFAULT_FILTER = {
@@ -21,7 +24,8 @@ const DEFAULT_FILTER = {
 	mod: 'none',
 	value: '',
 	disabled: false,
-	cond: 'and'
+	cond: 'and',
+	shutdown: false
 };
 
 const DEFAULT_SORT = {
@@ -40,6 +44,8 @@ class SSFilterSort extends Component {
 		sorts: [ { ...DEFAULT_SORT } ]
 	};
 
+	selectItems = getPropsBasedOnType(this.props.type);
+
 	UNSAFE_componentWillReceiveProps(props) {
 		if (props.type !== this.props.type) {
 			this.setState({
@@ -49,48 +55,7 @@ class SSFilterSort extends Component {
 		}
 	}
 
-	getPropsBasedOnType = () => {
-		let { type } = this.props;
-		type = type.toLowerCase();
-		const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at' ];
-
-		let selectItems = null;
-		if (type === 'quiz')
-			selectItems = [
-				...commonsorts,
-				'ratings',
-				'subject',
-				'average_quiz_time',
-				'average_difficulty',
-				'tags',
-				'watchers',
-				'total_questions'
-			];
-		else if (type === 'question') selectItems = [ ...commonsorts, 'difficulty', 'type', 'time_allocated', 'quiz' ];
-		else if (type === 'folder')
-			selectItems = [ ...commonsorts, 'icon', 'watchers', 'total_quizzes', 'total_questions' ];
-		else if (type === 'environment') selectItems = [ ...commonsorts, 'icon' ];
-		else if (type === 'user')
-			selectItems = [
-				'none',
-				'name',
-				'username',
-				'gmail',
-				'joined_at',
-				'total_environments',
-				'total_folders',
-				'total_questions',
-				'total_quizzes',
-				'version'
-			];
-		return selectItems.map((name) => ({
-			value: name,
-			text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-		}));
-	};
-
 	renderSortItem = (index) => {
-		const selectItems = this.getPropsBasedOnType();
 		const currentTarget = this.state.sorts[index];
 		const { disabled } = currentTarget;
 		return (
@@ -119,7 +84,7 @@ class SSFilterSort extends Component {
 							sorts: this.state.sorts
 						});
 					}}
-					selectItems={selectItems}
+					selectItems={this.selectItems}
 					disabledSelect={disabled}
 					value={this.state.sorts[index].target}
 				/>
@@ -146,79 +111,39 @@ class SSFilterSort extends Component {
 		);
 	};
 
-	decideTargetType = (target) => {
-		let targetType = null;
-		if (target.match(/^(name|subject|quiz|email)$/)) targetType = 'string';
-		else if (target.match(/^(public|favourite)$/)) targetType = 'boolean';
-		else if (target.match(/^(created_at|updated_at|joined_at)$/)) targetType = 'date';
-		else if (
-			target.match(
-				/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes|total_environments|total_folders)$/
-			)
-		)
-			targetType = 'number';
-		else if (target.match(/^(tags)$/)) targetType = 'array';
-		else if (target.match(/(difficulty|icon|type|average_difficulty|version)$/)) targetType = 'select';
-		return targetType;
-	};
-
-	decideFilterItem = (targetType, index) => {
-		const { disabled } = this.state.filters[index];
+	renderTargetValue = (targetType, targetItem) => {
+		const { disabled, value, mod, target, shutdown } = targetItem;
 		if (targetType === 'string')
-			return [
-				[ 'is', 'starts_with', 'ends_with', 'contains', 'regex' ].map((name) => ({
-					value: name,
-					text: name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-				})),
+			return (
 				<TextInput
-					value={this.state.filters[index].value}
+					value={value}
 					name={`value`}
-					disabled={disabled}
+					disabled={disabled || shutdown}
 					onChange={(e) => {
-						const target = this.state.filters[index];
-						target.value = e.target.value;
+						targetItem.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
 					}}
 				/>
-			];
+			);
 		else if (targetType === 'boolean')
-			return [
-				[ { value: 'is', text: 'Is' }, { value: 'is_not', text: 'Is not' } ],
+			return (
 				<InputSelect
 					name="Value"
-					value={this.state.filters[index].value ? this.state.filters[index].value : ''}
+					value={value ? value : ''}
 					onChange={(e) => {
-						this.state.filters.forEach((filter, _index) => {
-							if (_index === index) filter.value = e.target.value;
-						});
+						targetItem.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
 					}}
 					selectItems={[ { value: 'true', text: 'True' }, { value: 'false', text: 'False' } ]}
-					disabledSelect={disabled}
+					disabledSelect={disabled || shutdown}
 				/>
-			];
+			);
 		else if (targetType === 'number') {
-			const { mod } = this.state.filters[index];
-			return [
-				[
-					'is',
-					'is_not',
-					'greater_than',
-					'less_than',
-					'greater_than_equal',
-					'less_than_equal',
-					'between_inclusive',
-					'between_exclusive',
-					'not_between_inclusive',
-					'not_between_exclusive'
-				].map((name) => ({
-					value: name,
-					text: capitalize(name)
-				})),
+			return (
 				<Fragment>
 					{Array(
 						mod.match(/^(between_exclusive|not_between_exclusive|between_inclusive|not_between_inclusive)$/g) ? 2 : 1
@@ -226,21 +151,14 @@ class SSFilterSort extends Component {
 						.fill(0)
 						.map((_, _index) => (
 							<TextInput
-								disabled={disabled}
+								disabled={disabled || shutdown}
 								key={`${_index}_${targetType}_${mod}`}
-								value={
-									Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[_index] ? (
-										this.state.filters[index].value[_index]
-									) : (
-										[]
-									)
-								}
+								value={Array.isArray(value) && value[_index] ? value[_index] : []}
 								name={`value`}
 								type={'number'}
 								onChange={(e) => {
-									const target = this.state.filters[index];
-									if (!Array.isArray(target.value)) target.value = [];
-									target.value[_index] = e.target.value;
+									if (!Array.isArray(value)) targetItem.value = [];
+									targetItem.value[_index] = e.target.value;
 									this.setState({
 										filters: this.state.filters
 									});
@@ -248,9 +166,8 @@ class SSFilterSort extends Component {
 							/>
 						))}
 				</Fragment>
-			];
+			);
 		} else if (targetType === 'select') {
-			const { target, value = [] } = this.state.filters[index];
 			let selectItems = null;
 			if (target.match(/(difficulty|average_difficulty)/))
 				selectItems = [ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
@@ -281,112 +198,101 @@ class SSFilterSort extends Component {
 					_id: item
 				}));
 			}
-			return [
-				[ 'is', 'is_not' ].map((name) => ({
-					value: name,
-					text: capitalize(name)
-				})),
+			return (
 				<MultiSelect
-					disabled={disabled}
+					disabled={disabled || shutdown}
 					label={capitalize(target)}
 					selected={Array.isArray(value) ? value : []}
 					items={selectItems}
 					customChipRenderer={target.match(/(icon)/) ? getColoredIcons.bind(null, this.props.type) : null}
 					handleChange={(e) => {
-						const target = this.state.filters[index];
-						if (!Array.isArray(target.value)) target.value = [];
-						target.value = e.target.value;
+						if (!Array.isArray(value)) targetItem.value = [];
+						targetItem.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
 					}}
 				/>
-			];
+			);
 		} else if (targetType === 'date') {
-			const { mod } = this.state.filters[index];
-			return [
-				[
-					'exact',
-					'today',
-					'yesterday',
-					'within',
-					'last_week',
-					'within_last_week',
-					'last_month',
-					'within_last_month',
-					'last_year',
-					'within_last_year'
-				].map((item) => ({ value: item, text: capitalize(item) })),
-				mod.match(/^(exact|within)$/)
-					? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
-							<DatePicker
-								disabled={disabled}
-								key={`datepicker_${_index}${shortid.generate()}`}
-								value={this.state.filters[index].value[_index]}
-								onChange={(date) => {
-									const target = this.state.filters[index];
-									target.value[_index] = date.toISOString();
-									this.setState({
-										filters: this.state.filters
-									});
-								}}
-							/>
-						))
-					: null
-			];
-		} else return [ [ { value: 'none', text: 'None' } ], null ];
+			return mod.match(/^(exact|within)$/)
+				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
+						<DatePicker
+							disabled={disabled || shutdown}
+							key={`datepicker_${_index}${shortid.generate()}`}
+							value={value[_index]}
+							onChange={(date) => {
+								target.value[_index] = date.toISOString();
+								this.setState({
+									filters: this.state.filters
+								});
+							}}
+						/>
+					))
+				: null;
+		} else return null;
 	};
 
 	renderFilterItem = (parentIndex, { isChild, childIndex, child }) => {
 		let currentTarget = null,
 			index = null;
-		if (parentIndex !== null) {
+		if (!isChild) {
 			index = parentIndex;
 			currentTarget = this.state.filters[index];
 		} else {
 			index = childIndex;
 			currentTarget = child;
 		}
-		debugger;
+
 		if (currentTarget) {
-			const { target, mod, disabled } = currentTarget;
-			const selectItems = this.getPropsBasedOnType();
-			const targetType = this.decideTargetType(target);
-			const [ modItems, valueItem ] = this.decideFilterItem(targetType, index);
-			const modValue = mod !== 'none' ? mod : modItems[0].value;
+			const { target, mod, disabled, shutdown, children } = currentTarget;
+			const [ targetType, modItems ] = decideTargetType(target);
+			const valueItem = this.renderTargetValue(targetType, currentTarget);
 
 			return (
 				<div
 					key={isChild ? `filter${index}_child${childIndex}` : `filter${index}`}
-					className={`FilterSortItem_select_item ${disabled}`}
+					className={`FilterSortItem_select_item`}
 				>
 					<div className="FilterSortItem_select_switch">
-						<Switch
-							name={`${targetType}${index}`}
-							checked={!disabled}
-							color="primary"
-							onChange={(e) => {
-								currentTarget.disabled = !disabled;
-								this.setState({
-									filters: this.state.filters
-								});
-							}}
+						<FormControlLabel
+							disabled={shutdown}
+							control={
+								<Switch
+									name={`${targetType}${index}`}
+									checked={!disabled}
+									color="primary"
+									onChange={(e) => {
+										currentTarget.disabled = !disabled;
+										if (!isChild)
+											children.forEach((child) => {
+												child.shutdown = currentTarget.disabled;
+											});
+										this.setState({
+											filters: this.state.filters
+										});
+									}}
+								/>
+							}
 						/>
 					</div>
-					{index >= 1 ? (
+					{(!isChild && index >= 1) || isChild ? (
 						<InputSelect
 							className="FilterSortItem_select_cond"
 							name="Cond"
 							value={currentTarget.cond}
 							onChange={(e) => {
-								this.state.filters.forEach((filter) => {
+								let target = null;
+								if (!child) target = this.state.filters;
+								else target = this.state.filters[parentIndex].children;
+								target.forEach((filter) => {
 									filter.cond = e.target.value;
 								});
 								this.setState({
 									filters: this.state.filters
 								});
 							}}
-							disabledSelect={disabled}
+							disabledSelect={disabled || shutdown}
 							selectItems={[ { value: 'and', text: 'AND' }, { value: 'or', text: 'OR' } ]}
 						/>
 					) : null}
@@ -395,9 +301,7 @@ class SSFilterSort extends Component {
 						name="Target"
 						value={target}
 						onChange={(e) => {
-							const targetType = this.decideTargetType(e.target.value);
-							const [ modItems ] = this.decideFilterItem(targetType, index);
-
+							const [ targetType, modItems ] = decideTargetType(e.target.value);
 							currentTarget.target = e.target.value;
 							currentTarget.type = targetType;
 							currentTarget.cond = this.state.filters[0].cond;
@@ -417,20 +321,20 @@ class SSFilterSort extends Component {
 								filters: this.state.filters
 							});
 						}}
-						disabledSelect={disabled}
-						selectItems={selectItems}
+						disabledSelect={disabled || shutdown}
+						selectItems={this.selectItems}
 					/>
 					<InputSelect
 						className="FilterSortItem_select_mod"
 						name="Mod"
-						value={modValue}
+						value={mod}
 						onChange={(e) => {
 							currentTarget.mod = e.target.value;
 							this.setState({
 								filters: this.state.filters
 							});
 						}}
-						disabledSelect={disabled}
+						disabledSelect={disabled || shutdown}
 						selectItems={modItems}
 					/>
 					<div className="FilterSortItem_select_value">{valueItem}</div>
@@ -438,33 +342,47 @@ class SSFilterSort extends Component {
 						<div className="FilterSortItem_select_delete">
 							<CancelIcon
 								onClick={() => {
-									if (!disabled) {
-										const { filters } = this.state;
-										filters.splice(index, 1);
+									if (!disabled && !shutdown) {
+										if (isChild) this.state.filters[parentIndex].children.splice(childIndex, 1);
+										else this.state.filters.splice(index, 1);
 										this.setState({
-											filters
+											filters: this.state.filters
 										});
 									}
 								}}
 							/>
 						</div>
 					) : null}
-					{!isChild && currentTarget.children.length < 3 ? (
+					{!isChild && currentTarget.children.length < 2 ? (
 						<AddBoxIcon
 							className="FilterSortItem_select_add"
 							onClick={(e) => {
-								const newTarget = { ...DEFAULT_FILTER };
-								delete newTarget.children;
-								this.state.filters[index].children.push(newTarget);
-								this.setState({
-									filters: this.state.filters
-								});
+								if (!disabled && !shutdown) {
+									const newTarget = { ...DEFAULT_FILTER };
+									delete newTarget.children;
+									children.push(newTarget);
+									this.setState({
+										filters: this.state.filters
+									});
+								}
 							}}
 						/>
 					) : null}
 				</div>
 			);
 		}
+	};
+
+	renderFilterChildrens = (index) => {
+		return this.state.filters[index].children.length !== 0
+			? this.state.filters[index].children.map((child, childIndex) => {
+					return (
+						<div className={`FilterSortItem_select_filters_child`} key={`filter${index}_child${childIndex}`}>
+							{this.renderFilterItem(index, { child, isChild: true, childIndex })}
+						</div>
+					);
+				})
+			: null;
 	};
 
 	renderFilterSortItem = () => {
@@ -524,20 +442,7 @@ class SSFilterSort extends Component {
 											? 'FilterSortItem_select--disabled'
 											: ''}`}
 									>
-										{item === 'filters' ? this.state.filters[index].children.length !== 0 ? (
-											this.state.filters[index].children.map((child, childIndex) => {
-												return (
-													<div
-														className={`FilterSortItem_select_${item}_child ${disabled
-															? 'FilterSortItem_select--disabled'
-															: ''}`}
-														key={`filter${index}_child${childIndex}`}
-													>
-														{this.renderFilterItem(null, { child, isChild: true, childIndex })}
-													</div>
-												);
-											})
-										) : null : null}
+										{item === 'filters' ? this.renderFilterChildrens(index) : null}
 									</div>
 								</div>
 							);
@@ -595,7 +500,11 @@ export default withStyles((theme) => ({
 		'& .SSFilterSort_apply-button': {
 			color: theme.palette.success.main
 		},
+		'& .FilterSortItem_select_filters_parent': {
+			backgroundColor: theme.palette.background.dark
+		},
 		'& .FilterSortItem_select_filters_childcontainer': {
+			marginLeft: 20,
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex()
 		}
 	}
