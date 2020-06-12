@@ -17,6 +17,7 @@ import Color from 'color';
 import convert from 'color-convert';
 import decideTargetType from '../../Utils/decideTargetType';
 import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import './SSFilterSort.scss';
 
 const DEFAULT_FILTER = {
@@ -57,7 +58,7 @@ class SSFilterSort extends Component {
 
 	renderSortItem = (index) => {
 		const currentTarget = this.state.sorts[index];
-		const { disabled } = currentTarget;
+		const { disabled, target, value, order } = currentTarget;
 		return (
 			<Fragment>
 				<div className="FilterSortItem_select_switch">
@@ -77,25 +78,21 @@ class SSFilterSort extends Component {
 					className="FilterSortItem_select_target"
 					name="Target"
 					onChange={(e) => {
-						this.state.sorts.forEach((sort, _index) => {
-							if (_index === index) sort.target = e.target.value;
-						});
+						currentTarget.target = e.target.value;
 						this.setState({
 							sorts: this.state.sorts
 						});
 					}}
 					selectItems={this.selectItems}
 					disabledSelect={disabled}
-					value={this.state.sorts[index].target}
+					value={target}
 				/>
 				<InputSelect
 					className="FilterSortItem_select_order"
 					name="Order"
-					value={this.state.sorts[index].order}
+					value={order}
 					onChange={(e) => {
-						this.state.sorts.forEach((sort, _index) => {
-							if (_index === index) sort.order = e.target.value;
-						});
+						currentTarget.order = e.target.value;
 						this.setState({
 							sorts: this.state.sorts
 						});
@@ -107,6 +104,20 @@ class SSFilterSort extends Component {
 					]}
 					disabledSelect={disabled}
 				/>
+				{index !== 0 ? (
+					<div className="FilterSortItem_select_delete">
+						<CancelIcon
+							onClick={() => {
+								if (!disabled) {
+									this.state.sorts.splice(index, 1);
+									this.setState({
+										sorts: this.state.sorts
+									});
+								}
+							}}
+						/>
+					</div>
+				) : null}
 			</Fragment>
 		);
 	};
