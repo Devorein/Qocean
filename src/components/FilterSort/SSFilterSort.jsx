@@ -109,17 +109,16 @@ class SSFilterSort extends Component {
 		);
 	};
 
-	renderTargetValue = (targetType, index) => {
-		const { disabled } = this.state.filters[index];
+	renderTargetValue = (targetType, targetItem) => {
+		const { disabled, value, mod, target } = targetItem;
 		if (targetType === 'string')
 			return (
 				<TextInput
-					value={this.state.filters[index].value}
+					value={value}
 					name={`value`}
 					disabled={disabled}
 					onChange={(e) => {
-						const target = this.state.filters[index];
-						target.value = e.target.value;
+						targetItem.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
@@ -130,11 +129,9 @@ class SSFilterSort extends Component {
 			return (
 				<InputSelect
 					name="Value"
-					value={this.state.filters[index].value ? this.state.filters[index].value : ''}
+					value={value ? value : ''}
 					onChange={(e) => {
-						this.state.filters.forEach((filter, _index) => {
-							if (_index === index) filter.value = e.target.value;
-						});
+						targetItem.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
@@ -144,7 +141,6 @@ class SSFilterSort extends Component {
 				/>
 			);
 		else if (targetType === 'number') {
-			const { mod } = this.state.filters[index];
 			return (
 				<Fragment>
 					{Array(
@@ -155,19 +151,12 @@ class SSFilterSort extends Component {
 							<TextInput
 								disabled={disabled}
 								key={`${_index}_${targetType}_${mod}`}
-								value={
-									Array.isArray(this.state.filters[index].value) && this.state.filters[index].value[_index] ? (
-										this.state.filters[index].value[_index]
-									) : (
-										[]
-									)
-								}
+								value={Array.isArray(value) && value[_index] ? value[_index] : []}
 								name={`value`}
 								type={'number'}
 								onChange={(e) => {
-									const target = this.state.filters[index];
-									if (!Array.isArray(target.value)) target.value = [];
-									target.value[_index] = e.target.value;
+									if (!Array.isArray(value)) targetItem.value = [];
+									targetItem.value[_index] = e.target.value;
 									this.setState({
 										filters: this.state.filters
 									});
@@ -177,7 +166,6 @@ class SSFilterSort extends Component {
 				</Fragment>
 			);
 		} else if (targetType === 'select') {
-			const { target, value = [] } = this.state.filters[index];
 			let selectItems = null;
 			if (target.match(/(difficulty|average_difficulty)/))
 				selectItems = [ 'Beginner', 'Intermediate', 'Advanced' ].map((item) => ({
@@ -216,9 +204,8 @@ class SSFilterSort extends Component {
 					items={selectItems}
 					customChipRenderer={target.match(/(icon)/) ? getColoredIcons.bind(null, this.props.type) : null}
 					handleChange={(e) => {
-						const target = this.state.filters[index];
-						if (!Array.isArray(target.value)) target.value = [];
-						target.value = e.target.value;
+						if (!Array.isArray(value)) targetItem.value = [];
+						targetItem.value = e.target.value;
 						this.setState({
 							filters: this.state.filters
 						});
@@ -226,15 +213,13 @@ class SSFilterSort extends Component {
 				/>
 			);
 		} else if (targetType === 'date') {
-			const { mod } = this.state.filters[index];
 			return mod.match(/^(exact|within)$/)
 				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
 						<DatePicker
 							disabled={disabled}
 							key={`datepicker_${_index}${shortid.generate()}`}
-							value={this.state.filters[index].value[_index]}
+							value={value[_index]}
 							onChange={(date) => {
-								const target = this.state.filters[index];
 								target.value[_index] = date.toISOString();
 								this.setState({
 									filters: this.state.filters
@@ -260,7 +245,7 @@ class SSFilterSort extends Component {
 		if (currentTarget) {
 			const { target, mod, disabled } = currentTarget;
 			const [ targetType, modItems ] = decideTargetType(target);
-			const valueItem = this.renderTargetValue(targetType, index);
+			const valueItem = this.renderTargetValue(targetType, currentTarget);
 
 			return (
 				<div
@@ -499,7 +484,11 @@ export default withStyles((theme) => ({
 		'& .SSFilterSort_apply-button': {
 			color: theme.palette.success.main
 		},
+		'& .FilterSortItem_select_filters_parent': {
+			backgroundColor: theme.palette.background.dark
+		},
 		'& .FilterSortItem_select_filters_childcontainer': {
+			marginLeft: 20,
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex()
 		}
 	}
