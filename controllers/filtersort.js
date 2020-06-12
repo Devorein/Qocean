@@ -3,7 +3,7 @@ const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 
 exports.getMyFilterSorts = asyncHandler(async (req, res, next) => {
-	const filtersorts = await FilterSort.find({ user: req.user._id });
+	const filtersorts = await FilterSort.find({ user: req.user._id, ...req.query });
 	res.status(200).json({ success: true, data: filtersorts });
 });
 

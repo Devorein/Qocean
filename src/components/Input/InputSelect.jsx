@@ -27,7 +27,7 @@ class InputSelect extends Component {
 							<InputLabel id={name}>
 								{name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ')}
 							</InputLabel>
-							<Select disabled={disabledSelect} name={name} value={value} onChange={onChange}>
+							<Select disabled={disabledSelect} name={name} value={value ? value : ''} onChange={onChange}>
 								{selectItems.map(({ value, text, icon }) => {
 									return (
 										<MenuItem key={shortId.generate()} value={value ? value : text}>

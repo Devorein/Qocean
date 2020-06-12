@@ -41,7 +41,7 @@ const FilterSortSchema = new mongoose.Schema({
 			},
 			order: {
 				type: String,
-				enum: [ 'asc', 'desc' ]
+				enum: [ 'asc', 'desc', 'none' ]
 			}
 		}
 	]
