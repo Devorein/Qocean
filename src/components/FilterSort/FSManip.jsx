@@ -42,8 +42,9 @@ class FSManip extends Component {
 		});
 	};
 
-	createPreset = (filters, sorts, e) => {
+	createPreset = (e) => {
 		const { presetName } = this.state;
+		const { filters, sorts } = this.props;
 
 		axios
 			.post(
@@ -110,11 +111,36 @@ class FSManip extends Component {
 	};
 
 	updatePreset = (e) => {
-		const { currentPreset } = this.state;
+		const { currentPreset, presetName } = this.state;
 		const { filters, sorts } = this.props;
 
 		if (currentPreset) {
-			this.createPreset(filters, sorts, e);
+			axios
+				.put(
+					`http://localhost:5001/api/v1/filtersort/${currentPreset._id}`,
+					{
+						filters,
+						sorts,
+						type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
+						name: presetName !== '' ? presetName : Date.now()
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					}
+				)
+				.then(({ data: { data } }) => {
+					if (presetName === '')
+						this.changeResponse('Warning', 'You provided no value for preset name. Using current timestamp', 'warning');
+					setTimeout(() => {
+						this.changeResponse('Success', `Successfully updated preset ${data.name}`, 'success');
+					}, 1250);
+					this.fetchPreset();
+				})
+				.catch((err) => {
+					this.changeResponse('An error occurred', `${err.message}`, 'error');
+				});
 		}
 	};
 
@@ -123,7 +149,7 @@ class FSManip extends Component {
 		const { filters, sorts } = this.props;
 		return (
 			<Fragment>
-				<NoteAddIcon className="FilterSort_add" onClick={this.createPreset.bind(null, filters, sorts)} />
+				<NoteAddIcon className="FilterSort_add" onClick={this.createPreset} />
 				<UpdateIcon className="FilterSort_update" onClick={this.updatePreset} />
 				<CancelIcon className="FilterSort_delete" onClick={this.deletePreset} />
 				<InputSelect
