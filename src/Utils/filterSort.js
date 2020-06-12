@@ -36,7 +36,6 @@ function parseFilter(filter, targetFilter) {
 	let { shutdown, target, value, type, mod, disabled } = filter;
 	if (!disabled && !shutdown && target !== 'none' && mod !== 'none' && value !== undefined && value !== '') {
 		let targetValue = {};
-
 		if (type === 'boolean') {
 			value = value.toString();
 			if (value === 'false' && mod === 'is_not') targetValue.$eq = true;

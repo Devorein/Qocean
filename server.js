@@ -11,7 +11,6 @@ const rateLimiter = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const mongoSanitize = require('express-mongo-sanitize');
-const qs = require('qs');
 
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
@@ -26,6 +25,7 @@ const folder = require('./routes/folders');
 const environment = require('./routes/environment');
 const report = require('./routes/report');
 const watchlist = require('./routes/watchlist');
+const filtersort = require('./routes/filtersort');
 
 connectDB();
 
@@ -63,6 +63,7 @@ app.use('/api/v1/folders', folder);
 app.use('/api/v1/environments', environment);
 app.use('/api/v1/reports', report);
 app.use('/api/v1/watchlist', watchlist);
+app.use('/api/v1/filtersort', filtersort);
 app.use(cookieParser);
 app.use(errorHandler);
 

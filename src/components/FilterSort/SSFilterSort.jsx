@@ -1,22 +1,26 @@
 import React, { Component, Fragment } from 'react';
-import GenericButton from '../Buttons/GenericButton';
+import axios from 'axios';
+import moment from 'moment';
+import shortid from 'shortid';
+import Color from 'color';
+import convert from 'color-convert';
 import CancelIcon from '@material-ui/icons/Cancel';
-import InputSelect from '../Input/InputSelect';
 import Menu from '@material-ui/core/Menu';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withStyles } from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
+
+import GenericButton from '../Buttons/GenericButton';
+import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import DatePicker from '../Input/DatePicker';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import moment from 'moment';
-import shortid from 'shortid';
 import MultiSelect from '../Input/MultiSelect';
-import Color from 'color';
-import convert from 'color-convert';
 import decideTargetType from '../../Utils/decideTargetType';
 import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
+
 import './SSFilterSort.scss';
 
 const DEFAULT_FILTER = {
@@ -40,13 +44,37 @@ function capitalize(item) {
 
 class SSFilterSort extends Component {
 	state = {
+		filtersorts: [],
 		filters: [ { ...DEFAULT_FILTER, children: [] } ],
-		sorts: [ { ...DEFAULT_SORT } ]
+		sorts: [ { ...DEFAULT_SORT } ],
+		currentFilterSort: null
 	};
 
-	selectItems = getPropsBasedOnType(this.props.type);
+	selectItems = [ { vaule: 'none', text: 'none' } ];
+
+	fetchPreset = () => {
+		let { type } = this.props;
+		type = type.charAt(0).toUpperCase() + type.substr(1);
+		axios
+			.get(`http://localhost:5001/api/v1/filtersort/me?type=${type}`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			})
+			.then(({ data: { data: filtersorts } }) => {
+				this.setState({
+					filtersorts
+				});
+			});
+	};
+
+	componentDidMount() {
+		this.fetchPreset();
+	}
 
 	UNSAFE_componentWillReceiveProps(props) {
+		this.selectItems = getPropsBasedOnType(props.type);
+
 		if (props.type !== this.props.type) {
 			this.setState({
 				filters: [ { ...DEFAULT_FILTER, children: [] } ],
@@ -57,7 +85,7 @@ class SSFilterSort extends Component {
 
 	renderSortItem = (index) => {
 		const currentTarget = this.state.sorts[index];
-		const { disabled } = currentTarget;
+		const { disabled, target, order } = currentTarget;
 		return (
 			<Fragment>
 				<div className="FilterSortItem_select_switch">
@@ -77,25 +105,21 @@ class SSFilterSort extends Component {
 					className="FilterSortItem_select_target"
 					name="Target"
 					onChange={(e) => {
-						this.state.sorts.forEach((sort, _index) => {
-							if (_index === index) sort.target = e.target.value;
-						});
+						currentTarget.target = e.target.value;
 						this.setState({
 							sorts: this.state.sorts
 						});
 					}}
 					selectItems={this.selectItems}
 					disabledSelect={disabled}
-					value={this.state.sorts[index].target}
+					value={target}
 				/>
 				<InputSelect
 					className="FilterSortItem_select_order"
 					name="Order"
-					value={this.state.sorts[index].order}
+					value={order}
 					onChange={(e) => {
-						this.state.sorts.forEach((sort, _index) => {
-							if (_index === index) sort.order = e.target.value;
-						});
+						currentTarget.order = e.target.value;
 						this.setState({
 							sorts: this.state.sorts
 						});
@@ -107,6 +131,20 @@ class SSFilterSort extends Component {
 					]}
 					disabledSelect={disabled}
 				/>
+				{index !== 0 ? (
+					<div className="FilterSortItem_select_delete">
+						<CancelIcon
+							onClick={() => {
+								if (!disabled) {
+									this.state.sorts.splice(index, 1);
+									this.setState({
+										sorts: this.state.sorts
+									});
+								}
+							}}
+						/>
+					</div>
+				) : null}
 			</Fragment>
 		);
 	};
@@ -469,9 +507,54 @@ class SSFilterSort extends Component {
 		});
 	};
 
+	setFilterSort = (e) => {
+		const { filters, sorts } = this.state.filtersorts.find(({ _id }) => _id === e.target.value);
+		this.setState({
+			currentFilterSort: e.target.value,
+			filters,
+			sorts
+		});
+	};
+
+	createFilterSortPreset = (e) => {
+		const { filters, sorts } = this.state;
+		axios
+			.post(
+				`http://localhost:5001/api/v1/filtersort`,
+				{
+					filters,
+					sorts,
+					type: this.props.type.charAt(0).toUpperCase(0) + this.props.type.substr(1),
+					name: Date.now()
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				}
+			)
+			.then((data) => {
+				this.fetchPreset();
+			});
+	};
+
 	renderFilterSort = () => {
+		const { filtersorts, currentFilterSort } = this.state;
 		return (
 			<div className={`FilterSort`}>
+				<NoteAddIcon className="FilterSort_add" onClick={this.createFilterSortPreset} />
+				<InputSelect
+					className="FilterSort_preset"
+					name="Preset"
+					onChange={(e) => {
+						this.setFilterSort(e);
+					}}
+					selectItems={filtersorts.map(({ name, _id }) => ({
+						value: _id,
+						text: name
+					}))}
+					value={currentFilterSort}
+				/>
 				<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
 				<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
 			</div>
@@ -480,10 +563,14 @@ class SSFilterSort extends Component {
 
 	render() {
 		const { passFSAsProp = true } = this.props;
+		const { filters, sorts } = this.state;
 		if (this.props.children) {
 			return this.props.children({
 				SSFilterSort: passFSAsProp ? this.renderFilterSort() : null,
-				filter_sort: this.state
+				filter_sort: {
+					filters,
+					sorts
+				}
 			});
 		} else return this.renderFilterSort();
 	}
