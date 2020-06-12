@@ -245,7 +245,7 @@ class SSFilterSort extends Component {
 		}
 
 		if (currentTarget) {
-			const { target, mod, disabled, shutdown } = currentTarget;
+			const { target, mod, disabled, shutdown, children } = currentTarget;
 			const [ targetType, modItems ] = decideTargetType(target);
 			const valueItem = this.renderTargetValue(targetType, currentTarget);
 
@@ -265,7 +265,7 @@ class SSFilterSort extends Component {
 									onChange={(e) => {
 										currentTarget.disabled = !disabled;
 										if (!isChild)
-											currentTarget.children.forEach((child) => {
+											children.forEach((child) => {
 												child.shutdown = currentTarget.disabled;
 											});
 										this.setState({
@@ -282,7 +282,10 @@ class SSFilterSort extends Component {
 							name="Cond"
 							value={currentTarget.cond}
 							onChange={(e) => {
-								this.state.filters.forEach((filter) => {
+								let target = null;
+								if (!child) target = this.state.filters;
+								else target = this.state.filters[parentIndex].children;
+								target.forEach((filter) => {
 									filter.cond = e.target.value;
 								});
 								this.setState({
@@ -340,7 +343,7 @@ class SSFilterSort extends Component {
 							<CancelIcon
 								onClick={() => {
 									if (!disabled && !shutdown) {
-										if (isChild) currentTarget.children.splice(index, 1);
+										if (isChild) this.state.filters[parentIndex].children.splice(childIndex, 1);
 										else this.state.filters.splice(index, 1);
 										this.setState({
 											filters: this.state.filters
@@ -357,7 +360,7 @@ class SSFilterSort extends Component {
 								if (!disabled && !shutdown) {
 									const newTarget = { ...DEFAULT_FILTER };
 									delete newTarget.children;
-									this.state.filters[index].children.push(newTarget);
+									children.push(newTarget);
 									this.setState({
 										filters: this.state.filters
 									});
