@@ -526,7 +526,11 @@ class SSFilterSort extends Component {
 						<div className={`FilterSort`}>
 							<div className="FilterSortManip">{FSManip}</div>
 							<div className="FilterSortContainer">{this.renderFilterSortItem()}</div>
-							<GenericButton onClick={this.props.onApply.bind(null, this.state)} text="Apply" />
+							<GenericButton
+								className="FilterSort_apply"
+								onClick={this.props.onApply.bind(null, this.state)}
+								text="Apply"
+							/>
 						</div>
 					);
 				}}

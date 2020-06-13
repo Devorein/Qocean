@@ -1,14 +1,16 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import clsx from 'clsx';
 
-function GenericButton({ disabled, text, classes, onClick, buttonRef, icon, size, color, variant }) {
+function GenericButton({ disabled, text, classes, onClick, buttonRef, icon, size, color, variant, className }) {
+	const _classes = clsx(classes.root, className);
 	return (
 		<Button
 			variant={variant ? variant : 'contained'}
 			color={color ? color : 'primary'}
 			size={size ? size : 'medium'}
-			classes={{ root: classes.root }}
+			className={_classes}
 			// startIcon={<PlayArrowIcon />}
 			onClick={onClick}
 			ref={(r) => (buttonRef ? buttonRef(r) : null)}

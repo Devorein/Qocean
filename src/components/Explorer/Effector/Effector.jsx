@@ -4,6 +4,14 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import StarIcon from '@material-ui/icons/Star';
 import PublicIcon from '@material-ui/icons/Public';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import { withTheme } from '@material-ui/core/styles';
+import { difference } from 'lodash';
+import Color from 'color';
+import convert from 'color-convert';
+
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
@@ -11,12 +19,8 @@ import TextInput from '../../Input/TextInput/TextInput';
 import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { difference } from 'lodash';
 import exportData from '../../../Utils/exportData';
 import filterSort from '../../../Utils/filterSort';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import decideTargetTypes from '../../../Utils/decideTargetType';
 import localFilter from '../../../Utils/localFilter';
 
@@ -71,87 +75,90 @@ class Effector extends Component {
 		const maxPage = Math.ceil(totalCount / itemsPerPage);
 		return (
 			<Fragment>
-				<TextInput
-					className="Effector_bottombar-pageinput"
-					type="number"
-					name="Go to page"
-					value={typedPage}
-					onChange={(e) => {
-						this.setState({ typedPage: e.target.value });
-					}}
-					inputProps={{ max: maxPage, min: 1 }}
-				/>
-				<GenericButton
-					className="Effector_bottombar-pagebutton"
-					text={'Go to page'}
-					onClick={(e) => {
-						if (currentPage !== typedPage) {
-							this.setState(
-								{
-									currentPage: typedPage
-								},
-								() => {
-									this.refetchData();
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					<TextInput
+						className="Effector_bottombar-pageinput"
+						type="number"
+						name="Go to page"
+						value={typedPage}
+						onChange={(e) => {
+							this.setState({ typedPage: e.target.value });
+						}}
+						inputProps={{ max: maxPage, min: 1 }}
+					/>
+					<GenericButton
+						className="Effector_bottombar-pagebutton"
+						text={'Go to page'}
+						onClick={(e) => {
+							if (currentPage !== typedPage) {
+								this.setState(
+									{
+										currentPage: typedPage
+									},
+									() => {
+										this.refetchData();
+									}
+								);
+							}
+						}}
+						disabled={typedPage > maxPage}
+					/>
+				</div>
+				<div className="Effector_bottombar_container">
+					<InputSelect
+						className="Effector_bottombar-itemselect"
+						name="Items Per Page"
+						value={itemsPerPage}
+						onChange={(e) => {
+							this.setState({ itemsPerPage: e.target.value }, () => {
+								this.refetchData();
+							});
+						}}
+						selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
+					/>
+					<div className="Effector_bottombar-pagenavigation">
+						<ChevronLeftIcon
+							onClick={(e) => {
+								if (currentPage > 1) {
+									this.setState(
+										{
+											currentPage: currentPage - 1
+										},
+										() => {
+											this.refetchData();
+										}
+									);
 								}
-							);
-						}
-					}}
-					disabled={typedPage > maxPage}
-				/>
-
-				<InputSelect
-					className="Effector_bottombar-itemselect"
-					name="Items Per Page"
-					value={itemsPerPage}
-					onChange={(e) => {
-						this.setState({ itemsPerPage: e.target.value }, () => {
-							this.refetchData();
-						});
-					}}
-					selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
-				/>
-				<div className="Effector_bottombar-pagenavigation">
-					<ChevronLeftIcon
-						onClick={(e) => {
-							if (currentPage > 1) {
-								this.setState(
-									{
-										currentPage: currentPage - 1
-									},
-									() => {
-										this.refetchData();
-									}
-								);
-							}
-						}}
-					/>
-					<ChevronRightIcon
-						onClick={(e) => {
-							if (currentPage < maxPage) {
-								this.setState(
-									{
-										currentPage: currentPage + 1
-									},
-									() => {
-										this.refetchData();
-									}
-								);
-							}
-						}}
-					/>
-				</div>
-				<div>
-					Pg. {currentPage} of {maxPage}
-				</div>
-				<div className="Effector_bottombar-itemcount">
-					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
-						totalCount
-					) : itemsPerPage * currentPage <= totalCount ? (
-						itemsPerPage * currentPage
-					) : (
-						totalCount
-					)}{' '}
-					of {totalCount}
+							}}
+						/>
+						<ChevronRightIcon
+							onClick={(e) => {
+								if (currentPage < maxPage) {
+									this.setState(
+										{
+											currentPage: currentPage + 1
+										},
+										() => {
+											this.refetchData();
+										}
+									);
+								}
+							}}
+						/>
+					</div>
+					<div>
+						Pg. {currentPage} of {maxPage}
+					</div>
+					<div className="Effector_bottombar-itemcount">
+						{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
+							totalCount
+						) : itemsPerPage * currentPage <= totalCount ? (
+							itemsPerPage * currentPage
+						) : (
+							totalCount
+						)}{' '}
+						of {totalCount}
+					</div>
 				</div>
 			</Fragment>
 		);
@@ -442,14 +449,25 @@ class Effector extends Component {
 				modalMsg={deleteModalMessage()}
 			>
 				{({ setIsOpen }) => {
+					const style = {
+						backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark)).darken(0.15).hex()
+					};
 					this.setIsOpen = setIsOpen;
 					return this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
 						selectedIndex,
 						view,
 						setSelectedIndex: this.setSelectedIndex,
-						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar()}</div>,
-						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,
+						EffectorTopBar: (
+							<div className="Effector_topbar" style={style}>
+								{renderEffectorTopBar()}
+							</div>
+						),
+						EffectorBottomBar: (
+							<div className="Effector_bottombar" style={style}>
+								{renderEffectorBottomBar()}
+							</div>
+						),
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
 						limit: itemsPerPage,
 						page: currentPage,
@@ -461,4 +479,4 @@ class Effector extends Component {
 	}
 }
 
-export default Effector;
+export default withTheme(Effector);
