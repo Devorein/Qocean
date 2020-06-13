@@ -8,7 +8,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export default function AutoCompleteInput({ disabled, options, optionProp, label, onChange }) {
+export default function AutoCompleteInput({ isArray, disabled, options, optionProp, label, onChange }) {
 	return (
 		<Autocomplete
 			disabled={disabled}
@@ -16,12 +16,12 @@ export default function AutoCompleteInput({ disabled, options, optionProp, label
 			multiple
 			options={options || []}
 			disableCloseOnSelect
-			getOptionLabel={(option) => option[optionProp]}
-			getOptionSelected={(option, value) => value._id === option._id}
+			getOptionLabel={(option) => (!isArray ? option[optionProp] : option)}
+			getOptionSelected={(option, value) => (!isArray ? value._id === option._id : value === option)}
 			renderOption={(option, { selected }) => (
 				<React.Fragment>
 					<Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
-					{option[optionProp]}
+					{!isArray ? option[optionProp] : option}
 				</React.Fragment>
 			)}
 			renderInput={(params) => <TextField {...params} variant="outlined" label={label} />}

@@ -29,6 +29,7 @@ export default function(filterSort) {
 			});
 		}
 	});
+	console.log(query);
 	return query;
 }
 
@@ -136,6 +137,12 @@ function parseFilter(filter, targetFilter) {
 			} else if (mod === 'length_less_than') {
 				target = `${target}.${parseInt(value) - 1}`;
 				targetValue = { $exists: false };
+			} else if (mod === 'contains') {
+				targetValue = [];
+				value.forEach((val, index) => {
+					targetValue.push({ [target]: { $regex: `^${val}` } });
+				});
+				target = '$or';
 			}
 		}
 		targetFilter.push({ [target]: targetValue });

@@ -59,7 +59,7 @@ export default function(target, config = {}) {
 		];
 	} else if (target.match(/^(tags)$/)) {
 		targetType = 'array';
-		modValues = [ 'length_is', 'length_greater_than', 'length_less_than', 'contains', "doesn't contain" ];
+		modValues = [ 'length_is', 'length_greater_than', 'length_less_than', 'contains' ];
 	} else if (target.match(/(difficulty|icon|type|average_difficulty|version|user)$/)) {
 		targetType = 'select';
 		modValues = [ 'is', 'is_not' ];

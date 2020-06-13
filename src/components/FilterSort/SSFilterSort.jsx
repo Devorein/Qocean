@@ -66,6 +66,9 @@ class SSFilterSort extends Component {
 	componentDidMount() {
 		axios.get('http://localhost:5001/api/v1/users/getAllUsers').then(({ data: { data: users } }) => {
 			this.setState({ users });
+			axios.get(`http://localhost:5001/api/v1/users/getAllTags`).then(({ data: { data: tags } }) => {
+				this.setState({ tags });
+			});
 		});
 	}
 
@@ -276,6 +279,23 @@ class SSFilterSort extends Component {
 						}}
 					/>
 				);
+			else if (mod.match(/(contains)/)) {
+				return (
+					<AutoCompleteInput
+						disabled={disabled || shutdown}
+						options={this.state.tags}
+						isArray={true}
+						label={'Users'}
+						value={value}
+						onChange={(e, value) => {
+							targetItem.value = value.map((item) => item);
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+					/>
+				);
+			}
 		} else if (targetType === 'date') {
 			return mod.match(/^(exact|within)$/)
 				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
