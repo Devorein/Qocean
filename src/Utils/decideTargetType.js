@@ -10,7 +10,17 @@ export default function(target) {
 		modValue = [];
 	if (target.match(/^(name|subject|quiz|email)$/)) {
 		targetType = 'string';
-		modValue = convertToSelectItems([ 'is', 'starts_with', 'ends_with', 'contains', 'regex' ]);
+		modValue = convertToSelectItems([
+			'is',
+			'is_(case)',
+			'starts_with',
+			'starts_with_(case)',
+			'ends_with',
+			'ends_with_(case)',
+			'contains',
+			'contains_(case)',
+			'regex'
+		]);
 	} else if (target.match(/^(public|favourite)$/)) {
 		targetType = 'boolean';
 		modValue = convertToSelectItems([ 'is', 'is_not' ]);
