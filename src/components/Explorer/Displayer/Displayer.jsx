@@ -320,7 +320,8 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer, getCols, updateResource, deleteResource, watchToggle } = this;
-		const { data, totalCount, page, refetchData, type, filter_sort } = this.props;
+		const { totalCount, page, refetchData, type, filter_sort } = this.props;
+		let { data } = this.props;
 		const cols = getCols(data);
 		return (
 			<div className="Displayer">
@@ -349,8 +350,10 @@ class Displayer extends Component {
 									selectedIndex,
 									GLOBAL_ICONS,
 									page,
-									limit
+									limit,
+									filteredData
 								}) => {
+									data = filteredData;
 									this.queryParams = { page, limit, ...filterSort(filter_sort) };
 									let manipulatedData = null;
 									if (view !== 'table')

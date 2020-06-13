@@ -17,6 +17,8 @@ import { difference } from 'lodash';
 import exportData from '../../../Utils/exportData';
 import filterSort from '../../../Utils/filterSort';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import decideTargetTypes from '../../../Utils/decideTargetType';
+import localFilter from '../../../Utils/localFilter';
 
 import './Effector.scss';
 class Effector extends Component {
@@ -27,8 +29,10 @@ class Effector extends Component {
 		view: 'list',
 		cols: this.props.cols || [],
 		selected_cols: this.props.cols || [],
-		selectedIndex: []
+		selectedIndex: [],
+		searchInput: ''
 	};
+
 	GLOBAL_ICONS = {};
 	static contextType = AppContext;
 
@@ -218,7 +222,7 @@ class Effector extends Component {
 		return <div className="Effector_topbar_globals">{effectors.map((eff) => eff)}</div>;
 	};
 
-	renderSelectedEffectors = (setDeleteModal) => {
+	renderSelectedEffectors = () => {
 		const { data, updateResource } = this.props;
 		let { page, type } = this.props;
 		const { selectedIndex } = this.state;
@@ -255,7 +259,7 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
 					}}
 					onClick={(e) => {
-						setDeleteModal(true);
+						this.setIsOpen(true);
 					}}
 				/>,
 				<StarIcon
@@ -281,7 +285,7 @@ class Effector extends Component {
 		return <div className="Effector_topbar_selected">{effectors.map((eff) => eff)}</div>;
 	};
 
-	renderEffectorTopBar = (setDeleteModal) => {
+	renderEffectorTopBar = () => {
 		const { data } = this.props;
 
 		const { selectedIndex } = this.state;
@@ -342,7 +346,16 @@ class Effector extends Component {
 						)
 					}
 				/>
-				{selectedIndex.length > 0 ? this.renderSelectedEffectors(setDeleteModal) : this.renderGlobalEffectors()}
+				<TextInput
+					className="Effector_topbar-search"
+					name="Search"
+					fullWidth={false}
+					value={this.state.searchInput}
+					onChange={(e) => {
+						this.setState({ searchInput: e.target.value });
+					}}
+				/>
+				{selectedIndex.length > 0 ? this.renderSelectedEffectors() : this.renderGlobalEffectors()}
 			</Fragment>
 		);
 	};
@@ -373,9 +386,27 @@ class Effector extends Component {
 		});
 	};
 
+	filterData = () => {
+		const { searchInput } = this.state;
+		let data = this.props.data;
+		if (!searchInput.includes(':')) return data;
+		else {
+			const [ prop, mod, value ] = searchInput.split(':');
+			const [ targetType ] = decideTargetTypes(prop);
+			return data.filter((item) =>
+				localFilter({
+					targetType,
+					mod,
+					value,
+					against: item[prop]
+				})
+			);
+		}
+	};
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
 		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
+		const filteredData = this.filterData();
 		return (
 			<ModalRP
 				onAccept={() => {
@@ -387,18 +418,21 @@ class Effector extends Component {
 				}}
 				modalMsg={deleteModalMessage()}
 			>
-				{({ setIsOpen }) =>
-					this.props.children({
+				{({ setIsOpen }) => {
+					this.setIsOpen = setIsOpen;
+					return this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
 						selectedIndex,
 						view,
 						setSelectedIndex: this.setSelectedIndex,
-						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar(setIsOpen)}</div>,
+						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar()}</div>,
 						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
 						limit: itemsPerPage,
-						page: currentPage
-					})}
+						page: currentPage,
+						filteredData
+					});
+				}}
 			</ModalRP>
 		);
 	}

@@ -20,7 +20,13 @@ const options = [
 		type: 'group',
 		name: 'options',
 		children: Array(3).fill(0).map((_, index) => ({ name: `option_${index + 1}` })),
-		extra: { treeView: true, coalesce: true, groupType: 'text', helperText: 'Provide options' }
+		extra: {
+			treeView: true,
+			coalesce: true,
+			groupType: 'text',
+			helperText: 'Provide options',
+			className: 'OptionForm_MS_options'
+		}
 	},
 	{
 		type: 'group',
@@ -31,7 +37,8 @@ const options = [
 			collapsed: true,
 			coalesce: true,
 			groupType: 'text',
-			helperText: 'Provide additional options(optional)'
+			helperText: 'Provide additional options(optional)',
+			className: 'OptionForm_MS_addoptions'
 		}
 	}
 ];
@@ -43,6 +50,7 @@ const INIT_MCQ_STATE = {
 			name: 'answers',
 			type: 'radio',
 			extra: {
+				className: 'OptionForm_MS_answers',
 				radioItems: [
 					{ value: 'answer_1', label: 'Answer 1' },
 					{ value: 'answer_2', label: 'Answer 2' },
@@ -69,7 +77,8 @@ const INIT_MS_STATE = {
 				coalesce: true,
 				useArray: true,
 				row: true,
-				helperText: 'Choose answers'
+				helperText: 'Choose answers',
+				className: 'OptionForm_MS_answers'
 			},
 			children: Array(6).fill(0).map((_, index) => ({
 				name: `answer_${index + 1}`,
