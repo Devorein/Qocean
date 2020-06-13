@@ -52,11 +52,12 @@ export default function MultiSelect({
 	name = '',
 	useSwitch = false,
 	className,
-	customRenderValue
+	customRenderValue,
+	labelClass = ''
 }) {
 	const classes = useStyles();
 	return (
-		<FormControl fullWidth>
+		<FormControl fullWidth className={labelClass}>
 			<InputLabel>{label}</InputLabel>
 			<Select
 				className={className}

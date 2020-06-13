@@ -22,6 +22,12 @@
     &_selected {
       display: flex;
     }
+    &_hidden {
+      display: flex;
+    }
+    &_search {
+      max-width: 200px;
+    }
     &_toggleall,
     .MuiFormControlLabel-root {
       margin-right: 0px;

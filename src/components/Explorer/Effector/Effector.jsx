@@ -158,7 +158,8 @@ class Effector extends Component {
 	};
 
 	renderGlobalEffectors = () => {
-		const { data, updateResource } = this.props;
+		const { updateResource } = this.props;
+		const { filteredData } = this;
 		let { page, type } = this.props;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
@@ -180,12 +181,12 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
 					}}
 					onClick={(e) => {
-						exportData(type, data);
+						exportData(type, filteredData);
 					}}
 				/>
 			) : null
 		];
-		const array = Array(data.length).fill(0).map((_, i) => i);
+		const array = Array(filteredData.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
 				<StarIcon
@@ -223,12 +224,13 @@ class Effector extends Component {
 	};
 
 	renderSelectedEffectors = () => {
-		const { data, updateResource } = this.props;
+		const { updateResource } = this.props;
+		const { filteredData } = this;
 		let { page, type } = this.props;
 		const { selectedIndex } = this.state;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
-		const selectedItems = selectedIndex.map((index) => data[index]);
+		const selectedItems = selectedIndex.map((index) => filteredData[index]);
 		const effectors = [
 			type !== 'user' ? (
 				<GetAppIcon
@@ -286,31 +288,36 @@ class Effector extends Component {
 	};
 
 	renderEffectorTopBar = () => {
-		const { data } = this.props;
+		const { filteredData } = this;
 
 		const { selectedIndex } = this.state;
 		return (
 			<Fragment>
-				<CheckboxInput
-					className="Effector_topbar_toggleall"
-					checked={selectedIndex.length === data.length}
-					onChange={(e) => {
-						const { shiftKey, altKey } = e.nativeEvent;
-						let newIndex = null;
-						if (shiftKey && altKey)
-							newIndex = difference(Array(data.length).fill(0).map((_, index) => index), this.state.selectedIndex);
-						else if (shiftKey) newIndex = [];
-						else {
-							if (!e.target.checked) newIndex = [];
-							else newIndex = Array(data.length).fill(0).map((_, index) => index);
-						}
-						this.setState({
-							selectedIndex: newIndex
-						});
-					}}
-				/>
-				<div className="Effector_topbar_selectstat">
-					{selectedIndex.length}/{data.length}
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					<CheckboxInput
+						className="Effector_topbar_toggleall"
+						checked={selectedIndex.length === filteredData.length}
+						onChange={(e) => {
+							const { shiftKey, altKey } = e.nativeEvent;
+							let newIndex = null;
+							if (shiftKey && altKey)
+								newIndex = difference(
+									Array(filteredData.length).fill(0).map((_, index) => index),
+									this.state.selectedIndex
+								);
+							else if (shiftKey) newIndex = [];
+							else {
+								if (!e.target.checked) newIndex = [];
+								else newIndex = Array(filteredData.length).fill(0).map((_, index) => index);
+							}
+							this.setState({
+								selectedIndex: newIndex
+							});
+						}}
+					/>
+					<div className="Effector_topbar_selectstat">
+						{selectedIndex.length}/{filteredData.length}
+					</div>
 				</div>
 				<InputSelect
 					className="Effector_topbar_view"
@@ -327,7 +334,7 @@ class Effector extends Component {
 				<MultiSelect
 					customRenderValue={(selected) => `${selected ? selected.length : 0} Shown`}
 					useSwitch={true}
-					className="Effector_topbar_properties"
+					labelClass="Effector_topbar_properties"
 					name="Toggle Properties"
 					selected={this.state.cols ? this.state.selected_cols : []}
 					handleChange={(e) => {
@@ -346,8 +353,9 @@ class Effector extends Component {
 						)
 					}
 				/>
+				<div className="Effector_topbar_hidden">{this.props.data.length - this.filteredData.length} hidden</div>
 				<TextInput
-					className="Effector_topbar-search"
+					className="Effector_topbar_search"
 					name="Search"
 					fullWidth={false}
 					value={this.state.searchInput}
@@ -361,9 +369,10 @@ class Effector extends Component {
 	};
 
 	deleteModalMessage = () => {
-		const { data, type } = this.props;
+		const { type } = this.props;
+		const { filteredData } = this;
 		const { selectedIndex } = this.state;
-		const selectedItems = selectedIndex.map((index) => data[index]);
+		const selectedItems = selectedIndex.map((index) => filteredData[index]);
 		return (
 			<Fragment>
 				<div>
@@ -416,14 +425,15 @@ class Effector extends Component {
 		});
 		return filteredData;
 	};
+
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
 		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
-		const filteredData = this.filterData();
+		this.filteredData = this.filterData();
 		return (
 			<ModalRP
 				onAccept={() => {
-					const selectedDatas = selectedIndex.map((index) => this.props.data[index]._id);
+					const selectedDatas = selectedIndex.map((index) => this.filteredData[index]._id);
 					this.props.deleteResource(selectedDatas);
 					this.setState({
 						selectedIndex: []
@@ -443,7 +453,7 @@ class Effector extends Component {
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
 						limit: itemsPerPage,
 						page: currentPage,
-						filteredData
+						filteredData: this.filteredData
 					});
 				}}
 			</ModalRP>
