@@ -388,24 +388,33 @@ class Effector extends Component {
 
 	filterData = () => {
 		const { searchInput } = this.state;
-		let data = this.props.data;
-		const [ prop, mod, value ] = searchInput.split('=');
-		if (prop && mod && value && data.length !== 0) {
-			const [ targetType, modValues ] = decideTargetTypes(prop, {
-				shouldConvertToSelectItems: true,
-				shouldConvertToAcronym: true
-			});
-			if ((targetType && modValues.includes(mod) && data[0][prop] !== null) || data[0][prop] !== undefined) {
-				return data.filter((item) =>
-					localFilter({
-						targetType,
-						mod,
-						value,
-						against: item[prop]
-					})
-				);
-			} else return data;
-		} else return data;
+		const terms = searchInput.split('&');
+		let filteredData = this.props.data;
+		terms.forEach((term) => {
+			const [ prop, mod, value ] = term.split('=');
+			if (prop && mod && value && filteredData.length !== 0) {
+				const [ targetType, modValues ] = decideTargetTypes(prop, {
+					shouldConvertToSelectItems: true,
+					shouldConvertToAcronym: true
+				});
+				if (
+					targetType &&
+					modValues.includes(mod) &&
+					filteredData[0][prop] !== null &&
+					filteredData[0][prop] !== undefined
+				) {
+					filteredData = filteredData.filter((item) =>
+						localFilter({
+							targetType,
+							mod,
+							value,
+							against: item[prop]
+						})
+					);
+				}
+			}
+		});
+		return filteredData;
 	};
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;

@@ -56,5 +56,9 @@ export default function(filter) {
 			else if (mod === 'nbi') return Math.max(low, high) < against || Math.min(low, high) > against;
 			else if (mod === 'nbe') return Math.max(low, high) <= against && Math.min(low, high) >= against;
 		}
+	} else if (targetType === 'select') {
+		const values = value.split(',');
+		if (mod === 'i') return values.includes(against);
+		else if (mod === 'in') return !values.includes(against);
 	}
 }
