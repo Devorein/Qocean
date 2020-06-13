@@ -390,12 +390,12 @@ class Effector extends Component {
 		const { searchInput } = this.state;
 		let data = this.props.data;
 		const [ prop, mod, value ] = searchInput.split('=');
-		if (prop && mod && value) {
+		if (prop && mod && value && data.length !== 0) {
 			const [ targetType, modValues ] = decideTargetTypes(prop, {
 				shouldConvertToSelectItems: true,
 				shouldConvertToAcronym: true
 			});
-			if (targetType && modValues.includes(mod)) {
+			if ((targetType && modValues.includes(mod) && data[0][prop] !== null) || data[0][prop] !== undefined) {
 				return data.filter((item) =>
 					localFilter({
 						targetType,
