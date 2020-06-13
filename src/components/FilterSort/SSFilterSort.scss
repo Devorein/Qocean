@@ -1,9 +1,13 @@
 .FilterSort {
   align-items: center;
   display: flex;
-
+  justify-content: space-between;
   &_icons {
     height: 100%;
+  }
+  &_apply,
+  .MuiButton-contained.MuiButton-containedPrimary {
+    margin: 0px;
   }
   &_add,
   .MuiSvgIcon-root {

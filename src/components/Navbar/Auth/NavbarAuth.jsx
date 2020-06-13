@@ -55,7 +55,6 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 	const logout = () => {
 		localStorage.removeItem('token');
 		history.push('/');
-		refetch();
 	};
 
 	const switchPage = (page) => {

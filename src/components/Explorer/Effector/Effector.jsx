@@ -4,6 +4,14 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import StarIcon from '@material-ui/icons/Star';
 import PublicIcon from '@material-ui/icons/Public';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import { withTheme } from '@material-ui/core/styles';
+import { difference } from 'lodash';
+import Color from 'color';
+import convert from 'color-convert';
+
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
@@ -11,12 +19,8 @@ import TextInput from '../../Input/TextInput/TextInput';
 import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { difference } from 'lodash';
 import exportData from '../../../Utils/exportData';
 import filterSort from '../../../Utils/filterSort';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import decideTargetTypes from '../../../Utils/decideTargetType';
 import localFilter from '../../../Utils/localFilter';
 
@@ -71,94 +75,98 @@ class Effector extends Component {
 		const maxPage = Math.ceil(totalCount / itemsPerPage);
 		return (
 			<Fragment>
-				<TextInput
-					className="Effector_bottombar-pageinput"
-					type="number"
-					name="Go to page"
-					value={typedPage}
-					onChange={(e) => {
-						this.setState({ typedPage: e.target.value });
-					}}
-					inputProps={{ max: maxPage, min: 1 }}
-				/>
-				<GenericButton
-					className="Effector_bottombar-pagebutton"
-					text={'Go to page'}
-					onClick={(e) => {
-						if (currentPage !== typedPage) {
-							this.setState(
-								{
-									currentPage: typedPage
-								},
-								() => {
-									this.refetchData();
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					<TextInput
+						className="Effector_bottombar-pageinput"
+						type="number"
+						name="Go to page"
+						value={typedPage}
+						onChange={(e) => {
+							this.setState({ typedPage: e.target.value });
+						}}
+						inputProps={{ max: maxPage, min: 1 }}
+					/>
+					<GenericButton
+						className="Effector_bottombar-pagebutton"
+						text={'Go to page'}
+						onClick={(e) => {
+							if (currentPage !== typedPage) {
+								this.setState(
+									{
+										currentPage: typedPage
+									},
+									() => {
+										this.refetchData();
+									}
+								);
+							}
+						}}
+						disabled={typedPage > maxPage}
+					/>
+				</div>
+				<div className="Effector_bottombar_container">
+					<InputSelect
+						className="Effector_bottombar-itemselect"
+						name="Items Per Page"
+						value={itemsPerPage}
+						onChange={(e) => {
+							this.setState({ itemsPerPage: e.target.value }, () => {
+								this.refetchData();
+							});
+						}}
+						selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
+					/>
+					<div className="Effector_bottombar-pagenavigation">
+						<ChevronLeftIcon
+							onClick={(e) => {
+								if (currentPage > 1) {
+									this.setState(
+										{
+											currentPage: currentPage - 1
+										},
+										() => {
+											this.refetchData();
+										}
+									);
 								}
-							);
-						}
-					}}
-					disabled={typedPage > maxPage}
-				/>
-
-				<InputSelect
-					className="Effector_bottombar-itemselect"
-					name="Items Per Page"
-					value={itemsPerPage}
-					onChange={(e) => {
-						this.setState({ itemsPerPage: e.target.value }, () => {
-							this.refetchData();
-						});
-					}}
-					selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
-				/>
-				<div className="Effector_bottombar-pagenavigation">
-					<ChevronLeftIcon
-						onClick={(e) => {
-							if (currentPage > 1) {
-								this.setState(
-									{
-										currentPage: currentPage - 1
-									},
-									() => {
-										this.refetchData();
-									}
-								);
-							}
-						}}
-					/>
-					<ChevronRightIcon
-						onClick={(e) => {
-							if (currentPage < maxPage) {
-								this.setState(
-									{
-										currentPage: currentPage + 1
-									},
-									() => {
-										this.refetchData();
-									}
-								);
-							}
-						}}
-					/>
-				</div>
-				<div>
-					Pg. {currentPage} of {maxPage}
-				</div>
-				<div className="Effector_bottombar-itemcount">
-					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
-						totalCount
-					) : itemsPerPage * currentPage <= totalCount ? (
-						itemsPerPage * currentPage
-					) : (
-						totalCount
-					)}{' '}
-					of {totalCount}
+							}}
+						/>
+						<ChevronRightIcon
+							onClick={(e) => {
+								if (currentPage < maxPage) {
+									this.setState(
+										{
+											currentPage: currentPage + 1
+										},
+										() => {
+											this.refetchData();
+										}
+									);
+								}
+							}}
+						/>
+					</div>
+					<div>
+						Pg. {currentPage} of {maxPage}
+					</div>
+					<div className="Effector_bottombar-itemcount">
+						{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
+							totalCount
+						) : itemsPerPage * currentPage <= totalCount ? (
+							itemsPerPage * currentPage
+						) : (
+							totalCount
+						)}{' '}
+						of {totalCount}
+					</div>
 				</div>
 			</Fragment>
 		);
 	};
 
 	renderGlobalEffectors = () => {
-		const { data, updateResource } = this.props;
+		const { updateResource } = this.props;
+		const { filteredData } = this;
 		let { page, type } = this.props;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
@@ -180,12 +188,12 @@ class Effector extends Component {
 						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
 					}}
 					onClick={(e) => {
-						exportData(type, data);
+						exportData(type, filteredData);
 					}}
 				/>
 			) : null
 		];
-		const array = Array(data.length).fill(0).map((_, i) => i);
+		const array = Array(filteredData.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
 				<StarIcon
@@ -223,12 +231,13 @@ class Effector extends Component {
 	};
 
 	renderSelectedEffectors = () => {
-		const { data, updateResource } = this.props;
+		const { updateResource } = this.props;
+		const { filteredData } = this;
 		let { page, type } = this.props;
 		const { selectedIndex } = this.state;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
-		const selectedItems = selectedIndex.map((index) => data[index]);
+		const selectedItems = selectedIndex.map((index) => filteredData[index]);
 		const effectors = [
 			type !== 'user' ? (
 				<GetAppIcon
@@ -286,31 +295,36 @@ class Effector extends Component {
 	};
 
 	renderEffectorTopBar = () => {
-		const { data } = this.props;
+		const { filteredData } = this;
 
 		const { selectedIndex } = this.state;
 		return (
 			<Fragment>
-				<CheckboxInput
-					className="Effector_topbar_toggleall"
-					checked={selectedIndex.length === data.length}
-					onChange={(e) => {
-						const { shiftKey, altKey } = e.nativeEvent;
-						let newIndex = null;
-						if (shiftKey && altKey)
-							newIndex = difference(Array(data.length).fill(0).map((_, index) => index), this.state.selectedIndex);
-						else if (shiftKey) newIndex = [];
-						else {
-							if (!e.target.checked) newIndex = [];
-							else newIndex = Array(data.length).fill(0).map((_, index) => index);
-						}
-						this.setState({
-							selectedIndex: newIndex
-						});
-					}}
-				/>
-				<div className="Effector_topbar_selectstat">
-					{selectedIndex.length}/{data.length}
+				<div style={{ display: 'flex', alignItems: 'center' }}>
+					<CheckboxInput
+						className="Effector_topbar_toggleall"
+						checked={selectedIndex.length === filteredData.length}
+						onChange={(e) => {
+							const { shiftKey, altKey } = e.nativeEvent;
+							let newIndex = null;
+							if (shiftKey && altKey)
+								newIndex = difference(
+									Array(filteredData.length).fill(0).map((_, index) => index),
+									this.state.selectedIndex
+								);
+							else if (shiftKey) newIndex = [];
+							else {
+								if (!e.target.checked) newIndex = [];
+								else newIndex = Array(filteredData.length).fill(0).map((_, index) => index);
+							}
+							this.setState({
+								selectedIndex: newIndex
+							});
+						}}
+					/>
+					<div className="Effector_topbar_selectstat">
+						{selectedIndex.length}/{filteredData.length}
+					</div>
 				</div>
 				<InputSelect
 					className="Effector_topbar_view"
@@ -327,7 +341,7 @@ class Effector extends Component {
 				<MultiSelect
 					customRenderValue={(selected) => `${selected ? selected.length : 0} Shown`}
 					useSwitch={true}
-					className="Effector_topbar_properties"
+					labelClass="Effector_topbar_properties"
 					name="Toggle Properties"
 					selected={this.state.cols ? this.state.selected_cols : []}
 					handleChange={(e) => {
@@ -346,8 +360,9 @@ class Effector extends Component {
 						)
 					}
 				/>
+				<div className="Effector_topbar_hidden">{this.props.data.length - this.filteredData.length} hidden</div>
 				<TextInput
-					className="Effector_topbar-search"
+					className="Effector_topbar_search"
 					name="Search"
 					fullWidth={false}
 					value={this.state.searchInput}
@@ -361,9 +376,10 @@ class Effector extends Component {
 	};
 
 	deleteModalMessage = () => {
-		const { data, type } = this.props;
+		const { type } = this.props;
+		const { filteredData } = this;
 		const { selectedIndex } = this.state;
-		const selectedItems = selectedIndex.map((index) => data[index]);
+		const selectedItems = selectedIndex.map((index) => filteredData[index]);
 		return (
 			<Fragment>
 				<div>
@@ -388,33 +404,43 @@ class Effector extends Component {
 
 	filterData = () => {
 		const { searchInput } = this.state;
-		let data = this.props.data;
-		const [ prop, mod, value ] = searchInput.split('=');
-		if (prop && mod && value && data.length !== 0) {
-			const [ targetType, modValues ] = decideTargetTypes(prop, {
-				shouldConvertToSelectItems: true,
-				shouldConvertToAcronym: true
-			});
-			if ((targetType && modValues.includes(mod) && data[0][prop] !== null) || data[0][prop] !== undefined) {
-				return data.filter((item) =>
-					localFilter({
-						targetType,
-						mod,
-						value,
-						against: item[prop]
-					})
-				);
-			} else return data;
-		} else return data;
+		const terms = searchInput.split('&');
+		let filteredData = this.props.data;
+		terms.forEach((term) => {
+			const [ prop, mod, value ] = term.split('=');
+			if (prop && mod && value && filteredData.length !== 0) {
+				const [ targetType, modValues ] = decideTargetTypes(prop, {
+					shouldConvertToSelectItems: true,
+					shouldConvertToAcronym: true
+				});
+				if (
+					targetType &&
+					modValues.includes(mod) &&
+					filteredData[0][prop] !== null &&
+					filteredData[0][prop] !== undefined
+				) {
+					filteredData = filteredData.filter((item) =>
+						localFilter({
+							targetType,
+							mod,
+							value,
+							against: item[prop]
+						})
+					);
+				}
+			}
+		});
+		return filteredData;
 	};
+
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
 		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
-		const filteredData = this.filterData();
+		this.filteredData = this.filterData();
 		return (
 			<ModalRP
 				onAccept={() => {
-					const selectedDatas = selectedIndex.map((index) => this.props.data[index]._id);
+					const selectedDatas = selectedIndex.map((index) => this.filteredData[index]._id);
 					this.props.deleteResource(selectedDatas);
 					this.setState({
 						selectedIndex: []
@@ -423,18 +449,29 @@ class Effector extends Component {
 				modalMsg={deleteModalMessage()}
 			>
 				{({ setIsOpen }) => {
+					const style = {
+						backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark)).darken(0.15).hex()
+					};
 					this.setIsOpen = setIsOpen;
 					return this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
 						selectedIndex,
 						view,
 						setSelectedIndex: this.setSelectedIndex,
-						EffectorTopBar: <div className="Effector_topbar">{renderEffectorTopBar()}</div>,
-						EffectorBottomBar: <div className="Effector_bottombar">{renderEffectorBottomBar()}</div>,
+						EffectorTopBar: (
+							<div className="Effector_topbar" style={style}>
+								{renderEffectorTopBar()}
+							</div>
+						),
+						EffectorBottomBar: (
+							<div className="Effector_bottombar" style={style}>
+								{renderEffectorBottomBar()}
+							</div>
+						),
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
 						limit: itemsPerPage,
 						page: currentPage,
-						filteredData
+						filteredData: this.filteredData
 					});
 				}}
 			</ModalRP>
@@ -442,4 +479,4 @@ class Effector extends Component {
 	}
 }
 
-export default Effector;
+export default withTheme(Effector);

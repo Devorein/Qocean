@@ -10,7 +10,7 @@ const advancedResults = (model) =>
 	async function(req, res, next) {
 		if (req.query._id) {
 			let filters = {};
-			if (!req.user) filters.public = true;
+			if (!req.user && !req.baseUrl.includes('users')) filters.public = true;
 			let query = model.findOne({ _id: req.query._id, ...filters });
 			populateQuery(query, req);
 			const result = await query;

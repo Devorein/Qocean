@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import InputForm from '../../components/Form/InputForm';
-import { AppContext } from '../../context/AppContext';
+import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import './Signin.scss';
 
 import * as Yup from 'yup';
@@ -13,7 +13,7 @@ const validationSchema = Yup.object({
 });
 
 class SignIn extends Component {
-	submitForm = (changeResponse, { email, password }, { setSubmitting }) => {
+	submitForm = ({ email, password }, { setSubmitting }) => {
 		axios
 			.post(`http://localhost:5001/api/v1/auth/login`, {
 				email,
@@ -21,24 +21,27 @@ class SignIn extends Component {
 			})
 			.then((res) => {
 				localStorage.setItem('token', res.data.token);
-				this.props.history.push('/');
-				this.props.refetch();
-				changeResponse('Success', 'Successfully signed in', 'success');
+				this.changeResponse('Success', 'Successfully signed in', 'success');
+				setTimeout(() => {
+					this.props.history.push('/');
+					this.props.refetch();
+				}, 2500);
 			})
 			.catch((err) => {
 				setSubmitting(false);
-				changeResponse('An error occurred', err.response.data.error, 'error');
+				this.changeResponse('An error occurred', err.response.data.error, 'error');
 			});
 	};
 
 	render() {
 		return (
-			<AppContext.Consumer>
+			<CustomSnackbars>
 				{({ changeResponse }) => {
+					this.changeResponse = changeResponse;
 					return (
 						<div className="signin">
 							<InputForm
-								onSubmit={this.submitForm.bind(null, changeResponse)}
+								onSubmit={this.submitForm}
 								validationSchema={validationSchema}
 								inputs={[
 									{
@@ -51,7 +54,7 @@ class SignIn extends Component {
 						</div>
 					);
 				}}
-			</AppContext.Consumer>
+			</CustomSnackbars>
 		);
 	}
 }

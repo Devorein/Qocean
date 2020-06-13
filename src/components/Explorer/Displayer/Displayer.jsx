@@ -311,10 +311,9 @@ class Displayer extends Component {
 			Object.keys(
 				sectorizeData(data[0], this.props.type, { authenticated: this.context.user, singular: true })
 			).forEach((col) => {
-				if (this.props.page === 'Self' && col.match(/(favourite|public)/)) cols.push(col);
+				if (this.props.page === 'Self') cols.push(col);
 				else if (this.props.page !== 'Self' && !col.match(/(favourite|public)/)) cols.push(col);
 			});
-
 		return cols;
 	};
 
@@ -410,7 +409,12 @@ class Displayer extends Component {
 									return (
 										<Fragment>
 											{EffectorTopBar}
-											<div className={`Displayer_data Displayer_data-${view}`}>
+											<div
+												className={`Displayer_data Displayer_data-${view}`}
+												style={{
+													backgroundColor: this.props.theme.palette.background.main
+												}}
+											>
 												<HotKeys keyMap={keyMap} handlers={handlers}>
 													{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
 												</HotKeys>
