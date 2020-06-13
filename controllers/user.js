@@ -35,6 +35,11 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.imageUpload);
 });
 
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
+	const users = await User.find({}).select('username');
+	res.status(200).json(users);
+});
+
 // @desc     Update current user password
 // @route    PUT /api/v1/users/updatePassword
 // @access   Private
