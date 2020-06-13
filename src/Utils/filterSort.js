@@ -61,7 +61,7 @@ function parseFilter(filter, targetFilter) {
 			} else if (mod === 'contains_(case)') {
 				targetValue.$regex = `${value}`;
 			} else if (mod === 'regex') {
-				const regex = /^\/(\w+)\//g;
+				const regex = /^\/(.+)\//g;
 				const regexValue = regex.exec(value)[1];
 				const modifiers = value.substr(value.lastIndexOf('/') + 1);
 				targetValue.$regex = regexValue;

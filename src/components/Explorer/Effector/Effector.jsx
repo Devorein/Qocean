@@ -389,19 +389,23 @@ class Effector extends Component {
 	filterData = () => {
 		const { searchInput } = this.state;
 		let data = this.props.data;
-		if (!searchInput.includes(':')) return data;
-		else {
-			const [ prop, mod, value ] = searchInput.split(':');
-			const [ targetType ] = decideTargetTypes(prop);
-			return data.filter((item) =>
-				localFilter({
-					targetType,
-					mod,
-					value,
-					against: item[prop]
-				})
-			);
-		}
+		const [ prop, mod, value ] = searchInput.split('=');
+		if (prop && mod && value) {
+			const [ targetType, modValues ] = decideTargetTypes(prop, {
+				shouldConvertToSelectItems: true,
+				shouldConvertToAcronym: true
+			});
+			if (targetType && modValues.includes(mod)) {
+				return data.filter((item) =>
+					localFilter({
+						targetType,
+						mod,
+						value,
+						against: item[prop]
+					})
+				);
+			} else return data;
+		} else return data;
 	};
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
