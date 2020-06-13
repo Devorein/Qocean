@@ -37,7 +37,7 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
 
 exports.getAllUsers = asyncHandler(async (req, res, next) => {
 	const users = await User.find({}).select('username');
-	res.status(200).json(users);
+	res.status(200).json({ success: true, data: users });
 });
 
 // @desc     Update current user password

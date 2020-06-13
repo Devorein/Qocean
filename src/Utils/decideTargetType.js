@@ -58,7 +58,7 @@ export default function(target, config = {}) {
 			'not_between_exclusive'
 		];
 	} else if (target.match(/^(tags)$/)) targetType = 'array';
-	else if (target.match(/(difficulty|icon|type|average_difficulty|version)$/)) {
+	else if (target.match(/(difficulty|icon|type|average_difficulty|version|user)$/)) {
 		targetType = 'select';
 		modValues = [ 'is', 'is_not' ];
 	} else {

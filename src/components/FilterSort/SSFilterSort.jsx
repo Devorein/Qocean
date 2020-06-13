@@ -9,6 +9,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withStyles } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import axios from 'axios';
 
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import GenericButton from '../Buttons/GenericButton';
@@ -20,6 +21,7 @@ import MultiSelect from '../Input/MultiSelect';
 import decideTargetType from '../../Utils/decideTargetType';
 import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
 import FSManip from './FSManip';
+import AutoCompleteInput from '../../components/Input/AutoCompleteInput';
 
 import './SSFilterSort.scss';
 
@@ -59,6 +61,12 @@ class SSFilterSort extends Component {
 				sorts: [ { ...DEFAULT_SORT } ]
 			});
 		}
+	}
+
+	componentDidMount() {
+		axios.get('http://localhost:5001/api/v1/users/getAllUsers').then(({ data: { data: users } }) => {
+			this.setState({ users });
+		});
 	}
 
 	renderSortItem = (index) => {
@@ -214,22 +222,39 @@ class SSFilterSort extends Component {
 					_id: item
 				}));
 			}
-			return (
-				<MultiSelect
-					disabled={disabled || shutdown}
-					label={capitalize(target)}
-					selected={Array.isArray(value) ? value : []}
-					items={selectItems}
-					customChipRenderer={target.match(/(icon)/) ? getColoredIcons.bind(null, this.props.type) : null}
-					handleChange={(e) => {
-						if (!Array.isArray(value)) targetItem.value = [];
-						targetItem.value = e.target.value;
-						this.setState({
-							filters: this.state.filters
-						});
-					}}
-				/>
-			);
+			if (target !== 'user') {
+				return (
+					<MultiSelect
+						disabled={disabled || shutdown}
+						label={capitalize(target)}
+						selected={Array.isArray(value) ? value : []}
+						items={selectItems}
+						customChipRenderer={target.match(/(icon)/) ? getColoredIcons.bind(null, this.props.type) : null}
+						handleChange={(e) => {
+							if (!Array.isArray(value)) targetItem.value = [];
+							targetItem.value = e.target.value;
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+					/>
+				);
+			} else {
+				return (
+					<AutoCompleteInput
+						options={this.state.users}
+						optionProp={'username'}
+						label={'Users'}
+						value={value}
+						onChange={(e, value) => {
+							targetItem.value = value.map((item) => item._id);
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+					/>
+				);
+			}
 		} else if (targetType === 'date') {
 			return mod.match(/^(exact|within)$/)
 				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
