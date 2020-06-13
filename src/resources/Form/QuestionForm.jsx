@@ -131,8 +131,8 @@ class QuestionForm extends Component {
 			customInputs,
 			src = '',
 			selected_quiz = '',
-			defaultAnswers = {},
-			defaultOptions = {},
+			defaultAnswers = [],
+			defaultOptions = [],
 			blank_count
 		} = this.props;
 		const { quizzes, loading } = this.state;

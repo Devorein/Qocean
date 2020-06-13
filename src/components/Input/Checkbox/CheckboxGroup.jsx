@@ -16,7 +16,7 @@ class CheckboxGroup extends Component {
 	};
 	render() {
 		const { name, extra, children, onChange, values } = this.props;
-		const { useArray = false, row = false, helperText = '', errorText = '' } = extra;
+		const { useArray = false, row = false, helperText = '', errorText = '', className = '' } = extra;
 		const FORMGROUP = (
 			<FormGroup row={row}>
 				{children.map((child, index) => {
@@ -35,7 +35,7 @@ class CheckboxGroup extends Component {
 		);
 
 		return (
-			<div key={CheckboxGroup_id}>
+			<div key={CheckboxGroup_id} className={className}>
 				<div>{name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}</div>
 				{helperText !== '' ? <FormHelperText>{helperText}</FormHelperText> : null}
 				{errorText !== '' ? <FormHelperText error={true}>{errorText}</FormHelperText> : null}

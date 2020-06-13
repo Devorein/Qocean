@@ -5,18 +5,29 @@ function convertToSelectItems(arr) {
 	}));
 }
 
-export default function(target) {
+export default function(target, config = {}) {
+	const { shouldConvertToSelectItems = false, shouldConvertToAcronym = false } = config;
 	let targetType = null,
-		modValue = [];
+		modValues = [];
 	if (target.match(/^(name|subject|quiz|email)$/)) {
 		targetType = 'string';
-		modValue = convertToSelectItems([ 'is', 'starts_with', 'ends_with', 'contains', 'regex' ]);
+		modValues = [
+			'is',
+			'is_(case)',
+			'starts_with',
+			'starts_with_(case)',
+			'ends_with',
+			'ends_with_(case)',
+			'contains',
+			'contains_(case)',
+			'regex'
+		];
 	} else if (target.match(/^(public|favourite)$/)) {
 		targetType = 'boolean';
-		modValue = convertToSelectItems([ 'is', 'is_not' ]);
+		modValues = [ 'is', 'is_not' ];
 	} else if (target.match(/^(created_at|updated_at|joined_at)$/)) {
 		targetType = 'date';
-		modValue = convertToSelectItems([
+		modValues = [
 			'exact',
 			'today',
 			'yesterday',
@@ -27,14 +38,14 @@ export default function(target) {
 			'within_last_month',
 			'last_year',
 			'within_last_year'
-		]);
+		];
 	} else if (
 		target.match(
 			/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes|total_environments|total_folders)$/
 		)
 	) {
 		targetType = 'number';
-		modValue = convertToSelectItems([
+		modValues = [
 			'is',
 			'is_not',
 			'greater_than',
@@ -45,14 +56,19 @@ export default function(target) {
 			'between_exclusive',
 			'not_between_inclusive',
 			'not_between_exclusive'
-		]);
+		];
 	} else if (target.match(/^(tags)$/)) targetType = 'array';
 	else if (target.match(/(difficulty|icon|type|average_difficulty|version)$/)) {
 		targetType = 'select';
-		modValue = convertToSelectItems([ 'is', 'is_not' ]);
+		modValues = [ 'is', 'is_not' ];
 	} else {
 		targetType = 'none';
-		modValue = convertToSelectItems([ 'none' ]);
+		modValues = [ 'none' ];
 	}
-	return [ targetType, modValue ];
+	if (shouldConvertToAcronym)
+		modValues = modValues.map((modValue) =>
+			modValue.replace(/\((\w+)\)/g, '$1').split('_').map((chunk) => chunk.charAt(0)).join('')
+		);
+	if (!shouldConvertToSelectItems) return [ targetType, convertToSelectItems(modValues) ];
+	else return [ targetType, modValues ];
 }

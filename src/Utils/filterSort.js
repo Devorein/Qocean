@@ -43,14 +43,25 @@ function parseFilter(filter, targetFilter) {
 			else if (value === 'true' && mod === 'is') targetValue.$eq = true;
 			else if (value === 'true' && mod === 'is_not') targetValue.$eq = false;
 		} else if (type === 'string') {
-			if (mod === 'is') targetValue.$eq = value;
+			if (mod === 'is') {
+				targetValue.$regex = value;
+				targetValue.$options = 'i';
+			} else if (mod === 'is_(case)') targetValue.$eq = value;
 			else if (mod === 'starts_with') {
 				targetValue.$regex = `^${value}`;
 				targetValue.$options = 'i';
-			} else if (mod === 'ends_with') targetValue.$regex = `${value}$`;
-			else if (mod === 'contains') targetValue.$regex = `${value}`;
-			else if (mod === 'regex') {
-				const regex = /^\/(\w+)\//g;
+			} else if (mod === 'starts_with_(case)') targetValue.$regex = `^${value}`;
+			else if (mod === 'ends_with') {
+				targetValue.$regex = `${value}$`;
+				targetValue.$options = 'i';
+			} else if (mod === 'ends_with_(case)') targetValue.$regex = `${value}$`;
+			else if (mod === 'contains') {
+				targetValue.$regex = `${value}`;
+				targetValue.$options = 'i';
+			} else if (mod === 'contains_(case)') {
+				targetValue.$regex = `${value}`;
+			} else if (mod === 'regex') {
+				const regex = /^\/(.+)\//g;
 				const regexValue = regex.exec(value)[1];
 				const modifiers = value.substr(value.lastIndexOf('/') + 1);
 				targetValue.$regex = regexValue;
