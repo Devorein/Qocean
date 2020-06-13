@@ -128,6 +128,15 @@ function parseFilter(filter, targetFilter) {
 				targetValue.$gte = moment().subtract(365, 'days').format('YYYY-MM-DD');
 				targetValue.$lte = moment().subtract(364, 'days').format('YYYY-MM-DD');
 			} else if (mod === 'within_last_year') targetValue.$gte = moment().subtract(1, 'year').format('YYYY-MM-DD');
+		} else if (type === 'array') {
+			if (mod === 'length_is') targetValue.$size = value;
+			else if (mod === 'length_greater_than') {
+				target = `${target}.${parseInt(value) + 1}`;
+				targetValue = { $exists: true };
+			} else if (mod === 'length_less_than') {
+				target = `${target}.${parseInt(value) - 1}`;
+				targetValue = { $exists: false };
+			}
 		}
 		targetFilter.push({ [target]: targetValue });
 	}

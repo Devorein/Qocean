@@ -8,9 +8,10 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export default function AutoCompleteInput({ options, optionProp, label, onChange }) {
+export default function AutoCompleteInput({ disabled, options, optionProp, label, onChange }) {
 	return (
 		<Autocomplete
+			disabled={disabled}
 			onChange={onChange}
 			multiple
 			options={options || []}

@@ -242,6 +242,7 @@ class SSFilterSort extends Component {
 			} else {
 				return (
 					<AutoCompleteInput
+						disabled={disabled || shutdown}
 						options={this.state.users}
 						optionProp={'username'}
 						label={'Users'}
@@ -255,6 +256,26 @@ class SSFilterSort extends Component {
 					/>
 				);
 			}
+		} else if (targetType === 'array') {
+			if (mod.match(/(length_is|length_is_not|length_greater_than|length_less_than)/))
+				return (
+					<TextInput
+						disabled={disabled || shutdown}
+						value={value !== null && value !== undefined ? value : 0}
+						name={`value`}
+						inputProps={{
+							max: 5,
+							min: 0
+						}}
+						type={'number'}
+						onChange={(e) => {
+							targetItem.value = e.target.value;
+							this.setState({
+								filters: this.state.filters
+							});
+						}}
+					/>
+				);
 		} else if (targetType === 'date') {
 			return mod.match(/^(exact|within)$/)
 				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (

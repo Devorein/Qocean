@@ -19,7 +19,6 @@ const advancedResults = (model) =>
 			res.status(200).json({ success: true, data: result });
 		} else {
 			req.query = qs.parse(req._parsedOriginalUrl.query, { depth: 100 });
-			console.log(req.query);
 			let queryFilters = filterQuery(req, model);
 			let processFurther = await handleCountRoutes(queryFilters, req, res, model);
 			if (processFurther) {
@@ -29,7 +28,6 @@ const advancedResults = (model) =>
 				populateQuery(query, req);
 				const pagination = await paginateQuery(query, req, model);
 				const results = await query;
-				// console.log(queryFilters.$and[0].$and[0].$or);
 				res.advancedResults = {
 					success: true,
 					count: results.length,
