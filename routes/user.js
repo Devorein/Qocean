@@ -7,7 +7,9 @@ const {
 	getMe,
 	getUserTags,
 	getMyTags,
-	userPhotoUpload
+	userPhotoUpload,
+	getAllUsers,
+	getAllTags
 } = require('../controllers/user');
 const { protect } = require('../middleware/auth');
 const advancedResults = require('../middleware/advancedResults');
@@ -16,10 +18,12 @@ const imageUpload = require('../middleware/imageUpload');
 const router = express.Router();
 
 router.route('/').get(advancedResults(User));
-router.route('/countAll').get(advancedResults(User));
+router.route('/').get(advancedResults(User));
+router.route('/getAllUsers').get(getAllUsers);
 router.route('/countOthers').get(protect, advancedResults(User));
 router.route('/others').get(protect, advancedResults(User));
 router.route('/tags/:id').get(getUserTags);
+router.route('/getAllTags').get(getAllTags);
 router.route('/tags/_/me').post(protect, getMyTags);
 
 router.route('/').delete(protect, deleteUser).get(advancedResults(User));

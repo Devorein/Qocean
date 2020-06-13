@@ -1,6 +1,6 @@
 export default function(type) {
 	type = type.toLowerCase();
-	const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at' ];
+	const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at', 'user' ];
 
 	let selectItems = [];
 	if (type === 'quiz')

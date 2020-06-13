@@ -35,6 +35,11 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.imageUpload);
 });
 
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
+	const users = await User.find({}).select('username');
+	res.status(200).json({ success: true, data: users });
+});
+
 // @desc     Update current user password
 // @route    PUT /api/v1/users/updatePassword
 // @access   Private
@@ -82,6 +87,18 @@ exports.getUserTags = asyncHandler(async (req, res, next) => {
 	if (!user) return next(new ErrorResponse(`User not found`, 404));
 	const tags = [];
 	user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag)));
+	res.status(200).json({
+		success: true,
+		data: Array.from(new Set(tags))
+	});
+});
+
+exports.getAllTags = asyncHandler(async (req, res, next) => {
+	const users = await User.find({}).select('quizzes').populate({ path: 'quizzes', select: 'tags' });
+	const tags = [];
+	users.forEach((user) => {
+		user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag.split(':')[0])));
+	});
 	res.status(200).json({
 		success: true,
 		data: Array.from(new Set(tags))

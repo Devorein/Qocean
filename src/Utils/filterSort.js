@@ -29,6 +29,7 @@ export default function(filterSort) {
 			});
 		}
 	});
+	console.log(query);
 	return query;
 }
 
@@ -128,6 +129,21 @@ function parseFilter(filter, targetFilter) {
 				targetValue.$gte = moment().subtract(365, 'days').format('YYYY-MM-DD');
 				targetValue.$lte = moment().subtract(364, 'days').format('YYYY-MM-DD');
 			} else if (mod === 'within_last_year') targetValue.$gte = moment().subtract(1, 'year').format('YYYY-MM-DD');
+		} else if (type === 'array') {
+			if (mod === 'length_is') targetValue.$size = value;
+			else if (mod === 'length_greater_than') {
+				target = `${target}.${parseInt(value) + 1}`;
+				targetValue = { $exists: true };
+			} else if (mod === 'length_less_than') {
+				target = `${target}.${parseInt(value) - 1}`;
+				targetValue = { $exists: false };
+			} else if (mod === 'contains') {
+				targetValue = [];
+				value.forEach((val, index) => {
+					targetValue.push({ [target]: { $regex: `^${val}` } });
+				});
+				target = '$or';
+			}
 		}
 		targetFilter.push({ [target]: targetValue });
 	}

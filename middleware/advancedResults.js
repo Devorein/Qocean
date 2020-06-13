@@ -5,7 +5,7 @@ const sortQuery = require('../utils/sortQuery');
 const projectionQuery = require('../utils/projectionQuery');
 const filterQuery = require('../utils/filterQuery');
 const handleCountRoutes = require('../utils/handleCountRoutes');
-
+const qs = require('qs');
 const advancedResults = (model) =>
 	async function(req, res, next) {
 		if (req.query._id) {
@@ -18,6 +18,7 @@ const advancedResults = (model) =>
 				return next(new ErrorResponse(`Resource not found with id of ${req.query._id} or is made private`, 404));
 			res.status(200).json({ success: true, data: result });
 		} else {
+			req.query = qs.parse(req._parsedOriginalUrl.query, { depth: 100 });
 			let queryFilters = filterQuery(req, model);
 			let processFurther = await handleCountRoutes(queryFilters, req, res, model);
 			if (processFurther) {
@@ -27,7 +28,6 @@ const advancedResults = (model) =>
 				populateQuery(query, req);
 				const pagination = await paginateQuery(query, req, model);
 				const results = await query;
-
 				res.advancedResults = {
 					success: true,
 					count: results.length,
