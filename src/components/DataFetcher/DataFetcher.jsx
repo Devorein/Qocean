@@ -62,6 +62,22 @@ class DataFetcher extends React.Component {
 				.catch((err) => {
 					console.log(err);
 				});
+		} else if (page === 'watchlist') {
+			axios
+				.get(`http://localhost:5001/api/v1/watchlist/${pluralize(type, 2)}/count?${queryString}`, { ...headers })
+				.then(({ data: { data: totalCount } }) => {
+					axios
+						.get(`http://localhost:5001/api/v1/watchlist/${pluralize(type, 2)}?${queryString}`, { ...headers })
+						.then(({ data: { data } }) => {
+							this.setState({
+								data,
+								totalCount
+							});
+						});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		}
 	};
 

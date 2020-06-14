@@ -7,11 +7,6 @@ import DataFetcher from '../../components/DataFetcher/DataFetcher';
 import './Explore.scss';
 
 class Explore extends Component {
-	state = {
-		data: [],
-		totaCount: 0
-	};
-
 	render() {
 		return (
 			<DataFetcher page="Explore">
