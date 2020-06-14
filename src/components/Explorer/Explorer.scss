@@ -1,11 +1,14 @@
 .Explorer {
-  display: grid;
-  grid-template: 1fr/350px 1fr;
-  height: calc(100% - 50px);
+  display: flex;
+  .Detailer{
+    width: 350px;
+  }
+  .React-hotkeys{
+    width: fit-content;
+  }
   .Displayer_container {
     height: 100%;
-    grid-area: 1/2/3/3;
-    grid-template: 50px 1fr/1fr;
+    width: 100%;
     .Manipulator {
       height: 75px;
     }

@@ -8,12 +8,16 @@ import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import UpdateIcon from '@material-ui/icons/Update';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
+import { AppContext } from '../../context/AppContext';
+
 class FSManip extends Component {
 	state = {
 		filtersorts: [],
 		currentPreset: null,
 		presetName: ''
 	};
+
+	static contextType = AppContext;
 
 	componentDidMount() {
 		this.fetchPreset();
@@ -97,18 +101,20 @@ class FSManip extends Component {
 	fetchPreset = (newState) => {
 		let { type } = this.props;
 		type = type.charAt(0).toUpperCase() + type.substr(1);
-		axios
-			.get(`http://localhost:5001/api/v1/filtersort/me?type=${type}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
-			})
-			.then(({ data: { data: filtersorts } }) => {
-				this.setState({
-					filtersorts,
-					...newState
+		if (this.context.user) {
+			axios
+				.get(`http://localhost:5001/api/v1/filtersort/me?type=${type}`, {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then(({ data: { data: filtersorts } }) => {
+					this.setState({
+						filtersorts,
+						...newState
+					});
 				});
-			});
+		}
 	};
 
 	updatePreset = (e) => {

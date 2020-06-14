@@ -71,6 +71,7 @@
     "qs": "^6.9.4",
     "randomcolor": "^0.5.4",
     "react": "^16.13.1",
+    "react-adopt": "^0.6.0",
     "react-apollo": "^3.1.5",
     "react-color": "^2.18.1",
     "react-contextmenu": "^2.13.0",

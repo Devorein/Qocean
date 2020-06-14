@@ -173,13 +173,15 @@ class Displayer extends Component {
 
 		return data.map((item, index) => {
 			const actions = [
-				<InfoIcon
-					className="Displayer_actions-info"
-					key={'info'}
-					onClick={(e) => {
-						this.props.fetchData(this.props.type, item._id);
-					}}
-				/>
+				!this.props.hideDetailer ? (
+					<InfoIcon
+						className="Displayer_actions-info"
+						key={'info'}
+						onClick={(e) => {
+							this.props.fetchData(this.props.type, item._id);
+						}}
+					/>
+				) : null
 			];
 			if (type !== 'user')
 				actions.push(
@@ -415,7 +417,7 @@ class Displayer extends Component {
 													backgroundColor: this.props.theme.palette.background.main
 												}}
 											>
-												<HotKeys keyMap={keyMap} handlers={handlers}>
+												<HotKeys keyMap={keyMap} handlers={handlers} className="React-hotkeys">
 													{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
 												</HotKeys>
 											</div>

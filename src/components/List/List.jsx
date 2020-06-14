@@ -200,8 +200,8 @@ class CustomList extends React.Component {
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
 
 		return (
-			<HotKeys keyMap={keyMap}>
-				<Container className={rootClass}>
+			<Container className={rootClass}>
+				<HotKeys keyMap={keyMap}>
 					<MiniGrid>
 						<Typography variant="h6" classes={{ root: classes.listHeader }}>
 							{title}
@@ -286,8 +286,8 @@ class CustomList extends React.Component {
 							);
 						})}
 					</List>
-				</Container>
-			</HotKeys>
+				</HotKeys>
+			</Container>
 		);
 	};
 

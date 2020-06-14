@@ -28,7 +28,7 @@ class Explorer extends Component {
 
 	render() {
 		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
-		const { data, refetchData, totalCount, type, page, updateDataLocally } = this.props;
+		const { data, refetchData, totalCount, type, page, updateDataLocally, hideDetailer = false } = this.props;
 		const formFillerMsg = page === 'Self' ? 'Update' : 'Create';
 
 		return (
@@ -37,7 +37,7 @@ class Explorer extends Component {
 					{({ fetchData, Detailer }) => {
 						return (
 							<Fragment>
-								{Detailer}
+								{hideDetailer ? null : Detailer}
 								<div className="Displayer_container">
 									<Manipulator
 										onApply={(filterSorts) => {
@@ -63,6 +63,7 @@ class Explorer extends Component {
 																formFillerIndex
 															});
 														}}
+														hideDetailer={hideDetailer}
 														updateDataLocally={updateDataLocally}
 													/>
 													{formFillerIndex !== null ? (

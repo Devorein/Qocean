@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+
+import DataFetcher from '../../components/DataFetcher/DataFetcher';
+import Explorer from '../../components/Explorer/Explorer';
 import CustomList from '../../components/List/List';
 import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
@@ -76,53 +79,67 @@ class Play extends Component {
 		const { quizzes, hasStarted } = this.state;
 
 		return (
-			<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList(quizzes)}>
-				{({ list, checked }) => {
+			<DataFetcher page="Play">
+				{({ data, totalCount, refetchData }) => {
 					return (
-						<PlaySettings>
-							{({ formData, inputs, slider }) => {
-								const selectedQuizzes = checked.map((index) => quizzes[index]);
+						<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList(quizzes)}>
+							{({ list, checked }) => {
+								return (
+									<PlaySettings>
+										{({ formData, inputs, slider }) => {
+											const selectedQuizzes = checked.map((index) => quizzes[index]);
 
-								const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
-									...formData.values,
-									slider
-								});
+											const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
+												...formData.values,
+												slider
+											});
 
-								let filteredQuestions = 0;
-								for (let i = 0; i < filteredQuizzes.length; i++) {
-									const filteredQuiz = filteredQuizzes[i];
-									filteredQuestions += filteredQuiz.filteredQuestions.length;
-								}
+											let filteredQuestions = 0;
+											for (let i = 0; i < filteredQuizzes.length; i++) {
+												const filteredQuiz = filteredQuizzes[i];
+												filteredQuestions += filteredQuiz.filteredQuestions.length;
+											}
 
-								return !hasStarted ? (
-									<div className="play pages">
-										{list}
-										<PlayStats quizzes={quizzes} selectedQuizzes={filteredQuizzes} />
-										<div className="play_button">
-											<GenericButton
-												text="Play"
-												onClick={(e) =>
-													checked.length !== 0 && filteredQuestions !== 0
-														? this.setState({ hasStarted: true })
-														: void 0}
-											/>
-										</div>
-										{inputs}
-									</div>
-								) : (
-									<Quiz
-										settings={formData.values}
-										quizzes={filteredQuizzes.map((filteredQuiz) => ({
-											...filteredQuiz,
-											questions: filteredQuiz.filteredQuestions
-										}))}
-									/>
+											return !hasStarted ? (
+												<div className="play pages">
+													<Explorer
+														page={'Play'}
+														data={data}
+														totalCount={totalCount}
+														type={'Quiz'}
+														refetchData={refetchData.bind(null, 'Quiz')}
+														hideDetailer
+													/>
+													{list}
+													<PlayStats quizzes={quizzes} selectedQuizzes={filteredQuizzes} />
+													<div className="play_button">
+														<GenericButton
+															text="Play"
+															onClick={(e) =>
+																checked.length !== 0 && filteredQuestions !== 0
+																	? this.setState({ hasStarted: true })
+																	: void 0}
+														/>
+													</div>
+													{inputs}
+												</div>
+											) : (
+												<Quiz
+													settings={formData.values}
+													quizzes={filteredQuizzes.map((filteredQuiz) => ({
+														...filteredQuiz,
+														questions: filteredQuiz.filteredQuestions
+													}))}
+												/>
+											);
+										}}
+									</PlaySettings>
 								);
 							}}
-						</PlaySettings>
+						</CustomList>
 					);
 				}}
-			</CustomList>
+			</DataFetcher>
 		);
 	}
 }
