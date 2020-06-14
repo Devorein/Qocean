@@ -5,8 +5,10 @@
   }
   &_footer{
     display: flex;
-    justify-content: space-around;
     align-items: center;
-    padding: 5px;
+    div{
+      text-align: center;
+      padding: 3px 24px 3px 16px;
+    }
   }
 }

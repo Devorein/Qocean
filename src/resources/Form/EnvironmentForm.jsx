@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import { validateHTMLColorHex } from 'validate-color';
+import createEnvGroups from '../../Utils/createEnvGroups';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -50,99 +51,10 @@ class EnvironmentForm extends Component {
 			},
 			{ name: 'reset_on_success', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
-			{
-				type: 'group',
-				name: 'Explore_group',
-				extra: { treeView: true },
-				children: [
-					{
-						name: 'default_explore_landing',
-						type: 'select',
-						extra: {
-							selectItems: [ 'user', 'quiz', 'question', 'folder', 'environment' ].map((land) => {
-								return {
-									text: land.charAt(0).toUpperCase() + land.substr(1)
-								};
-							})
-						},
-						defaultValue: 'User'
-					},
-					{
-						name: 'default_explore_rpp',
-						type: 'select',
-						extra: {
-							selectItems: [ 10, 15, 20, 30, 40, 50 ].map((rpp) => {
-								return {
-									text: rpp
-								};
-							})
-						},
-						defaultValue: 15
-					}
-				]
-			},
-			{
-				type: 'group',
-				name: 'Self_group',
-				extra: { treeView: true },
-				children: [
-					{
-						name: 'default_self_landing',
-						type: 'select',
-						extra: {
-							selectItems: [ 'quiz', 'question', 'folder', 'environment' ].map((land) => {
-								return {
-									text: land.charAt(0).toUpperCase() + land.substr(1)
-								};
-							})
-						},
-						defaultValue: 'Quiz'
-					},
-					{
-						name: 'default_self_rpp',
-						type: 'select',
-						extra: {
-							selectItems: [ 10, 15, 20, 30, 40, 50 ].map((rpp) => {
-								return {
-									text: rpp
-								};
-							})
-						},
-						defaultValue: 15
-					}
-				]
-			},
-			{
-				type: 'group',
-				name: 'Watchlist_group',
-				extra: { treeView: true },
-				children: [
-					{
-						name: 'default_watchlist_landing',
-						type: 'select',
-						extra: {
-							selectItems: [ 'quiz', 'folder' ].map((land) => {
-								return {
-									text: land.charAt(0).toUpperCase() + land.substr(1)
-								};
-							})
-						},
-						defaultValue: 'Quiz'
-					},
-					{
-						name: 'default_watchlist_rpp',
-						type: 'select',
-						extra: {
-							selectItems: [ 10, 15, 20, 30, 40, 50 ].map((rpp) => {
-								return {
-									text: rpp
-								};
-							})
-						},
-						defaultValue: 15
-					}
-				]
-			},
+			createEnvGroups('explore'),
+			createEnvGroups('self'),
+			createEnvGroups('watchlist'),
+			createEnvGroups('play'),
 			{
 				name: 'default_create_landing',
 				type: 'select',
