@@ -16,8 +16,9 @@ casual.define('environment', function() {
 	const notification_timings = [ 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 ];
 	const notification_timing = notification_timings[getRandomInt(0, notification_timings.length - 1)];
 	const resources = [ 'User', 'Question', 'Quiz', 'Folder', 'Environment' ];
-	const rpp = [ 10, 15, 20, 25, 30, 40, 50 ];
-	return {
+	const ipp = [ 10, 15, 20, 25, 30, 40, 50 ];
+
+	const envObj = {
 		name: casual.array_of_words(2).join(''),
 		icon: `${icons[getRandomInt(0, icons.length - 1)]}_env.svg`,
 		favourite: casual.boolean,
@@ -31,16 +32,24 @@ casual.define('environment', function() {
 		default_question_weight: getRandomInt(1, 10),
 		reset_on_success: casual.boolean,
 		reset_on_error: casual.boolean,
-		default_explore_landing: resources[getRandomInt(0, resources.length - 1)],
 		default_create_landing: resources.splice(1)[getRandomInt(0, resources.length - 2)],
-		default_self_landing: resources.splice(1)[getRandomInt(0, resources.length - 2)],
-		default_explore_rpp: rpp[getRandomInt(0, rpp.length - 1)],
-		default_self_rpp: rpp[getRandomInt(0, rpp.length - 1)],
 		notification_timing,
 		max_notifications: getRandomInt(3, 10),
 		primary_color: randomColor(),
 		secondary_color: randomColor()
 	};
+
+	[ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
+		envObj[`default_${page}_ipp`] = ipp[getRandomInt(0, ipp.length - 1)];
+		envObj[`default_${page}_view`] = [ 'Table', 'List', 'Board', 'Gallery' ][getRandomInt(0, 3)];
+		envObj[`default_${page}_landing`] = ((page) => {
+			if (page === 'explore') return resources[getRandomInt(0, resources.length - 1)];
+			else if (page === 'self') return resources.slice(1)[getRandomInt(0, resources.length - 2)];
+			else if (page === 'watchlist') return [ 'Quiz', 'Folder' ][getRandomInt(0, 1)];
+			else return [];
+		})(page);
+	});
+	return envObj;
 });
 
 const createEnvironment = async ({ envs, users, total_users }) => {

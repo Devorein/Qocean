@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
 
-const EnvironmentSchema = extendSchema(ResourceSchema, {
+const envSchema = {
 	name: {
 		type: String,
 		required: [ true, 'Please provide the name of the environment' ]
@@ -55,31 +55,8 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		min: [ 1, 'Weight cant be less than 1' ],
 		max: [ 10, 'Weight cant be less than 10' ]
 	},
-	default_explore_landing: {
-		type: String,
-		default: 'User'
-	},
-	default_explore_rpp: {
-		type: Number,
-		default: 15
-	},
-	default_watchlist_landing: {
-		type: String,
-		default: 'Quiz'
-	},
-	default_watchlist_rpp: {
-		type: Number,
-		default: 15
-	},
+
 	default_create_landing: {
-		type: String,
-		default: 'Quiz'
-	},
-	default_self_rpp: {
-		type: Number,
-		default: 15
-	},
-	default_self_landing: {
 		type: String,
 		default: 'Quiz'
 	},
@@ -117,7 +94,26 @@ const EnvironmentSchema = extendSchema(ResourceSchema, {
 		type: String,
 		default: 'Quantico'
 	}
+};
+[ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
+	envSchema[`default_${page}_ipp`] = {
+		type: Number,
+		default: 15
+	};
+	envSchema[`default_${page}_view`] = {
+		type: String,
+		default: 'List'
+	};
+
+	if (page !== 'play') {
+		envSchema[`default_${page}_landing`] = {
+			type: String,
+			default: 'Quiz'
+		};
+	}
 });
+
+const EnvironmentSchema = extendSchema(ResourceSchema, envSchema);
 
 EnvironmentSchema.pre('save', async function(next) {
 	await this.model('User').add(this.user, 'environments', this._id);
