@@ -40,6 +40,7 @@ export default function(filter) {
 		if (mod.match(/^(i|in|gt|gte|lt|lte)$/)) {
 			value = parseInt(value);
 			against = parseInt(against);
+			console.log(value, against);
 			if (mod === 'i') return value === against;
 			else if (mod === 'in') return value !== against;
 			else if (mod === 'gt') return value < against;

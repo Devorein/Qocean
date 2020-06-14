@@ -347,9 +347,16 @@ class Effector extends Component {
 					labelClass="Effector_topbar_properties"
 					name="Toggle Properties"
 					selected={this.state.cols ? this.state.selected_cols : []}
-					handleChange={(e) => {
+					handleChange={(e, child) => {
+						let selected_cols = e.target.value;
+						if (e.altKey) selected_cols = [ child.props.value ];
+						else if (e.shiftKey) {
+							const { menuitem } = child.props;
+							selected_cols = [];
+							Array(menuitem + 1).fill(0).forEach((_, index) => selected_cols.push(this.state.cols[index]));
+						}
 						this.setState({
-							selected_cols: e.target.value
+							selected_cols
 						});
 					}}
 					items={
@@ -412,7 +419,7 @@ class Effector extends Component {
 		terms.forEach((term) => {
 			const [ prop, mod, value ] = term.split('=');
 			if (prop && mod && value && filteredData.length !== 0) {
-				const [ targetType, modValues ] = decideTargetTypes(prop, {
+				const { targetType, modValues } = decideTargetTypes(prop, {
 					shouldConvertToSelectItems: true,
 					shouldConvertToAcronym: true
 				});

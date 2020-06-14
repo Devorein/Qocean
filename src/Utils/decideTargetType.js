@@ -6,10 +6,10 @@ function convertToSelectItems(arr) {
 }
 
 export default function(target, config = {}) {
-	const { shouldConvertToSelectItems = false, shouldConvertToAcronym = false } = config;
+	const { shouldConvertToSelectItems = true, shouldConvertToAcronym = false } = config;
 	let targetType = null,
 		modValues = [];
-	if (target.match(/^(name|subject|quiz|email)$/)) {
+	if (target.match(/^(string|name|subject|quiz|email)$/)) {
 		targetType = 'string';
 		modValues = [
 			'is',
@@ -22,10 +22,10 @@ export default function(target, config = {}) {
 			'contains_(case)',
 			'regex'
 		];
-	} else if (target.match(/^(public|favourite)$/)) {
+	} else if (target.match(/^(boolean|public|favourite)$/)) {
 		targetType = 'boolean';
 		modValues = [ 'is', 'is_not' ];
-	} else if (target.match(/^(created_at|updated_at|joined_at)$/)) {
+	} else if (target.match(/^(date|created_at|updated_at|joined_at)$/)) {
 		targetType = 'date';
 		modValues = [
 			'exact',
@@ -41,7 +41,7 @@ export default function(target, config = {}) {
 		];
 	} else if (
 		target.match(
-			/^(ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes|total_environments|total_folders)$/
+			/^(number|ratings|average_quiz_time|watchers|total_questions|time_allocated|total_quizzes|total_environments|total_folders)$/
 		)
 	) {
 		targetType = 'number';
@@ -71,6 +71,6 @@ export default function(target, config = {}) {
 		modValues = modValues.map((modValue) =>
 			modValue.replace(/\((\w+)\)/g, '$1').split('_').map((chunk) => chunk.charAt(0)).join('')
 		);
-	if (!shouldConvertToSelectItems) return [ targetType, convertToSelectItems(modValues) ];
-	else return [ targetType, modValues ];
+	if (shouldConvertToSelectItems) return { targetType, modValues: convertToSelectItems(modValues) };
+	else return { targetType, modValues };
 }

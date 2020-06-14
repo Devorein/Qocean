@@ -101,7 +101,7 @@ export default function MultiSelect({
 				}}
 			>
 				{items.map(({ name, _id, customText, disabled }, index) => (
-					<MenuItem key={_id} value={_id} disabled={disabled} className={classes.MenuItem}>
+					<MenuItem key={_id} value={_id} disabled={disabled} className={classes.MenuItem} menuitem={index}>
 						{!useSwitch ? (
 							<Checkbox name={name} checked={selected.indexOf(_id) > -1} />
 						) : (
