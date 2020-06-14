@@ -47,13 +47,15 @@ function capitalize(item) {
 class SSFilterSort extends Component {
 	state = {
 		filters: [ { ...DEFAULT_FILTER, children: [] } ],
-		sorts: [ { ...DEFAULT_SORT } ]
+		sorts: [ { ...DEFAULT_SORT } ],
+		users: [],
+		tags: []
 	};
 
 	selectItems = [ { value: 'none', text: 'none' } ];
 
 	UNSAFE_componentWillReceiveProps(props) {
-		this.selectItems = getPropsBasedOnType(props.type);
+		this.selectItems = getPropsBasedOnType(props.type, props.page);
 
 		if (props.type !== this.props.type) {
 			this.setState({
@@ -64,12 +66,31 @@ class SSFilterSort extends Component {
 	}
 
 	componentDidMount() {
-		axios.get('http://localhost:5001/api/v1/users/getAllUsers').then(({ data: { data: users } }) => {
-			this.setState({ users });
-			axios.get(`http://localhost:5001/api/v1/users/getAllTags`).then(({ data: { data: tags } }) => {
-				this.setState({ tags });
+		const page = this.props.page.toLowerCase();
+		if (page !== 'self') {
+			axios.get('http://localhost:5001/api/v1/users/getAllUsers').then(({ data: { data: users } }) => {
+				this.setState({ users });
+				axios.get(`http://localhost:5001/api/v1/users/getAllTags`).then(({ data: { data: tags } }) => {
+					this.setState({ tags });
+				});
 			});
-		});
+		} else {
+			axios
+				.post(
+					`http://localhost:5001/api/v1/users/tags/_/me`,
+					{
+						uniqueWithoutColor: true
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					}
+				)
+				.then(({ data: { data: { uniqueWithoutColor: tags } } }) => {
+					this.setState({ tags });
+				});
+		}
 	}
 
 	renderSortItem = (index) => {
@@ -285,7 +306,7 @@ class SSFilterSort extends Component {
 						disabled={disabled || shutdown}
 						options={this.state.tags}
 						isArray={true}
-						label={'Users'}
+						label={'Tags'}
 						value={value}
 						onChange={(e, value) => {
 							targetItem.value = value.map((item) => item);

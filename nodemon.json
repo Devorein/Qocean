@@ -3,6 +3,7 @@
     "/store/*.json",
     "/simulate.js",
     "/simulate/*.js",
-    "/src/*.js"
+    "/src/*.js",
+    "/src/Utils/*.js"
   ]
 }

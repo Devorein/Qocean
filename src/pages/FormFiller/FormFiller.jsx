@@ -76,7 +76,7 @@ class FormFiller extends Component {
 					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
-							this.props.refetch();
+							this.context.refetch();
 						});
 					}
 				})

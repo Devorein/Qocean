@@ -44,6 +44,7 @@ class Explorer extends Component {
 											refetchData(filterSort(filterSorts));
 										}}
 										type={type}
+										page={page}
 									>
 										{({ Manipulator, filter_sort }) => {
 											return (

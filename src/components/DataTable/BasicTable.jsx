@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -49,18 +49,22 @@ class BasicTable extends Component {
 						</TableBody>
 					</Table>
 				</div>
-				<div
-					className={'BasicTable_footer'}
-					style={{
-						marginLeft:
-							this.Table && this.Table.children[0] ? this.Table.children[0].children[0].children[0].clientWidth : 0
-					}}
-				>
-					{footers.splice(1).map((data) => (
-						<span key={shortid.generate()} align="center">
-							{data}
-						</span>
-					))}
+				<div className={'BasicTable_footer'}>
+					{footers.map((data, index) => {
+						return (
+							<div
+								key={shortid.generate()}
+								style={{
+									width:
+										this.Table && this.Table.children[0]
+											? this.Table.children[0].children[0].children[index].clientWidth + 'px'
+											: 'fit-content'
+								}}
+							>
+								{data}
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		);
@@ -82,10 +86,7 @@ export default withStyles((theme) => ({
 	},
 	root: {
 		'& .BasicTable_footer': {
-			backgroundColor: theme.palette.background.main,
-			'& span': {
-				margin: '0 auto'
-			}
+			backgroundColor: theme.palette.background.main
 		}
 	}
 }))(BasicTable);

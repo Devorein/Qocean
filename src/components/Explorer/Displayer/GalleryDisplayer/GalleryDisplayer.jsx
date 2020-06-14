@@ -13,6 +13,10 @@ class GalleryDisplayer extends Component {
 
 	renderGalleryDisplayer = () => {
 		const { type, data, classes, currentSelected } = this.props;
+		const page = this.props.page.toLowerCase();
+		const sectors = [ 'primary', 'secondary' ];
+		if (page !== 'self') sectors.push('ref', 'tertiary');
+		else sectors.push('tertiary');
 		return (
 			<div
 				className="GalleryDisplayer_container"
@@ -30,18 +34,18 @@ class GalleryDisplayer extends Component {
 							<div className="GalleryDisplayer_item_container GalleryDisplayer_item_container-actions">
 								{item.actions}
 							</div>
-							{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
+							{sectors.map((sector, index) => {
 								return (
 									<div
-										key={`${type}${key}${index}`}
-										className={`GalleryDisplayer_item_container GalleryDisplayer_item_container-${key}`}
+										key={`${type}${sector}${index}`}
+										className={`GalleryDisplayer_item_container GalleryDisplayer_item_container-${sector}`}
 									>
-										{Object.entries(item[key]).map(([ _key, val ], index) => (
+										{Object.entries(item[sector]).map(([ _key, val ], index) => (
 											<span
 												key={`${type}${_key}${index}`}
 												className={`GalleryDisplayer_item_container_item GalleryDisplayer_item_container-${_key}_item`}
 											>
-												{key.match(/(tertiary)/) ? (
+												{sector.match(/(tertiary)/) ? (
 													<Fragment>
 														<span className="GalleryDisplayer_item_container_item-key">
 															{_key

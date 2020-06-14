@@ -1,5 +1,6 @@
 .Explorer {
   display: flex;
+  height: calc(100% - 50px);
   .Detailer{
     width: 350px;
   }

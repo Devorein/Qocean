@@ -27,23 +27,29 @@ class InputForm extends Component {
 				const { name, defaultValue, extra = {}, type, children } = input;
 				if (name) {
 					if (type === 'group' && !extra.coalesce)
-						children.forEach(({ name, defaultValue }) => {
-							initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
-							try {
-								if (validateOnChange && validationSchema._nodes.includes(name))
-									validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
-							} catch (err) {
-								initialErrors[name] = err.message;
+						children.forEach((child) => {
+							if (child) {
+								const { name, defaultValue } = child;
+								initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+								try {
+									if (validateOnChange && validationSchema._nodes.includes(name))
+										validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
+								} catch (err) {
+									initialErrors[name] = err.message;
+								}
 							}
 						});
 					else if (type === 'group' && extra.coalesce) {
 						const groupname = input.name;
 						if (extra.useArray) initialValues[groupname] = [];
 						else initialValues[groupname] = {};
-						children.forEach(({ name, defaultValue }, index) => {
-							const inputvalue = typeof defaultValue !== 'undefined' ? defaultValue : '';
-							if (extra.useArray) initialValues[groupname][index] = inputvalue;
-							else initialValues[groupname][name] = inputvalue;
+						children.forEach((child, index) => {
+							if (child) {
+								const { name, defaultValue } = child;
+								const inputvalue = typeof defaultValue !== 'undefined' ? defaultValue : '';
+								if (extra.useArray) initialValues[groupname][index] = inputvalue;
+								else initialValues[groupname][name] = inputvalue;
+							}
 						});
 						try {
 							if (validateOnChange && validationSchema._nodes.includes(groupname))

@@ -1,18 +1,6 @@
 import { difference } from 'lodash';
 
-export default function(
-	data,
-	type,
-	{
-		authenticated,
-		flatten = false,
-		singular = false,
-		blacklist = [],
-		purpose,
-		singularSectorize = false,
-		page = 'self'
-	}
-) {
+export default function(data, type, { authenticated, flatten = false, blacklist = [], purpose, page = 'self' }) {
 	type = type.toLowerCase();
 	page = page.toLowerCase();
 	const primary = [],
@@ -20,7 +8,6 @@ export default function(
 		tertiary = [],
 		refs = [],
 		ref = [];
-
 	if (type.match(/(quiz|quizzes)/)) {
 		secondary.push('subject', 'tags');
 		tertiary.push('total_questions', 'average_difficulty', 'average_quiz_time', 'ratings', 'total_played');
@@ -73,55 +60,31 @@ export default function(
 	primary.push('name');
 	if (!type.match(/(user|users)/)) {
 		tertiary.push('created_at', 'updated_at');
-		ref.push('user');
+		if (page !== 'self') ref.push('user');
 		if (authenticated && page === 'self') secondary.push('public', 'favourite');
 	}
 
-	if (flatten) {
-		return data.map((data) => {
-			const temp = {};
-			difference(primary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
-			difference(secondary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
-			difference(tertiary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
-			temp._id = data._id;
-			temp.actions = data.actions;
-			temp.checked = data.checked;
-			return temp;
-		});
-	} else if (singular) {
+	function mapToSector(data) {
 		const temp = {};
-		primary.forEach((prop) => (temp[prop] = data[prop]));
-		secondary.forEach((prop) => (temp[prop] = data[prop]));
-		tertiary.forEach((prop) => (temp[prop] = data[prop]));
-		refs.forEach((prop) => (temp[prop] = data[prop]));
-		return temp;
-	} else if (singularSectorize) {
-		const temp = {};
-		temp.primary = {};
-		temp.secondary = {};
-		temp.tertiary = {};
-		temp.refs = {};
-		temp.ref = {};
-		primary.forEach((prop) => (temp['primary'][prop] = data[prop]));
-		secondary.forEach((prop) => (temp['secondary'][prop] = data[prop]));
-		tertiary.forEach((prop) => (temp['tertiary'][prop] = data[prop]));
-		refs.forEach((prop) => (temp['refs'][prop] = data[prop]));
-		ref.forEach((prop) => (temp['ref'][prop] = data[prop]));
 		temp._id = data._id;
-		return temp;
-	} else {
-		return data.map((data) => {
-			const temp = {};
-			temp.primary = {};
-			temp.secondary = {};
-			temp.tertiary = {};
-			difference(primary, blacklist).forEach((prop) => (temp['primary'][prop] = data[prop]));
-			difference(secondary, blacklist).forEach((prop) => (temp['secondary'][prop] = data[prop]));
-			difference(tertiary, blacklist).forEach((prop) => (temp['tertiary'][prop] = data[prop]));
-			temp._id = data._id;
-			temp.actions = data.actions;
-			temp.checked = data.checked;
-			return temp;
+		if (!blacklist.includes('actions')) temp.actions = data.actions;
+		if (!blacklist.includes('checked')) temp.checked = data.checked;
+		[
+			[ primary, 'primary' ],
+			[ secondary, 'secondary' ],
+			[ tertiary, 'tertiary' ],
+			[ refs, 'refs' ],
+			[ ref, 'ref' ]
+		].forEach(([ array, sector ]) => {
+			let target = temp;
+			if (!flatten) {
+				temp[sector] = {};
+				target = temp[sector];
+			}
+			difference(array, blacklist).forEach((prop) => (target[prop] = data[prop]));
 		});
+		return temp;
 	}
+	if (Array.isArray(data)) return data.map((item) => mapToSector(item));
+	else return mapToSector(data);
 }
