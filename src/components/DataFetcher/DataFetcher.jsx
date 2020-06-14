@@ -23,7 +23,7 @@ class DataFetcher extends React.Component {
 			}
 		};
 
-		if (page === 'self') {
+		if (page.match(/(self|play)/)) {
 			axios
 				.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine?${queryString}`, {
 					...headers
@@ -86,7 +86,10 @@ class DataFetcher extends React.Component {
 		return this.props.children({
 			data,
 			totalCount,
-			refetchData: this.refetchData
+			refetchData: this.refetchData,
+			updateDataLocally: (data) => {
+				this.setState({ data });
+			}
 		});
 	}
 }

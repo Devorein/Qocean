@@ -8,7 +8,7 @@ class Watchlist extends Component {
 	render() {
 		return (
 			<DataFetcher page={'Watchlist'}>
-				{({ data, totalCount, refetchData }) => {
+				{({ data, totalCount, refetchData, updateDataLocally }) => {
 					return (
 						<PageSwitcher
 							page="watchlist"
@@ -17,7 +17,7 @@ class Watchlist extends Component {
 							}}
 						>
 							{({ CustomTabs, type }) => (
-								<div className="Explore page">
+								<div className="Watchlist page">
 									{CustomTabs}
 									<Explorer
 										page={'Watchlist'}
@@ -25,9 +25,7 @@ class Watchlist extends Component {
 										totalCount={totalCount}
 										type={type}
 										refetchData={refetchData.bind(null, type)}
-										updateDataLocally={(data) => {
-											this.setState({ data });
-										}}
+										updateDataLocally={updateDataLocally}
 									/>
 								</div>
 							)}

@@ -10,7 +10,7 @@ class Explore extends Component {
 	render() {
 		return (
 			<DataFetcher page="Explore">
-				{({ data, totalCount, refetchData }) => {
+				{({ data, totalCount, refetchData, updateDataLocally }) => {
 					return (
 						<PageSwitcher
 							page="explore"
@@ -30,9 +30,7 @@ class Explore extends Component {
 										totalCount={totalCount}
 										type={type}
 										refetchData={refetchData.bind(null, type)}
-										updateDataLocally={(data) => {
-											this.setState({ data });
-										}}
+										updateDataLocally={updateDataLocally}
 									/>
 								</div>
 							)}

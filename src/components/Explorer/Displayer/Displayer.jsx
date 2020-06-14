@@ -173,13 +173,15 @@ class Displayer extends Component {
 
 		return data.map((item, index) => {
 			const actions = [
-				<InfoIcon
-					className="Displayer_actions-info"
-					key={'info'}
-					onClick={(e) => {
-						this.props.fetchData(this.props.type, item._id);
-					}}
-				/>
+				!this.props.hideDetailer ? (
+					<InfoIcon
+						className="Displayer_actions-info"
+						key={'info'}
+						onClick={(e) => {
+							this.props.fetchData(this.props.type, item._id);
+						}}
+					/>
+				) : null
 			];
 			if (type !== 'user')
 				actions.push(

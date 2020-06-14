@@ -9,7 +9,7 @@ class Self extends Component {
 	render() {
 		return (
 			<DataFetcher page="Self">
-				{({ data, totalCount, refetchData }) => {
+				{({ data, totalCount, refetchData, updateDataLocally }) => {
 					return (
 						<PageSwitcher
 							page="self"
@@ -26,9 +26,7 @@ class Self extends Component {
 										totalCount={totalCount}
 										type={type}
 										refetchData={refetchData.bind(null, type)}
-										updateDataLocally={(data) => {
-											this.setState({ data });
-										}}
+										updateDataLocally={updateDataLocally}
 									/>
 								</div>
 							)}
