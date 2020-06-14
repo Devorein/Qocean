@@ -1,0 +1,12 @@
+.BasicTable{
+  &_table{
+    height: calc(100% - 50px);
+    overflow-y: auto;
+  }
+  &_footer{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px;
+  }
+}

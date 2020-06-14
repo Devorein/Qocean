@@ -26,6 +26,17 @@
   }
   &_stats {
     grid-area: 1/2/4/3;
-    max-height: 750px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 375px);
+    .BasicTable{
+      height: 33.33%;
+      margin: 5px;
+      .MuiTable-root{
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+    }
   }
 }

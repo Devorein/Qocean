@@ -7,9 +7,9 @@ class PlayStats extends Component {
 		const { quizzes } = this.props;
 		return (
 			<div className="play_stats">
-				<BasicTable title={'Question Difficulty'} contents={quizStats(quizzes, 'time_allocated')} />
-				<BasicTable title={'Question Types'} contents={quizStats(quizzes, 'difficulty')} />
-				<BasicTable title={'Question Time'} contents={quizStats(quizzes, 'type')} />
+				<BasicTable title={'Question Time'} contents={quizStats(quizzes, 'time_allocated')} />
+				<BasicTable title={'Question Difficulty'} contents={quizStats(quizzes, 'difficulty')} />
+				<BasicTable title={'Question Types'} contents={quizStats(quizzes, 'type')} />
 			</div>
 		);
 	}
