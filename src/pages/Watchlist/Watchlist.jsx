@@ -10,12 +10,7 @@ class Watchlist extends Component {
 			<DataFetcher page={'Watchlist'}>
 				{({ data, totalCount, refetchData, updateDataLocally }) => {
 					return (
-						<PageSwitcher
-							page="watchlist"
-							runAfterSwitch={(type) => {
-								refetchData(type, { page: 1, limit: this.props.user.current_environment.default_watchlist_rpp });
-							}}
-						>
+						<PageSwitcher page="watchlist" refetchData={refetchData}>
 							{({ CustomTabs, type }) => (
 								<div className="Watchlist page">
 									{CustomTabs}

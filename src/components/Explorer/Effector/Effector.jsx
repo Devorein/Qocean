@@ -27,10 +27,14 @@ import localFilter from '../../../Utils/localFilter';
 import './Effector.scss';
 class Effector extends Component {
 	state = {
-		itemsPerPage: 15,
+		itemsPerPage: this.context.user
+			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_ipp`]
+			: 15,
 		currentPage: 1,
 		typedPage: 1,
-		view: 'list',
+		view: this.context.user
+			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_view`].toLowerCase()
+			: 'list',
 		cols: this.props.cols || [],
 		selected_cols: this.props.cols || [],
 		selectedIndex: [],

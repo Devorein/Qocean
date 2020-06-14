@@ -23,7 +23,7 @@ const useStyles = makeStyles({
 
 function CustomTabs(props) {
 	const { headers, onChange, height = 50, against, addIcon = true } = props;
-	const value = headers.findIndex(({ name }) => name === against);
+	const value = headers.findIndex(({ name }) => name.toLowerCase() === against.toLowerCase());
 	const { tabs, tab } = useStyles({ height });
 	return (
 		<Tabs

@@ -12,15 +12,7 @@ class Explore extends Component {
 			<DataFetcher page="Explore">
 				{({ data, totalCount, refetchData, updateDataLocally }) => {
 					return (
-						<PageSwitcher
-							page="explore"
-							runAfterSwitch={(type) => {
-								refetchData(type, {
-									page: 1,
-									limit: this.props.user ? this.props.user.current_environment.default_explore_rpp : 15
-								});
-							}}
-						>
+						<PageSwitcher page="explore" refetchData={refetchData}>
 							{({ CustomTabs, type }) => (
 								<div className="Explore page">
 									{CustomTabs}

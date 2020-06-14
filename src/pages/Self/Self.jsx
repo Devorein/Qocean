@@ -11,12 +11,7 @@ class Self extends Component {
 			<DataFetcher page="Self">
 				{({ data, totalCount, refetchData, updateDataLocally }) => {
 					return (
-						<PageSwitcher
-							page="self"
-							runAfterSwitch={(type) => {
-								refetchData(type, { page: 1, limit: this.props.user.current_environment.default_self_rpp });
-							}}
-						>
+						<PageSwitcher page="self" refetchData={refetchData}>
 							{({ CustomTabs, type }) => (
 								<div className="Self page">
 									{CustomTabs}

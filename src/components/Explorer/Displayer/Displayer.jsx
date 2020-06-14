@@ -53,7 +53,9 @@ class Displayer extends Component {
 
 	componentDidMount() {
 		this.props.refetchData({
-			limit: this.context.user ? this.context.user.current_environment.default_self_rpp : 15,
+			limit: this.context.user
+				? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_ipp`]
+				: 15,
 			page: 1
 		});
 	}
