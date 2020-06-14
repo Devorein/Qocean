@@ -10,25 +10,47 @@ import shortid from 'shortid';
 
 import TextInput from '../Input/TextInput/TextInput';
 import localFilter from '../../Utils/localFilter';
+import decideTargetTypes from '../../Utils/decideTargetType';
 
 import './BasicTable.scss';
 class BasicTable extends Component {
 	state = {
 		searchInput: ''
 	};
+
+	filterRows = () => {
+		const { contents } = this.props;
+		const { headers, rows } = contents;
+		const { searchInput } = this.state;
+		const terms = searchInput.split('&');
+		let filteredData = rows;
+		terms.forEach((term) => {
+			const [ prop, mod, value ] = term.split('=');
+			if (prop && mod && value && filteredData.length !== 0) {
+				const { modValues } = decideTargetTypes('number', {
+					shouldConvertToSelectItems: false,
+					shouldConvertToAcronym: true
+				});
+				console.log(modValues, headers.map(({ name }) => name));
+				if (modValues.includes(mod) && headers.map(({ name }) => name).includes(prop)) {
+					filteredData = filteredData.filter((item) =>
+						localFilter({
+							targetType: 'number',
+							mod,
+							value,
+							against: item[prop]
+						})
+					);
+					console.log(prop, mod, value, headers, filteredData);
+				}
+			}
+		});
+		return filteredData;
+	};
 	render() {
 		const { classes, title, contents } = this.props;
-		const { headers, rows, footers } = contents;
-		console.log(
-			rows.filter((row) =>
-				localFilter({
-					targetType: 'number',
-					mod: 'i',
-					value: row.Beginner,
-					against: parseInt(this.state.searchInput)
-				})
-			)
-		);
+		const { headers, footers } = contents;
+		const rows = this.filterRows();
 		return (
 			<div className={`BasicTable ${classes.root}`}>
 				<Typography className={classes.tableTitle} variant="body1">

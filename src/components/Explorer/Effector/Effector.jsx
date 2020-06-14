@@ -419,7 +419,7 @@ class Effector extends Component {
 		terms.forEach((term) => {
 			const [ prop, mod, value ] = term.split('=');
 			if (prop && mod && value && filteredData.length !== 0) {
-				const [ targetType, modValues ] = decideTargetTypes(prop, {
+				const { targetType, modValues } = decideTargetTypes(prop, {
 					shouldConvertToSelectItems: true,
 					shouldConvertToAcronym: true
 				});

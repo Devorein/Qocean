@@ -349,7 +349,7 @@ class SSFilterSort extends Component {
 
 		if (currentTarget) {
 			const { target, mod, disabled, shutdown, children } = currentTarget;
-			const [ targetType, modItems ] = decideTargetType(target);
+			const { targetType, modValues } = decideTargetType(target);
 			const valueItem = this.renderTargetValue(targetType, currentTarget);
 
 			return (
@@ -404,11 +404,11 @@ class SSFilterSort extends Component {
 						name="Target"
 						value={target}
 						onChange={(e) => {
-							const [ targetType, modItems ] = decideTargetType(e.target.value);
+							const { targetType, modValues } = decideTargetType(e.target.value);
 							currentTarget.target = e.target.value;
 							currentTarget.type = targetType;
 							currentTarget.cond = this.state.filters[0].cond;
-							currentTarget.mod = modItems[0].value;
+							currentTarget.mod = modValues[0].value;
 							if (targetType === 'date') {
 								const currentDate = moment(Date.now()).toISOString();
 								if (currentTarget.mod === 'exact') currentTarget.value = [ currentDate ];
@@ -438,7 +438,7 @@ class SSFilterSort extends Component {
 							});
 						}}
 						disabledSelect={disabled || shutdown}
-						selectItems={modItems}
+						selectItems={modValues}
 					/>
 					<div className="FilterSortItem_select_value">{valueItem}</div>
 					{index !== 0 || isChild ? (

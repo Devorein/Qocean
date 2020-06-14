@@ -26,9 +26,11 @@
         user-select: none;
       }
       &-primary {
-        width: 30%;
         font-weight: bolder;
         font-size: 1rem;
+        width: 200px;
+        overflow-x: auto;
+        margin-right: 10px;
       }
       &-actions {
         .MuiSvgIcon-root {
