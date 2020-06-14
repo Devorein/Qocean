@@ -3,15 +3,7 @@ import { difference } from 'lodash';
 export default function(
 	data,
 	type,
-	{
-		authenticated,
-		flatten = false,
-		singular = false,
-		blacklist = [],
-		purpose,
-		singularSectorize = false,
-		page = 'self'
-	}
+	{ authenticated, flatten = false, blacklist = [], purpose, singularSectorize = false, page = 'self' }
 ) {
 	type = type.toLowerCase();
 	page = page.toLowerCase();
@@ -20,7 +12,6 @@ export default function(
 		tertiary = [],
 		refs = [],
 		ref = [];
-
 	if (type.match(/(quiz|quizzes)/)) {
 		secondary.push('subject', 'tags');
 		tertiary.push('total_questions', 'average_difficulty', 'average_quiz_time', 'ratings', 'total_played');
@@ -76,25 +67,22 @@ export default function(
 		ref.push('user');
 		if (authenticated && page === 'self') secondary.push('public', 'favourite');
 	}
-
 	if (flatten) {
-		return data.map((data) => {
+		function mapToSector(data) {
 			const temp = {};
+			if (!blacklist.includes('checked')) temp.checked = data.checked;
+			if (!blacklist.includes('actions')) temp.actions = data.actions;
 			difference(primary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
 			difference(secondary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
 			difference(tertiary, blacklist).forEach((prop) => (temp[prop] = data[prop]));
+			difference(ref, blacklist).forEach((prop) => (temp[prop] = data[prop]));
+			difference(refs, blacklist).forEach((prop) => (temp[prop] = data[prop]));
 			temp._id = data._id;
-			temp.actions = data.actions;
-			temp.checked = data.checked;
 			return temp;
-		});
-	} else if (singular) {
-		const temp = {};
-		primary.forEach((prop) => (temp[prop] = data[prop]));
-		secondary.forEach((prop) => (temp[prop] = data[prop]));
-		tertiary.forEach((prop) => (temp[prop] = data[prop]));
-		refs.forEach((prop) => (temp[prop] = data[prop]));
-		return temp;
+		}
+
+		if (Array.isArray(data)) return data.map((data) => mapToSector(data));
+		else return mapToSector(data);
 	} else if (singularSectorize) {
 		const temp = {};
 		temp.primary = {};
@@ -115,12 +103,14 @@ export default function(
 			temp.primary = {};
 			temp.secondary = {};
 			temp.tertiary = {};
+			temp.ref = {};
 			difference(primary, blacklist).forEach((prop) => (temp['primary'][prop] = data[prop]));
 			difference(secondary, blacklist).forEach((prop) => (temp['secondary'][prop] = data[prop]));
 			difference(tertiary, blacklist).forEach((prop) => (temp['tertiary'][prop] = data[prop]));
+			difference(ref, blacklist).forEach((prop) => (temp['ref'][prop] = data[prop]));
 			temp._id = data._id;
-			temp.actions = data.actions;
-			temp.checked = data.checked;
+			if (!blacklist.includes('actions')) temp.actions = data.actions;
+			if (!blacklist.includes('checked')) temp.checked = data.checked;
 			return temp;
 		});
 	}

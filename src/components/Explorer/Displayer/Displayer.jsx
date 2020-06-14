@@ -294,13 +294,14 @@ class Displayer extends Component {
 		});
 	};
 
-	decideDisplayer = (data, view, cols, setSelectedIndex) => {
-		const { type } = this.props;
+	decideDisplayer = (data, view, cols) => {
+		const { type, page } = this.props;
 
 		const props = {
 			data,
 			type,
-			currentSelected: this.state.currentSelected
+			currentSelected: this.state.currentSelected,
+			page
 		};
 
 		if (view === 'table') return <TableDisplayer {...props} cols={cols} />;
@@ -313,17 +314,20 @@ class Displayer extends Component {
 		const cols = [];
 		if (data.length > 0)
 			Object.keys(
-				sectorizeData(data[0], this.props.type, { authenticated: this.context.user, singular: true })
+				sectorizeData(data[0], this.props.type, {
+					authenticated: this.context.user,
+					flatten: true,
+					page: this.props.page
+				})
 			).forEach((col) => {
-				if (this.props.page === 'Self') cols.push(col);
-				else if (this.props.page !== 'Self' && !col.match(/(favourite|public)/)) cols.push(col);
+				if (col !== '_id') cols.push(col);
 			});
 		return cols;
 	};
 
 	render() {
 		const { decideDisplayer, getCols, updateResource, deleteResource, watchToggle } = this;
-		const { totalCount, page, refetchData, type, filter_sort } = this.props;
+		const { totalCount, page: currentPage, refetchData, type, filter_sort } = this.props;
 		let { data } = this.props;
 		const cols = getCols(data);
 		return (
@@ -335,7 +339,7 @@ class Displayer extends Component {
 							<Effector
 								updateResource={updateResource}
 								type={type}
-								page={page}
+								page={currentPage}
 								data={data}
 								totalCount={totalCount}
 								refetchData={refetchData}
@@ -362,13 +366,15 @@ class Displayer extends Component {
 									if (view !== 'table')
 										manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
 											authenticated: this.context.user,
-											blacklist: removed_cols
+											blacklist: removed_cols,
+											page: currentPage
 										});
 									else {
 										manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
 											authenticated: this.context.user,
 											blacklist: removed_cols,
-											flatten: true
+											flatten: true,
+											page: currentPage
 										});
 									}
 									const handlers = {

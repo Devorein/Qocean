@@ -13,7 +13,6 @@ class TableDisplayer extends Component {
 	render() {
 		const { type, classes, currentSelected } = this.props;
 		let { data, cols } = this.props;
-		cols.unshift('checked', 'actions');
 
 		return (
 			<div className={`TableDisplayer TableDisplayer-${type}`}>

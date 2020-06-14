@@ -7,6 +7,10 @@ import './ListDisplayer.scss';
 class ListDisplayer extends Component {
 	renderListDisplayer = () => {
 		const { type, data, classes, currentSelected } = this.props;
+		const page = this.props.page.toLowerCase();
+		const sectors = [ 'primary', 'secondary' ];
+		if (page !== 'self') sectors.push('ref', 'tertiary');
+		else sectors.push('tertiary');
 		return data.map((item, index) => {
 			return (
 				<div
@@ -17,13 +21,13 @@ class ListDisplayer extends Component {
 				>
 					{item.checked}
 					<div className="ListDisplayer_item_container ListDisplayer_item_container-actions">{item.actions}</div>
-					{[ 'primary', 'secondary', 'tertiary' ].map((key, index) => {
+					{sectors.map((sector, index) => {
 						return (
 							<div
-								key={`${type}${key}${index}`}
-								className={`ListDisplayer_item_container ListDisplayer_item_container-${key}`}
+								key={`${type}${sector}${index}`}
+								className={`ListDisplayer_item_container ListDisplayer_item_container-${sector}`}
 							>
-								{Object.entries(item[key]).map(([ key, val ], index) => (
+								{Object.entries(item[sector]).map(([ key, val ], index) => (
 									<span
 										key={`${type}${key}${index}`}
 										className={`ListDisplayer_item_container_item ListDisplayer_item_container-${key}_item`}
