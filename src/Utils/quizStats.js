@@ -25,10 +25,19 @@ export default function(quizzes, prop) {
 		});
 	}
 	headers.unshift('name');
-	return [
-		headers.map((header) => ({
+
+	return {
+		headers: headers.map((header) => ({
 			name: header
 		})),
-		rows.length !== 0 ? rows : []
-	];
+		rows: rows.length !== 0 ? rows : [],
+		footers: [
+			'',
+			...headers.splice(1).map((header) => {
+				let total = 0;
+				rows.forEach((row) => (total += row[header]));
+				return total;
+			})
+		]
+	};
 }

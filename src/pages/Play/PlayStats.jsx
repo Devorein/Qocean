@@ -5,14 +5,11 @@ import quizStats from '../../Utils/quizStats';
 class PlayStats extends Component {
 	render() {
 		const { quizzes } = this.props;
-		const [ timeHeaders, timeRows ] = quizStats(quizzes, 'time_allocated');
-		const [ difficultyHeaders, difficultyRows ] = quizStats(quizzes, 'difficulty');
-		const [ typeHeaders, typeRows ] = quizStats(quizzes, 'type');
 		return (
 			<div className="play_stats">
-				<BasicTable title={'Question Difficulty'} headers={difficultyHeaders} rows={difficultyRows} />
-				<BasicTable title={'Question Types'} headers={typeHeaders} rows={typeRows} />
-				<BasicTable title={'Question Time'} headers={timeHeaders} rows={timeRows} />
+				<BasicTable title={'Question Difficulty'} contents={quizStats(quizzes, 'time_allocated')} />
+				<BasicTable title={'Question Types'} contents={quizStats(quizzes, 'difficulty')} />
+				<BasicTable title={'Question Time'} contents={quizStats(quizzes, 'type')} />
 			</div>
 		);
 	}

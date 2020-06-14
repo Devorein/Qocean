@@ -7,16 +7,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableFooter from '@material-ui/core/TableFooter';
 import Typography from '@material-ui/core/Typography';
+import shortid from 'shortid';
 
 class BasicTable extends Component {
-	decideRow = (name) => {
-		let total = 0;
-		this.props.rows.forEach((row) => (total += row[name]));
-		return total;
-	};
-
 	render() {
-		const { classes, headers, rows, title } = this.props;
+		const { classes, title, contents } = this.props;
+		const { headers, rows, footers } = contents;
 		return (
 			<Fragment>
 				<Typography className={classes.tableTitle} variant="body1">
@@ -47,10 +43,9 @@ class BasicTable extends Component {
 
 					<TableFooter className={classes.tableFooter}>
 						<TableRow>
-							<TableCell />
-							{headers.splice(1).map(({ name }, index) => (
-								<TableCell key={`${name}${index}`} align="center">
-									{rows.length > 1 ? this.decideRow(name) : ''}
+							{footers.map((data) => (
+								<TableCell key={shortid.generate()} align="center">
+									{data}
 								</TableCell>
 							))}
 						</TableRow>
