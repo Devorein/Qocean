@@ -1,7 +1,8 @@
-export default function(type) {
+export default function(type, page) {
+	page = page.toLowerCase();
 	type = type.toLowerCase();
-	const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at', 'user' ];
-
+	const commonsorts = [ 'none', 'name', 'public', 'favourite', 'created_at', 'updated_at' ];
+	if (page !== 'self') commonsorts.push('user');
 	let selectItems = [];
 	if (type === 'quiz')
 		selectItems = [
