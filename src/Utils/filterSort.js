@@ -29,7 +29,6 @@ export default function(filterSort) {
 			});
 		}
 	});
-	console.log(query);
 	return query;
 }
 

@@ -1,45 +1,68 @@
-import React, { Component } from 'react';
+import React from 'react';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import qs from 'qs';
-
+import { AppContext } from '../../context/AppContext';
 import populateQueryParams from '../../Utils/populateQueryParams';
 
-class DataFetcher extends Component {
+class DataFetcher extends React.Component {
+	static contextType = AppContext;
 	state = {
 		data: [],
 		totalCount: 0
 	};
 
 	refetchData = (type, queryParams) => {
-		const { page } = this.props;
+		const page = this.props.page.toLowerCase();
 		type = type.toLowerCase();
-		populateQueryParams(type, queryParams, this.props.user);
+		populateQueryParams(type, queryParams, this.context.user);
 		const queryString = qs.stringify(queryParams, { depth: 10 });
 		const headers = {
 			headers: {
 				Authorization: `Bearer ${localStorage.getItem('token')}`
 			}
 		};
-		axios
-			.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine?${queryString}`, {
-				...headers
-			})
-			.then(({ data: { data: totalCount } }) => {
-				axios
-					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/me?${queryString}`, {
-						...headers
-					})
-					.then(({ data: { data } }) => {
-						this.setState({
-							data,
-							totalCount
+
+		if (page === 'self') {
+			axios
+				.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/countMine?${queryString}`, {
+					...headers
+				})
+				.then(({ data: { data: totalCount } }) => {
+					axios
+						.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/me?${queryString}`, {
+							...headers
+						})
+						.then(({ data: { data } }) => {
+							this.setState({
+								data,
+								totalCount
+							});
 						});
-					});
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} else if (page === 'explore') {
+			const [ count, endpoint, header ] = this.context.user
+				? [ `countOthers`, '/others/', headers ]
+				: [ 'countAll', '/', {} ];
+			axios
+				.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}?${queryString}`, { ...header })
+				.then(({ data: { data: totalCount } }) => {
+					axios
+						.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}?${queryString}`, { ...header })
+						.then(({ data: { data } }) => {
+							this.setState({
+								data,
+								totalCount
+							});
+						});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
 	};
 
 	render() {
