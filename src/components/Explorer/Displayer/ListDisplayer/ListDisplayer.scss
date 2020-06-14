@@ -8,6 +8,8 @@
     margin: 3px;
     border-radius: 3px;
     transition: background-color 250ms ease-in-out;
+    white-space: nowrap;
+    width: fit-content;
 
     &--selected {
       transition: background-color 250ms ease-in-out;

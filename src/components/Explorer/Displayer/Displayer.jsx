@@ -417,7 +417,7 @@ class Displayer extends Component {
 													backgroundColor: this.props.theme.palette.background.main
 												}}
 											>
-												<HotKeys keyMap={keyMap} handlers={handlers}>
+												<HotKeys keyMap={keyMap} handlers={handlers} className="React-hotkeys">
 													{decideDisplayer(manipulatedData, view, difference(cols, removed_cols), setSelectedIndex)}
 												</HotKeys>
 											</div>

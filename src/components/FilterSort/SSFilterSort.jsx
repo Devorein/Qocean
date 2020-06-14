@@ -484,7 +484,6 @@ class SSFilterSort extends Component {
 						}}
 					>
 						{totalActive}/{this.state[item].length} {`${item}`}{' '}
-						<span style={{ fontSize: 12, marginLeft: 5 }}>{'Active'}</span>
 					</div>
 					<RotateLeftIcon
 						onClick={(e) => {

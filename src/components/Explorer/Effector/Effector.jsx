@@ -170,7 +170,7 @@ class Effector extends Component {
 		let { page, type } = this.props;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
-
+		console.log(page);
 		const effectors = [
 			<RotateLeftIcon
 				key={'refetch'}
@@ -181,7 +181,7 @@ class Effector extends Component {
 					this.refetchData();
 				}}
 			/>,
-			type !== 'user' ? (
+			type !== 'user' && page !== 'play' ? (
 				<GetAppIcon
 					key={'export'}
 					ref={(ref) => {
@@ -216,7 +216,7 @@ class Effector extends Component {
 				/>
 			);
 		} else {
-			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user) {
+			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user && page !== 'play') {
 				effectors.push(
 					<VisibilityIcon
 						key={'watch'}
@@ -239,7 +239,7 @@ class Effector extends Component {
 		type = type.toLowerCase();
 		const selectedItems = selectedIndex.map((index) => filteredData[index]);
 		const effectors = [
-			type !== 'user' ? (
+			type !== 'user' && page !== 'play' ? (
 				<GetAppIcon
 					key={'export'}
 					ref={(ref) => {
@@ -250,7 +250,7 @@ class Effector extends Component {
 					}}
 				/>
 			) : null,
-			this.context.user ? (
+			this.context.user && page !== 'play' ? (
 				<VisibilityIcon
 					key={'watch'}
 					onClick={(e) => {
