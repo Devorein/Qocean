@@ -211,8 +211,8 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 
 QuestionSchema.post('save', async function() {
 	await this.model('User').add(this.user, 'questions', this._id);
+	await this.model('Quiz').add(this.quiz, 'questions', this._id);
 	if (this.isModified('quiz')) {
-		await this.model('Quiz').add(this.quiz, 'questions', this._id);
 		const folders = await this.model('Folder').find({ quizzes: this.quiz });
 		for (let i = 0; i < folders.length; i++) {
 			const folder = folders[i];

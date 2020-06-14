@@ -8,16 +8,41 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import shortid from 'shortid';
 
+import TextInput from '../Input/TextInput/TextInput';
+import localFilter from '../../Utils/localFilter';
+
 import './BasicTable.scss';
 class BasicTable extends Component {
+	state = {
+		searchInput: ''
+	};
 	render() {
 		const { classes, title, contents } = this.props;
 		const { headers, rows, footers } = contents;
+		console.log(
+			rows.filter((row) =>
+				localFilter({
+					targetType: 'number',
+					mod: 'i',
+					value: row.Beginner,
+					against: parseInt(this.state.searchInput)
+				})
+			)
+		);
 		return (
 			<div className={`BasicTable ${classes.root}`}>
 				<Typography className={classes.tableTitle} variant="body1">
 					{title}
 				</Typography>
+				<TextInput
+					value={this.state.searchInput}
+					name={`Search`}
+					onChange={(e) => {
+						this.setState({
+							searchInput: e.target.value
+						});
+					}}
+				/>
 				<div className="BasicTable_table">
 					<Table
 						stickyHeader
