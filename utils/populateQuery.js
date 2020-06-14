@@ -7,9 +7,17 @@ module.exports = function populateQuery(query, req) {
 		if (populateFields) {
 			populateFields = populateFields.split('-');
 			populateFields.forEach((populateField, index) => {
+				let match = {};
+				if (populates[index] !== 'user' && !req.route.path.includes('me'))
+					match = {
+						match: {
+							public: true
+						}
+					};
 				populations.push({
 					path: populates[index],
-					select: decodeURIComponent(populateField).split(',').join(' ')
+					select: decodeURIComponent(populateField).split(',').join(' '),
+					...match
 				});
 			});
 			query.populate(populations);

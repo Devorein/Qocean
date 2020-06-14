@@ -8,18 +8,17 @@ const handleCountRoutes = require('../utils/handleCountRoutes');
 const qs = require('qs');
 const advancedResults = (model) =>
 	async function(req, res, next) {
+		let queryFilters = filterQuery(req, model);
 		if (req.query._id) {
-			let filters = {};
-			if (!req.user && !req.baseUrl.includes('users')) filters.public = true;
-			let query = model.findOne({ _id: req.query._id, ...filters });
+			let query = model.findOne({ _id: req.query._id, ...queryFilters });
 			populateQuery(query, req);
+			projectionQuery(query, req);
 			const result = await query;
 			if (!result)
 				return next(new ErrorResponse(`Resource not found with id of ${req.query._id} or is made private`, 404));
 			res.status(200).json({ success: true, data: result });
 		} else {
 			req.query = qs.parse(req._parsedOriginalUrl.query, { depth: 100 });
-			let queryFilters = filterQuery(req, model);
 			let processFurther = await handleCountRoutes(queryFilters, req, res, model);
 			if (processFurther) {
 				const query = model.find(queryFilters);

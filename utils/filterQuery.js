@@ -11,6 +11,7 @@ module.exports = function filterQuery(req, model) {
 			filters.public = true;
 		} else if (req.route.path === '/') filters.public = true;
 	}
+	if (!req.user && !req.baseUrl.includes('users')) filters.public = true;
 	if (req.baseUrl.includes('watchlist')) filters.watchers = { $in: [ req.user._id ] };
 	return filters;
 };

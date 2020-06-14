@@ -126,9 +126,15 @@ class Detailer extends Component {
 		} else if (value !== null) value = value.toString();
 
 		if (page === 'self') {
-			if (key === 'public') value = <PublicIcon style={{ fill: value ? '#00a3e6' : '#f4423c' }} />;
+			if (key === 'public')
+				value = <PublicIcon style={{ fill: value.toString() === 'true' ? '#00a3e6' : '#f4423c' }} />;
 			else if (key === 'favourite')
-				value = value ? <StarIcon style={{ fill: '#f0e744' }} /> : <StarBorderIcon style={{ fill: '#ead50f' }} />;
+				value =
+					value.toString() === 'true' ? (
+						<StarIcon style={{ fill: '#f0e744' }} />
+					) : (
+						<StarBorderIcon style={{ fill: '#ead50f' }} />
+					);
 		}
 		return value;
 	};

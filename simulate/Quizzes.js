@@ -14,7 +14,7 @@ casual.define('quiz', function() {
 	const width = 100 * getRandomInt(3, 6);
 	const height = Math.floor(width / 1.66);
 	return {
-		image: `https://i.picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
+		image: `https://picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
 		name: casual.title,
 		subject: casual.word,
 		tags: len === 0 ? [] : casual.array_of_words(len).map((word) => `${word}:${randomColor()}`),

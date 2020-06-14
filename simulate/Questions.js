@@ -62,7 +62,7 @@ casual.define('question', function() {
 		add_to_score: casual.boolean,
 		time_allocated: time,
 		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
-		image: `https://i.picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
+		image: `https://picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
 		options,
 		answers,
 		favourite: casual.boolean,
