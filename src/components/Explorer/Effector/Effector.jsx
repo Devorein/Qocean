@@ -170,7 +170,6 @@ class Effector extends Component {
 		let { page, type } = this.props;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
-		console.log(page);
 		const effectors = [
 			<RotateLeftIcon
 				key={'refetch'}
