@@ -1,78 +1,12 @@
 import React, { Component, Fragment } from 'react';
-import styled from 'styled-components';
 import axios from 'axios';
-import { withTheme } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
 import Checkbox from '@material-ui/core/Checkbox';
 import TextField from '@material-ui/core/TextField';
+
 import RadioInput from '../../components/Input/RadioInput';
 import GenericButton from '../../components/Buttons/GenericButton';
-
-const QuizContent = styled.div``;
-
-const flexCenter = `
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const QuestionStats = styled.div`
-	background: ${(props) => props.theme.palette.background.dark};
-	padding: 5px;
-	${flexCenter};
-`;
-
-const QuestionStat = styled.div`
-	${flexCenter};
-	padding: 5px;
-	font-size: 14px;
-	background: ${(props) => props.theme.palette.background.main};
-	& .question_stat_key {
-		font-weight: bolder;
-		font-size: 16px;
-	}
-	& .question_stat_value {
-		margin-left: 5px;
-	}
-	margin-right: 5px;
-	border-radius: 5px;
-`;
-
-const QuestionName = styled.div`
-	font-size: 22px;
-	font-weight: bold;
-	padding: 20px;
-	${flexCenter};
-	background: ${(props) => props.theme.palette.background.dark};
-`;
-
-const QuestionOptions = styled.div`
-	display: grid;
-	grid-template: 100px 1fr / 1fr 1fr;
-	grid-gap: 5px;
-`;
-
-const QuestionOption = styled.div`
-	font-size: 18px;
-	padding: 5px 20px;
-	width: 100%;
-	${flexCenter};
-	background: ${(props) => props.theme.palette.background.main};
-	min-height: 50px;
-	text-align: center;
-	cursor: pointer;
-	border-radius: 5px;
-`;
-
-const QuestionImage = styled.div`
-	width: 100%;
-	height: 250px;
-	& img {
-		max-width: 100%;
-		max-height: 100%;
-		display: block;
-		object-fit: contain;
-	}
-`;
+import './Question.scss';
 
 class Question extends Component {
 	state = {
@@ -105,46 +39,44 @@ class Question extends Component {
 	};
 
 	renderQuestionBody = () => {
-		const { question: { type, options, name, shuffled }, theme } = this.props;
+		const { question: { type, options, name, shuffled } } = this.props;
 		if (type === 'MS')
-			return (
-				<QuestionOptions>
-					{options.map((option, index) => {
-						index = shuffled ? option.index : index;
-						return (
-							<Fragment key={shuffled ? option.option : `${option}${index}`}>
-								<QuestionOption
-									theme={theme}
-									onClick={(e) => {
-										let { user_answers } = this.state;
-										if (!user_answers.includes(index)) user_answers.push(index);
-										else user_answers = user_answers.filter((answer) => answer !== index);
-										if (this._ismounted) this.setState({ user_answers });
-									}}
-								>
-									<Checkbox checked={this.state.user_answers.includes(index)} color="primary" />
-									{shuffled ? option.option : option}
-								</QuestionOption>
-							</Fragment>
-						);
-					})}
-				</QuestionOptions>
-			);
+			return options.map((option, index) => {
+				index = shuffled ? option.index : index;
+				return (
+					<Fragment key={shuffled ? option.option : `${option}${index}`}>
+						<div
+							className="Question_Options_Item"
+							onClick={(e) => {
+								let { user_answers } = this.state;
+								if (!user_answers.includes(index)) user_answers.push(index);
+								else user_answers = user_answers.filter((answer) => answer !== index);
+								if (this._ismounted) this.setState({ user_answers });
+							}}
+						>
+							<Checkbox checked={this.state.user_answers.includes(index)} color="primary" />
+							{shuffled ? option.option : option}
+						</div>
+					</Fragment>
+				);
+			});
 		else if (type === 'FIB')
 			return name.match(/\$\{_\}/g).map((match, index) => {
 				return (
-					<TextField
-						key={`FIB_option_${index}`}
-						value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
-						onChange={(e) => {
-							const { user_answers } = this.state;
-							user_answers[index] = e.target.value;
-							if (this._ismounted)
-								this.setState({
-									user_answers
-								});
-						}}
-					/>
+					<div className="Question_Options_Item">
+						<TextField
+							key={`FIB_option_${index}`}
+							value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
+							onChange={(e) => {
+								const { user_answers } = this.state;
+								user_answers[index] = e.target.value;
+								if (this._ismounted)
+									this.setState({
+										user_answers
+									});
+							}}
+						/>
+					</div>
 				);
 			});
 		else if (type === 'TF' || type === 'MCQ') {
@@ -165,10 +97,8 @@ class Question extends Component {
 			}
 			return (
 				<RadioInput
-					OptionsContainer={QuestionOptions}
+					radioItemsClass="Question_Options_Item"
 					radioItems={radioItems}
-					OptionContainer={QuestionOption}
-					optionProps={{ theme }}
 					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
 					onChange={(e) => {
 						if (this._ismounted)
@@ -180,44 +110,46 @@ class Question extends Component {
 			);
 		} else if (type === 'Snippet')
 			return (
-				<TextField
-					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
-					onChange={(e) => {
-						if (this._ismounted)
-							this.setState({
-								user_answers: [ e.target.value ]
-							});
-					}}
-				/>
+				<div className="Question_Options_Item">
+					<TextField
+						value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
+						onChange={(e) => {
+							if (this._ismounted)
+								this.setState({
+									user_answers: [ e.target.value ]
+								});
+						}}
+					/>
+				</div>
 			);
 		else if (type === 'FC')
 			return (
 				<Fragment>
 					{!this.state.show_answer ? (
-						<GenericButton
-							text={'show'}
-							onClick={(e) => {
-								this.getFlashCardAnswer();
-							}}
-						/>
+						<div className="Question_Options_Item">
+							<GenericButton
+								text={'show'}
+								onClick={(e) => {
+									this.getFlashCardAnswer();
+								}}
+							/>
+						</div>
 					) : (
-						<QuestionOptions>
-							{this.state.answers.map((answer, index) => (
-								<QuestionOption theme={theme} key={answer}>
-									<Checkbox
-										checked={this.state.user_answers.includes(index)}
-										onChange={(e) => {
-											let { user_answers } = this.state;
-											if (e.target.checked) user_answers.push(index);
-											else user_answers = user_answers.filter((answer) => answer !== index);
-											if (this._ismounted) this.setState({ user_answers });
-										}}
-										color="primary"
-									/>
-									{answer}
-								</QuestionOption>
-							))}
-						</QuestionOptions>
+						this.state.answers.map((answer, index) => (
+							<div className="Question_Options_Item" key={answer}>
+								<Checkbox
+									checked={this.state.user_answers.includes(index)}
+									onChange={(e) => {
+										let { user_answers } = this.state;
+										if (e.target.checked) user_answers.push(index);
+										else user_answers = user_answers.filter((answer) => answer !== index);
+										if (this._ismounted) this.setState({ user_answers });
+									}}
+									color="primary"
+								/>
+								{answer}
+							</div>
+						))
 					)}
 				</Fragment>
 			);
@@ -225,14 +157,14 @@ class Question extends Component {
 
 	renderQuestionStat = () => {
 		const { decideLabel } = this;
-		const { question, theme } = this.props;
+		const { question } = this.props;
 
 		const stats = [ 'difficulty', 'add_to_score', 'type', 'weight' ];
 		return stats.map((stat) => (
-			<QuestionStat theme={theme} key={stat}>
-				<span className="question_stat_key">{decideLabel(stat)}</span> :
-				<span className="question_stat_value">{question[stat].toString()}</span>
-			</QuestionStat>
+			<div className="Question_Stats_Item" key={stat}>
+				<span className="Question_Stats_Item_key">{decideLabel(stat)}</span> :
+				<span className="Question_Stats_Item_value">{question[stat].toString()}</span>
+			</div>
 		));
 	};
 
@@ -249,20 +181,20 @@ class Question extends Component {
 	};
 
 	render() {
-		let { question, theme } = this.props;
+		let { question } = this.props;
 		return this.props.children({
 			question: question ? (
-				<QuizContent theme={theme}>
-					<QuestionStats theme={theme}>{this.renderQuestionStat()}</QuestionStats>
+				<div className={`Question ${this.props.classes.root}`}>
+					<div className="Question_Stats">{this.renderQuestionStat()}</div>
 					{question.image ? (
-						<QuestionImage>
+						<div className="Question_Image">
 							<img src={question.image} alt="question" />
-						</QuestionImage>
+						</div>
 					) : null}
-					<QuestionName theme={theme}>{question.name}</QuestionName>
+					<div className="Question_name">{question.name}</div>
 
-					{this.renderQuestionBody()}
-				</QuizContent>
+					<div className={`Question_Options Question_Options--${question.type}`}>{this.renderQuestionBody()}</div>
+				</div>
 			) : (
 				<div>Loading question</div>
 			),
@@ -274,4 +206,19 @@ class Question extends Component {
 	}
 }
 
-export default withTheme(Question);
+export default withStyles((theme) => ({
+	root: {
+		'& .Question_Stats': {
+			backgroundColor: theme.palette.background.dark
+		},
+		'& .Question_Stats_Item': {
+			backgroundColor: theme.palette.background.main
+		},
+		'& .Question_name': {
+			backgroundColor: theme.palette.background.dark
+		},
+		'& .Question_Options_Item': {
+			backgroundColor: theme.palette.background.main
+		}
+	}
+}))(Question);

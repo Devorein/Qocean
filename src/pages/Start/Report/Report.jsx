@@ -5,23 +5,11 @@ import { withTheme } from '@material-ui/core';
 import './Report.scss';
 import ReportHeader from './Header/ReportHeader';
 import ReportBody from './Body/ReportBody';
+import SSFilterSort from '../../../components/FilterSort/SSFilterSort';
 
 class Report extends Component {
 	state = {
-		validations: null,
-		filters: {
-			type: 'All',
-			result: 'both'
-		}
-	};
-
-	setFilters = (target, value) => {
-		this.setState({
-			filters: {
-				...this.state.filters,
-				[target]: value
-			}
-		});
+		validations: null
 	};
 
 	componentDidMount() {
@@ -59,19 +47,32 @@ class Report extends Component {
 		const { theme, settings, quizzes } = this.props;
 
 		const stats = this.transformStats();
-		const { validations, filters } = this.state;
+		const { validations } = this.state;
 		const props = {
 			stats,
 			theme,
 			validations,
-			filters,
 			settings,
 			quizzes
 		};
 		return validations ? (
 			<div className="report pages">
-				<ReportHeader {...props} setFilters={this.setFilters} />
-				<ReportBody {...props} />
+				<SSFilterSort
+					type={'Question'}
+					page={'Report'}
+					onApply={(e) => {
+						console.log(e);
+					}}
+				>
+					{({ SSFilterSort, filter_sort }) => {
+						return (
+							<div>
+								<ReportHeader {...props} SSFilterSort={SSFilterSort} />
+								<ReportBody {...props} />
+							</div>
+						);
+					}}
+				</SSFilterSort>
 			</div>
 		) : null;
 	}

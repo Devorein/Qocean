@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import axios from 'axios';
+import { Route, withRouter } from 'react-router-dom';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import DataFetcher from '../../components/DataFetcher/DataFetcher';
 import Explorer from '../../components/Explorer/Explorer';
@@ -9,14 +11,12 @@ import PlaySettings from './PlaySettings';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../Start/Quiz';
 import arrayShuffler from '../../Utils/arrayShuffler';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 import './Play.scss';
 
 class Play extends Component {
 	state = {
 		quizzes: [],
-		hasStarted: false,
 		playsettings: null,
 		selectedQuizIds: []
 	};
@@ -103,85 +103,89 @@ class Play extends Component {
 	};
 
 	render() {
-		const { hasStarted, selectedQuizIds } = this.state;
-
+		const { selectedQuizIds } = this.state;
+		const { history, match } = this.props;
 		return (
 			<DataFetcher page="Play">
 				{({ data: quizzes, totalCount, refetchData }) => {
 					return (
-						<CustomList
-							className="play_list"
-							listItems={this.transformList()}
-							icons={[
-								{
-									icon: DeleteIcon,
-									onClick: this.onDelete
+						<PlaySettings>
+							{({ formData, inputs, slider }) => {
+								const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
+									quizzes.find((quiz) => quiz._id === selectedQuizId)
+								);
+
+								const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
+									...formData.values,
+									slider
+								});
+
+								let filteredQuestions = 0;
+								for (let i = 0; i < filteredQuizzes.length; i++) {
+									const filteredQuiz = filteredQuizzes[i];
+									filteredQuestions += filteredQuiz.filteredQuestions.length;
 								}
-							]}
-						>
-							{({ list }) => {
 								return (
-									<PlaySettings>
-										{({ formData, inputs, slider }) => {
-											const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
-												quizzes.find((quiz) => quiz._id === selectedQuizId)
-											);
-											console.log(selectedQuizzes);
+									<Fragment>
+										{history.location.pathname === '/play' ? (
+											<CustomList
+												className="play_list"
+												listItems={this.transformList()}
+												icons={[
+													{
+														icon: DeleteIcon,
+														onClick: this.onDelete
+													}
+												]}
+											>
+												{({ list }) => {
+													return (
+														<div className="play pages">
+															<Explorer
+																page={'Play'}
+																data={quizzes.map((item) => ({
+																	...item,
+																	added: selectedQuizIds.includes(item._id)
+																}))}
+																totalCount={totalCount}
+																type={'Quiz'}
+																refetchData={refetchData.bind(null, 'Quiz')}
+																hideDetailer
+																customHandlers={{
+																	add: this.addToBucketList
+																}}
+															/>
+															{list}
+															<PlayStats quizzes={quizzes} selectedQuizzes={selectedQuizzes} />
+															<div className="play_button">
+																<GenericButton
+																	text="Play"
+																	onClick={(e) => {
+																		if (selectedQuizIds.length !== 0 && filteredQuestions !== 0)
+																			history.push(match.url + '/quiz');
+																	}}
+																/>
+															</div>
+															{inputs}
+														</div>
+													);
+												}}
+											</CustomList>
+										) : null}
 
-											const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
-												...formData.values,
-												slider
-											});
-
-											let filteredQuestions = 0;
-											for (let i = 0; i < filteredQuizzes.length; i++) {
-												const filteredQuiz = filteredQuizzes[i];
-												filteredQuestions += filteredQuiz.filteredQuestions.length;
-											}
-
-											return !hasStarted ? (
-												<div className="play pages">
-													<Explorer
-														page={'Play'}
-														data={quizzes.map((item) => ({
-															...item,
-															added: selectedQuizIds.includes(item._id)
-														}))}
-														totalCount={totalCount}
-														type={'Quiz'}
-														refetchData={refetchData.bind(null, 'Quiz')}
-														hideDetailer
-														customHandlers={{
-															add: this.addToBucketList
-														}}
-													/>
-													{list}
-													<PlayStats quizzes={quizzes} selectedQuizzes={selectedQuizzes} />
-													<div className="play_button">
-														<GenericButton
-															text="Play"
-															onClick={(e) =>
-																selectedQuizIds.length !== 0 && filteredQuestions !== 0
-																	? this.setState({ hasStarted: true })
-																	: void 0}
-														/>
-													</div>
-													{inputs}
-												</div>
-											) : (
-												<Quiz
-													settings={formData.values}
-													quizzes={filteredQuizzes.map((filteredQuiz) => ({
-														...filteredQuiz,
-														questions: filteredQuiz.filteredQuestions
-													}))}
-												/>
-											);
-										}}
-									</PlaySettings>
+										<Route path={match.url + '/quiz'} exact>
+											<Quiz
+												settings={formData.values}
+												quizzes={filteredQuizzes.map((filteredQuiz) => ({
+													...filteredQuiz,
+													questions: filteredQuiz.filteredQuestions
+												}))}
+											/>
+										</Route>
+									</Fragment>
 								);
 							}}
-						</CustomList>
+						</PlaySettings>
 					);
 				}}
 			</DataFetcher>
@@ -189,4 +193,4 @@ class Play extends Component {
 	}
 }
 
-export default Play;
+export default withRouter(Play);

@@ -98,7 +98,6 @@ class App extends Component {
 							/>
 							<Route
 								path="/play"
-								exact
 								render={() => {
 									return session.data ? <Play user={session.data.data} /> : <Redirect to="/401" />;
 								}}

@@ -1,40 +1,13 @@
 import React, { Component, Fragment } from 'react';
-import GenericButton from '../../components/Buttons/GenericButton';
 import Question from './Question';
 import axios from 'axios';
-import styled from 'styled-components';
-import { withTheme } from '@material-ui/core';
+import { withStyles } from '@material-ui/core';
+
+import GenericButton from '../../components/Buttons/GenericButton';
 import Timer from '../../components/Timer/Timer';
 import Report from './Report/Report';
 import arrayShuffler from '../../Utils/arrayShuffler';
-
-const flexCenter = `
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const QuizStats = styled.div`
-	background: ${(props) => props.theme.palette.background.dark};
-	padding: 5px;
-	${flexCenter};
-`;
-
-const QuizStat = styled.div`
-	${flexCenter};
-	padding: 5px;
-	font-size: 14px;
-	background: ${(props) => props.theme.palette.background.main};
-	& .question_stat_key {
-		font-weight: bolder;
-		font-size: 16px;
-	}
-	& .question_stat_value {
-		margin-left: 5px;
-	}
-	margin-right: 5px;
-	border-radius: 5px;
-`;
+import './Quiz.scss';
 
 class Quiz extends Component {
 	state = {
@@ -191,18 +164,19 @@ class Quiz extends Component {
 			);
 
 		return (
-			<QuizStats theme={theme}>
+			<div className="Quiz_Stats">
 				{stats.map(([ key, value, style ]) => (
-					<QuizStat theme={theme} key={key}>
+					<div key={key} className={'Quiz_Stats_Item'}>
 						<span className="question_stat_key">{key}</span> :
 						<span className="question_stat_value" style={style ? style : {}}>
 							{value.toString()}
 						</span>
-					</QuizStat>
+					</div>
 				))}
-			</QuizStats>
+			</div>
 		);
 	};
+
 	transformOption = (question) => {
 		if (this.props.settings.randomized_options && question.type === 'MCQ') {
 			if (!question.shuffled) {
@@ -217,18 +191,18 @@ class Quiz extends Component {
 			}
 		} else if (!this.props.settings.randomized_options && question.type === 'MS') question.shuffled = false;
 	};
+
 	render() {
 		const { getTotalQuestions, setQuestion, renderQuizStats, transformOption } = this;
 		const { currentQuestion, question } = this.state;
 		if (question) transformOption(question);
 		const totalQuestion = getTotalQuestions();
-		let questionManipRef = null;
 		return currentQuestion < totalQuestion ? (
-			<div className={`start`} style={{ gridArea: '1/1/span 3/span 3' }}>
+			<div className={`Quiz ${this.props.classes.root}`} style={{ gridArea: '1/1/span 3/span 3' }}>
 				{question ? (
 					<Question question={question}>
 						{({ question, questionManip }) => {
-							questionManipRef = questionManip;
+							this.questionManip = questionManip;
 							return (
 								<Fragment>
 									{renderQuizStats()}
@@ -254,7 +228,7 @@ class Quiz extends Component {
 										text={currentQuestion + 1 < totalQuestion ? 'Next' : 'Report'}
 										onClick={(e) => {
 											clearInterval();
-											setQuestion(currentTime, questionManipRef);
+											setQuestion(currentTime, this.questionManip);
 										}}
 									/>
 								</Fragment>
@@ -273,4 +247,13 @@ class Quiz extends Component {
 	}
 }
 
-export default withTheme(Quiz);
+export default withStyles((theme) => ({
+	root: {
+		'& .Quiz_Stats': {
+			background: theme.palette.background.dark
+		},
+		'& .Quiz_Stats_Item': {
+			background: theme.palette.background.main
+		}
+	}
+}))(Quiz);
