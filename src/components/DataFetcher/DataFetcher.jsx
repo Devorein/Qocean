@@ -15,7 +15,7 @@ class DataFetcher extends React.Component {
 	refetchData = (type, queryParams) => {
 		const page = this.props.page.toLowerCase();
 		type = type.toLowerCase();
-		populateQueryParams(type, queryParams, this.context.user);
+		populateQueryParams(type, queryParams, this.context.user, page);
 		const queryString = qs.stringify(queryParams, { depth: 10 });
 		const headers = {
 			headers: {

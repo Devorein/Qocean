@@ -1,4 +1,4 @@
-export default function(type, queryParams, authenticated) {
+export default function(type, queryParams, authenticated, page) {
 	type = type.toLowerCase();
 	if (type.match(/(user|users)/)) {
 		const commonpopulate = 'quizzes,questions,folders,environments';
@@ -14,7 +14,8 @@ export default function(type, queryParams, authenticated) {
 		queryParams.populateFields = 'username-name-username';
 	} else if (type.match(/(quiz|quizzes)/)) {
 		queryParams.populate = 'user,folders,questions,watchers';
-		queryParams.populateFields = 'username-name-name-username';
+		if (page === 'play') queryParams.populateFields = 'username-name-name,time_allocated-username';
+		else queryParams.populateFields = 'username-name-name-username';
 	} else if (type.match(/(question|questions)/)) {
 		queryParams.populate = 'user,quiz';
 		queryParams.populateFields = 'username-name';

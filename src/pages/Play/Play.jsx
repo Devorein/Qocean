@@ -21,7 +21,7 @@ class Play extends Component {
 
 	componentDidMount() {
 		axios
-			.get(`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=type,difficulty`, {
+			.get(`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=type,difficulty,time_allocated`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}

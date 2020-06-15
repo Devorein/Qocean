@@ -31,7 +31,6 @@ class BasicTable extends Component {
 					shouldConvertToSelectItems: false,
 					shouldConvertToAcronym: true
 				});
-				console.log(modValues, headers.map(({ name }) => name));
 				if (modValues.includes(mod) && headers.map(({ name }) => name).includes(prop)) {
 					filteredData = filteredData.filter((item) =>
 						localFilter({
