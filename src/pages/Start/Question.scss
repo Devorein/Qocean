@@ -12,11 +12,11 @@
       @extend %flexCenter;
       padding: 5px;
       font-size: 14px;
-      & .question_stat_key {
+      &_key {
         font-weight: bolder;
         font-size: 16px;
       }
-      & .question_stat_value {
+      &_value {
         margin-left: 5px;
       }
       margin-right: 5px;
@@ -30,9 +30,28 @@
     @extend %flexCenter;
   }
   &_Options {
-    display: grid;
-    grid-template: 100px 1fr / 1fr 1fr;
-    grid-gap: 5px;
+    display: flex;
+    &--MCQ {
+      .MuiFormGroup-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 5px;
+      }
+      .Question_Options_Item {
+        display: flex;
+        overflow: auto;
+        justify-content: flex-start;
+        .MuiButtonBase-root {
+          margin: 0px;
+        }
+        .MuiTypography-body1 {
+          width: 100%;
+          display: flex;
+          justify-content: flex-start;
+          overflow: auto;
+        }
+      }
+    }
     &_Item {
       min-height: 50px;
       text-align: center;

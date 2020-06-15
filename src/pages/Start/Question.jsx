@@ -39,47 +39,44 @@ class Question extends Component {
 	};
 
 	renderQuestionBody = () => {
-		const { question: { type, options, name, shuffled }, theme } = this.props;
+		const { question: { type, options, name, shuffled } } = this.props;
 		if (type === 'MS')
-			return (
-				<div className="Question_Options">
-					{options.map((option, index) => {
-						index = shuffled ? option.index : index;
-						return (
-							<Fragment key={shuffled ? option.option : `${option}${index}`}>
-								<div
-									className="Question_Options_Item"
-									theme={theme}
-									onClick={(e) => {
-										let { user_answers } = this.state;
-										if (!user_answers.includes(index)) user_answers.push(index);
-										else user_answers = user_answers.filter((answer) => answer !== index);
-										if (this._ismounted) this.setState({ user_answers });
-									}}
-								>
-									<Checkbox checked={this.state.user_answers.includes(index)} color="primary" />
-									{shuffled ? option.option : option}
-								</div>
-							</Fragment>
-						);
-					})}
-				</div>
-			);
+			return options.map((option, index) => {
+				index = shuffled ? option.index : index;
+				return (
+					<Fragment key={shuffled ? option.option : `${option}${index}`}>
+						<div
+							className="Question_Options_Item"
+							onClick={(e) => {
+								let { user_answers } = this.state;
+								if (!user_answers.includes(index)) user_answers.push(index);
+								else user_answers = user_answers.filter((answer) => answer !== index);
+								if (this._ismounted) this.setState({ user_answers });
+							}}
+						>
+							<Checkbox checked={this.state.user_answers.includes(index)} color="primary" />
+							{shuffled ? option.option : option}
+						</div>
+					</Fragment>
+				);
+			});
 		else if (type === 'FIB')
 			return name.match(/\$\{_\}/g).map((match, index) => {
 				return (
-					<TextField
-						key={`FIB_option_${index}`}
-						value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
-						onChange={(e) => {
-							const { user_answers } = this.state;
-							user_answers[index] = e.target.value;
-							if (this._ismounted)
-								this.setState({
-									user_answers
-								});
-						}}
-					/>
+					<div className="Question_Options_Item">
+						<TextField
+							key={`FIB_option_${index}`}
+							value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
+							onChange={(e) => {
+								const { user_answers } = this.state;
+								user_answers[index] = e.target.value;
+								if (this._ismounted)
+									this.setState({
+										user_answers
+									});
+							}}
+						/>
+					</div>
 				);
 			});
 		else if (type === 'TF' || type === 'MCQ') {
@@ -100,8 +97,8 @@ class Question extends Component {
 			}
 			return (
 				<RadioInput
+					radioItemsClass="Question_Options_Item"
 					radioItems={radioItems}
-					optionProps={{ theme }}
 					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
 					onChange={(e) => {
 						if (this._ismounted)
@@ -113,44 +110,46 @@ class Question extends Component {
 			);
 		} else if (type === 'Snippet')
 			return (
-				<TextField
-					value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
-					onChange={(e) => {
-						if (this._ismounted)
-							this.setState({
-								user_answers: [ e.target.value ]
-							});
-					}}
-				/>
+				<div className="Question_Options_Item">
+					<TextField
+						value={this.state.user_answers[0] ? this.state.user_answers[0] : ''}
+						onChange={(e) => {
+							if (this._ismounted)
+								this.setState({
+									user_answers: [ e.target.value ]
+								});
+						}}
+					/>
+				</div>
 			);
 		else if (type === 'FC')
 			return (
 				<Fragment>
 					{!this.state.show_answer ? (
-						<GenericButton
-							text={'show'}
-							onClick={(e) => {
-								this.getFlashCardAnswer();
-							}}
-						/>
-					) : (
-						<div className="Question_Options">
-							{this.state.answers.map((answer, index) => (
-								<div className="Question_Options_Item" theme={theme} key={answer}>
-									<Checkbox
-										checked={this.state.user_answers.includes(index)}
-										onChange={(e) => {
-											let { user_answers } = this.state;
-											if (e.target.checked) user_answers.push(index);
-											else user_answers = user_answers.filter((answer) => answer !== index);
-											if (this._ismounted) this.setState({ user_answers });
-										}}
-										color="primary"
-									/>
-									{answer}
-								</div>
-							))}
+						<div className="Question_Options_Item">
+							<GenericButton
+								text={'show'}
+								onClick={(e) => {
+									this.getFlashCardAnswer();
+								}}
+							/>
 						</div>
+					) : (
+						this.state.answers.map((answer, index) => (
+							<div className="Question_Options_Item" key={answer}>
+								<Checkbox
+									checked={this.state.user_answers.includes(index)}
+									onChange={(e) => {
+										let { user_answers } = this.state;
+										if (e.target.checked) user_answers.push(index);
+										else user_answers = user_answers.filter((answer) => answer !== index);
+										if (this._ismounted) this.setState({ user_answers });
+									}}
+									color="primary"
+								/>
+								{answer}
+							</div>
+						))
 					)}
 				</Fragment>
 			);
@@ -163,8 +162,8 @@ class Question extends Component {
 		const stats = [ 'difficulty', 'add_to_score', 'type', 'weight' ];
 		return stats.map((stat) => (
 			<div className="Question_Stats_Item" key={stat}>
-				<span className="question_stat_key">{decideLabel(stat)}</span> :
-				<span className="question_stat_value">{question[stat].toString()}</span>
+				<span className="Question_Stats_Item_key">{decideLabel(stat)}</span> :
+				<span className="Question_Stats_Item_value">{question[stat].toString()}</span>
 			</div>
 		));
 	};
@@ -194,7 +193,7 @@ class Question extends Component {
 					) : null}
 					<div className="Question_name">{question.name}</div>
 
-					{this.renderQuestionBody()}
+					<div className={`Question_Options Question_Options--${question.type}`}>{this.renderQuestionBody()}</div>
 				</div>
 			) : (
 				<div>Loading question</div>

@@ -43,6 +43,7 @@ class RadioInput extends Component {
 								value={value}
 								label={label ? label : value}
 								labelPlacement="end"
+								className={this.props.radioItemsClass || ''}
 							/>
 						)
 				)}
