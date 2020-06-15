@@ -9,7 +9,6 @@ export default function(quizzes, prop) {
 	for (let i = 0; i < quizzes.length; i++) {
 		const quiz = quizzes[i];
 		const temp = {};
-
 		headers.forEach((header) => {
 			temp[header] = 0;
 		});
@@ -19,7 +18,6 @@ export default function(quizzes, prop) {
 			if (prop === 'time_allocated') targetProp = headers[Math.floor(parseInt(question[prop]) / 15) - 2];
 			temp[targetProp] = temp[targetProp] ? temp[targetProp] + 1 : 1;
 		});
-
 		rows.push({
 			name: quiz.name,
 			...temp

@@ -2,7 +2,7 @@
   display: grid;
   grid-template: 450px 300px/ 650px 500px 1fr;
   height: calc(100% - 50px);
-  .Explorer{
+  .Explorer {
     grid-area: 1/1/2/2;
     height: 100%;
   }
@@ -25,18 +25,36 @@
       height: 100%;
     }
   }
-  &_stats {
+}
+
+.Play {
+  &Stats {
     grid-area: 1/2/4/3;
     display: flex;
-    flex-direction: column;
-    .BasicTable{
-      height: 250px;
-      margin: 5px;
-      .MuiTable-root{
-        max-height: 200px;
+    flex-flow: column nowrap;
+    &_toggletarget,
+    .MuiFormControlLabel-root {
+      margin: 0px;
+      height: 50px;
+    }
+    &_BasicTables {
+      flex: 1 1 0px;
+      flex-basis: 0px;
+      display: flex;
+      flex-direction: column;
+      .BasicTable {
+        height: 225px;
+        margin: 5px;
         overflow-y: auto;
+        overflow-x: hidden;
+        .MuiTable-root {
+          max-height: 200px;
+          overflow-y: auto;
+        }
+        &_footer {
+          margin-bottom: 10px;
+        }
       }
-
     }
   }
 }

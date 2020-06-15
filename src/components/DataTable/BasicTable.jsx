@@ -40,7 +40,6 @@ class BasicTable extends Component {
 							against: item[prop]
 						})
 					);
-					console.log(prop, mod, value, headers, filteredData);
 				}
 			}
 		});
@@ -128,7 +127,8 @@ export default withStyles((theme) => ({
 	tableTitle: {
 		fontWeight: 'bolder',
 		textAlign: 'center',
-		padding: 5
+		padding: 5,
+		backgroundColor: theme.palette.background.dark
 	},
 	root: {
 		'& .BasicTable_footer': {

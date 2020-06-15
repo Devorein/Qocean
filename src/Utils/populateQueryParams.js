@@ -14,7 +14,7 @@ export default function(type, queryParams, authenticated, page) {
 		queryParams.populateFields = 'username-name-username';
 	} else if (type.match(/(quiz|quizzes)/)) {
 		queryParams.populate = 'user,folders,questions,watchers';
-		if (page === 'play') queryParams.populateFields = 'username-name-name,time_allocated-username';
+		if (page === 'play') queryParams.populateFields = 'username-name-name,time_allocated,difficulty,type-username';
 		else queryParams.populateFields = 'username-name-name-username';
 	} else if (type.match(/(question|questions)/)) {
 		queryParams.populate = 'user,quiz';
