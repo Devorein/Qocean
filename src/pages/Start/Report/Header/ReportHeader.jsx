@@ -2,30 +2,8 @@ import React, { Component } from 'react';
 import Color from 'color';
 import convert from 'color-convert';
 import axios from 'axios';
-import styled from 'styled-components';
+import { withStyles } from '@material-ui/core';
 import { blue } from '@material-ui/core/colors';
-
-import InputSelect from '../../../../components/Input/InputSelect';
-
-const ReportHeaderC = styled.div`
-	background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.main)).darken(0.25).hex()};
-
-	& .report_header_row_item {
-		background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.main)).lighten(0.1).hex()};
-
-		&--correct .text-data {
-			color: ${(props) => props.theme.palette.success.main};
-		}
-
-		&--incorrect .text-data {
-			color: ${(props) => props.theme.palette.error.main};
-		}
-
-		&--total .text-data {
-			color: ${blue[500]};
-		}
-	}
-`;
 
 class ReportHeader extends Component {
 	componentDidMount() {
@@ -109,52 +87,36 @@ class ReportHeader extends Component {
 		);
 	};
 
-	renderFilterRow = () => {
-		return (
-			<div className="report_header_row report_header_row--filter">
-				<InputSelect
-					className="report_header_row--filter report_header_row_item report_header_row--filter--result"
-					selectItems={[
-						{ text: 'Show both', value: 'both' },
-						{ text: 'Show only correct', value: 'correct' },
-						{ text: 'Show only incorrect', value: 'incorrect' }
-					]}
-					name="Filter By result"
-					value={this.props.filters.result}
-					onChange={(e) => {
-						this.props.setFilters('result', e.target.value);
-					}}
-				/>
-				<InputSelect
-					className="report_header_row--filter report_header_row_item report_header_row--filter--type"
-					selectItems={[
-						{ value: 'All', text: 'All types' },
-						{ value: 'MCQ', text: 'Multiple Choice Question' },
-						{ value: 'MS', text: 'Multi Select' },
-						{ value: 'FIB', text: 'Fill In The Blanks' },
-						{ value: 'FC', text: 'Flashcard' },
-						{ value: 'Snippet', text: 'Snippet' },
-						{ value: 'TF', text: 'True/False' }
-					]}
-					name="Filter By type"
-					value={this.props.filters.type}
-					onChange={(e) => {
-						this.props.setFilters('type', e.target.value);
-					}}
-				/>
-			</div>
-		);
-	};
 	render() {
 		const { renderDataRow } = this;
-		const { theme, SSFilterSort } = this.props;
+		const { SSFilterSort, classes } = this.props;
 		return (
-			<ReportHeaderC theme={theme} className="report_header">
+			<div className={`report_header ${classes.root}`}>
 				{renderDataRow()}
 				{SSFilterSort}
-			</ReportHeaderC>
+			</div>
 		);
 	}
 }
 
-export default ReportHeader;
+export default withStyles((theme) => ({
+	root: {
+		background: Color.rgb(convert.hex.rgb(theme.palette.background.main)).darken(0.25).hex(),
+
+		'& .report_header_row_item': {
+			background: Color.rgb(convert.hex.rgb(theme.palette.background.main)).lighten(0.1).hex(),
+
+			'&--correct .text-data': {
+				color: theme.palette.success.main
+			},
+
+			'&--incorrect .text-data': {
+				color: theme.palette.error.main
+			},
+
+			'&--total .text-data': {
+				color: blue[500]
+			}
+		}
+	}
+}))(ReportHeader);

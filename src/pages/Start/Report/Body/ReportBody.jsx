@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
 import Color from 'color';
 import convert from 'color-convert';
-import styled from 'styled-components';
 import axios from 'axios';
+import { withStyles } from '@material-ui/core';
 
 import ReportBodyItemHeader from './Item/Header/ReportBodyItemHeader';
 import ReportBodyItemBody from './Item/Body/ReportBodyItemBody';
-
-const ReportBodyC = styled.div`
-	& .report_body_item {
-		background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.main)).darken(0.1).hex()};
-	}
-`;
 
 class ReportBody extends Component {
 	state = {
@@ -52,15 +46,17 @@ class ReportBody extends Component {
 			);
 		});
 	};
+
 	render() {
-		const { theme } = this.props;
 		const { answers } = this.state;
-		return (
-			<ReportBodyC className={'report_body'} theme={theme}>
-				{answers ? this.applyFilters() : null}
-			</ReportBodyC>
-		);
+		return <div className={`report_body ${this.props.classes.root}`}>{answers ? this.applyFilters() : null}</div>;
 	}
 }
 
-export default ReportBody;
+export default withStyles((theme) => ({
+	root: {
+		'& .report_body_item': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.main)).darken(0.1).hex()
+		}
+	}
+}))(ReportBody);
