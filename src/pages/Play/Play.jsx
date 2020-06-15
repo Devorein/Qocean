@@ -12,14 +12,13 @@ import arrayShuffler from '../../Utils/arrayShuffler';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import './Play.scss';
-import { difference } from 'lodash';
 
 class Play extends Component {
 	state = {
 		quizzes: [],
 		hasStarted: false,
 		playsettings: null,
-		selectedQuizzes: []
+		selectedQuizIds: []
 	};
 
 	componentDidMount() {
@@ -37,9 +36,9 @@ class Play extends Component {
 	}
 
 	transformList = () => {
-		const { selectedQuizzes, quizzes } = this.state;
+		const { selectedQuizIds, quizzes } = this.state;
 
-		return selectedQuizzes.map((id) => {
+		return selectedQuizIds.map((id) => {
 			const quiz = quizzes.find((quiz) => quiz._id === id);
 			return {
 				_id: quiz._id,
@@ -51,12 +50,12 @@ class Play extends Component {
 	};
 
 	onDelete = (_ids) => {
-		const { selectedQuizzes } = this.state;
+		const { selectedQuizIds } = this.state;
 		_ids.forEach((_id) => {
-			selectedQuizzes.splice(selectedQuizzes.indexOf(_id), 1);
+			selectedQuizIds.splice(selectedQuizIds.indexOf(_id), 1);
 		});
 		this.setState({
-			selectedQuizzes
+			selectedQuizIds
 		});
 	};
 
@@ -91,12 +90,24 @@ class Play extends Component {
 		return quizzes;
 	};
 
+	addToBucketList = (selectedIds) => {
+		const { selectedQuizIds } = this.state;
+		selectedIds.forEach((selectedId) => {
+			const index = selectedQuizIds.indexOf(selectedId);
+			if (index === -1) selectedQuizIds.push(selectedId);
+			else selectedQuizIds.splice(index, 1);
+		});
+		this.setState({
+			selectedQuizIds
+		});
+	};
+
 	render() {
-		const { quizzes, hasStarted } = this.state;
+		const { hasStarted, selectedQuizIds } = this.state;
 
 		return (
 			<DataFetcher page="Play">
-				{({ data, totalCount, refetchData }) => {
+				{({ data: quizzes, totalCount, refetchData }) => {
 					return (
 						<CustomList
 							className="play_list"
@@ -108,11 +119,13 @@ class Play extends Component {
 								}
 							]}
 						>
-							{({ list, checked }) => {
+							{({ list }) => {
 								return (
 									<PlaySettings>
 										{({ formData, inputs, slider }) => {
-											const selectedQuizzes = checked.map((index) => quizzes[index]);
+											const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
+												quizzes.find((quiz) => quiz._id === selectedQuizId)
+											);
 
 											const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
 												...formData.values,
@@ -129,35 +142,25 @@ class Play extends Component {
 												<div className="play pages">
 													<Explorer
 														page={'Play'}
-														data={data.map((item) => ({
+														data={quizzes.map((item) => ({
 															...item,
-															added: this.state.selectedQuizzes.includes(item._id)
+															added: selectedQuizIds.includes(item._id)
 														}))}
 														totalCount={totalCount}
 														type={'Quiz'}
 														refetchData={refetchData.bind(null, 'Quiz')}
 														hideDetailer
 														customHandlers={{
-															add: (selectedIds) => {
-																const { selectedQuizzes } = this.state;
-																selectedIds.forEach((selectedId) => {
-																	const index = selectedQuizzes.indexOf(selectedId);
-																	if (index === -1) selectedQuizzes.push(selectedId);
-																	else selectedQuizzes.splice(index, 1);
-																});
-																this.setState({
-																	selectedQuizzes
-																});
-															}
+															add: this.addToBucketList
 														}}
 													/>
 													{list}
-													<PlayStats quizzes={quizzes} selectedQuizzes={filteredQuizzes} />
+													<PlayStats quizzes={quizzes} selectedQuizzes={selectedQuizzes} />
 													<div className="play_button">
 														<GenericButton
 															text="Play"
 															onClick={(e) =>
-																checked.length !== 0 && filteredQuestions !== 0
+																selectedQuizIds.length !== 0 && filteredQuestions !== 0
 																	? this.setState({ hasStarted: true })
 																	: void 0}
 														/>

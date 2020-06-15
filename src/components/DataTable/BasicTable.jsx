@@ -40,7 +40,6 @@ class BasicTable extends Component {
 							against: item[prop]
 						})
 					);
-					console.log(prop, mod, value, headers, filteredData);
 				}
 			}
 		});
