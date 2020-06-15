@@ -78,8 +78,8 @@ class Play extends Component {
 				shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
 				shouldReturn =
 					shouldReturn &&
-					question.time_allocated <= settings.slider[1] &&
-					question.time_allocated >= settings.slider[0];
+					question.time_allocated <= settings.disable_by_time_allocated[1] &&
+					question.time_allocated >= settings.disable_by_time_allocated[0];
 				return shouldReturn;
 			});
 			return quiz;

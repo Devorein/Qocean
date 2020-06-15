@@ -60,7 +60,7 @@ export default function(data, type, { authenticated, flatten = false, blacklist 
 	primary.push('name');
 	if (!type.match(/(user|users)/)) {
 		tertiary.push('created_at', 'updated_at');
-		if (page !== 'self') ref.push('user');
+		if (!page.match(/play|self/)) ref.push('user');
 		if (authenticated && page === 'self') secondary.push('public', 'favourite');
 	}
 

@@ -13,7 +13,7 @@ function ValueLabelComponent(props) {
 
 class CustomSlider extends Component {
 	render() {
-		const { min = 0, max = 100, step = 1, onChange, value } = this.props;
+		const { min = 0, max = 100, step = 1, onChange, value, name } = this.props;
 		return (
 			<Slider
 				key="time_slider"
@@ -22,7 +22,8 @@ class CustomSlider extends Component {
 				max={max}
 				step={step}
 				ValueLabelComponent={ValueLabelComponent}
-				onChange={onChange}
+				onChangeCommitted={onChange}
+				name={name}
 			/>
 		);
 	}

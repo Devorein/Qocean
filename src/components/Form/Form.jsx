@@ -25,9 +25,10 @@ import Icon from '@material-ui/core/Icon';
 import CancelIcon from '@material-ui/icons/Cancel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import Slider from '@material-ui/core/Slider';
 import CheckboxGroup from '../Input/Checkbox/CheckboxGroup';
 import TextInputGroup from '../Input/TextInput/TextInputGroup';
+import CustomSlider from '../Input/Slider';
+
 import './Form.scss';
 
 class Form extends React.Component {
@@ -101,7 +102,7 @@ class Form extends React.Component {
 	};
 
 	renderFormComponent = (input) => {
-		const { values, errors, handleBlur, touched, handleChange } = this.props;
+		const { values, errors, handleBlur, touched, setValues } = this.props;
 		const {
 			name,
 			label,
@@ -150,15 +151,17 @@ class Form extends React.Component {
 			);
 		else if (type === 'slider') {
 			return (
-				<Slider
-					name={name}
-					value={values[name]}
-					onChange={(e) => {
-						handleChange(name);
-					}}
-					key={name}
-					valueLabelDisplay="auto"
-				/>
+				<Fragment key={name}>
+					<FormLabel component="legend">{this.decideLabel(name)}</FormLabel>
+					<CustomSlider
+						name={name}
+						value={values[name]}
+						onChange={(e, value) => {
+							setValues({ ...values, [name]: value });
+						}}
+						valueLabelDisplay="auto"
+					/>
+				</Fragment>
 			);
 		} else if (type === 'checkbox') {
 			return (

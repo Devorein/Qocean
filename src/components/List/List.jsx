@@ -136,7 +136,7 @@ class CustomList extends React.Component {
 	};
 
 	renderList = () => {
-		const { handleToggle, handleToggleAll, filterList, moveLeft, moveRight } = this;
+		const { handleToggle, handleToggleAll, filterList, moveUp, moveDown } = this;
 
 		const { classes, className, title, containsCheckbox = true, icons, listItems } = this.props;
 		const { manipulated, filteredItems, checked, selectedIndex } = this.state;
@@ -169,8 +169,8 @@ class CustomList extends React.Component {
 							);
 						})}
 
-						<ChevronLeftIcon onClick={moveLeft} />
-						<ChevronRightIcon onClick={moveRight} />
+						<ChevronLeftIcon onClick={moveUp} />
+						<ChevronRightIcon onClick={moveDown} />
 						<div onClick={handleToggleAll} className={'CustomList_Header_toggle'}>
 							<Checkbox
 								edge="start"

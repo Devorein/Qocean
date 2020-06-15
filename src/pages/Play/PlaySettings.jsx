@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import InputForm from '../../components/Form/InputForm';
-import CustomSlider from '../../components/Input/Slider';
 
 const inputs = [
 	{ name: 'session_name', defaultValue: Date.now().toString() },
@@ -21,7 +20,11 @@ const inputs = [
 		},
 		defaultValue: 'end'
 	},
-	null,
+	{
+		name: 'disable_by_time_allocated',
+		type: 'slider',
+		defaultValue: [ 15, 60 ]
+	},
 	{
 		name: 'disable_by_difficulty',
 		type: 'group',
@@ -71,24 +74,7 @@ const inputs = [
 ];
 
 class PlaySettings extends Component {
-	state = {
-		value: [ 15, 120 ]
-	};
 	render() {
-		inputs[2] = {
-			type: 'component',
-			component: (
-				<CustomSlider
-					min={15}
-					max={120}
-					key="time_slider"
-					value={this.state.value}
-					onChange={(e, value) => {
-						this.setState({ value });
-					}}
-				/>
-			)
-		};
 		return (
 			<InputForm formButtons={false} inputs={inputs} passFormAsProp>
 				{({ setValues, values, errors, isValid, inputs }) => {
@@ -99,8 +85,7 @@ class PlaySettings extends Component {
 							isValid
 						},
 						inputs: <div className="play_settings">{inputs}</div>,
-						setValues,
-						slider: this.state.value
+						setValues
 					});
 				}}
 			</InputForm>
