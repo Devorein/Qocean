@@ -126,6 +126,7 @@ class Play extends Component {
 											const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
 												quizzes.find((quiz) => quiz._id === selectedQuizId)
 											);
+											console.log(selectedQuizzes);
 
 											const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
 												...formData.values,
