@@ -9,8 +9,10 @@ import PlaySettings from './PlaySettings';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../Start/Quiz';
 import arrayShuffler from '../../Utils/arrayShuffler';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import './Play.scss';
+import { difference } from 'lodash';
 
 class Play extends Component {
 	state = {
@@ -37,14 +39,24 @@ class Play extends Component {
 	transformList = () => {
 		const { selectedQuizzes, quizzes } = this.state;
 
-		return selectedQuizzes.map((id, index) => {
+		return selectedQuizzes.map((id) => {
 			const quiz = quizzes.find((quiz) => quiz._id === id);
 			return {
+				_id: quiz._id,
 				primary: quiz.name,
 				primaryIcon: 'Quiz',
-				key: `${quiz.name}${index}`,
 				secondary: `${quiz.questions.length} Questions`
 			};
+		});
+	};
+
+	onDelete = (_ids) => {
+		const { selectedQuizzes } = this.state;
+		_ids.forEach((_id) => {
+			selectedQuizzes.splice(selectedQuizzes.indexOf(_id), 1);
+		});
+		this.setState({
+			selectedQuizzes
 		});
 	};
 
@@ -86,7 +98,16 @@ class Play extends Component {
 			<DataFetcher page="Play">
 				{({ data, totalCount, refetchData }) => {
 					return (
-						<CustomList className="play_list" listItems={this.transformList()}>
+						<CustomList
+							className="play_list"
+							listItems={this.transformList()}
+							icons={[
+								{
+									icon: DeleteIcon,
+									onClick: this.onDelete
+								}
+							]}
+						>
 							{({ list, checked }) => {
 								return (
 									<PlaySettings>

@@ -27,7 +27,8 @@ class CustomList extends React.Component {
 
 	UNSAFE_componentWillReceiveProps(props) {
 		this.setState({
-			filteredItems: props.listItems
+			filteredItems: props.listItems,
+			checked: this.state.checked.filter((check) => check < props.listItems.length - 1)
 		});
 	}
 
@@ -137,7 +138,7 @@ class CustomList extends React.Component {
 	renderList = () => {
 		const { handleToggle, handleToggleAll, filterList, moveLeft, moveRight } = this;
 
-		const { classes, className, title, containsCheckbox = true, selectedIcons, listItems } = this.props;
+		const { classes, className, title, containsCheckbox = true, icons, listItems } = this.props;
 		const { manipulated, filteredItems, checked, selectedIndex } = this.state;
 
 		const items = manipulated ? filteredItems : listItems;
@@ -153,14 +154,21 @@ class CustomList extends React.Component {
 					) : null}
 					<TextField onChange={filterList} className="CustomList_Header_search" />
 					<div className="CustomList_Header_Icons">
-						{checked.length >= 1 && selectedIcons ? (
-							selectedIcons.map(({ icon, onClick }, index) =>
-								React.createElement(icon, {
-									key: shortid.generate(),
-									onClick: onClick.bind(null, this.state.checked)
-								})
-							)
-						) : null}
+						{icons.map(({ icon, onClick }) => {
+							return (
+								<div key={shortid.generate()} className={`CustomList_Header_Icons_${icon.displayName}`}>
+									{React.createElement(icon, {
+										onClick: onClick.bind(
+											null,
+											(checked.length > 0 ? checked : Array(items.length).fill(0).map((_, i) => i)).map(
+												(index) => items[index]._id
+											)
+										)
+									})}
+								</div>
+							);
+						})}
+
 						<ChevronLeftIcon onClick={moveLeft} />
 						<ChevronRightIcon onClick={moveRight} />
 						<div onClick={handleToggleAll} className={'CustomList_Header_toggle'}>
@@ -181,10 +189,10 @@ class CustomList extends React.Component {
 
 				<div className={clsx('CustomList_Body', classes.Body)}>
 					{items.map((listItem, index) => {
-						const { primary, secondary, primaryIcon, key } = listItem;
+						const { primary, secondary, primaryIcon } = listItem;
 						return (
 							<HotKeys
-								key={key ? key : primary}
+								key={listItem._id}
 								keyMap={keyMap}
 								handlers={{
 									...this.handlers,
@@ -213,7 +221,19 @@ class CustomList extends React.Component {
 											/>
 										</div>
 									) : null}
-									<div className={'CustomList_Body_Item_icon'}>{getIcons(primaryIcon)}</div>
+									<div className={'CustomList_Body_Item_Icons'}>
+										<div className={'CustomList_Body_Item_Icons_primary'}>{getIcons(primaryIcon)}</div>
+										{icons.map(({ icon, onClick }) => {
+											return (
+												<div
+													className={`CustomList_Body_Item_Icons_${icon.displayName}`}
+													key={listItem._id + icon.displayName}
+												>
+													{React.createElement(icon, { onClick: onClick.bind(null, [ listItem._id ]) })}
+												</div>
+											);
+										})}
+									</div>
 									<div className={'CustomList_Body_Item_Content'}>
 										<div className={'CustomList_Body_Item_Content_primary'}>{primary}</div>
 										<div className={'CustomList_Body_Item_Content_secondary'}>{secondary}</div>
