@@ -86,7 +86,7 @@ class Play extends Component {
 			<DataFetcher page="Play">
 				{({ data, totalCount, refetchData }) => {
 					return (
-						<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList()}>
+						<CustomList className="play_list" listItems={this.transformList()}>
 							{({ list, checked }) => {
 								return (
 									<PlaySettings>
