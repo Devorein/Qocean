@@ -1,0 +1,39 @@
+.CustomList {
+  height: 100%;
+  &_Header {
+    display: flex;
+    justify-content: space-between;
+    height: 50px;
+    &_search {
+      max-width: 150px;
+      width: 150px;
+    }
+    &_Icons {
+      display: flex;
+      align-items: center;
+      padding: 5px;
+    }
+  }
+  &_Body {
+    height: calc(100% - 50px);
+    overflow-y: auto;
+    &_Item {
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      &_Icons {
+        padding: 5px;
+        display: flex;
+        align-items: center;
+      }
+      &_Content {
+        width: 100%;
+        padding: 5px;
+        &_primary {
+          font-size: 18px;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

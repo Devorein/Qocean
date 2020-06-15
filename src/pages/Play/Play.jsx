@@ -9,19 +9,22 @@ import PlaySettings from './PlaySettings';
 import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../Start/Quiz';
 import arrayShuffler from '../../Utils/arrayShuffler';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import './Play.scss';
+import { difference } from 'lodash';
 
 class Play extends Component {
 	state = {
 		quizzes: [],
 		hasStarted: false,
-		playsettings: null
+		playsettings: null,
+		selectedQuizzes: []
 	};
 
 	componentDidMount() {
 		axios
-			.get(`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=type,difficulty`, {
+			.get(`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=type,difficulty,time_allocated`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`
 				}
@@ -33,14 +36,27 @@ class Play extends Component {
 			});
 	}
 
-	transformList = (data) => {
-		return data.map((data, index) => {
+	transformList = () => {
+		const { selectedQuizzes, quizzes } = this.state;
+
+		return selectedQuizzes.map((id) => {
+			const quiz = quizzes.find((quiz) => quiz._id === id);
 			return {
-				primary: data.name,
+				_id: quiz._id,
+				primary: quiz.name,
 				primaryIcon: 'Quiz',
-				key: `${data.name}${index}`,
-				secondary: `${data.questions.length} Questions`
+				secondary: `${quiz.questions.length} Questions`
 			};
+		});
+	};
+
+	onDelete = (_ids) => {
+		const { selectedQuizzes } = this.state;
+		_ids.forEach((_id) => {
+			selectedQuizzes.splice(selectedQuizzes.indexOf(_id), 1);
+		});
+		this.setState({
+			selectedQuizzes
 		});
 	};
 
@@ -82,7 +98,16 @@ class Play extends Component {
 			<DataFetcher page="Play">
 				{({ data, totalCount, refetchData }) => {
 					return (
-						<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList(quizzes)}>
+						<CustomList
+							className="play_list"
+							listItems={this.transformList()}
+							icons={[
+								{
+									icon: DeleteIcon,
+									onClick: this.onDelete
+								}
+							]}
+						>
 							{({ list, checked }) => {
 								return (
 									<PlaySettings>
@@ -104,11 +129,27 @@ class Play extends Component {
 												<div className="play pages">
 													<Explorer
 														page={'Play'}
-														data={data}
+														data={data.map((item) => ({
+															...item,
+															added: this.state.selectedQuizzes.includes(item._id)
+														}))}
 														totalCount={totalCount}
 														type={'Quiz'}
 														refetchData={refetchData.bind(null, 'Quiz')}
 														hideDetailer
+														customHandlers={{
+															add: (selectedIds) => {
+																const { selectedQuizzes } = this.state;
+																selectedIds.forEach((selectedId) => {
+																	const index = selectedQuizzes.indexOf(selectedId);
+																	if (index === -1) selectedQuizzes.push(selectedId);
+																	else selectedQuizzes.splice(index, 1);
+																});
+																this.setState({
+																	selectedQuizzes
+																});
+															}
+														}}
 													/>
 													{list}
 													<PlayStats quizzes={quizzes} selectedQuizzes={filteredQuizzes} />

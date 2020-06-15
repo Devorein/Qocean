@@ -16,7 +16,7 @@ export default function(quizzes, prop) {
 
 		quiz.questions.forEach((question) => {
 			let targetProp = question[prop];
-			if (prop === 'time_allocated') targetProp = headers[Math.floor(parseInt(temp[question[prop]]) / 15)];
+			if (prop === 'time_allocated') targetProp = headers[Math.floor(parseInt(question[prop]) / 15) - 2];
 			temp[targetProp] = temp[targetProp] ? temp[targetProp] + 1 : 1;
 		});
 
@@ -26,13 +26,11 @@ export default function(quizzes, prop) {
 		});
 	}
 	headers.unshift('name');
-
 	const footers = headers.slice(1).map((header) => {
 		let total = 0;
 		rows.forEach((row) => (total += row[header]));
 		return total;
 	});
-
 	return {
 		headers: headers.map((header) => ({
 			name: header

@@ -66,6 +66,7 @@ class Explorer extends Component {
 														}}
 														hideDetailer={hideDetailer}
 														updateDataLocally={updateDataLocally}
+														customHandlers={this.props.customHandlers}
 													/>
 													{formFillerIndex !== null ? (
 														<FormFiller
