@@ -8,9 +8,11 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { withTheme } from '@material-ui/core/styles';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { difference } from 'lodash';
 import Color from 'color';
 import convert from 'color-convert';
+import shortid from 'shortid';
 
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
@@ -194,7 +196,8 @@ class Effector extends Component {
 						exportData(type, filteredData);
 					}}
 				/>
-			) : null
+			) : null,
+			page === 'play' ? <AddCircleIcon key={shortid.generate()} /> : null
 		];
 		const array = Array(filteredData.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
@@ -260,7 +263,8 @@ class Effector extends Component {
 						this.props.watchToggle(selectedIndex);
 					}}
 				/>
-			) : null
+			) : null,
+			page === 'play' ? <AddCircleIcon key={shortid.generate()} /> : null
 		];
 
 		if (page === 'self') {

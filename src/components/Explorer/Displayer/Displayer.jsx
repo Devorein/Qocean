@@ -1,24 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { withTheme } from '@material-ui/core';
-import TableDisplayer from './TableDisplayer/TableDisplayer';
-import ListDisplayer from './ListDisplayer/ListDisplayer';
-import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
-import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
-import Effector from '../Effector/Effector';
-import { AppContext } from '../../../context/AppContext';
-import sectorizeData from '../../../Utils/sectorizeData';
-import ChipContainer from '../../../components/Chip/ChipContainer';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import UpdateIcon from '@material-ui/icons/Update';
 import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import getColouredIcons from '../../../Utils/getColoredIcons';
-import exportData from '../../../Utils/exportData';
-import filterSort from '../../../Utils/filterSort';
 import DeleteIcon from '@material-ui/icons/Delete';
-import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import moment from 'moment';
@@ -27,6 +16,21 @@ import { HotKeys } from 'react-hotkeys';
 import SettingsIcon from '@material-ui/icons/Settings';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import shortid from 'shortid';
+
+import TableDisplayer from './TableDisplayer/TableDisplayer';
+import ListDisplayer from './ListDisplayer/ListDisplayer';
+import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
+import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
+import Effector from '../Effector/Effector';
+import { AppContext } from '../../../context/AppContext';
+import sectorizeData from '../../../Utils/sectorizeData';
+import ChipContainer from '../../../components/Chip/ChipContainer';
+import getColouredIcons from '../../../Utils/getColoredIcons';
+import exportData from '../../../Utils/exportData';
+import filterSort from '../../../Utils/filterSort';
+import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
+
 import CustomSnackbars from '../../Snackbars/CustomSnackbars';
 import './Displayer.scss';
 
@@ -240,7 +244,14 @@ class Displayer extends Component {
 					);
 				}
 			}
-
+			if (page === 'play')
+				actions.push(
+					<AddCircleIcon
+						style={{ fill: item.added ? this.props.theme.palette.success.main : this.props.theme.palette.error.main }}
+						key={shortid.generate()}
+						onClick={this.props.customHandlers.add.bind(null, [ item._id ])}
+					/>
+				);
 			const temp = {
 				...item,
 				checked: (

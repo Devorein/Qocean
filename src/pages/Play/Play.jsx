@@ -16,7 +16,8 @@ class Play extends Component {
 	state = {
 		quizzes: [],
 		hasStarted: false,
-		playsettings: null
+		playsettings: null,
+		selectedQuizzes: []
 	};
 
 	componentDidMount() {
@@ -33,13 +34,16 @@ class Play extends Component {
 			});
 	}
 
-	transformList = (data) => {
-		return data.map((data, index) => {
+	transformList = () => {
+		const { selectedQuizzes, quizzes } = this.state;
+
+		return selectedQuizzes.map((id, index) => {
+			const quiz = quizzes.find((quiz) => quiz._id === id);
 			return {
-				primary: data.name,
+				primary: quiz.name,
 				primaryIcon: 'Quiz',
-				key: `${data.name}${index}`,
-				secondary: `${data.questions.length} Questions`
+				key: `${quiz.name}${index}`,
+				secondary: `${quiz.questions.length} Questions`
 			};
 		});
 	};
@@ -82,7 +86,7 @@ class Play extends Component {
 			<DataFetcher page="Play">
 				{({ data, totalCount, refetchData }) => {
 					return (
-						<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList(quizzes)}>
+						<CustomList className="play_list" title={`Your quizzes`} listItems={this.transformList()}>
 							{({ list, checked }) => {
 								return (
 									<PlaySettings>
@@ -104,11 +108,27 @@ class Play extends Component {
 												<div className="play pages">
 													<Explorer
 														page={'Play'}
-														data={data}
+														data={data.map((item) => ({
+															...item,
+															added: this.state.selectedQuizzes.includes(item._id)
+														}))}
 														totalCount={totalCount}
 														type={'Quiz'}
 														refetchData={refetchData.bind(null, 'Quiz')}
 														hideDetailer
+														customHandlers={{
+															add: (selectedIds) => {
+																const { selectedQuizzes } = this.state;
+																selectedIds.forEach((selectedId) => {
+																	const index = selectedQuizzes.indexOf(selectedId);
+																	if (index === -1) selectedQuizzes.push(selectedId);
+																	else selectedQuizzes.splice(index, 1);
+																});
+																this.setState({
+																	selectedQuizzes
+																});
+															}
+														}}
 													/>
 													{list}
 													<PlayStats quizzes={quizzes} selectedQuizzes={filteredQuizzes} />
