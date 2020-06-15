@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import Color from 'color';
 import convert from 'color-convert';
+import axios from 'axios';
 import styled from 'styled-components';
 import { blue } from '@material-ui/core/colors';
+
 import InputSelect from '../../../../components/Input/InputSelect';
-import axios from 'axios';
 
 const ReportHeaderC = styled.div`
 	background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.main)).darken(0.25).hex()};
@@ -145,12 +146,12 @@ class ReportHeader extends Component {
 		);
 	};
 	render() {
-		const { renderDataRow, renderFilterRow } = this;
-		const { theme } = this.props;
+		const { renderDataRow } = this;
+		const { theme, SSFilterSort } = this.props;
 		return (
 			<ReportHeaderC theme={theme} className="report_header">
 				{renderDataRow()}
-				{renderFilterRow()}
+				{SSFilterSort}
 			</ReportHeaderC>
 		);
 	}

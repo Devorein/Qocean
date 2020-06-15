@@ -74,7 +74,7 @@ class SSFilterSort extends Component {
 					this.setState({ tags });
 				});
 			});
-		} else {
+		} else if (page !== 'report') {
 			axios
 				.post(
 					`http://localhost:5001/api/v1/users/tags/_/me`,
@@ -491,7 +491,7 @@ class SSFilterSort extends Component {
 	renderFilterSortItem = () => {
 		return [ 'filters', 'sorts' ].map((item) => {
 			let totalActive = 0;
-
+			const { renderFilter = true, renderSort = true } = this.props;
 			this.state[item].forEach((item) => (totalActive += item.disabled ? 0 : 1));
 			const items = this.state[item];
 			return (
@@ -556,11 +556,11 @@ class SSFilterSort extends Component {
 												: ''}`}
 										>
 											{' '}
-											{this.renderFilterItem(index, { isChild: false, childIndex: null })}
+											{renderFilter ? this.renderFilterItem(index, { isChild: false, childIndex: null }) : null}
 										</div>
-									) : (
+									) : renderSort ? (
 										this.renderSortItem(index)
-									)}
+									) : null}
 									<div
 										className={`FilterSortItem_select_${item}_childcontainer ${disabled
 											? 'FilterSortItem_select--disabled'

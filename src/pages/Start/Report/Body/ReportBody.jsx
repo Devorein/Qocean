@@ -41,23 +41,16 @@ class ReportBody extends Component {
 	}
 
 	applyFilters = () => {
-		const { filters, stats, validations } = this.props;
+		const { stats, validations } = this.props;
 		const { answers } = this.state;
-
-		return stats
-			.filter((stat) => {
-				if (filters.result === 'both') return stat;
-				else return validations[filters.result].includes(stat._id);
-			})
-			.filter((stat) => filters.type === 'All' || stat.type === filters.type)
-			.map((stat, index) => {
-				return (
-					<div className="report_body_item" key={stat._id}>
-						<ReportBodyItemHeader stat={stat} answer={answers[index]} validations={validations} />
-						<ReportBodyItemBody stat={stat} answer={answers[index]} random={this.props.settings.randomized_options} />
-					</div>
-				);
-			});
+		return stats.map((stat, index) => {
+			return (
+				<div className="report_body_item" key={stat._id}>
+					<ReportBodyItemHeader stat={stat} answer={answers[index]} validations={validations} />
+					<ReportBodyItemBody stat={stat} answer={answers[index]} random={this.props.settings.randomized_options} />
+				</div>
+			);
+		});
 	};
 	render() {
 		const { theme } = this.props;

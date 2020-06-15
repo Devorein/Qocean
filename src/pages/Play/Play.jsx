@@ -109,37 +109,37 @@ class Play extends Component {
 			<DataFetcher page="Play">
 				{({ data: quizzes, totalCount, refetchData }) => {
 					return (
-						<CustomList
-							className="play_list"
-							listItems={this.transformList()}
-							icons={[
-								{
-									icon: DeleteIcon,
-									onClick: this.onDelete
+						<PlaySettings>
+							{({ formData, inputs, slider }) => {
+								const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
+									quizzes.find((quiz) => quiz._id === selectedQuizId)
+								);
+
+								const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
+									...formData.values,
+									slider
+								});
+
+								let filteredQuestions = 0;
+								for (let i = 0; i < filteredQuizzes.length; i++) {
+									const filteredQuiz = filteredQuizzes[i];
+									filteredQuestions += filteredQuiz.filteredQuestions.length;
 								}
-							]}
-						>
-							{({ list }) => {
 								return (
-									<PlaySettings>
-										{({ formData, inputs, slider }) => {
-											const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
-												quizzes.find((quiz) => quiz._id === selectedQuizId)
-											);
-
-											const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
-												...formData.values,
-												slider
-											});
-
-											let filteredQuestions = 0;
-											for (let i = 0; i < filteredQuizzes.length; i++) {
-												const filteredQuiz = filteredQuizzes[i];
-												filteredQuestions += filteredQuiz.filteredQuestions.length;
-											}
-											return (
-												<Fragment>
-													{history.location.pathname === '/play' ? (
+									<Fragment>
+										{history.location.pathname === '/play' ? (
+											<CustomList
+												className="play_list"
+												listItems={this.transformList()}
+												icons={[
+													{
+														icon: DeleteIcon,
+														onClick: this.onDelete
+													}
+												]}
+											>
+												{({ list }) => {
+													return (
 														<div className="play pages">
 															<Explorer
 																page={'Play'}
@@ -161,7 +161,6 @@ class Play extends Component {
 																<GenericButton
 																	text="Play"
 																	onClick={(e) => {
-																		console.log(selectedQuizIds, filteredQuestions);
 																		if (selectedQuizIds.length !== 0 && filteredQuestions !== 0)
 																			history.push(match.url + '/quiz');
 																	}}
@@ -169,24 +168,24 @@ class Play extends Component {
 															</div>
 															{inputs}
 														</div>
-													) : null}
+													);
+												}}
+											</CustomList>
+										) : null}
 
-													<Route path={match.url + '/quiz'} exact>
-														<Quiz
-															settings={formData.values}
-															quizzes={filteredQuizzes.map((filteredQuiz) => ({
-																...filteredQuiz,
-																questions: filteredQuiz.filteredQuestions
-															}))}
-														/>
-													</Route>
-												</Fragment>
-											);
-										}}
-									</PlaySettings>
+										<Route path={match.url + '/quiz'} exact>
+											<Quiz
+												settings={formData.values}
+												quizzes={filteredQuizzes.map((filteredQuiz) => ({
+													...filteredQuiz,
+													questions: filteredQuiz.filteredQuestions
+												}))}
+											/>
+										</Route>
+									</Fragment>
 								);
 							}}
-						</CustomList>
+						</PlaySettings>
 					);
 				}}
 			</DataFetcher>

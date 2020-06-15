@@ -148,7 +148,7 @@ class App extends Component {
 							<Route path="/signup" exact render={() => <SignUp refetch={refetch} />} />
 							<Route path="/401" exact component={Unauthorized} />
 							<Route path="/404" exact component={NotFound} />
-							{/* <Redirect to="/404" /> */}
+							<Redirect to="/404" />
 						</Switch>
 					</AppContext.Provider>
 				</div>
