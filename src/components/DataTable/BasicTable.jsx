@@ -127,7 +127,8 @@ export default withStyles((theme) => ({
 	tableTitle: {
 		fontWeight: 'bolder',
 		textAlign: 'center',
-		padding: 5
+		padding: 5,
+		backgroundColor: theme.palette.background.dark
 	},
 	root: {
 		'& .BasicTable_footer': {

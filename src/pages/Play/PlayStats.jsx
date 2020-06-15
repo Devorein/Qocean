@@ -11,7 +11,7 @@ class PlayStats extends Component {
 		const { quizzes, selectedQuizzes } = this.props;
 		const { showQuizzes } = this.state;
 		return (
-			<div className="play_stats">
+			<div className="PlayStats">
 				<CheckboxInput
 					className="PlayStats_toggletarget"
 					checked={this.state.showQuizzes}
@@ -20,15 +20,17 @@ class PlayStats extends Component {
 						this.setState({ showQuizzes: !this.state.showQuizzes });
 					}}
 				/>
-				<BasicTable
-					title={'Question Time'}
-					contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'time_allocated')}
-				/>
-				<BasicTable
-					title={'Question Difficulty'}
-					contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'difficulty')}
-				/>
-				<BasicTable title={'Question Types'} contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'type')} />
+				<div className="PlayStats_BasicTables">
+					<BasicTable
+						title={'Question Time'}
+						contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'time_allocated')}
+					/>
+					<BasicTable
+						title={'Question Difficulty'}
+						contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'difficulty')}
+					/>
+					<BasicTable title={'Question Types'} contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'type')} />
+				</div>
 			</div>
 		);
 	}
