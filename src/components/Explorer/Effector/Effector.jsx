@@ -197,7 +197,12 @@ class Effector extends Component {
 					}}
 				/>
 			) : null,
-			page === 'play' ? <AddCircleIcon key={shortid.generate()} /> : null
+			page === 'play' ? (
+				<AddCircleIcon
+					key={shortid.generate()}
+					onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))}
+				/>
+			) : null
 		];
 		const array = Array(filteredData.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
@@ -264,7 +269,12 @@ class Effector extends Component {
 					}}
 				/>
 			) : null,
-			page === 'play' ? <AddCircleIcon key={shortid.generate()} /> : null
+			page === 'play' ? (
+				<AddCircleIcon
+					key={shortid.generate()}
+					onClick={this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id))}
+				/>
+			) : null
 		];
 
 		if (page === 'self') {

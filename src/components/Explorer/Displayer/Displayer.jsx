@@ -338,7 +338,7 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer, getCols, updateResource, deleteResource, watchToggle } = this;
-		const { totalCount, page: currentPage, refetchData, type, filter_sort } = this.props;
+		const { totalCount, page: currentPage, refetchData, type, filter_sort, customHandlers } = this.props;
 		let { data } = this.props;
 		const cols = getCols(data);
 		return (
@@ -358,6 +358,7 @@ class Displayer extends Component {
 								deleteResource={deleteResource}
 								watchToggle={watchToggle}
 								filter_sort={filter_sort}
+								customHandlers={customHandlers}
 							>
 								{({
 									EffectorTopBar,
