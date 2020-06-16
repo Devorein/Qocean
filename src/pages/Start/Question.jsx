@@ -61,22 +61,24 @@ class Question extends Component {
 				);
 			});
 		else if (type === 'FIB') {
-			return name.split(/\$\{_\}/g).map((match, index) => {
+			return name.split(/\$\{_\}/g).map((match, index, arr) => {
 				return (
 					<div className="Question_Options_Item" key={`FIB_option_${index}`}>
 						<div className="Question_Options_Item_name">{match.trim()}</div>
-						<TextField
-							className="Question_Options_Item_answer"
-							value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
-							onChange={(e) => {
-								const { user_answers } = this.state;
-								user_answers[index] = e.target.value;
-								if (this._ismounted)
-									this.setState({
-										user_answers
-									});
-							}}
-						/>
+						{index !== arr.length - 1 ? (
+							<TextField
+								className="Question_Options_Item_answer"
+								value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
+								onChange={(e) => {
+									const { user_answers } = this.state;
+									user_answers[index] = e.target.value;
+									if (this._ismounted)
+										this.setState({
+											user_answers
+										});
+								}}
+							/>
+						) : null}
 					</div>
 				);
 			});
