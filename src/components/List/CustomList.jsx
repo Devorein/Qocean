@@ -40,7 +40,7 @@ class CustomList extends React.Component {
 		const items = manipulated ? filteredItems : listItems;
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
 
-		const { checked, moveUp, moveDown, handleChecked, handleCheckedAll, selectedIndex } = this;
+		const { checked, moveUp, moveDown, handleChecked, handleCheckedAll, selectedIndex, setSelectedIndex } = this;
 		return (
 			<div className={rootClass}>
 				<div className={clsx('CustomList_Header', classes.Header)}>
@@ -93,6 +93,9 @@ class CustomList extends React.Component {
 							<div
 								key={listItem._id || `${listItem.primary}${index}`}
 								className={clsx(selectedIndex === index ? 'selected' : null, classes.BodyItem, 'CustomList_Body_Item')}
+								onClick={(e) => {
+									setSelectedIndex(index);
+								}}
 							>
 								<div className={'CustomList_Body_Item_index'}>{index + 1}</div>
 

@@ -51,19 +51,26 @@ class Import extends Component {
 	submitForm = (index) => {
 		const { enqueueSnackbar } = this.props;
 		const { currentType, transformedData } = this;
-		if (index.length === 1) {
-			submitForm(currentType, transformedData[index])
-				.then(({ data: { data } }) => {
-					enqueueSnackbar(`Successfully created ${currentType} ${data.name}`, {
-						variant: 'success'
-					});
-				})
-				.catch((err) => {
-					enqueueSnackbar(`Error: ${err.response.data.error}`, {
-						variant: 'error'
-					});
+
+		function reductiveDownloadChain(items) {
+			return items.reduce((chain, currentItem) => {
+				return chain.then((_) => {
+					submitForm(currentType, currentItem)
+						.then(({ data: { data } }) => {
+							enqueueSnackbar(`Successfully created ${currentType} ${data.name}`, {
+								variant: 'success'
+							});
+						})
+						.catch((err) => {
+							enqueueSnackbar(`Error: ${err.response.data.error}`, {
+								variant: 'error'
+							});
+						});
 				});
+			}, Promise.resolve());
 		}
+
+		reductiveDownloadChain(index.map((index) => transformedData[index]));
 	};
 
 	render() {
