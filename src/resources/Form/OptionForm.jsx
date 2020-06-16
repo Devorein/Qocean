@@ -158,18 +158,48 @@ class OptionForm extends Component {
 		} else if (type === 'FC')
 			return {
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 4 }, defaultValue: defaultAnswers[0][0] },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][1] },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][2] }
+					{
+						name: 'answers',
+						type: 'textarea',
+						extra: { row: 4 },
+						defaultValue: defaultAnswers[0] ? defaultAnswers[0][0] : ''
+					},
+					{
+						name: 'alternate_1',
+						type: 'textarea',
+						extra: { row: 2 },
+						defaultValue: defaultAnswers[0] ? defaultAnswers[0][1] : ''
+					},
+					{
+						name: 'alternate_2',
+						type: 'textarea',
+						extra: { row: 2 },
+						defaultValue: defaultAnswers[0] ? defaultAnswers[0][2] : ''
+					}
 				],
 				options: []
 			};
 		else if (type === 'Snippet')
 			return {
 				answers: [
-					{ name: 'answers', type: 'textarea', extra: { row: 2 }, defaultValue: defaultAnswers[0][0] },
-					{ name: 'alternate_1', type: 'textarea', extra: { row: 1 }, defaultValue: defaultAnswers[0][1] },
-					{ name: 'alternate_2', type: 'textarea', extra: { row: 1 }, defaultValue: defaultAnswers[0][2] }
+					{
+						name: 'answers',
+						type: 'textarea',
+						extra: { row: 2 },
+						defaultValue: defaultAnswers[0] ? defaultAnswers[0][0] : ''
+					},
+					{
+						name: 'alternate_1',
+						type: 'textarea',
+						extra: { row: 1 },
+						defaultValue: defaultAnswers[0] ? defaultAnswers[0][1] : ''
+					},
+					{
+						name: 'alternate_2',
+						type: 'textarea',
+						extra: { row: 1 },
+						defaultValue: defaultAnswers[0] ? defaultAnswers[0][2] : ''
+					}
 				],
 				options: []
 			};

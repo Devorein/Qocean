@@ -60,12 +60,13 @@ class Question extends Component {
 					</Fragment>
 				);
 			});
-		else if (type === 'FIB')
-			return name.match(/\$\{_\}/g).map((match, index) => {
+		else if (type === 'FIB') {
+			return name.split(/\$\{_\}/g).map((match, index) => {
 				return (
-					<div className="Question_Options_Item">
+					<div className="Question_Options_Item" key={`FIB_option_${index}`}>
+						<div className="Question_Options_Item_name">{match.trim()}</div>
 						<TextField
-							key={`FIB_option_${index}`}
+							className="Question_Options_Item_answer"
 							value={this.state.user_answers[index] ? this.state.user_answers[index] : ''}
 							onChange={(e) => {
 								const { user_answers } = this.state;
@@ -79,7 +80,7 @@ class Question extends Component {
 					</div>
 				);
 			});
-		else if (type === 'TF' || type === 'MCQ') {
+		} else if (type === 'TF' || type === 'MCQ') {
 			let radioItems = null;
 			if (type === 'TF')
 				radioItems = [ 'False', 'True' ].map((option, index) => ({ label: option, value: index.toString() }));
@@ -191,8 +192,7 @@ class Question extends Component {
 							<img src={question.image} alt="question" />
 						</div>
 					) : null}
-					<div className="Question_name">{question.name}</div>
-
+					{question.type !== 'FIB' ? <div className="Question_name">{question.name}</div> : null}
 					<div className={`Question_Options Question_Options--${question.type}`}>{this.renderQuestionBody()}</div>
 				</div>
 			) : (

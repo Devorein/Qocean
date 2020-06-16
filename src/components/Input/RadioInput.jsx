@@ -20,7 +20,8 @@ class RadioInput extends Component {
 			value,
 			OptionsContainer,
 			OptionContainer,
-			optionProps
+			optionProps,
+			className
 		} = this.props;
 
 		const RADIOGROUP = (
@@ -50,7 +51,7 @@ class RadioInput extends Component {
 			</RadioGroup>
 		);
 		return (
-			<FormControl>
+			<FormControl className={className}>
 				{name ? <FormLabel component="legend">{this.decideLabel(name)}</FormLabel> : null}
 				{OptionsContainer ? <OptionsContainer>{RADIOGROUP}</OptionsContainer> : RADIOGROUP}
 			</FormControl>
