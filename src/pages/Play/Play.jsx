@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import axios from 'axios';
 import { Route, withRouter } from 'react-router-dom';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -8,35 +7,17 @@ import Explorer from '../../components/Explorer/Explorer';
 import CustomList from '../../components/List/List';
 import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
-import GenericButton from '../../components/Buttons/GenericButton';
 import Quiz from '../Start/Quiz';
-import arrayShuffler from '../../Utils/arrayShuffler';
 
 import './Play.scss';
 
 class Play extends Component {
 	state = {
-		quizzes: [],
-		playsettings: null,
 		selectedQuizIds: []
 	};
 
-	componentDidMount() {
-		axios
-			.get(`http://localhost:5001/api/v1/quizzes/me?populate=questions&populateFields=type,difficulty,time_allocated`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
-			})
-			.then(({ data: { data: quizzes } }) => {
-				this.setState({
-					quizzes: quizzes.map((quiz) => ({ ...quiz, filteredQuestions: [] }))
-				});
-			});
-	}
-
-	transformList = () => {
-		const { selectedQuizIds, quizzes } = this.state;
+	transformList = (quizzes) => {
+		const { selectedQuizIds } = this.state;
 
 		return selectedQuizIds.map((id) => {
 			const quiz = quizzes.find((quiz) => quiz._id === id);
@@ -59,37 +40,6 @@ class Play extends Component {
 		});
 	};
 
-	applySettingsFilter = (quizzes, settings) => {
-		const disabled = {
-			type: [],
-			difficulty: []
-		};
-		[ 'MCQ', 'TF', 'MS', 'FC', 'FIB', 'Snippet' ].forEach(
-			(type) => (settings[type] ? disabled.type.push(type) : void 0)
-		);
-		[ 'Beginner', 'Intermediate', 'Advanced' ].forEach(
-			(type) => (settings[type] ? disabled.difficulty.push(type) : void 0)
-		);
-
-		quizzes = quizzes.map((quiz) => {
-			quiz.filteredQuestions = quiz.questions.filter((question) => {
-				let shouldReturn = true;
-				shouldReturn = shouldReturn && !disabled.type.includes(question.type);
-				shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
-				shouldReturn =
-					shouldReturn &&
-					question.time_allocated <= settings.disable_by_time_allocated[1] &&
-					question.time_allocated >= settings.disable_by_time_allocated[0];
-				return shouldReturn;
-			});
-			return quiz;
-		});
-		if (settings.randomized_quiz) quizzes = arrayShuffler(quizzes);
-		if (settings.randomized_question)
-			quizzes = quizzes.map((quiz) => ({ ...quiz, questions: arrayShuffler(quiz.questions) }));
-		return quizzes;
-	};
-
 	addToBucketList = (selectedIds) => {
 		const { selectedQuizIds } = this.state;
 		selectedIds.forEach((selectedId) => {
@@ -109,28 +59,14 @@ class Play extends Component {
 			<DataFetcher page="Play">
 				{({ data: quizzes, totalCount, refetchData }) => {
 					return (
-						<PlaySettings>
-							{({ formData, inputs, slider }) => {
-								const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
-									quizzes.find((quiz) => quiz._id === selectedQuizId)
-								);
-
-								const filteredQuizzes = this.applySettingsFilter(selectedQuizzes, {
-									...formData.values,
-									slider
-								});
-
-								let filteredQuestions = 0;
-								for (let i = 0; i < filteredQuizzes.length; i++) {
-									const filteredQuiz = filteredQuizzes[i];
-									filteredQuestions += filteredQuiz.filteredQuestions.length;
-								}
+						<PlaySettings selectedQuizIds={selectedQuizIds} quizzes={quizzes}>
+							{({ formData, inputs, selectedQuizzes, filteredQuizzes, button }) => {
 								return (
 									<Fragment>
 										{history.location.pathname === '/play' ? (
 											<CustomList
 												className="play_list"
-												listItems={this.transformList()}
+												listItems={this.transformList(quizzes)}
 												icons={[
 													{
 														icon: DeleteIcon,
@@ -157,16 +93,8 @@ class Play extends Component {
 															/>
 															{list}
 															<PlayStats quizzes={quizzes} selectedQuizzes={selectedQuizzes} />
-															<div className="play_button">
-																<GenericButton
-																	text="Play"
-																	onClick={(e) => {
-																		if (selectedQuizIds.length !== 0 && filteredQuestions !== 0)
-																			history.push(match.url + '/quiz');
-																	}}
-																/>
-															</div>
 															{inputs}
+															<div className="play_button">{button}</div>
 														</div>
 													);
 												}}
