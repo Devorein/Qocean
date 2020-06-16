@@ -41,7 +41,6 @@ class CustomList extends React.Component {
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
 
 		const { checked, moveUp, moveDown, handleChecked, handleCheckedAll, selectedIndex } = this;
-
 		return (
 			<div className={rootClass}>
 				<div className={clsx('CustomList_Header', classes.Header)}>
@@ -60,7 +59,7 @@ class CustomList extends React.Component {
 											onClick: onClick.bind(
 												null,
 												(checked.length > 0 ? checked : Array(items.length).fill(0).map((_, i) => i)).map(
-													(index) => items[index]._id
+													(index) => items[index]._id || index
 												)
 											)
 										})}
@@ -118,7 +117,7 @@ class CustomList extends React.Component {
 													className={`CustomList_Body_Item_Icons_${icon.displayName}`}
 													key={listItem._id + icon.displayName}
 												>
-													{React.createElement(icon, { onClick: onClick.bind(null, [ listItem._id ]) })}
+													{React.createElement(icon, { onClick: onClick.bind(null, [ listItem._id || index ]) })}
 												</div>
 											);
 										})

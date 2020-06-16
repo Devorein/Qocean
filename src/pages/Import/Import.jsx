@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
+import PublishIcon from '@material-ui/icons/Publish';
 import { withSnackbar } from 'notistack';
+
 import UploadButton from '../../components/Buttons/UploadButton';
 import CustomList from '../../components/List/CustomList';
-import PublishIcon from '@material-ui/icons/Publish';
 import FormFiller from '../FormFiller/FormFiller';
 import PageSwitcher from '../../components/PageSwitcher/PageSwitcher';
+import submitForm from '../../operations/submitForm';
 
 import './Import.scss';
 
@@ -37,13 +39,31 @@ class Import extends Component {
 		} else return [];
 	};
 
-	transformList = (type, data) => {
-		return data.map((data) => {
+	transformList = () => {
+		return this.transformedData.map((data) => {
 			return {
 				primary: data.name,
-				primaryIcon: type
+				primaryIcon: this.currentType
 			};
 		});
+	};
+
+	submitForm = (index) => {
+		const { enqueueSnackbar } = this.props;
+		const { currentType, transformedData } = this;
+		if (index.length === 1) {
+			submitForm(currentType, transformedData[index])
+				.then(({ data: { data } }) => {
+					enqueueSnackbar(`Successfully created ${currentType} ${data.name}`, {
+						variant: 'success'
+					});
+				})
+				.catch((err) => {
+					enqueueSnackbar(`Error: ${err.response.data.error}`, {
+						variant: 'error'
+					});
+				});
+		}
 	};
 
 	render() {
@@ -63,13 +83,20 @@ class Import extends Component {
 							{({ UploadButton, data }) => {
 								let transformedData = [];
 								if (data) transformedData = this.transformData(type, data);
+								this.currentType = type;
+								this.transformedData = transformedData;
 								return (
 									<div className={`Import Import-${type}`}>
 										{UploadButton}
 										{transformedData.length !== 0 ? (
 											<CustomList
-												listItems={this.transformList(type, transformedData)}
-												selectedIcons={[ <PublishIcon key={'publish'} onClick={(e) => {}} /> ]}
+												listItems={this.transformList()}
+												icons={[
+													{
+														icon: PublishIcon,
+														onClick: this.submitForm
+													}
+												]}
 											>
 												{({ selectedIndex, list }) => {
 													return (
@@ -77,8 +104,6 @@ class Import extends Component {
 															{list}
 															<FormFiller
 																useModal={false}
-																user={this.props.user}
-																submitMsg={'Import'}
 																type={type}
 																page={'Import'}
 																data={transformedData[selectedIndex]}

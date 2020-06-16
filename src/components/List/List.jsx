@@ -1,7 +1,6 @@
 import React from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { difference } from 'lodash';
-import shortid from 'shortid';
 
 const keyMap = {
 	MOVE_UP: 'up',

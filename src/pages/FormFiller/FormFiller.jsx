@@ -116,12 +116,12 @@ class FormFiller extends Component {
 
 	decideForm = () => {
 		const { transformValue } = this;
-		const { data, user, submitMsg } = this.props;
+		const { data, submitMsg } = this.props;
 		const page = this.props.page.toLowerCase();
 		const type = this.props.type.toLowerCase();
 		const props = {
-			user,
-			submitMsg,
+			user: this.context.user,
+			submitMsg: submitMsg || page,
 			onSubmit: page !== 'self' ? this.createResource : this.updateResource,
 			customInputs: page !== 'create' ? transformValue : null
 		};
