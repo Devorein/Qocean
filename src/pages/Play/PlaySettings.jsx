@@ -133,18 +133,22 @@ class PlaySettings extends Component {
 							errors,
 							isValid
 						},
-						inputs: <div className="play_settings">{inputs}</div>,
+						inputs: (
+							<div className="play_settings">
+								{inputs}
+								<div className="play_button">
+									<GenericButton
+										text="Play"
+										onClick={(e) => {
+											if (selectedQuizIds.length !== 0 && filteredQuestions !== 0) history.push(match.url + '/quiz');
+										}}
+									/>
+								</div>
+							</div>
+						),
 						setValues,
 						selectedQuizzes,
-						filteredQuizzes,
-						button: (
-							<GenericButton
-								text="Play"
-								onClick={(e) => {
-									if (selectedQuizIds.length !== 0 && filteredQuestions !== 0) history.push(match.url + '/quiz');
-								}}
-							/>
-						)
+						filteredQuizzes
 					});
 				}}
 			</InputForm>

@@ -35,7 +35,7 @@ class Play extends Component {
 							{({ ids, addToList, removeFromList }) => {
 								return (
 									<PlaySettings selectedQuizIds={ids} quizzes={quizzes}>
-										{({ formData, inputs, selectedQuizzes, filteredQuizzes, button }) => {
+										{({ formData, inputs, selectedQuizzes, filteredQuizzes }) => {
 											return (
 												<Fragment>
 													{history.location.pathname === '/play' ? (
@@ -69,7 +69,6 @@ class Play extends Component {
 																		{list}
 																		<PlayStats quizzes={quizzes} selectedQuizzes={selectedQuizzes} />
 																		{inputs}
-																		<div className="play_button">{button}</div>
 																	</div>
 																);
 															}}
