@@ -15,7 +15,10 @@ export default function(quizzes, prop) {
 
 		quiz.questions.forEach((question) => {
 			let targetProp = question[prop];
-			if (prop === 'time_allocated') targetProp = headers[Math.floor(parseInt(question[prop]) / 15) - 2];
+			if (prop === 'time_allocated') {
+				const index = Math.floor(parseInt(question[prop]) / 15);
+				targetProp = headers[index - (index === 1 ? 1 : 2)];
+			}
 			temp[targetProp] = temp[targetProp] ? temp[targetProp] + 1 : 1;
 		});
 		rows.push({

@@ -1,61 +1,61 @@
 .play {
-  display: grid;
-  grid-template: 450px 300px/ 650px 500px 1fr;
-  height: calc(100% - 50px);
-  .Explorer {
-    grid-area: 1/1/2/2;
-    height: 100%;
-  }
-  &_list {
-    grid-area: 2/1/3/2;
-  }
-  &_button {
-    grid-area: 3/1/4/2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    .MuiButton-contained.MuiButton-containedPrimary {
-      height: fit-content;
-    }
-  }
-  &_settings {
-    grid-area: 1/3/3/4;
+	display: grid;
+	grid-template: 450px 300px/ 650px 500px 1fr;
+	height: calc(100% - 50px);
+	.Explorer {
+		grid-area: 1/1/2/2;
+		height: 100%;
+	}
+	&_list {
+		grid-area: 2/1/3/2;
+	}
+	&_button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.MuiButton-contained.MuiButton-containedPrimary {
+			height: fit-content;
+		}
+	}
+	&_settings {
+		grid-area: 1/3/3/4;
 
-    .form {
-      height: 100%;
-    }
-  }
+		.form {
+			width: 100%;
+			height: calc(100% - 50px);
+			grid-template-rows: 1fr;
+		}
+	}
 }
 
 .Play {
-  &Stats {
-    grid-area: 1/2/4/3;
-    display: flex;
-    flex-flow: column nowrap;
-    &_toggletarget,
-    .MuiFormControlLabel-root {
-      margin: 0px;
-      height: 50px;
-    }
-    &_BasicTables {
-      flex: 1 1 0px;
-      flex-basis: 0px;
-      display: flex;
-      flex-direction: column;
-      .BasicTable {
-        height: 225px;
-        margin: 5px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        .MuiTable-root {
-          max-height: 200px;
-          overflow-y: auto;
-        }
-        &_footer {
-          margin-bottom: 10px;
-        }
-      }
-    }
-  }
+	&Stats {
+		grid-area: 1/2/4/3;
+		display: flex;
+		flex-flow: column nowrap;
+		&_toggletarget,
+		.MuiFormControlLabel-root {
+			margin: 0px;
+			height: 50px;
+		}
+		&_BasicTables {
+			flex: 1 1 0px;
+			flex-basis: 0px;
+			display: flex;
+			flex-direction: column;
+			.BasicTable {
+				height: 225px;
+				margin: 5px;
+				overflow-y: auto;
+				overflow-x: hidden;
+				.MuiTable-root {
+					max-height: 200px;
+					overflow-y: auto;
+				}
+				&_footer {
+					margin-bottom: 10px;
+				}
+			}
+		}
+	}
 }

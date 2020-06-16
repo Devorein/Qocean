@@ -29,21 +29,21 @@ class Timer extends Component {
 	};
 
 	componentDidMount() {
-		// clearInterval(this.state.timer);
-		// const timer = setInterval(() => {
-		// 	if (this.state.timeout !== 0) {
-		// 		this.setState({
-		// 			timeout: this.state.timeout - 1
-		// 		});
-		// 	} else {
-		// 		this.props.onTimerEnd();
-		// 		clearInterval(timer);
-		// 	}
-		// }, 1000);
-		// this.setState({
-		// 	timeout: this.props.timeout,
-		// 	timer
-		// });
+		clearInterval(this.state.timer);
+		const timer = setInterval(() => {
+			if (this.state.timeout !== 0) {
+				this.setState({
+					timeout: this.state.timeout - 1
+				});
+			} else {
+				this.props.onTimerEnd();
+				clearInterval(timer);
+			}
+		}, 1000);
+		this.setState({
+			timeout: this.props.timeout,
+			timer
+		});
 	}
 
 	displayTime = (time) => {
@@ -56,8 +56,8 @@ class Timer extends Component {
 		const { timeout } = this.state;
 		return this.props.children({
 			timer: <TimerDisplay>{this.displayTime(timeout)}</TimerDisplay>,
-			currentTime: timeout
-			// clearInterval: this.clearInterval
+			currentTime: timeout,
+			clearInterval: this.clearInterval
 		});
 	}
 }
