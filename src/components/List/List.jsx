@@ -93,7 +93,12 @@ class List extends React.Component {
 					handleChecked,
 					handleCheckedAll,
 					moveUp: handlers.MOVE_UP,
-					moveDown: handlers.MOVE_DOWN
+					moveDown: handlers.MOVE_DOWN,
+					setSelectedIndex: (selectedIndex) => {
+						this.setState({
+							selectedIndex
+						});
+					}
 				})}
 			</HotKeys>
 		);

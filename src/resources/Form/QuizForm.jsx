@@ -4,8 +4,8 @@ import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import MultiSelect from '../../components/Input/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import TagCreatorRP from '../../RP/TagCreatorRP';
-import FileInputRP from '../../RP/FileInputRP';
+import TagCreator from '../../RP/TagCreator';
+import FileInput from '../../RP/FileInput';
 import { isEqual } from 'lodash';
 
 const validationSchema = Yup.object({
@@ -13,12 +13,7 @@ const validationSchema = Yup.object({
 		.min(3, 'Name can not be less than 3 characters')
 		.max(50, 'Name can not be more than 50 characters')
 		.required('Quiz name is required'),
-	subject: Yup.string('Enter quiz subject').required('Please provide a subject'),
-	source: Yup.string('Enter quiz source'),
-	image: Yup.string('Enter quiz image'),
-	favourite: Yup.bool().default(false),
-	public: Yup.bool().default(true),
-	folder: Yup.string('Enter folder')
+	subject: Yup.string('Enter quiz subject').required('Please provide a subject')
 });
 
 class QuizForm extends Component {
@@ -66,34 +61,18 @@ class QuizForm extends Component {
 		});
 	};
 
-	preSubmit = (getFileData, tags, values) => {
+	preSubmit = (FileInputState, tags, values) => {
 		values.folders = this.state.selected_folders;
 		values.tags = tags;
-		const { src, image } = getFileData();
-		if (image === 'link') values.image = src;
+		const { src, type } = FileInputState;
+		if (type === 'link') values.image = src;
 		return [ values, true ];
 	};
 
-	resetForm = ({ resetFileInput, resetTags, refetchTags }, cb) => {
-		let { selected_folders } = this.state;
-		if (this.props.user.current_environment.reset_on_success) {
-			selected_folders = [];
-			resetTags();
-			resetFileInput();
-		}
-		refetchTags();
-		this.setState(
-			{
-				selected_folders
-			},
-			cb ? cb : () => {}
-		);
-	};
-
-	postSubmit = (getFileData, reset, { data }) => {
-		const fd = new FormData();
-		const { file, image } = getFileData();
-		if (image === 'upload' && file) {
+	postSubmit = (FileInputState, reset, { data }) => {
+		const { file, type } = FileInputState;
+		if (type === 'upload' && file) {
+			const fd = new FormData();
 			fd.append('file', file, file.name);
 			axios
 				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
@@ -119,9 +98,25 @@ class QuizForm extends Component {
 		} else this.resetForm(reset, null);
 	};
 
+	resetForm = ({ resetFileInputState, resetTags, refetchTags }, cb) => {
+		let { selected_folders } = this.state;
+		if (this.props.user.current_environment.reset_on_success) {
+			selected_folders = [];
+			resetTags();
+			resetFileInputState();
+		}
+		refetchTags();
+		this.setState(
+			{
+				selected_folders
+			},
+			cb ? cb : () => {}
+		);
+	};
+
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit, customInputs, submitMsg, src, tags = [] } = this.props;
+		const { onSubmit, transformInputs, submitMsg, src, tags = [] } = this.props;
 		const { folders, loading, selected_folders } = this.state;
 
 		let defaultInputs = [
@@ -134,21 +129,21 @@ class QuizForm extends Component {
 		];
 
 		return (
-			<FileInputRP src={src ? src : ''}>
-				{({ getFileData, FileInput, resetFileInput }) => {
+			<FileInput src={src ? src : ''}>
+				{({ FileInput, FileInputState, resetFileInputState }) => {
 					return (
-						<TagCreatorRP tags={tags}>
-							{({ tags, resetTags, tagCreator, refetchTags }) => {
+						<TagCreator tags={tags}>
+							{({ tags, resetTags, TagCreator, refetchTags }) => {
 								defaultInputs[2] = {
 									name: 'source',
 									siblings: [
 										{
 											type: 'component',
-											component: tagCreator
+											component: TagCreator
 										}
 									]
 								};
-								if (customInputs) defaultInputs = customInputs(defaultInputs);
+								if (transformInputs) defaultInputs = transformInputs(defaultInputs);
 								defaultInputs[5] = {
 									type: 'component',
 									name: 'select_folder',
@@ -174,18 +169,18 @@ class QuizForm extends Component {
 											validationSchema={validationSchema}
 											onSubmit={onSubmit.bind(null, [
 												'quiz',
-												preSubmit.bind(null, getFileData, tags),
-												postSubmit.bind(null, getFileData, { resetFileInput, resetTags, refetchTags })
+												preSubmit.bind(null, FileInputState, tags),
+												postSubmit.bind(null, FileInputState, { resetFileInputState, resetTags, refetchTags })
 											])}
 										/>
 										{FileInput}
 									</div>
 								);
 							}}
-						</TagCreatorRP>
+						</TagCreator>
 					);
 				}}
-			</FileInputRP>
+			</FileInput>
 		);
 	}
 }

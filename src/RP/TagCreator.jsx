@@ -27,7 +27,7 @@ const TagContainer = styled.div`
 	width: 100%;
 `;
 
-class TagCreatorRP extends Component {
+class TagCreator extends Component {
 	static contextType = AppContext;
 
 	state = {
@@ -65,8 +65,9 @@ class TagCreatorRP extends Component {
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if (
-			nextProps.tags.length === this.state.tags.length &&
-			nextProps.tags.every((tag, index) => tag === this.state.tags[index])
+			nextProps.tags.length === 0 ||
+			(nextProps.tags.length === this.state.tags.length &&
+				nextProps.tags.every((tag, index) => tag === this.state.tags[index]))
 		)
 			return null;
 		else {
@@ -235,7 +236,7 @@ class TagCreatorRP extends Component {
 		return this.props.children({
 			resetTags,
 			tags: this.state.tags,
-			tagCreator: renderTagCreator(),
+			TagCreator: renderTagCreator(),
 			refetchTags
 		});
 	}
@@ -276,4 +277,4 @@ export default withStyles((theme) => ({
 			borderTop: `0px !important`
 		}
 	}
-}))(TagCreatorRP);
+}))(TagCreator);

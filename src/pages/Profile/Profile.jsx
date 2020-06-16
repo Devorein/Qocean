@@ -8,7 +8,7 @@ import { AppContext } from '../../context/AppContext';
 import GenericButton from '../../components/Buttons/GenericButton';
 import ModalRP from '../../RP/ModalRP';
 import ExportAll from './ExportAll';
-import FileInputRP from '../../RP/FileInputRP';
+import FileInput from '../../RP/FileInput';
 import ChangePassword from '../../RP/ChangePassword';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import './Profile.scss';
@@ -206,7 +206,7 @@ class Profile extends Component {
 				{({ changeResponse }) => {
 					this.changeResponse = changeResponse;
 					return (
-						<FileInputRP src={decideImage()}>
+						<FileInput src={decideImage()}>
 							{({ FileInput, getFileData }) => {
 								return (
 									<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
@@ -239,7 +239,7 @@ class Profile extends Component {
 									</ModalRP>
 								);
 							}}
-						</FileInputRP>
+						</FileInput>
 					);
 				}}
 			</CustomSnackbars>

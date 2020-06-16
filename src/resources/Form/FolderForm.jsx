@@ -72,7 +72,7 @@ class FolderForm extends Component {
 
 	render() {
 		const { preSubmit, handleChange, postSubmit } = this;
-		const { onSubmit, customInputs, submitMsg } = this.props;
+		const { onSubmit, transformInputs, submitMsg } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
 		let defaultInputs = [
 			{ name: 'name' },
@@ -112,7 +112,7 @@ class FolderForm extends Component {
 			}
 		];
 
-		if (customInputs) defaultInputs = customInputs(defaultInputs);
+		if (transformInputs) defaultInputs = transformInputs(defaultInputs);
 
 		return (
 			<div className="create_folder create_form">

@@ -123,7 +123,8 @@ class FormFiller extends Component {
 			user: this.context.user,
 			submitMsg: submitMsg || page,
 			onSubmit: page !== 'self' ? this.createResource : this.updateResource,
-			customInputs: page !== 'create' ? transformValue : null
+			transformInputs: page !== 'create' ? transformValue : null,
+			changeResponse: this.changeResponse
 		};
 		if (data) {
 			if (type === 'folder') props.selected_quizzes = page === 'self' ? data.quizzes.map(({ _id }) => _id) : [];
