@@ -4,7 +4,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import DataFetcher from '../../components/DataFetcher/DataFetcher';
 import Explorer from '../../components/Explorer/Explorer';
-import CustomList from '../../components/List/List';
+import CustomList from '../../components/List/CustomList';
 import IdList from '../../components/List/IdList';
 import PlayStats from './PlayStats';
 import PlaySettings from './PlaySettings';
