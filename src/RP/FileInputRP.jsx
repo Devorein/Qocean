@@ -1,13 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import UploadButton from '../components/Buttons/UploadButton';
-import CustomTabs from '../components/Tab/Tabs';
-import LinkIcon from '@material-ui/icons/Link';
-import PublishIcon from '@material-ui/icons/Publish';
 import TextField from '@material-ui/core/TextField';
+
+import UploadButton from '../components/Buttons/UploadButton';
+import TabSwitcher from '../components/Tab/TabSwitcher';
 
 class FileInputRP extends Component {
 	state = {
-		image: this.props.src.match(/^(http|data)/) ? 'link' : 'upload',
 		file: null,
 		src: this.props.src.match(/^(http|data)/) ? this.props.src : `http://localhost:5001/uploads/${this.props.src}`
 	};
@@ -15,8 +13,7 @@ class FileInputRP extends Component {
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if (nextProps.src !== this.state.src) {
 			this.setState({
-				src: nextProps.src.match(/^(http|data)/) ? nextProps.src : `http://localhost:5001/uploads/${nextProps.src}`,
-				image: nextProps.src.match(/^(http|data)/) ? 'link' : 'upload'
+				src: nextProps.src.match(/^(http|data)/) ? nextProps.src : `http://localhost:5001/uploads/${nextProps.src}`
 			});
 		} else return null;
 	}
@@ -35,12 +32,6 @@ class FileInputRP extends Component {
 		reader.readAsDataURL(file);
 	};
 
-	switchImageHandler = (value) => {
-		this.setState({
-			image: value.name
-		});
-	};
-
 	resetData = () => {
 		if (this.input) this.input.value = '';
 		this.setState({
@@ -51,56 +42,57 @@ class FileInputRP extends Component {
 
 	resetFileInput = () => {
 		this.setState({
-			image: 'link',
 			file: null,
 			src: this.props.src || ''
 		});
 	};
 
 	render() {
-		const { setFile, switchImageHandler, resetFileInput } = this;
-		const { image, src, file } = this.state;
-		const headers = [ { name: 'link', icon: <LinkIcon /> }, { name: 'upload', icon: <PublishIcon /> } ];
+		const { setFile, resetFileInput } = this;
+		const { src, file } = this.state;
 		return (
-			<Fragment>
-				{this.props.children({
-					resetFileInput,
-					getFileData: () => {
-						return {
-							file,
-							src,
-							image
-						};
-					},
-					FileInput: (
-						<div className="FileInput">
-							<CustomTabs
-								against={this.state.image}
-								onChange={(e, value) => {
-									switchImageHandler(headers[value]);
-								}}
-								headers={headers}
-							/>
-							{image === 'link' ? (
-								<TextField
-									value={this.state.src}
-									onChange={(e) => {
-										this.setState({
-											src: e.target.value
-										});
-									}}
-								/>
-							) : (
-								<UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
-							)}
+			<TabSwitcher comp="Fileinput" type={this.props.src.match(/^(http|data)/) ? 'link' : 'upload'}>
+				{({ CustomTabs, type: image }) => {
+					image = image.toLowerCase();
+					return (
+						<Fragment>
+							{this.props.children({
+								resetFileInput,
+								getFileData: () => {
+									return {
+										file,
+										src,
+										image
+									};
+								},
+								FileInput: (
+									<div className="FileInput">
+										<Fragment>
+											{CustomTabs}
+											{image === 'link' ? (
+												<TextField
+													value={this.state.src}
+													onChange={(e) => {
+														this.setState({
+															src: e.target.value
+														});
+													}}
+												/>
+											) : (
+												<UploadButton key={'upload'} setFile={setFile} inputRef={(input) => (this.input = input)} />
+											)}
 
-							<div className="image_preview">
-								{src ? <img src={src} alt="preview" /> : 'No image selected or linked'}
-							</div>
-						</div>
-					)
-				})}
-			</Fragment>
+											<div className="image_preview">
+												{src ? <img src={src} alt="preview" /> : 'No image selected or linked'}
+											</div>
+										</Fragment>
+									</div>
+								)
+							})}
+						</Fragment>
+					);
+				}}
+			</TabSwitcher>
 		);
 	}
 }

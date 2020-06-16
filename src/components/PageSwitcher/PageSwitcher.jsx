@@ -7,9 +7,12 @@ class PageSwitcher extends Component {
 	static contextType = AppContext;
 
 	state = {
-		type: this.context.user
-			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_landing`]
-			: 'Quiz'
+		type: (() => {
+			const prop = `default_${this.props.page.toLowerCase()}_landing`;
+			return this.context.user && this.context.user.current_environment[prop]
+				? this.context.user.current_environment[prop]
+				: 'Quiz';
+		})()
 	};
 
 	switchPage = (page) => {
@@ -33,8 +36,9 @@ class PageSwitcher extends Component {
 		let { page } = this.props;
 		page = page.toLowerCase();
 		if (page === 'explore') return [ 'User', 'Quiz', 'Question', 'Folder', 'Environment' ];
-		else if (page.match(/(self|create)/)) return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
+		else if (page.match(/(self|create|import)/)) return [ 'Quiz', 'Question', 'Folder', 'Environment' ];
 		else if (page === 'watchlist') return [ 'Quiz', 'Folder' ];
+		else if (page === 'fileinput') return [ 'Link', 'Upload' ];
 	};
 
 	render() {

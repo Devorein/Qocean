@@ -60,7 +60,7 @@ class FormFiller extends Component {
 		}
 	};
 
-	submitForm = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+	createResource = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		type = type.toLowerCase();
 		const { reset_on_success, reset_on_error } = this.context.user.current_environment;
 		let canSubmit = true;
@@ -122,7 +122,7 @@ class FormFiller extends Component {
 		const props = {
 			user,
 			submitMsg,
-			onSubmit: page !== 'self' ? this.submitForm : this.updateResource,
+			onSubmit: page !== 'self' ? this.createResource : this.updateResource,
 			customInputs: page !== 'create' ? transformValue : null
 		};
 		if (data) {

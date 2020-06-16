@@ -30,9 +30,11 @@ class QuizForm extends Component {
 
 	UNSAFE_componentWillReceiveProps(props) {
 		let isAllSame = true;
-		if (props.selected_folders && props.selected_folders.length !== this.state.selected_folders.length)
-			isAllSame = false;
-		isAllSame = isAllSame && isEqual([ ...this.state.selected_folders ].sort(), [ ...props.selected_folders ].sort());
+		if (props.selected_folders) {
+			isAllSame =
+				Boolean(props.selected_folders) && props.selected_folders.length === this.state.selected_folders.length;
+			isAllSame = isAllSame && isEqual([ ...this.state.selected_folders ].sort(), [ ...props.selected_folders ].sort());
+		}
 		if (!isAllSame) {
 			this.setState({
 				selected_folders: props.selected_folders

@@ -7,6 +7,7 @@ import HorizontalSplitIcon from '@material-ui/icons/HorizontalSplit';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PublishIcon from '@material-ui/icons/Publish';
+import LinkIcon from '@material-ui/icons/Link';
 
 export default function getIcons(icon, onClick, key) {
 	switch (icon.toLowerCase()) {
@@ -26,6 +27,8 @@ export default function getIcons(icon, onClick, key) {
 			return <DeleteIcon onClick={onClick} key={key ? key : icon} />;
 		case 'upload':
 			return <PublishIcon onClick={onClick} key={key ? key : icon} />;
+		case 'link':
+			return <LinkIcon onClick={onClick} key={key ? key : icon} />;
 		default:
 			return <FolderOpenIcon onClick={onClick} key={key ? key : icon} />;
 	}
