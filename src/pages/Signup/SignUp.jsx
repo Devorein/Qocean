@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
 import { isStrongPassword, isAlphaNumericOnly } from '../../Utils/validation';
-import FileInput from '../../RP/FileInputRP';
+import FileInput from '../../RP/FileInput';
 import { AppContext } from '../../context/AppContext';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import './Signup.scss';

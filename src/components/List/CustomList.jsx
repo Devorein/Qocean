@@ -39,7 +39,7 @@ class CustomList extends React.Component {
 
 		const items = manipulated ? filteredItems : listItems;
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
-
+		console.log(items);
 		const { checked, moveUp, moveDown, handleChecked, handleCheckedAll, selectedIndex, setSelectedIndex } = this;
 		return (
 			<div className={rootClass}>

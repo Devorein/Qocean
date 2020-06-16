@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PublishIcon from '@material-ui/icons/Publish';
 import { withSnackbar } from 'notistack';
 
-import UploadButton from '../../components/Buttons/UploadButton';
+import Upload from '../../components/Buttons/Upload';
 import CustomList from '../../components/List/CustomList';
 import FormFiller from '../FormFiller/FormFiller';
 import PageSwitcher from '../../components/PageSwitcher/PageSwitcher';
@@ -86,15 +86,15 @@ class Import extends Component {
 				{({ CustomTabs, type }) => (
 					<Fragment>
 						{CustomTabs}
-						<UploadButton msg={`Import ${type}`} accept={'application/json'}>
-							{({ UploadButton, data }) => {
+						<Upload msg={`Import ${type}`} accept={'application/json'}>
+							{({ Upload, data }) => {
 								let transformedData = [];
 								if (data) transformedData = this.transformData(type, data);
 								this.currentType = type;
 								this.transformedData = transformedData;
 								return (
 									<div className={`Import Import-${type}`}>
-										{UploadButton}
+										{Upload}
 										{transformedData.length !== 0 ? (
 											<CustomList
 												listItems={this.transformList()}
@@ -125,7 +125,7 @@ class Import extends Component {
 									</div>
 								);
 							}}
-						</UploadButton>
+						</Upload>
 					</Fragment>
 				)}
 			</PageSwitcher>

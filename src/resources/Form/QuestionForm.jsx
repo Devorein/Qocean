@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import InputForm from '../../components/Form/InputForm';
 import axios from 'axios';
 import OptionForm from './OptionForm';
-import FileInputRP from '../../RP/FileInputRP';
+import FileInput from '../../RP/FileInput';
 
 let defaultInputs = [
 	{ name: 'name' },
@@ -79,26 +79,26 @@ class QuestionForm extends Component {
 			});
 	}
 
-	preSubmit = (getFileData, formData, values) => {
+	preSubmit = (FileInputState, formData, values) => {
 		let { values: formValues, transformValues, isValid } = formData;
 		if (isValid) {
 			values = transformValues(formValues, values);
 			if (values) {
-				const { image, src } = getFileData();
-				if (image === 'link') values.image = src;
+				const { type, src } = FileInputState;
+				if (type === 'link') values.image = src;
 				return [ values, true ];
 			} else return [ values, false ];
 		} else return [ values, false ];
 	};
 
-	postSubmit = ({ getFileData, resetFileInput }, formData, response) => {
+	postSubmit = ({ FileInputState, resetFileInputState }, formData, response) => {
 		const env = this.props.user.current_environment;
 		const { resetOptionInput } = formData;
 		if (!response instanceof Error) {
 			const { data: { data: { _id } } } = response;
-			const fd = new FormData();
-			const { file, image } = getFileData();
-			if (file && image === 'upload') {
+			const { file, type } = FileInputState;
+			if (file && type === 'upload') {
+				const fd = new FormData();
 				fd.append('file', file, file.name);
 				axios
 					.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
@@ -108,19 +108,31 @@ class QuestionForm extends Component {
 						}
 					})
 					.then((data) => {
-						if (env.reset_on_success) resetOptionInput();
+						if (env.reset_on_success) {
+							resetOptionInput();
+							resetFileInputState();
+						}
 						setTimeout(() => {
 							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
 						}, env.notification_timing + 500);
 					})
 					.catch((err) => {
-						if (env.reset_on_error) resetOptionInput();
+						if (env.reset_on_error) {
+							resetFileInputState();
+							resetOptionInput();
+						}
 						setTimeout(() => {
 							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
 						}, env.notification_timing + 500);
 					});
-			} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
-		} else if (env.reset_on_success || env.reset_on_error) resetOptionInput();
+			} else if (env.reset_on_success || env.reset_on_error) {
+				resetOptionInput();
+				resetFileInputState();
+			}
+		} else if (env.reset_on_success || env.reset_on_error) {
+			resetOptionInput();
+			resetFileInputState();
+		}
 	};
 
 	render() {
@@ -128,7 +140,7 @@ class QuestionForm extends Component {
 		const {
 			onSubmit,
 			submitMsg,
-			customInputs,
+			transformInputs,
 			src = '',
 			selected_quiz = '',
 			defaultAnswers = [],
@@ -172,11 +184,11 @@ class QuestionForm extends Component {
 				<b style={{ color: this.props.theme.palette.error.main }}>You have not created any quizzes yet</b>
 			) : null
 		};
-		if (customInputs) defaultInputs = customInputs(defaultInputs);
+		if (transformInputs) defaultInputs = transformInputs(defaultInputs);
 		defaultInputs[1].defaultValue = selected_quiz;
 		return (
-			<FileInputRP src={src}>
-				{({ FileInput, resetFileInput, getFileData }) => {
+			<FileInput src={src}>
+				{({ FileInput, resetFileInputState, FileInputState }) => {
 					return (
 						<div className="create_question create_form">
 							<OptionForm
@@ -198,8 +210,8 @@ class QuestionForm extends Component {
 												validationSchema={validationSchema}
 												onSubmit={onSubmit.bind(null, [
 													'question',
-													preSubmit.bind(null, getFileData, formData),
-													postSubmit.bind(null, { getFileData, resetFileInput }, formData)
+													preSubmit.bind(null, FileInputState, formData),
+													postSubmit.bind(null, { FileInputState, resetFileInputState }, formData)
 												])}
 												classNames={'question_form'}
 												disabled={this.state.quizzes.length === 0}
@@ -213,7 +225,7 @@ class QuestionForm extends Component {
 						</div>
 					);
 				}}
-			</FileInputRP>
+			</FileInput>
 		);
 	}
 }

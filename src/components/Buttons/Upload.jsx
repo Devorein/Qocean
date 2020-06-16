@@ -3,43 +3,38 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
 
-class UploadButton extends React.Component {
+class Upload extends React.Component {
 	state = {
-		files: [],
+		file: null,
 		data: null
 	};
 
 	onChange = (e) => {
 		e.persist();
-		const { files } = this.state;
 		const reader = new FileReader();
-		const { files: [ file ] } = e.target;
-		delete files[0];
-		this.input.value = '';
-
+		const { files } = e.target;
 		reader.onload = (e) => {
-			file.text().then((data) => {
-				this.setState({ data });
-			});
+			this.setState({ data: e.target.result, file: files[0] });
 		};
-		reader.readAsDataURL(file);
+		reader.readAsDataURL(files[0]);
 	};
 
-	resetFileInput = () => {
+	resetUploadState = () => {
 		this.setState({
 			data: null,
-			files: []
+			file: null
 		});
 	};
 
 	render() {
 		const { inputRef, msg = 'Upload', accept = 'image/*', classes } = this.props;
 		const classNames = clsx(classes.root, 'upload_button');
-		const { onChange } = this;
+		const { onChange, resetUploadState } = this;
 
 		return this.props.children({
-			data: this.state.data,
-			UploadButton: (
+			resetUploadState,
+			UploadState: this.state,
+			Upload: (
 				<div className={classNames}>
 					<input
 						accept={accept}
@@ -77,4 +72,4 @@ export default withStyles((theme) => ({
 	input: {
 		display: 'none'
 	}
-}))(UploadButton);
+}))(Upload);
