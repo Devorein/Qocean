@@ -25,7 +25,7 @@ class Visualizer extends Component {
 
 		const VisualizerView = (
 			<InputSelect
-				className="Visualizer_View"
+				className="Visualizer_Manip_item Visualizer_Manip_view"
 				selectItems={[ 'Heatmap', 'Table' ].map((view) => ({ value: view, text: view }))}
 				value={this.state.view}
 				name="View"
@@ -42,12 +42,14 @@ class Visualizer extends Component {
 			<div className={`Visualizer ${classes.root}`}>
 				{title ? <div className="Visualizer_title">{title}</div> : null}
 
-				<LocalFilter contents={contents}>
+				<LocalFilter contents={contents} className="Visualizer_Manip_item Visualizer_Manip_search">
 					{({ LocalFilterSearch, filteredContents }) => {
 						return (
 							<Fragment>
-								{VisualizerView}
-								{LocalFilterSearch}
+								<div className="Visualizer_Manip">
+									{VisualizerView}
+									{LocalFilterSearch}
+								</div>
 								<div className="Visualizer_Content">{this.decideVisualizer(filteredContents)}</div>
 							</Fragment>
 						);

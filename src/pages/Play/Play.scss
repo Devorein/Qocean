@@ -30,32 +30,27 @@
 
 .Play {
 	&Stats {
-		grid-area: 1/2/4/3;
+		grid-area: 1/2/3/3;
 		display: flex;
-		flex-flow: column nowrap;
+    flex-flow: column nowrap;
 		&_toggletarget,
 		.MuiFormControlLabel-root {
 			margin: 0px;
 			height: 50px;
-		}
-		&_BasicTables {
-			flex: 1 1 0px;
-			flex-basis: 0px;
-			display: flex;
-			flex-direction: column;
-			.BasicTable {
-				height: 225px;
-				margin: 5px;
-				overflow-y: auto;
-				overflow-x: hidden;
-				.MuiTable-root {
-					max-height: 200px;
-					overflow-y: auto;
-				}
-				&_footer {
-					margin-bottom: 10px;
-				}
-			}
-		}
+    }
+    &_Visualizers{
+      height: calc(100% - 50px);
+		  display: flex;
+      flex-flow: column nowrap;
+      overflow: auto;
+      .Visualizer{
+        height: 500px;
+
+        .MuiTable-root {
+          max-height: 200px;
+          overflow-y: auto;
+        }
+      }
+    }
 	}
 }

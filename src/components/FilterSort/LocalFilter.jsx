@@ -43,16 +43,18 @@ class LocalFilter extends Component {
 	render() {
 		return this.props.children({
 			LocalFilterSearch: (
-				<TextInput
-					className="LocalFilter_Search"
-					value={this.state.searchInput}
-					name={`Search`}
-					onChange={(e) => {
-						this.setState({
-							searchInput: e.target.value
-						});
-					}}
-				/>
+				<div className={this.props.className}>
+					<TextInput
+						className={`LocalFilter_Search`}
+						value={this.state.searchInput}
+						name={`Search`}
+						onChange={(e) => {
+							this.setState({
+								searchInput: e.target.value
+							});
+						}}
+					/>
+				</div>
 			),
 			filteredContents: this.filterRows()
 		});

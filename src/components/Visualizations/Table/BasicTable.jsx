@@ -5,6 +5,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableFooter from '@material-ui/core/TableFooter';
 
 import './BasicTable.scss';
 
@@ -43,24 +44,16 @@ class BasicTable extends Component {
 								</TableRow>
 							))}
 						</TableBody>
+						<TableFooter className={'BasicTable_footer'}>
+							<TableRow key={'BasicTable_footer'}>
+								{footers.map((data, index) => (
+									<TableCell key={`${data}${index}`} align="center">
+										{data}
+									</TableCell>
+								))}
+							</TableRow>
+						</TableFooter>
 					</Table>
-				</div>
-				<div className={'BasicTable_footer'}>
-					{footers.map((data, index) => {
-						return (
-							<div
-								key={`${data}${index}`}
-								style={{
-									width:
-										this.Table && this.Table.children[0]
-											? this.Table.children[0].children[0].children[index].clientWidth + 'px'
-											: 'fit-content'
-								}}
-							>
-								{data}
-							</div>
-						);
-					})}
 				</div>
 			</div>
 		);
@@ -76,7 +69,7 @@ export default withStyles((theme) => ({
 		}
 	},
 	root: {
-		'& .BasicTable_footer': {
+		'& .BasicTable_footer .MuiTableCell-footer': {
 			backgroundColor: theme.palette.background.main
 		}
 	}
