@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { HeatMap } from '@nivo/heatmap';
+import { withTheme } from '@material-ui/core/styles';
 
 class CustomHeatmap extends Component {
 	render() {
-		const { contents, indexBy = 'name' } = this.props;
+		const { contents, indexBy = 'name', theme } = this.props;
 		let { headers, footers, rows } = contents;
 		headers = headers.slice(1).map((header) => header.name);
 
@@ -17,12 +18,25 @@ class CustomHeatmap extends Component {
 		rows.concat(obj);
 
 		const commonProperties = {
-			width: 900,
-			height: 500,
-			margin: { top: 60, right: 80, bottom: 60, left: 80 },
+			width: 750,
+			height: 750,
+			margin: { left: 200, top: 50, right: 50 },
 			data: rows,
 			indexBy,
-			keys: headers
+			keys: headers,
+			sizeVariation: 0.5
+		};
+
+		const customTheme = {
+			fontFamily: theme.typography.fontFamily,
+			fontSize: 14,
+			textColor: theme.palette.text.primary,
+			fill: theme.palette.text.primary,
+			tooltip: {
+				container: {
+					background: theme.palette.background.dark
+				}
+			}
 		};
 
 		return (
@@ -32,15 +46,28 @@ class CustomHeatmap extends Component {
 					forceSquare={true}
 					axisTop={{
 						orient: 'top',
-						tickSize: 5,
+						tickSize: 0,
 						tickPadding: 5,
 						legend: '',
 						legendOffset: 36
 					}}
+					theme={customTheme}
+					labelTextColor={theme.palette.text.primary}
+					tooltip={({ xKey, yKey, value }) => (
+						<span
+							style={{
+								color: theme.palette.text.primary,
+								backgroundColor: theme.palette.background.dark,
+								padding: 3
+							}}
+						>
+							{yKey} - {xKey}: {value}
+						</span>
+					)}
 				/>
 			</div>
 		);
 	}
 }
 
-export default CustomHeatmap;
+export default withTheme(CustomHeatmap);
