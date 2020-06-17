@@ -65,9 +65,9 @@ class Effector extends Component {
 					{PageInput}
 					{GoToPageButton}
 				</div>
-				<div className="Effector_bottombar_container">
+				<div className="Effector_Bottombar_container">
 					{IppSelect}
-					<div className="Effector_bottombar-pagenavigation">
+					<div className="Effector_Bottombar-pagenavigation">
 						<ChevronLeftIcon
 							onClick={(e) => {
 								this.movePage('prev');
@@ -339,11 +339,7 @@ class Effector extends Component {
 		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
 		return (
 			<Pagination
-				PageInputClass="Effector_bottombar-pageinput"
-				GoToPageButtonClass="Effector_bottombar-pagebutton"
-				IppSelectClass="Effector_bottombar-itemselect"
-				ItemCountClass="Effector_bottombar-itemcount"
-				PageCountClass="Effector_bottombar-pagecount"
+				prefix={'Effector_Bottombar'}
 				filter_sort={this.props.filter_sort}
 				refetchData={this.props.refetchData}
 				totalCount={this.props.totalCount}
@@ -385,7 +381,7 @@ class Effector extends Component {
 													</div>
 												),
 												EffectorBottomBar: (
-													<div className="Effector_bottombar" style={style}>
+													<div className="Effector_Bottombar" style={style}>
 														{renderEffectorBottomBar()}
 													</div>
 												),

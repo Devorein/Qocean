@@ -51,7 +51,7 @@ class Pagination extends React.Component {
 
 	render() {
 		const {
-			props: { children, IppSelectClass, PageInputClass, GoToPageButtonClass, PageCountClass, ItemCountClass },
+			props: { children, IppSelectClass, PageInputClass, GoToPageButtonClass, PageCountClass, ItemCountClass, prefix },
 			refetchData
 		} = this;
 		const { itemsPerPage, typedPage, currentPage } = this.state;
@@ -62,7 +62,7 @@ class Pagination extends React.Component {
 			refetchData,
 			IppSelect: (
 				<InputSelect
-					className={`${IppSelectClass} Pagination_ippselect`}
+					className={`${IppSelectClass} ${prefix}_ippselect Pagination_ippselect`}
 					name="Items Per Page"
 					value={itemsPerPage}
 					onChange={(e) => {
@@ -75,7 +75,7 @@ class Pagination extends React.Component {
 			),
 			PageInput: (
 				<TextInput
-					className={`${PageInputClass} Pagination_pageInput`}
+					className={`${PageInputClass} ${prefix}_pageinput Pagination_pageinput`}
 					type="number"
 					name="Go to page"
 					value={typedPage}
@@ -87,7 +87,7 @@ class Pagination extends React.Component {
 			),
 			GoToPageButton: (
 				<GenericButton
-					className={`${GoToPageButtonClass} Pagination_gotopage`}
+					className={`${GoToPageButtonClass} ${prefix}_gotopagebutton Pagination_gotopagebutton`}
 					text={'Go to page'}
 					onClick={(e) => {
 						if (currentPage !== typedPage) {
@@ -105,12 +105,12 @@ class Pagination extends React.Component {
 				/>
 			),
 			PageCount: (
-				<div className={`${PageCountClass} Pagination_pagecount`}>
+				<div className={`${PageCountClass} ${prefix}_pagecount Pagination_pagecount`}>
 					Pg. {currentPage} of {maxPage}
 				</div>
 			),
 			ItemCount: (
-				<div className={`${ItemCountClass} Pagination_itemcount`}>
+				<div className={`${ItemCountClass} ${prefix}_itemcount Pagination_itemcount`}>
 					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
 						totalCount
 					) : itemsPerPage * currentPage <= totalCount ? (

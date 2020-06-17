@@ -41,7 +41,7 @@
       margin-right: 5px;
     }
   }
-  &_bottombar {
+  &_Bottombar {
     display: flex;
     align-items: center;
     height: 75px;
@@ -53,7 +53,7 @@
       justify-content: space-evenly;
       width: 50%;
     }
-    &-pageinput,
+    &_pageinput,
     .MuiFormControl-root {
       width: 75px;
     }
@@ -73,7 +73,7 @@
       align-items: center;
       margin: 5px;
     }
-    &-itemselect {
+    &_ippselect {
       width: 150px;
       & .MuiFormControl-root {
         width: 100%;
