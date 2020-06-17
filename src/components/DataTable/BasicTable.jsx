@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -6,16 +6,18 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import shortid from 'shortid';
 
 import TextInput from '../Input/TextInput/TextInput';
+import InputSelect from '../Input/InputSelect';
 import localFilter from '../../Utils/localFilter';
 import decideTargetTypes from '../../Utils/decideTargetType';
+import Heatmap from '../Visualizations/Heatmap/Heatmap';
 
 import './BasicTable.scss';
 class BasicTable extends Component {
 	state = {
-		searchInput: ''
+		searchInput: '',
+		view: 'Table'
 	};
 
 	filterRows = () => {
@@ -45,72 +47,88 @@ class BasicTable extends Component {
 		});
 		return filteredData;
 	};
+
 	render() {
 		const { classes, title, contents } = this.props;
 		const { headers, footers } = contents;
 		const rows = this.filterRows();
+		const { view } = this.state;
 		return (
 			<div className={`BasicTable ${classes.root}`}>
 				<Typography className={classes.tableTitle} variant="body1">
 					{title}
 				</Typography>
-				<TextInput
-					value={this.state.searchInput}
-					name={`Search`}
-					onChange={(e) => {
-						this.setState({
-							searchInput: e.target.value
-						});
-					}}
-				/>
-				<div className="BasicTable_table">
-					<Table
-						stickyHeader
-						size="small"
-						className={classes.table}
-						aria-label="basic table"
-						ref={(r) => (this.Table = r)}
-					>
-						<TableHead classes={{ root: classes.tableHead }}>
-							<TableRow>
-								{headers.map(({ label, name, align }) => (
-									<TableCell key={name} align={align ? align : 'center'}>
-										{label ? label : name.charAt(0).toUpperCase() + name.substr(1)}
-									</TableCell>
-								))}
-							</TableRow>
-						</TableHead>
-
-						<TableBody>
-							{rows.map((row) => (
-								<TableRow key={row.name}>
-									{headers.map(({ name }, index) => (
-										<TableCell key={`${name}${row[name]}${index}`} align="center">
-											{row[name]}
-										</TableCell>
-									))}
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
+				<div>
+					<TextInput
+						value={this.state.searchInput}
+						name={`Search`}
+						onChange={(e) => {
+							this.setState({
+								searchInput: e.target.value
+							});
+						}}
+					/>
+					<InputSelect
+						selectItems={[ 'Heatmap', 'Table' ].map((view) => ({ value: view, text: view }))}
+						value={this.state.view}
+						name="View"
+						onChange={(e) => this.setState({ view: e.target.value })}
+					/>
 				</div>
-				<div className={'BasicTable_footer'}>
-					{footers.map((data, index) => {
-						return (
-							<div
-								key={shortid.generate()}
-								style={{
-									width:
-										this.Table && this.Table.children[0]
-											? this.Table.children[0].children[0].children[index].clientWidth + 'px'
-											: 'fit-content'
-								}}
+				{view === 'Table' ? (
+					<Fragment>
+						<div className="BasicTable_table">
+							<Table
+								stickyHeader
+								size="small"
+								className={classes.table}
+								aria-label="basic table"
+								ref={(r) => (this.Table = r)}
 							>
-								{data}
-							</div>
-						);
-					})}
-				</div>
+								<TableHead classes={{ root: classes.tableHead }}>
+									<TableRow>
+										{headers.map(({ label, name, align }) => (
+											<TableCell key={name} align={align ? align : 'center'}>
+												{label ? label : name.charAt(0).toUpperCase() + name.substr(1)}
+											</TableCell>
+										))}
+									</TableRow>
+								</TableHead>
+
+								<TableBody>
+									{rows.map((row) => (
+										<TableRow key={row.name}>
+											{headers.map(({ name }, index) => (
+												<TableCell key={`${name}${row[name]}${index}`} align="center">
+													{row[name]}
+												</TableCell>
+											))}
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</div>
+						<div className={'BasicTable_footer'}>
+							{footers.map((data, index) => {
+								return (
+									<div
+										key={`${data}${index}`}
+										style={{
+											width:
+												this.Table && this.Table.children[0]
+													? this.Table.children[0].children[0].children[index].clientWidth + 'px'
+													: 'fit-content'
+										}}
+									>
+										{data}
+									</div>
+								);
+							})}
+						</div>
+					</Fragment>
+				) : (
+					<Heatmap keys={headers.slice(1).map((header) => header.name)} data={rows} />
+				)}
 			</div>
 		);
 	}

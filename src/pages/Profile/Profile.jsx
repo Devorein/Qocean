@@ -21,9 +21,9 @@ class Profile extends Component {
 
 	static contextType = AppContext;
 
-	postSubmit = (image, file) => {
+	postSubmit = (type, file) => {
 		const fd = new FormData();
-		if (image === 'upload' && file) {
+		if (type === 'upload' && file) {
 			fd.append('file', file, file.name);
 			axios
 				.put(`http://localhost:5001/api/v1/users/${this.props.user._id}/photo`, fd, {
@@ -34,19 +34,19 @@ class Profile extends Component {
 				})
 				.then((data) => {
 					setTimeout(() => {
-						this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
+						this.changeResponse(`Uploaded`, `Successsfully uploaded image for the user`, 'success');
 					}, this.props.user.current_environment.notification_timing + 500);
 				})
 				.catch((err) => {
 					setTimeout(() => {
-						this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						this.changeResponse(`An error occurred`, err.response.data.error, 'error');
 					}, this.props.user.current_environment.notification_timing + 500);
 				});
 		}
 	};
 
 	submitForm = (
-		getFileData,
+		FileInputState,
 		{ showChangePasswordForm, values, errors, isValid, password: current_password },
 		{ name, email, username },
 		{ setSubmitting }
@@ -67,7 +67,7 @@ class Profile extends Component {
 								setSubmitting(false);
 							}, 2500);
 							this.props.refetch();
-							this.postSubmit(image, file);
+							this.postSubmit(type, file);
 						})
 						.catch((err) => {
 							this.changeResponse('An error occurred', err.response.data.error, 'error');
@@ -86,8 +86,8 @@ class Profile extends Component {
 
 		const { user } = this.props;
 		const payload = {};
-		const { file, src, image } = getFileData();
-		if (image === 'link' || (image === 'upload' && !file)) payload.image = src;
+		const { file, src, type } = FileInputState;
+		if (type === 'link' || (type === 'upload' && !file)) payload.image = src;
 		payload.name = name ? name : user.name;
 		payload.email = email ? email : user.email;
 		payload.username = username ? username : user.username;
@@ -207,7 +207,7 @@ class Profile extends Component {
 					this.changeResponse = changeResponse;
 					return (
 						<FileInput src={decideImage()}>
-							{({ FileInput, getFileData }) => {
+							{({ FileInput, FileInputState }) => {
 								return (
 									<ModalRP onClose={(e) => {}} onAccept={() => {}} modalMsg={this.renderPassword()}>
 										{({ setIsOpen }) => (
@@ -220,7 +220,7 @@ class Profile extends Component {
 																classNames={'profile_form'}
 																validationSchema={validationSchema}
 																inputs={formInputs}
-																onSubmit={this.submitForm.bind(null, getFileData, formData)}
+																onSubmit={this.submitForm.bind(null, FileInputState, formData)}
 																submitMsg={'update'}
 																disabled={disabled}
 															/>
