@@ -14,6 +14,7 @@ import Color from 'color';
 import convert from 'color-convert';
 import shortid from 'shortid';
 
+import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
@@ -23,8 +24,6 @@ import { AppContext } from '../../../context/AppContext';
 import GenericButton from '../../Buttons/GenericButton';
 import exportData from '../../../Utils/exportData';
 import filterSort from '../../../Utils/filterSort';
-import decideTargetTypes from '../../../Utils/decideTargetType';
-import localFilter from '../../../Utils/localFilter';
 
 import './Effector.scss';
 class Effector extends Component {
@@ -39,8 +38,7 @@ class Effector extends Component {
 			: 'list',
 		cols: this.props.cols || [],
 		selected_cols: this.props.cols || [],
-		selectedIndex: [],
-		searchInput: ''
+		selectedIndex: []
 	};
 
 	GLOBAL_ICONS = {};
@@ -385,15 +383,7 @@ class Effector extends Component {
 					}
 				/>
 				<div className="Effector_topbar_hidden">{this.props.data.length - this.filteredData.length} hidden</div>
-				<TextInput
-					className="Effector_topbar_search"
-					name="Search"
-					fullWidth={false}
-					value={this.state.searchInput}
-					onChange={(e) => {
-						this.setState({ searchInput: e.target.value });
-					}}
-				/>
+				{this.LocalFilterSearch}
 				{selectedIndex.length > 0 ? this.renderSelectedEffectors() : this.renderGlobalEffectors()}
 			</Fragment>
 		);
@@ -426,79 +416,57 @@ class Effector extends Component {
 		});
 	};
 
-	filterData = () => {
-		const { searchInput } = this.state;
-		const terms = searchInput.split('&');
-		let filteredData = this.props.data;
-		terms.forEach((term) => {
-			const [ prop, mod, value ] = term.split('=');
-			if (prop && mod && value && filteredData.length !== 0) {
-				const { targetType, modValues } = decideTargetTypes(prop, {
-					shouldConvertToSelectItems: true,
-					shouldConvertToAcronym: true
-				});
-				if (
-					targetType &&
-					modValues.includes(mod) &&
-					filteredData[0][prop] !== null &&
-					filteredData[0][prop] !== undefined
-				) {
-					filteredData = filteredData.filter((item) =>
-						localFilter({
-							targetType,
-							mod,
-							value,
-							against: item[prop]
-						})
-					);
-				}
-			}
-		});
-		return filteredData;
-	};
-
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
 		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
-		this.filteredData = this.filterData();
 		return (
-			<ModalRP
-				onAccept={() => {
-					const selectedDatas = selectedIndex.map((index) => this.filteredData[index]._id);
-					this.props.deleteResource(selectedDatas);
-					this.setState({
-						selectedIndex: []
-					});
+			<LocalFilter data={this.props.data} className="Effector_topbar_search">
+				{({ LocalFilterSearch, filteredContents }) => {
+					this.filteredData = filteredContents;
+					this.LocalFilterSearch = LocalFilterSearch;
+					return (
+						<ModalRP
+							onAccept={() => {
+								const selectedDatas = selectedIndex.map((index) => this.filteredData[index]._id);
+								this.props.deleteResource(selectedDatas);
+								this.setState({
+									selectedIndex: []
+								});
+							}}
+							modalMsg={deleteModalMessage()}
+						>
+							{({ setIsOpen }) => {
+								const style = {
+									backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark))
+										.darken(0.15)
+										.hex()
+								};
+								this.setIsOpen = setIsOpen;
+								return this.props.children({
+									removed_cols: difference(this.props.cols, selected_cols),
+									selectedIndex,
+									view,
+									setSelectedIndex: this.setSelectedIndex,
+									EffectorTopBar: (
+										<div className="Effector_topbar" style={style}>
+											{renderEffectorTopBar()}
+										</div>
+									),
+									EffectorBottomBar: (
+										<div className="Effector_bottombar" style={style}>
+											{renderEffectorBottomBar()}
+										</div>
+									),
+									GLOBAL_ICONS: this.GLOBAL_ICONS,
+									limit: itemsPerPage,
+									page: currentPage,
+									filteredData: this.filteredData
+								});
+							}}
+						</ModalRP>
+					);
 				}}
-				modalMsg={deleteModalMessage()}
-			>
-				{({ setIsOpen }) => {
-					const style = {
-						backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark)).darken(0.15).hex()
-					};
-					this.setIsOpen = setIsOpen;
-					return this.props.children({
-						removed_cols: difference(this.props.cols, selected_cols),
-						selectedIndex,
-						view,
-						setSelectedIndex: this.setSelectedIndex,
-						EffectorTopBar: (
-							<div className="Effector_topbar" style={style}>
-								{renderEffectorTopBar()}
-							</div>
-						),
-						EffectorBottomBar: (
-							<div className="Effector_bottombar" style={style}>
-								{renderEffectorBottomBar()}
-							</div>
-						),
-						GLOBAL_ICONS: this.GLOBAL_ICONS,
-						limit: itemsPerPage,
-						page: currentPage,
-						filteredData: this.filteredData
-					});
-				}}
-			</ModalRP>
+			</LocalFilter>
 		);
 	}
 }
