@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
 
-  &_item {
+  &_Item {
     display: flex;
     padding: 5px;
     margin: 3px;
@@ -17,11 +17,11 @@
     .MuiFormControlLabel-root {
       margin-right: 0px;
     }
-    &_container {
+    &_Sector {
       display: flex;
       align-items: center;
       padding: 3px;
-      &_item {
+      &_Item {
         margin: 0 3px;
         user-select: none;
       }
