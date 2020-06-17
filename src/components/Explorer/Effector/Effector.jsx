@@ -18,21 +18,14 @@ import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
 import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
-import TextInput from '../../Input/TextInput/TextInput';
 import CheckboxInput from '../../Input/Checkbox/CheckboxInput';
 import { AppContext } from '../../../context/AppContext';
-import GenericButton from '../../Buttons/GenericButton';
 import exportData from '../../../Utils/exportData';
-import filterSort from '../../../Utils/filterSort';
+import Pagination from '../../Pagination/Pagination';
 
 import './Effector.scss';
 class Effector extends Component {
 	state = {
-		itemsPerPage: this.context.user
-			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_ipp`]
-			: 15,
-		currentPage: 1,
-		typedPage: 1,
 		view: this.context.user
 			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_view`].toLowerCase()
 			: 'list',
@@ -63,106 +56,31 @@ class Effector extends Component {
 		});
 	}
 
-	refetchData = () => {
-		const { itemsPerPage, currentPage } = this.state;
-		const filterSortQuery = filterSort(this.props.filter_sort);
-		this.props.refetchData({
-			limit: itemsPerPage,
-			page: currentPage,
-			...filterSortQuery
-		});
-	};
-
 	renderEffectorBottomBar = () => {
-		const { totalCount } = this.props;
-		const { itemsPerPage, currentPage, typedPage } = this.state;
-		const maxPage = Math.ceil(totalCount / itemsPerPage);
+		const { PageInput, GoToPageButton, IppSelect, PageCount, ItemCount } = this;
+
 		return (
 			<Fragment>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
-					<TextInput
-						className="Effector_bottombar-pageinput"
-						type="number"
-						name="Go to page"
-						value={typedPage}
-						onChange={(e) => {
-							this.setState({ typedPage: e.target.value });
-						}}
-						inputProps={{ max: maxPage, min: 1 }}
-					/>
-					<GenericButton
-						className="Effector_bottombar-pagebutton"
-						text={'Go to page'}
-						onClick={(e) => {
-							if (currentPage !== typedPage) {
-								this.setState(
-									{
-										currentPage: typedPage
-									},
-									() => {
-										this.refetchData();
-									}
-								);
-							}
-						}}
-						disabled={typedPage > maxPage}
-					/>
+					{PageInput}
+					{GoToPageButton}
 				</div>
 				<div className="Effector_bottombar_container">
-					<InputSelect
-						className="Effector_bottombar-itemselect"
-						name="Items Per Page"
-						value={itemsPerPage}
-						onChange={(e) => {
-							this.setState({ itemsPerPage: e.target.value }, () => {
-								this.refetchData();
-							});
-						}}
-						selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
-					/>
+					{IppSelect}
 					<div className="Effector_bottombar-pagenavigation">
 						<ChevronLeftIcon
 							onClick={(e) => {
-								if (currentPage > 1) {
-									this.setState(
-										{
-											currentPage: currentPage - 1
-										},
-										() => {
-											this.refetchData();
-										}
-									);
-								}
+								this.movePage('prev');
 							}}
 						/>
 						<ChevronRightIcon
 							onClick={(e) => {
-								if (currentPage < maxPage) {
-									this.setState(
-										{
-											currentPage: currentPage + 1
-										},
-										() => {
-											this.refetchData();
-										}
-									);
-								}
+								this.movePage('next');
 							}}
 						/>
 					</div>
-					<div>
-						Pg. {currentPage} of {maxPage}
-					</div>
-					<div className="Effector_bottombar-itemcount">
-						{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
-							totalCount
-						) : itemsPerPage * currentPage <= totalCount ? (
-							itemsPerPage * currentPage
-						) : (
-							totalCount
-						)}{' '}
-						of {totalCount}
-					</div>
+					{PageCount}
+					{ItemCount}
 				</div>
 			</Fragment>
 		);
@@ -420,53 +338,70 @@ class Effector extends Component {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
 		const { selected_cols, view, selectedIndex, itemsPerPage, currentPage } = this.state;
 		return (
-			<LocalFilter data={this.props.data} className="Effector_topbar_search">
-				{({ LocalFilterSearch, filteredContents }) => {
-					this.filteredData = filteredContents;
-					this.LocalFilterSearch = LocalFilterSearch;
+			<Pagination
+				PageInputClass="Effector_bottombar-pageinput"
+				GoToPageButtonClass="Effector_bottombar-pagebutton"
+				IppSelectClass="Effector_bottombar-itemselect"
+				ItemCountClass="Effector_bottombar-itemcount"
+				PageCountClass="Effector_bottombar-pagecount"
+				filter_sort={this.props.filter_sort}
+				refetchData={this.props.refetchData}
+				totalCount={this.props.totalCount}
+				page={this.props.page}
+			>
+				{(props) => {
+					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
 					return (
-						<ModalRP
-							onAccept={() => {
-								const selectedDatas = selectedIndex.map((index) => this.filteredData[index]._id);
-								this.props.deleteResource(selectedDatas);
-								this.setState({
-									selectedIndex: []
-								});
+						<LocalFilter data={this.props.data} className="Effector_topbar_search">
+							{({ LocalFilterSearch, filteredContents }) => {
+								this.filteredData = filteredContents;
+								this.LocalFilterSearch = LocalFilterSearch;
+								return (
+									<ModalRP
+										onAccept={() => {
+											const selectedDatas = selectedIndex.map((index) => this.filteredData[index]._id);
+											this.props.deleteResource(selectedDatas);
+											this.setState({
+												selectedIndex: []
+											});
+										}}
+										modalMsg={deleteModalMessage()}
+									>
+										{({ setIsOpen }) => {
+											const style = {
+												backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark))
+													.darken(0.15)
+													.hex()
+											};
+											this.setIsOpen = setIsOpen;
+											return this.props.children({
+												removed_cols: difference(this.props.cols, selected_cols),
+												selectedIndex,
+												view,
+												setSelectedIndex: this.setSelectedIndex,
+												EffectorTopBar: (
+													<div className="Effector_topbar" style={style}>
+														{renderEffectorTopBar()}
+													</div>
+												),
+												EffectorBottomBar: (
+													<div className="Effector_bottombar" style={style}>
+														{renderEffectorBottomBar()}
+													</div>
+												),
+												GLOBAL_ICONS: this.GLOBAL_ICONS,
+												limit: itemsPerPage,
+												page: currentPage,
+												filteredData: this.filteredData
+											});
+										}}
+									</ModalRP>
+								);
 							}}
-							modalMsg={deleteModalMessage()}
-						>
-							{({ setIsOpen }) => {
-								const style = {
-									backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark))
-										.darken(0.15)
-										.hex()
-								};
-								this.setIsOpen = setIsOpen;
-								return this.props.children({
-									removed_cols: difference(this.props.cols, selected_cols),
-									selectedIndex,
-									view,
-									setSelectedIndex: this.setSelectedIndex,
-									EffectorTopBar: (
-										<div className="Effector_topbar" style={style}>
-											{renderEffectorTopBar()}
-										</div>
-									),
-									EffectorBottomBar: (
-										<div className="Effector_bottombar" style={style}>
-											{renderEffectorBottomBar()}
-										</div>
-									),
-									GLOBAL_ICONS: this.GLOBAL_ICONS,
-									limit: itemsPerPage,
-									page: currentPage,
-									filteredData: this.filteredData
-								});
-							}}
-						</ModalRP>
+						</LocalFilter>
 					);
 				}}
-			</LocalFilter>
+			</Pagination>
 		);
 	}
 }
