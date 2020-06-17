@@ -16,7 +16,6 @@ import Self from './pages/Self/Self';
 import Watchlist from './pages/Watchlist/Watchlist';
 import Home from './pages/Home/Home';
 import Import from './pages/Import/Import';
-import Detail from './pages/Detail/Detail';
 import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
 import Play from './pages/Play/Play';
@@ -54,13 +53,6 @@ class App extends Component {
 								exact
 								render={(e) => {
 									return <Explore user={session.data ? session.data.data : null} />;
-								}}
-							/>
-							<Route
-								path="/detail/:type/:id"
-								exact
-								render={(e) => {
-									return <Detail user={session.data.data} />;
 								}}
 							/>
 							<Route
