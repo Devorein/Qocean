@@ -61,7 +61,7 @@ export default function(data, type, { authenticated, flatten = false, blacklist 
 	if (!type.match(/(user|users)/)) {
 		tertiary.push('created_at', 'updated_at');
 		if (!page.match(/play|self/)) ref.push('user');
-		if (authenticated && page === 'self') secondary.push('public', 'favourite');
+		if (authenticated && page.match(/(self|play)/)) secondary.push('public', 'favourite');
 	}
 
 	function mapToSector(data) {

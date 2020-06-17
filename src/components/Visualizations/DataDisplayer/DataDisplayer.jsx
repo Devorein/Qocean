@@ -40,7 +40,6 @@ class DataDisplayer extends Component {
 				);
 			});
 		}
-
 		return (
 			<span
 				key={`${type}${sector}${sector}`}
@@ -58,7 +57,8 @@ class DataDisplayer extends Component {
 
 		const { page, type } = this;
 
-		const sectors = [ 'checked', 'actions', 'primary', 'secondary' ];
+		const sectors = [ 'primary', 'secondary' ];
+		if (page !== 'detailer') sectors.unshift('checked', 'actions');
 		if (page !== 'self') sectors.push('ref', 'tertiary');
 		else sectors.push('tertiary');
 		return (

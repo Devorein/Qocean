@@ -5,7 +5,6 @@ import TextField from '@material-ui/core/TextField';
 import clsx from 'clsx';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import shortid from 'shortid';
 
 import getIcons from '../../Utils/getIcons';
 import List from './List';
@@ -39,7 +38,6 @@ class CustomList extends React.Component {
 
 		const items = manipulated ? filteredItems : listItems;
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
-		console.log(items);
 		const { checked, moveUp, moveDown, handleChecked, handleCheckedAll, selectedIndex, setSelectedIndex } = this;
 		return (
 			<div className={rootClass}>
@@ -54,7 +52,7 @@ class CustomList extends React.Component {
 						{icons && icons.length !== 0 ? (
 							icons.map(({ icon, onClick }) => {
 								return (
-									<div key={shortid.generate()} className={`CustomList_Header_Icons_${icon.displayName}`}>
+									<div key={icon.displayName} className={`CustomList_Header_Icons_${icon.displayName}`}>
 										{React.createElement(icon, {
 											onClick: onClick.bind(
 												null,
