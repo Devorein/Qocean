@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import BasicTable from '../../components/DataTable/BasicTable';
 import quizStats from '../../Utils/quizStats';
 import CheckboxInput from '../../components/Input/Checkbox/CheckboxInput';
+import Visualizer from '../../components/Visualizations/Visualizer';
 
 class PlayStats extends Component {
 	state = {
@@ -20,16 +20,16 @@ class PlayStats extends Component {
 						this.setState({ showQuizzes: !this.state.showQuizzes });
 					}}
 				/>
-				<div className="PlayStats_BasicTables">
-					<BasicTable
+				<div className="PlayStats_Visualizers">
+					<Visualizer
 						title={'Question Time'}
 						contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'time_allocated')}
 					/>
-					<BasicTable
+					<Visualizer
 						title={'Question Difficulty'}
 						contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'difficulty')}
 					/>
-					<BasicTable title={'Question Types'} contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'type')} />
+					<Visualizer title={'Question Types'} contents={quizStats(showQuizzes ? quizzes : selectedQuizzes, 'type')} />
 				</div>
 			</div>
 		);
