@@ -10,21 +10,31 @@ class LocalFilter extends Component {
 	};
 
 	filterRows = () => {
-		const { contents: { headers, rows, footers } } = this.props;
+		const { data, contents, fixedTargetType, checkAgainst } = this.props;
+		let target = data;
+		if (contents) target = contents.rows;
 		const { searchInput } = this.state;
 		const terms = searchInput.split('&');
-		let filteredData = rows;
+		let filteredData = target;
 		terms.forEach((term) => {
 			const [ prop, mod, value ] = term.split('=');
 			if (prop && mod && value && filteredData.length !== 0) {
-				const { modValues } = decideTargetTypes('number', {
+				const { targetType, modValues } = decideTargetTypes(fixedTargetType || prop, {
 					shouldConvertToSelectItems: false,
 					shouldConvertToAcronym: true
 				});
-				if (modValues.includes(mod) && headers.map(({ name }) => name).includes(prop)) {
+				if (
+					targetType &&
+					modValues.includes(mod) &&
+					filteredData[0][prop] !== null &&
+					filteredData[0][prop] !== undefined &&
+					checkAgainst
+						? checkAgainst.includes(prop)
+						: true
+				) {
 					filteredData = filteredData.filter((item) =>
 						localFilter({
-							targetType: 'number',
+							targetType: fixedTargetType || targetType,
 							mod,
 							value,
 							against: item[prop]
@@ -33,11 +43,14 @@ class LocalFilter extends Component {
 				}
 			}
 		});
-		return {
-			headers,
-			footers,
-			rows: filteredData
-		};
+		if (contents) {
+			const { headers, footers } = contents;
+			return {
+				headers,
+				footers,
+				rows: filteredData
+			};
+		} else return filteredData;
 	};
 
 	render() {

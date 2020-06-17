@@ -1,6 +1,7 @@
 import React from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { difference } from 'lodash';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const keyMap = {
 	MOVE_UP: 'up',
@@ -57,7 +58,7 @@ class List extends React.Component {
 	handleCheckedAll = () => {
 		const { totalItems } = this.props;
 		const shouldCheck = this.state.checked.length < totalItems;
-		if (shouldCheck)
+		if (shouldCheck && totalItems !== 0)
 			this.setState({
 				checked: new Array(totalItems).fill(0).map((_, index) => index)
 			});
@@ -85,20 +86,51 @@ class List extends React.Component {
 	render() {
 		const { checked, selectedIndex } = this.state;
 		const { handleChecked, handleCheckedAll, handlers } = this;
+		const { AllCheckboxClass, children, totalItems, SelectStatClass, prefix } = this.props;
 		return (
 			<HotKeys keyMap={keyMap} className="React-hotkeys" handlers={handlers}>
-				{this.props.children({
+				{children({
 					checked,
 					selectedIndex,
 					handleChecked,
 					handleCheckedAll,
 					moveUp: handlers.MOVE_UP,
 					moveDown: handlers.MOVE_DOWN,
-					setSelectedIndex: (selectedIndex) => {
+					setSelectedIndex: (index, useGiven = false) => {
+						let { checked } = this.state;
+						if (useGiven) checked = index;
+						else {
+							const indexOf = checked.indexOf(index);
+							if (indexOf === -1) checked.push(index);
+							else checked.splice(indexOf, 1);
+						}
 						this.setState({
-							selectedIndex
+							checked
 						});
-					}
+					},
+					resetChecked: () => {
+						this.setState({
+							checked: []
+						});
+					},
+					AllCheckbox: (
+						<div className={`${AllCheckboxClass || ''} ${prefix ? prefix + 'AllCheckbox' : ''} List_AllCheckbox`}>
+							<Checkbox
+								onClick={handleCheckedAll}
+								edge="start"
+								checked={checked.length === totalItems && totalItems !== 0}
+								tabIndex={-1}
+								disableRipple
+								color="primary"
+								inputProps={{ 'aria-labelledby': 'Select All' }}
+							/>
+						</div>
+					),
+					SelectStat: (
+						<div className={`${SelectStatClass || ''} ${prefix ? prefix + 'SelectStat' : ''} List_SelectStat`}>
+							{checked.length}/{totalItems}
+						</div>
+					)
 				})}
 			</HotKeys>
 		);

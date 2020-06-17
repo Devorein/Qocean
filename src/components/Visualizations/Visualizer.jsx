@@ -42,7 +42,12 @@ class Visualizer extends Component {
 			<div className={`Visualizer ${classes.root}`}>
 				{title ? <div className="Visualizer_title">{title}</div> : null}
 
-				<LocalFilter contents={contents} className="Visualizer_Manip_item Visualizer_Manip_search">
+				<LocalFilter
+					contents={contents}
+					className="Visualizer_Manip_item Visualizer_Manip_search"
+					fixedTargetType={'number'}
+					checkAgainst={contents.headers.map(({ name }) => name)}
+				>
 					{({ LocalFilterSearch, filteredContents }) => {
 						return (
 							<Fragment>

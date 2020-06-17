@@ -338,7 +338,7 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer, getCols, updateResource, deleteResource, watchToggle } = this;
-		const { totalCount, page: currentPage, refetchData, type, filter_sort, customHandlers } = this.props;
+		const { totalCount, page, refetchData, type, filter_sort, customHandlers } = this.props;
 		let { data } = this.props;
 		const cols = getCols(data);
 		return (
@@ -350,7 +350,7 @@ class Displayer extends Component {
 							<Effector
 								updateResource={updateResource}
 								type={type}
-								page={currentPage}
+								page={page}
 								data={data}
 								totalCount={totalCount}
 								refetchData={refetchData}
@@ -368,25 +368,25 @@ class Displayer extends Component {
 									setSelectedIndex,
 									selectedIndex,
 									GLOBAL_ICONS,
-									page,
+									currentPage,
 									limit,
-									filteredData
+									filteredContents
 								}) => {
-									data = filteredData;
-									this.queryParams = { page, limit, ...filterSort(filter_sort) };
+									data = filteredContents;
+									this.queryParams = { currentPage, limit, ...filterSort(filter_sort) };
 									let manipulatedData = null;
 									if (view !== 'table')
 										manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
 											authenticated: this.context.user,
 											blacklist: removed_cols,
-											page: currentPage
+											page
 										});
 									else {
 										manipulatedData = sectorizeData(this.transformData(data, selectedIndex, setSelectedIndex), type, {
 											authenticated: this.context.user,
 											blacklist: removed_cols,
 											flatten: true,
-											page: currentPage
+											page
 										});
 									}
 									const handlers = {
