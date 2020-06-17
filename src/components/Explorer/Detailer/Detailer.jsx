@@ -1,40 +1,37 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import { AppContext } from '../../../context/AppContext';
+import qs from 'qs';
+import Color from 'color';
+import convert from 'color-convert';
+import axios from 'axios';
+import pluralize from 'pluralize';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import { withStyles } from '@material-ui/core/styles';
-import axios from 'axios';
-import pluralize from 'pluralize';
-import qs from 'qs';
-import Color from 'color';
-import convert from 'color-convert';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+
+import Stack from '../../Stack/Stack';
+import { AppContext } from '../../../context/AppContext';
 import sectorizeData from '../../../Utils/sectorizeData';
 import populateQueryParams from '../../../Utils/populateQueryParams';
 import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import TextInput from '../../Input/TextInput/TextInput';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import DataDisplayer from '../../Visualizations/DataDisplayer/DataDisplayer';
 
 import './Detailer.scss';
-const headers = {
-	headers: {
-		Authorization: `Bearer ${localStorage.getItem('token')}`
-	}
-};
+
 class Detailer extends Component {
 	static contextType = AppContext;
 
 	state = {
-		stack: [],
 		type: null,
-		data: null,
-		currentIndex: null
+		data: null
 	};
 
 	fetchData = (type, id) => {
@@ -52,36 +49,41 @@ class Detailer extends Component {
 			: ''}?${queryString}`;
 		axios
 			.get(url, {
-				...headers
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
 			})
 			.then(({ data: { data } }) => {
-				this.state.stack.push(url);
+				this.addToStack(url);
 				this.setState({
 					data,
-					stack: this.state.stack,
-					type,
-					currentIndex: this.state.currentIndex === null ? 0 : this.state.currentIndex + 1
+					type
 				});
 			});
 	};
 
 	refetchData = (currentIndex) => {
-		const { stack } = this.state;
-		const url = stack[currentIndex];
+		const url = this.StackState.stack[currentIndex];
 		const [ uri ] = url.split('?');
 		const chunks = uri.split('/');
 		let type = chunks[chunks.length - 1];
 		if (type === 'me') type = chunks[chunks.length - 2];
 		axios
 			.get(url, {
-				...headers
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
 			})
 			.then(({ data: { data } }) => {
-				this.setState({
-					data,
-					currentIndex,
-					type
-				});
+				this.setState(
+					{
+						data,
+						type
+					},
+					() => {
+						this.changeCurrentIndex(currentIndex);
+					}
+				);
 			});
 	};
 
@@ -139,32 +141,26 @@ class Detailer extends Component {
 		return value;
 	};
 
-	alterHistory = (dir) => {
-		let { stack, currentIndex } = this.state;
-		if (dir === 'left') {
-			stack.splice(0, stack.length - currentIndex);
-			currentIndex = 0;
-		} else if (dir === 'right') stack.splice(currentIndex + 1, stack.length - currentIndex);
-		this.setState({
-			stack,
-			currentIndex
-		});
-	};
-
 	renderDetailerStats = () => {
-		const { stack, currentIndex } = this.state;
+		const { StackState: { stack, currentIndex }, removeDuplicates, moveLeft, moveRight } = this;
 		return (
 			<div className="Detailer_stats">
 				<ChevronLeftIcon
 					className="Detailer_stats_left"
 					onClick={(e) => {
-						if (currentIndex !== 0) this.refetchData(currentIndex - 1);
+						if (currentIndex !== 0) {
+							moveLeft();
+							this.refetchData(currentIndex - 1);
+						}
 					}}
 				/>
 				<ChevronRightIcon
 					className="Detailer_stats_right"
 					onClick={(e) => {
-						if (currentIndex !== stack.length - 1) this.refetchData(currentIndex + 1);
+						if (currentIndex !== stack.length - 1) {
+							moveRight();
+							this.refetchData(currentIndex + 1);
+						}
 					}}
 				/>
 				<TextInput
@@ -174,7 +170,7 @@ class Detailer extends Component {
 					type="number"
 					inputProps={{
 						min: 1,
-						max: this.state.stack.length
+						max: stack.length
 					}}
 					ref={(r) => (this.TextInput = r)}
 				/>
@@ -187,23 +183,19 @@ class Detailer extends Component {
 				<DeleteSweepIcon
 					className="Detailer_stats_deleteleft"
 					onClick={(e) => {
-						this.alterHistory('left');
+						this.removeFromStack('left');
 					}}
 				/>
 				<DeleteSweepIcon
 					className="Detailer_stats_deleteright"
 					onClick={(e) => {
-						this.alterHistory('right');
+						this.removeFromStack('right');
 					}}
 				/>
 				<FileCopyIcon
 					className="Detailer_stats_removedup"
 					onClick={(e) => {
-						const { stack } = this.state;
-						this.setState({
-							stack: Array.from(new Set(stack)),
-							currentIndex: 0
-						});
+						removeDuplicates();
 					}}
 				/>
 				<div className="Detailer_stats_count">
@@ -212,17 +204,18 @@ class Detailer extends Component {
 			</div>
 		);
 	};
+
 	renderDetailer = () => {
 		const { page } = this.props;
 		const { data, type } = this.state;
 		const sectorizedData = data
 			? sectorizeData(data, type, {
 					authenticated: this.context.user,
-					singularSectorize: true,
 					purpose: 'detail',
 					page
 				})
 			: null;
+
 		if (sectorizedData) {
 			return (
 				<div className={`Detailer ${this.props.classes.Detailer}`}>
@@ -273,14 +266,20 @@ class Detailer extends Component {
 			);
 		}
 	};
+
 	render() {
-		const Detailer = this.renderDetailer();
-		return this.props.children
-			? this.props.children({
-					fetchData: this.fetchData,
-					Detailer
-				})
-			: Detailer;
+		const { renderDetailer, fetchData, props: { children } } = this;
+		return (
+			<Stack>
+				{(props) => {
+					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
+					return children({
+						fetchData,
+						Detailer: renderDetailer()
+					});
+				}}
+			</Stack>
+		);
 	}
 }
 

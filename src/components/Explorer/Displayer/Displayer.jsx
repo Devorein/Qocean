@@ -270,7 +270,7 @@ class Displayer extends Component {
 			if (item.quiz) temp.quiz = item.quiz.name;
 			if (item.user) temp.user = item.user.username;
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
-			if (page === 'self') {
+			if (page.match(/(self|play)/)) {
 				if (item.public !== undefined)
 					temp.public = item.public ? (
 						<PublicIcon onClick={this.updateResource.bind(null, [ index ], 'public')} style={{ fill: '#00a3e6' }} />

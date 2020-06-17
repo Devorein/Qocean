@@ -1,19 +1,20 @@
+.React-hotkeys{
+  height: 100%;
+}
 .GalleryDisplayer {
+  grid-auto-rows: 300px;
+  grid-template-rows: 300px;
+  display: grid;
+  grid-gap: 5px;
+  overflow-y: auto;
+  height: calc(100% - 75px);
   &_colcount {
     width: 50%;
     margin: 0 auto;
     max-width: 150px;
   }
-  &_container {
-    grid-auto-rows: 300px;
-    grid-template-rows: 300px;
-    display: grid;
-    grid-gap: 5px;
-    overflow-y: auto;
-    height: 460px;
-    overflow-y: auto;
-  }
-  &_item {
+
+  &_Item {
     padding: 5px;
     border-radius: 3px;
     overflow-y: auto;
@@ -29,7 +30,7 @@
         width: 0.75em;
       }
     }
-    &_container {
+    &_Sector {
       &-actions {
         display: flex;
         justify-content: center;
@@ -61,12 +62,12 @@
         max-height: 150px;
         overflow-y: auto;
         padding: 5px;
-        .GalleryDisplayer_item_container_item {
+        &_Item {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           padding: 3px;
-          &-value {
+          &_value {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -74,7 +75,7 @@
           }
         }
       }
-      &-ref{
+      &-ref {
         text-align: center;
       }
     }
@@ -82,25 +83,21 @@
 }
 
 .GalleryDisplayer-Quiz {
-  .GalleryDisplayer_container {
-    grid-auto-rows: 300px;
-  }
-  v .GalleryDisplayer_item_container-secondary {
+  grid-auto-rows: 300px;
+  .GalleryDisplayer_Item_Sector-secondary {
     display: grid;
     grid-template: 30px 1fr/ 1fr 1fr 1fr;
-    .GalleryDisplayer_item_container_item {
+    .GalleryDisplayer_Item_Sector_Item {
       display: flex;
       justify-content: center;
     }
-    .GalleryDisplayer_item_container-tags_item {
+    .GalleryDisplayer_Item_Sector_Item-tags {
       grid-area: 2/1/3/4;
     }
   }
 }
 
 .GalleryDisplayer-Environment {
-  .GalleryDisplayer_container {
     grid-auto-rows: 250px;
     grid-template-rows: 250px;
-  }
 }

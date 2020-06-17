@@ -4,70 +4,13 @@ import Color from 'color';
 import convert from 'color-convert';
 import InputSelect from '../../../Input/InputSelect';
 
+import DataDisplayer from '../../../Visualizations/DataDisplayer/DataDisplayer';
+
 import './GalleryDisplayer.scss';
 
 class GalleryDisplayer extends Component {
 	state = {
 		colsCount: 3
-	};
-
-	renderGalleryDisplayer = () => {
-		const { type, data, classes, currentSelected } = this.props;
-		const page = this.props.page.toLowerCase();
-		const sectors = [ 'primary', 'secondary' ];
-		if (page !== 'self') sectors.push('ref', 'tertiary');
-		else sectors.push('tertiary');
-		return (
-			<div
-				className="GalleryDisplayer_container"
-				style={{ gridTemplateColumns: `${'1fr '.repeat(this.state.colsCount)}` }}
-			>
-				{data.map((item, index) => {
-					return (
-						<div
-							className={`GalleryDisplayer_item ${classes.GalleryDisplayer_item} ${currentSelected === index
-								? 'GalleryDisplayer_item--selected'
-								: ''}`}
-							key={item._id}
-						>
-							{item.checked}
-							<div className="GalleryDisplayer_item_container GalleryDisplayer_item_container-actions">
-								{item.actions}
-							</div>
-							{sectors.map((sector, index) => {
-								return (
-									<div
-										key={`${type}${sector}${index}`}
-										className={`GalleryDisplayer_item_container GalleryDisplayer_item_container-${sector}`}
-									>
-										{Object.entries(item[sector]).map(([ _key, val ], index) => (
-											<span
-												key={`${type}${_key}${index}`}
-												className={`GalleryDisplayer_item_container_item GalleryDisplayer_item_container-${_key}_item`}
-											>
-												{sector.match(/(tertiary)/) ? (
-													<Fragment>
-														<span className="GalleryDisplayer_item_container_item-key">
-															{_key
-																.split('_')
-																.map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1))
-																.join(' ')}
-														</span>
-														<span className="GalleryDisplayer_item_container_item-value">{val}</span>
-													</Fragment>
-												) : (
-													<span className="GalleryDisplayer_item_container_item">{val}</span>
-												)}
-											</span>
-										))}
-									</div>
-								);
-							})}
-						</div>
-					);
-				})}
-			</div>
-		);
 	};
 
 	renderColSelection = () => {
@@ -84,26 +27,38 @@ class GalleryDisplayer extends Component {
 			/>
 		);
 	};
+
 	render() {
+		const { type, page, data, currentSelected, classes } = this.props;
 		return (
-			<div className={`GalleryDisplayer-${this.props.type} GalleryDisplayer`}>
+			<Fragment>
 				{this.renderColSelection()}
-				{this.renderGalleryDisplayer()}
-			</div>
+				<DataDisplayer
+					className={classes.GalleryDisplayer_item}
+					type={type}
+					page={page}
+					currentSelected={currentSelected}
+					view={'Gallery'}
+					data={data}
+					style={{ gridTemplateColumns: `${'1fr '.repeat(this.state.colsCount)}` }}
+				/>
+			</Fragment>
 		);
 	}
 }
 
 export default withStyles((theme) => ({
 	GalleryDisplayer_item: {
-		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex(),
-		'&.GalleryDisplayer_item--selected': {
+		'& .GalleryDisplayer_Item': {
+			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
+		},
+		'&. GalleryDisplayer_Item--selected': {
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
 		},
-		'& .GalleryDisplayer_item_container-tertiary': {
+		'& .GalleryDisplayer_Item_Sector-tertiary': {
 			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
 		},
-		'& .GalleryDisplayer_item_container_item-value': {
+		'& .GalleryDisplayer_Item_Sector-tertiary_Item_value': {
 			backgroundColor: theme.palette.background.light
 		}
 	}
