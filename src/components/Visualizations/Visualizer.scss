@@ -1,0 +1,27 @@
+.Visualizer{
+  &_Manip{
+    display: flex;
+    &_item{
+      width: 50%;
+      max-width: 150px;
+      margin: 3px;
+    }
+    &_search{
+      max-width: 250px;
+    }
+
+  }
+  &_title{
+    padding: 5px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    font-size: 18px;
+  }
+  &_Content{
+    height: calc(100% - 105px);
+    overflow: auto;
+  }
+}
