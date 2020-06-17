@@ -60,7 +60,7 @@ class Pagination extends React.Component {
 
 		return children({
 			refetchData,
-			IppSelect: (
+			PaginationIppSelect: (
 				<InputSelect
 					className={`${IppSelectClass} ${prefix}_ippselect Pagination_ippselect`}
 					name="Items Per Page"
@@ -73,7 +73,7 @@ class Pagination extends React.Component {
 					selectItems={[ 5, 10, 15, 20, 25, 30, 40, 50, 100 ].map((value) => ({ value, text: value }))}
 				/>
 			),
-			PageInput: (
+			PaginationPageInput: (
 				<TextInput
 					className={`${PageInputClass} ${prefix}_pageinput Pagination_pageinput`}
 					type="number"
@@ -85,7 +85,7 @@ class Pagination extends React.Component {
 					inputProps={{ max: maxPage, min: 1 }}
 				/>
 			),
-			GoToPageButton: (
+			PaginationGoToPageButton: (
 				<GenericButton
 					className={`${GoToPageButtonClass} ${prefix}_gotopagebutton Pagination_gotopagebutton`}
 					text={'Go to page'}
@@ -104,12 +104,12 @@ class Pagination extends React.Component {
 					disabled={typedPage > maxPage}
 				/>
 			),
-			PageCount: (
+			PaginationPageCount: (
 				<div className={`${PageCountClass} ${prefix}_pagecount Pagination_pagecount`}>
 					Pg. {currentPage} of {maxPage}
 				</div>
 			),
-			ItemCount: (
+			PaginationItemCount: (
 				<div className={`${ItemCountClass} ${prefix}_itemcount Pagination_itemcount`}>
 					{itemsPerPage * (currentPage - 1) + 1}-{totalCount <= itemsPerPage ? (
 						totalCount

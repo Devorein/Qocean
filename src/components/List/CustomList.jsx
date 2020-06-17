@@ -38,7 +38,7 @@ class CustomList extends React.Component {
 
 		const items = manipulated ? filteredItems : listItems;
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
-		const { checked, moveUp, moveDown, handleChecked, handleCheckedAll, selectedIndex, setSelectedIndex } = this;
+		const { checked, moveUp, moveDown, handleChecked, selectedIndex, setSelectedIndex } = this;
 		return (
 			<div className={rootClass}>
 				<div className={clsx('CustomList_Header', classes.Header)}>
@@ -56,31 +56,17 @@ class CustomList extends React.Component {
 										{React.createElement(icon, {
 											onClick: onClick.bind(
 												null,
-												(checked.length > 0 ? checked : Array(items.length).fill(0).map((_, i) => i)).map(
-													(index) => items[index]._id || index
-												)
+												checked.length > 0 ? checked : Array(items.length).fill(0).map((_, i) => items[i]._id || i)
 											)
 										})}
 									</div>
 								);
 							})
 						) : null}
-
 						<ChevronLeftIcon onClick={moveUp} />
 						<ChevronRightIcon onClick={moveDown} />
-						<div onClick={handleCheckedAll} className={'CustomList_Header_toggle'}>
-							<Checkbox
-								edge="start"
-								checked={checked.length === items.length && items.length !== 0}
-								tabIndex={-1}
-								disableRipple
-								color="primary"
-								inputProps={{ 'aria-labelledby': 'Select All' }}
-							/>
-						</div>
-						<div className={'CustomList_Header_checked'}>
-							{checked.length} / {items.length}
-						</div>
+						{this.AllCheckbox}
+						{this.SelectStat}
 					</div>
 				</div>
 
@@ -139,7 +125,7 @@ class CustomList extends React.Component {
 	render() {
 		const { renderList } = this;
 		return (
-			<List totalItems={this.props.listItems.length}>
+			<List totalItems={this.props.listItems.length} prefix="CustomList">
 				{(props) => {
 					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
 
