@@ -34,7 +34,6 @@ class CustomHeatmap extends Component {
 						orient: 'top',
 						tickSize: 5,
 						tickPadding: 5,
-						tickRotation: -55,
 						legend: '',
 						legendOffset: 36
 					}}

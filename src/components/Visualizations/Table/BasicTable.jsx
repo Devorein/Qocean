@@ -6,61 +6,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import TextInput from '../../Input/TextInput/TextInput';
-import localFilter from '../../../Utils/localFilter';
-import decideTargetTypes from '../../../Utils/decideTargetType';
-
 import './BasicTable.scss';
+
 class BasicTable extends Component {
-	state = {
-		searchInput: ''
-	};
-
-	filterRows = () => {
-		const { contents } = this.props;
-		const { headers, rows } = contents;
-		const { searchInput } = this.state;
-		const terms = searchInput.split('&');
-		let filteredData = rows;
-		terms.forEach((term) => {
-			const [ prop, mod, value ] = term.split('=');
-			if (prop && mod && value && filteredData.length !== 0) {
-				const { modValues } = decideTargetTypes('number', {
-					shouldConvertToSelectItems: false,
-					shouldConvertToAcronym: true
-				});
-				if (modValues.includes(mod) && headers.map(({ name }) => name).includes(prop)) {
-					filteredData = filteredData.filter((item) =>
-						localFilter({
-							targetType: 'number',
-							mod,
-							value,
-							against: item[prop]
-						})
-					);
-				}
-			}
-		});
-		return filteredData;
-	};
-
 	render() {
 		const { classes, contents } = this.props;
-		const { headers, footers } = contents;
-		const rows = this.filterRows();
+		const { headers, footers, rows } = contents;
 		return (
 			<div className={`BasicTable ${classes.root}`}>
-				<div>
-					<TextInput
-						value={this.state.searchInput}
-						name={`Search`}
-						onChange={(e) => {
-							this.setState({
-								searchInput: e.target.value
-							});
-						}}
-					/>
-				</div>
 				<div className="BasicTable_table">
 					<Table
 						stickyHeader

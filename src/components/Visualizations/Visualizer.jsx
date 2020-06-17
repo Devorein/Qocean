@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 
 import InputSelect from '../Input/InputSelect';
 import Heatmap from './Heatmap/Heatmap';
 import BasicTable from './Table/BasicTable';
+import LocalFilter from '../FilterSort/LocalFilter';
 
 import './Visualizer.scss';
 class Visualizer extends Component {
@@ -11,16 +12,16 @@ class Visualizer extends Component {
 		view: 'Table'
 	};
 
-	decideVisualizer = () => {
+	decideVisualizer = (contents) => {
 		const { view } = this.state;
-		const { contents, title } = this.props;
+		const { title } = this.props;
 
 		if (view === 'Table') return <BasicTable title={title} contents={contents} />;
 		else if (view === 'Heatmap') return <Heatmap title={title} contents={contents} />;
 	};
 
 	render() {
-		const { title, classes } = this.props;
+		const { title, classes, children, contents } = this.props;
 
 		const VisualizerView = (
 			<InputSelect
@@ -32,16 +33,26 @@ class Visualizer extends Component {
 			/>
 		);
 
-		return this.props.children ? (
-			this.props.children({
+		return children ? (
+			children({
 				VisualizerView,
 				Visualizer: <div className="Visualizer">{this.decideVisualizer}</div>
 			})
 		) : (
 			<div className={`Visualizer ${classes.root}`}>
-				{title ? <div className="Visualizer_title">{this.props.title}</div> : null}
-				{VisualizerView}
-				<div className="Visualizer_Content">{this.decideVisualizer()}</div>
+				{title ? <div className="Visualizer_title">{title}</div> : null}
+
+				<LocalFilter contents={contents}>
+					{({ LocalFilterSearch, filteredContents }) => {
+						return (
+							<Fragment>
+								{VisualizerView}
+								{LocalFilterSearch}
+								<div className="Visualizer_Content">{this.decideVisualizer(filteredContents)}</div>
+							</Fragment>
+						);
+					}}
+				</LocalFilter>
 			</div>
 		);
 	}
