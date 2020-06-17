@@ -7,6 +7,15 @@ class CustomHeatmap extends Component {
 		let { headers, footers, rows } = contents;
 		headers = headers.slice(1).map((header) => header.name);
 
+		const obj = {
+			[indexBy]: 0
+		};
+		headers.forEach((header, index) => {
+			obj[header] = footers[index];
+		});
+
+		rows.concat(obj);
+
 		const commonProperties = {
 			width: 900,
 			height: 500,
@@ -17,10 +26,9 @@ class CustomHeatmap extends Component {
 		};
 
 		return (
-			<div>
+			<div className="Heatmap">
 				<HeatMap
 					{...commonProperties}
-					// cellShape={CustomCell}
 					forceSquare={true}
 					axisTop={{
 						orient: 'top',

@@ -1,9 +1,11 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 
 import InputSelect from '../Input/InputSelect';
 import Heatmap from './Heatmap/Heatmap';
 import BasicTable from './Table/BasicTable';
 
+import './Visualizer.scss';
 class Visualizer extends Component {
 	state = {
 		view: 'Table'
@@ -18,32 +20,37 @@ class Visualizer extends Component {
 	};
 
 	render() {
+		const { title, classes } = this.props;
+
+		const VisualizerView = (
+			<InputSelect
+				className="Visualizer_View"
+				selectItems={[ 'Heatmap', 'Table' ].map((view) => ({ value: view, text: view }))}
+				value={this.state.view}
+				name="View"
+				onChange={(e) => this.setState({ view: e.target.value })}
+			/>
+		);
+
 		return this.props.children ? (
 			this.props.children({
-				ViewInputSelect: (
-					<InputSelect
-						className="Visualizer_View"
-						selectItems={[ 'Heatmap', 'Table' ].map((view) => ({ value: view, text: view }))}
-						value={this.state.view}
-						name="View"
-						onChange={(e) => this.setState({ view: e.target.value })}
-					/>
-				),
+				VisualizerView,
 				Visualizer: <div className="Visualizer">{this.decideVisualizer}</div>
 			})
 		) : (
-			<Fragment>
-				<InputSelect
-					className="Visualizer_View"
-					selectItems={[ 'Heatmap', 'Table' ].map((view) => ({ value: view, text: view }))}
-					value={this.state.view}
-					name="View"
-					onChange={(e) => this.setState({ view: e.target.value })}
-				/>
-				<div className="Visualizer">{this.decideVisualizer()}</div>
-			</Fragment>
+			<div className={`Visualizer ${classes.root}`}>
+				{title ? <div className="Visualizer_title">{this.props.title}</div> : null}
+				{VisualizerView}
+				<div className="Visualizer_Content">{this.decideVisualizer()}</div>
+			</div>
 		);
 	}
 }
 
-export default Visualizer;
+export default withStyles((theme) => ({
+	root: {
+		'& .Visualizer_title': {
+			backgroundColor: theme.palette.background.dark
+		}
+	}
+}))(Visualizer);

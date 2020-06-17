@@ -5,7 +5,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
 
 import TextInput from '../../Input/TextInput/TextInput';
 import localFilter from '../../../Utils/localFilter';
@@ -46,14 +45,11 @@ class BasicTable extends Component {
 	};
 
 	render() {
-		const { classes, title, contents } = this.props;
+		const { classes, contents } = this.props;
 		const { headers, footers } = contents;
 		const rows = this.filterRows();
 		return (
 			<div className={`BasicTable ${classes.root}`}>
-				<Typography className={classes.tableTitle} variant="body1">
-					{title}
-				</Typography>
 				<div>
 					<TextInput
 						value={this.state.searchInput}
@@ -125,12 +121,6 @@ export default withStyles((theme) => ({
 		'& .MuiTableCell-stickyHeader': {
 			backgroundColor: theme.palette.background.dark
 		}
-	},
-	tableTitle: {
-		fontWeight: 'bolder',
-		textAlign: 'center',
-		padding: 5,
-		backgroundColor: theme.palette.background.dark
 	},
 	root: {
 		'& .BasicTable_footer': {
