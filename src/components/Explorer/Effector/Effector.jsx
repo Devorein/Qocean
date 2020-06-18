@@ -9,7 +9,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { withTheme } from '@material-ui/core/styles';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { difference } from 'lodash';
 import Composer from 'react-composer';
 
 import LocalFilter from '../../FilterSort/LocalFilter';
@@ -17,36 +16,14 @@ import ModalRP from '../../../RP/ModalRP';
 import Pagination from '../../Pagination/Pagination';
 import DataView from '../../DataView/DataView';
 import List from '../../List/List';
-import MultiSelect from '../../Input/MultiSelect';
+import ColList from '../../List/ColList';
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
 
 import './Effector.scss';
 class Effector extends Component {
-	state = {
-		cols: this.props.cols || [],
-		selected_cols: this.props.cols || []
-	};
-
 	GLOBAL_ICONS = {};
 	static contextType = AppContext;
-
-	// ? Contained selectedIndex
-	UNSAFE_componentWillReceiveProps(props) {
-		let cols = null,
-			selected_cols = this.state.selected_cols;
-		if (props.cols.length > 0) {
-			cols = props.cols;
-			selected_cols = props.cols;
-		}
-		if (props.type !== this.props.type) {
-			selected_cols = [];
-		}
-		this.setState({
-			cols,
-			selected_cols
-		});
-	}
 
 	renderEffectorBottomBar = () => {
 		const {
@@ -232,37 +209,8 @@ class Effector extends Component {
 					{this.AllCheckbox}
 					{this.SelectStat}
 				</div>
-				{/* "Effector_Topbar_view" */}
 				{this.DataViewSelect}
-				<MultiSelect
-					customRenderValue={(selected) => `${selected ? selected.length : 0} Shown`}
-					useSwitch={true}
-					labelClass="Effector_Topbar_properties"
-					name="Toggle Properties"
-					selected={this.state.cols ? this.state.selected_cols : []}
-					handleChange={(e, child) => {
-						let selected_cols = e.target.value;
-						if (e.altKey) selected_cols = [ child.props.value ];
-						else if (e.shiftKey) {
-							const { menuitem } = child.props;
-							selected_cols = [];
-							Array(menuitem + 1).fill(0).forEach((_, index) => selected_cols.push(this.state.cols[index]));
-						}
-						this.setState({
-							selected_cols
-						});
-					}}
-					items={
-						this.state.cols ? (
-							this.state.cols.map((col) => ({
-								_id: col,
-								name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-							}))
-						) : (
-							[]
-						)
-					}
-				/>
+				{this.ColListSelect}
 				<div className="Effector_Topbar_hidden">{this.props.data.length - this.filteredContents.length} hidden</div>
 				{this.LocalFilterSearch}
 				{checked.length > 0 ? this.renderSelectedEffectors() : this.renderGlobalEffectors()}
@@ -284,18 +232,18 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { selected_cols, itemsPerPage, currentPage } = this.state;
+		const { type, page, data, filter_sort, refetchData, totalCount } = this.props;
 		return (
 			<Composer
 				components={[
 					<Pagination
 						prefix={'Effector_Bottombar'}
-						filter_sort={this.props.filter_sort}
-						refetchData={this.props.refetchData}
-						totalCount={this.props.totalCount}
-						page={this.props.page}
+						filter_sort={filter_sort}
+						refetchData={refetchData}
+						totalCount={totalCount}
+						page={page}
 					/>,
-					<LocalFilter data={this.props.data} className="Effector_Topbar_search" />,
+					<LocalFilter data={data} className="Effector_Topbar_search" />,
 					({ results, render }) => (
 						<List prefix={'Effector_Topbar'} totalItems={results[1].filteredContents.length} children={render} />
 					),
@@ -312,7 +260,8 @@ class Effector extends Component {
 							/>
 						);
 					},
-					<DataView displayComponent="displayer" prefix="Effector_Topbar" page={this.props.page} />
+					<DataView displayComponent="displayer" prefix="Effector_Topbar" page={page} />,
+					<ColList ColListSelectClass="Effector_Topbar_properties" data={data} page={page} type={type} />
 				]}
 			>
 				{(ComposedProps) => {
@@ -323,9 +272,8 @@ class Effector extends Component {
 					const style = {
 						backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
 					};
-
 					return this.props.children({
-						removed_cols: difference(this.props.cols, selected_cols),
+						removed_cols: this.ColListState.removed_cols,
 						selectedIndex: this.checked,
 						view: this.DataViewState.view,
 						setSelectedIndex: this.setSelectedIndex,
@@ -340,8 +288,8 @@ class Effector extends Component {
 							</div>
 						),
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
-						limit: itemsPerPage,
-						currentPage,
+						limit: this.itemsPerPage,
+						currentPage: this.currentPage,
 						filteredContents: this.filteredContents
 					});
 				}}
