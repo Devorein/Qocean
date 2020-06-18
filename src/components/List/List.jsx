@@ -16,7 +16,7 @@ Array.create = function(length) {
 class List extends React.Component {
 	state = {
 		checked: [],
-		selectedIndex: 0
+		selected: 0
 	};
 
 	UNSAFE_componentWillReceiveProps(props) {
@@ -75,34 +75,34 @@ class List extends React.Component {
 	handlers = {
 		MOVE_UP: (e) => {
 			this.setState({
-				selectedIndex: this.state.selectedIndex > 0 ? this.state.selectedIndex - 1 : this.props.totalItems - 1
+				selected: this.state.selected > 0 ? this.state.selected - 1 : this.props.totalItems - 1
 			});
 		},
 
 		MOVE_DOWN: (e) => {
 			this.setState({
-				selectedIndex: this.state.selectedIndex < this.props.totalItems - 1 ? this.state.selectedIndex + 1 : 0
+				selected: this.state.selected < this.props.totalItems - 1 ? this.state.selected + 1 : 0
 			});
 		},
-		CHECK: (event) => this.handleChecked(this.state.selectedIndex, event)
+		CHECK: (event) => this.handleChecked(this.state.selected, event)
 	};
 
 	render() {
-		const { checked, selectedIndex } = this.state;
+		const { checked, selected } = this.state;
 		const { handleChecked, handleCheckedAll, handlers } = this;
 		const { AllCheckboxClass, children, totalItems, SelectStatClass, prefix } = this.props;
 		return (
 			<HotKeys keyMap={keyMap} className="React-hotkeys" handlers={handlers}>
 				{children({
 					checked,
-					selectedIndex,
+					selected,
 					handleChecked,
 					handleCheckedAll,
 					moveUp: handlers.MOVE_UP,
 					moveDown: handlers.MOVE_DOWN,
-					setSelectedIndex: (selectedIndex, useGiven = false) => {
+					setSelectedIndex: (selected, useGiven = false) => {
 						this.setState({
-							selectedIndex
+							selected
 						});
 					},
 					resetChecked: () => {

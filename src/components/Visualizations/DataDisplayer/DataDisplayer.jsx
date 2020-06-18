@@ -48,12 +48,10 @@ class DataDisplayer extends Component {
 	};
 
 	render() {
-		const { data, classes, currentSelected, view, className } = this.props;
+		const { data, classes, selected, view, className } = this.props;
 		this.page = this.props.page.toLowerCase();
 		this.type = this.props.type.toLowerCase();
-
 		const { page, type } = this;
-
 		const sectors = [ 'primary', 'secondary' ];
 		if (page !== 'detailer') sectors.unshift('checked', 'actions');
 		if (page !== 'self') sectors.push('ref', 'tertiary');
@@ -66,7 +64,7 @@ class DataDisplayer extends Component {
 				{data.map((item, index) => {
 					return (
 						<div
-							className={`${view}Displayer_Item ${classes.DataDisplayer_Item} ${currentSelected === index
+							className={`${view}Displayer_Item ${classes.DataDisplayer_Item} ${selected === index
 								? `${view}Displayer_Item--selected`
 								: ''}`}
 							key={item._id}
@@ -94,7 +92,7 @@ export default withStyles((theme) => ({
 		return {
 			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5),
 			[`&.${props.view}Displayer_Item--selected`]: {
-				backgroundColor: theme.darken(theme.palette.background.dark, 0.25)
+				backgroundColor: `${theme.darken(theme.palette.background.dark, 0.25)} !important`
 			}
 		};
 	}

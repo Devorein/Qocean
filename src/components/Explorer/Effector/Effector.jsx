@@ -21,6 +21,7 @@ import DataTransformer from '../../DataTransformer/DataTransformer';
 
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
+import sectorizeData from '../../../Utils/sectorizeData';
 
 import './Effector.scss';
 
@@ -36,9 +37,11 @@ class Effector extends Component {
 			PaginationPageCount,
 			PaginationItemCount
 		} = this;
-
+		const style = {
+			backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
+		};
 		return (
-			<Fragment>
+			<div className="Effector_Bottombar" style={style}>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
 					{PaginationPageInput}
 					{PaginationGoToPageButton}
@@ -60,7 +63,7 @@ class Effector extends Component {
 					{PaginationPageCount}
 					{PaginationItemCount}
 				</div>
-			</Fragment>
+			</div>
 		);
 	};
 
@@ -206,8 +209,11 @@ class Effector extends Component {
 
 	renderEffectorTopBar = () => {
 		const { checked } = this;
+		const style = {
+			backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
+		};
 		return (
-			<Fragment>
+			<div className="Effector_Topbar" style={style}>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
 					{this.AllCheckbox}
 					{this.SelectStat}
@@ -217,7 +223,7 @@ class Effector extends Component {
 				<div className="Effector_Topbar_hidden">{this.props.data.length - this.filteredContents.length} hidden</div>
 				{this.LocalFilterSearch}
 				{checked.length > 0 ? this.renderSelectedEffectors() : this.renderGlobalEffectors()}
-			</Fragment>
+			</div>
 		);
 	};
 
@@ -283,6 +289,7 @@ class Effector extends Component {
 						<DataTransformer
 							data={results[1].filteredContents}
 							checked={results[2].checked}
+							handleChecked={results[2].handleChecked}
 							type={type}
 							page={page}
 							customHandlers={customHandlers}
@@ -302,29 +309,32 @@ class Effector extends Component {
 						Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
 					});
 
-					const style = {
-						backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
-					};
+					let { manipulatedData } = this;
+					if (this.DataViewState.view !== 'table')
+						manipulatedData = sectorizeData(manipulatedData, type, {
+							authenticated: this.context.user,
+							blacklist: this.ColListState.removed_cols,
+							page
+						});
+					else {
+						manipulatedData = sectorizeData(manipulatedData, type, {
+							authenticated: this.context.user,
+							blacklist: this.ColListState.removed_cols,
+							flatten: true,
+							page
+						});
+					}
 					return this.props.children({
-						removed_cols: this.ColListState.removed_cols,
-						manipulatedData: this.manipulatedData,
+						manipulatedData,
+						selected: this.selected,
 						selectedIndex: this.checked,
 						view: this.DataViewState.view,
 						setSelectedIndex: this.setSelectedIndex,
-						EffectorTopBar: (
-							<div className="Effector_Topbar" style={style}>
-								{renderEffectorTopBar()}
-							</div>
-						),
-						EffectorBottomBar: (
-							<div className="Effector_Bottombar" style={style}>
-								{renderEffectorBottomBar()}
-							</div>
-						),
+						EffectorTopBar: renderEffectorTopBar(),
+						EffectorBottomBar: renderEffectorBottomBar(),
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
 						limit: this.itemsPerPage,
-						currentPage: this.currentPage,
-						filteredContents: this.filteredContents
+						currentPage: this.currentPage
 					});
 				}}
 			</Composer>

@@ -35,7 +35,9 @@ class DataTransformer extends Component {
 			theme,
 			customHandlers,
 			deleteResource,
-			updateResource
+			updateResource,
+			watchToggle,
+			handleChecked
 		} = this.props;
 		type = type.toLowerCase();
 		page = page.toLowerCase();
@@ -101,7 +103,7 @@ class DataTransformer extends Component {
 							style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
 							key={'watch'}
 							onClick={(e) => {
-								this.watchToggle([ index ]);
+								watchToggle([ index ]);
 							}}
 						/>
 					);
@@ -119,12 +121,7 @@ class DataTransformer extends Component {
 				...item,
 				checked: (
 					<div className="Displayer_checked">
-						<CheckboxInput
-							checked={checked.includes(index)}
-							// onChange={(e) => {
-							// 	this.decideShortcut(e, { selectedIndex, setSelectedIndex, index });
-							// }}
-						/>
+						<CheckboxInput checked={checked.includes(index)} onChange={handleChecked.bind(null, index)} />
 					</div>
 				),
 				actions: <div className="Displayer_actions">{actions.map((action) => action)}</div>

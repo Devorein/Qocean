@@ -11,7 +11,6 @@ import BoardDisplayer from './BoardDisplayer/BoardDisplayer';
 import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
 import Effector from '../Effector/Effector';
 import { AppContext } from '../../../context/AppContext';
-import sectorizeData from '../../../Utils/sectorizeData';
 
 import exportData from '../../../Utils/exportData';
 import filterSort from '../../../Utils/filterSort';
@@ -20,9 +19,6 @@ import CustomSnackbars from '../../Snackbars/CustomSnackbars';
 import './Displayer.scss';
 
 const keyMap = {
-	MOVE_UP: 'up',
-	MOVE_DOWN: 'down',
-	SELECT: [ 's', 'shift+s', 'alt+s' ],
 	ACTION_1: '1',
 	ACTION_2: '2',
 	ACTION_3: '3',
@@ -55,9 +51,9 @@ class Displayer extends Component {
 		}
 	};
 
-	updateResource = (selectedIndex, field) => {
+	updateResource = (checked, field) => {
 		let { type, data, updateDataLocally } = this.props;
-		const updatedRows = selectedIndex.map((index) => ({ id: data[index]._id, body: { [field]: !data[index][field] } }));
+		const updatedRows = checked.map((index) => ({ id: data[index]._id, body: { [field]: !data[index][field] } }));
 		type = pluralize(type, 2).toLowerCase();
 		axios
 			.put(
@@ -71,7 +67,7 @@ class Displayer extends Component {
 			)
 			.then(({ data: { data: updatedDatas } }) => {
 				this.changeResponse('Success', `Successfully updated ${updatedDatas.length} ${type}`);
-				selectedIndex.forEach((index, _index) => {
+				checked.forEach((index, _index) => {
 					data[index] = updatedDatas[_index];
 				});
 				updateDataLocally(data);
@@ -114,10 +110,10 @@ class Displayer extends Component {
 			});
 	};
 
-	watchToggle = (selectedIndex) => {
+	watchToggle = (checked) => {
 		let { type, data, page } = this.props;
 		page = page.toLowerCase();
-		const ids = selectedIndex.map((index) => data[index]._id);
+		const ids = checked.map((index) => data[index]._id);
 		type = pluralize(type, 2).toLowerCase();
 		axios
 			.put(
@@ -162,7 +158,7 @@ class Displayer extends Component {
 		const props = {
 			data,
 			type,
-			currentSelected: this.state.currentSelected,
+			selected: this.selected,
 			page
 		};
 
@@ -192,45 +188,17 @@ class Displayer extends Component {
 									EffectorBottomBar,
 									view,
 									setSelectedIndex,
-									selectedIndex,
 									GLOBAL_ICONS,
-									removed_cols,
 									currentPage,
+									selected,
 									limit,
 									manipulatedData
 								}) => {
+									this.selected = selected;
 									this.queryParams = { currentPage, limit, ...filterSort(filter_sort) };
-									if (view !== 'table')
-										manipulatedData = sectorizeData(manipulatedData, type, {
-											authenticated: this.context.user,
-											blacklist: removed_cols,
-											page
-										});
-									else {
-										manipulatedData = sectorizeData(manipulatedData, type, {
-											authenticated: this.context.user,
-											blacklist: removed_cols,
-											flatten: true,
-											page
-										});
-									}
+
 									{
 										/* const handlers = {
-										MOVE_UP: (event) => {
-											this.setState({
-												currentSelected:
-													this.state.currentSelected > 0 ? this.state.currentSelected - 1 : data.length - 1
-											});
-										},
-										MOVE_DOWN: (event) => {
-											this.setState({
-												currentSelected:
-													this.state.currentSelected < data.length - 1 ? this.state.currentSelected + 1 : 0
-											});
-										},
-										SELECT: (e) => {
-											this.decideShortcut(e, { selectedIndex, setSelectedIndex, index: this.state.currentSelected });
-										},
 										ACTION_1: (e) => {
 											this.props.setDetailerIndex(this.state.currentSelected);
 										},
