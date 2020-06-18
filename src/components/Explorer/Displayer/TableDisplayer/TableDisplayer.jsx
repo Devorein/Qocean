@@ -10,7 +10,8 @@ import './TableDisplayer.scss';
 class TableDisplayer extends Component {
 	render() {
 		const { type, classes, currentSelected } = this.props;
-		let { data, cols } = this.props;
+		let { data } = this.props;
+		const cols = Object.keys(data[0]).filter((key) => key !== '_id');
 
 		return (
 			<div className={`TableDisplayer TableDisplayer-${type}`}>

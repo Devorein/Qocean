@@ -17,10 +17,13 @@ import Pagination from '../../Pagination/Pagination';
 import DataView from '../../DataView/DataView';
 import List from '../../List/List';
 import ColList from '../../List/ColList';
+import DataTransformer from '../../DataTransformer/DataTransformer';
+
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
 
 import './Effector.scss';
+
 class Effector extends Component {
 	GLOBAL_ICONS = {};
 	static contextType = AppContext;
@@ -232,7 +235,21 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { type, page, data, filter_sort, refetchData, totalCount } = this.props;
+		const {
+			type,
+			page,
+			customHandlers,
+			data,
+			filter_sort,
+			refetchData,
+			totalCount,
+			enableFormFiller,
+			fetchData,
+			hideDetailer,
+			updateResource,
+			deleteResource,
+			watchToggle
+		} = this.props;
 		return (
 			<Composer
 				components={[
@@ -261,7 +278,23 @@ class Effector extends Component {
 						);
 					},
 					<DataView displayComponent="displayer" prefix="Effector_Topbar" page={page} />,
-					<ColList ColListSelectClass="Effector_Topbar_properties" data={data} page={page} type={type} />
+					<ColList ColListSelectClass="Effector_Topbar_properties" data={data} page={page} type={type} />,
+					({ results, render }) => (
+						<DataTransformer
+							data={results[1].filteredContents}
+							checked={results[2].checked}
+							type={type}
+							page={page}
+							customHandlers={customHandlers}
+							enableFormFiller={enableFormFiller}
+							getDetails={fetchData}
+							hideDetailer={hideDetailer}
+							updateResource={updateResource}
+							deleteResource={deleteResource}
+							watchToggle={watchToggle}
+							children={render}
+						/>
+					)
 				]}
 			>
 				{(ComposedProps) => {
@@ -274,6 +307,7 @@ class Effector extends Component {
 					};
 					return this.props.children({
 						removed_cols: this.ColListState.removed_cols,
+						manipulatedData: this.manipulatedData,
 						selectedIndex: this.checked,
 						view: this.DataViewState.view,
 						setSelectedIndex: this.setSelectedIndex,
