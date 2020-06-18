@@ -1,50 +1,50 @@
 .play {
-	display: grid;
-	grid-template: 450px 300px/ 650px 500px 1fr;
-	height: calc(100% - 50px);
-	.Explorer {
-		grid-area: 1/1/2/2;
-		height: 100%;
-	}
-	&_list {
-		grid-area: 2/1/3/2;
-	}
-	&_button {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		.MuiButton-contained.MuiButton-containedPrimary {
-			height: fit-content;
-		}
-	}
-	&_settings {
-		grid-area: 1/3/3/4;
+  display: grid;
+  grid-template: 450px 300px/ 650px 500px 1fr;
+  height: calc(100% - 50px);
+  .Explorer {
+    grid-area: 1/1/2/2;
+    height: 100%;
+  }
+  &_list {
+    grid-area: 2/1/3/2;
+  }
+  &_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .MuiButton-contained.MuiButton-containedPrimary {
+      height: fit-content;
+    }
+  }
+  &_settings {
+    grid-area: 1/3/3/4;
 
-		.form {
-			width: 100%;
-			height: calc(100% - 50px);
-			grid-template-rows: 1fr;
-		}
-	}
+    .form {
+      width: 100%;
+      height: calc(100% - 50px);
+      grid-template-rows: 1fr;
+    }
+  }
 }
 
 .Play {
-	&Stats {
-		grid-area: 1/2/3/3;
-		display: flex;
+  &Stats {
+    grid-area: 1/2/3/3;
+    display: flex;
     flex-flow: column nowrap;
-		&_toggletarget,
-		.MuiFormControlLabel-root {
-			margin: 0px;
-			height: 50px;
+    &_toggletarget,
+    .MuiFormControlLabel-root {
+      margin: 0px;
+      height: 50px;
     }
-    &_Visualizers{
+    &_Visualizers {
       height: calc(100% - 50px);
-		  display: flex;
+      display: flex;
       flex-flow: column nowrap;
       overflow: auto;
-      .Visualizer{
-        height: 500px;
+      .Visualizer {
+        max-height: 500px;
 
         .MuiTable-root {
           max-height: 200px;
@@ -52,5 +52,5 @@
         }
       }
     }
-	}
+  }
 }

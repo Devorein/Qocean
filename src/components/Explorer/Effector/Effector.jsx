@@ -243,7 +243,7 @@ class Effector extends Component {
 						totalCount={totalCount}
 						page={page}
 					/>,
-					<LocalFilter data={data} className="Effector_Topbar_search" />,
+					<LocalFilter data={data} LocalFilterSearchClass="Effector_Topbar_search" />,
 					({ results, render }) => (
 						<List prefix={'Effector_Topbar'} totalItems={results[1].filteredContents.length} children={render} />
 					),

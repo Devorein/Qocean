@@ -25,7 +25,7 @@ class Visualizer extends Component {
 							{title ? <div className="Visualizer_title">{title}</div> : null}
 							<LocalFilter
 								contents={contents}
-								className="Visualizer_Manip_item Visualizer_Manip_search"
+								LocalFilterSearchClass="Visualizer_Manip_item Visualizer_Manip_search"
 								fixedTargetType={'number'}
 								checkAgainst={contents.headers.map(({ name }) => name)}
 							>
