@@ -5,8 +5,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Color from 'color';
-import convert from 'color-convert';
 import './TableDisplayer.scss';
 
 class TableDisplayer extends Component {
@@ -62,9 +60,9 @@ export default withStyles((theme) => ({
 			background: theme.palette.background.dark
 		},
 		'& .TableDisplayer_body': {
-			background: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex(),
+			background: theme.lighten(theme.palette.background.dark, 0.25),
 			'& .TableDisplayer_row--selected': {
-				backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
+				backgroundColor: theme.darken(theme.palette.background.dark, 0.25)
 			}
 		},
 		'& .MuiTableCell-body': {

@@ -354,7 +354,6 @@ class Displayer extends Component {
 								data={data}
 								totalCount={totalCount}
 								refetchData={refetchData}
-								cols={cols}
 								deleteResource={deleteResource}
 								watchToggle={watchToggle}
 								filter_sort={filter_sort}

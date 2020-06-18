@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
 import shortid from 'shortid';
-import Color from 'color';
-import convert from 'color-convert';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Menu from '@material-ui/core/Menu';
 import AddBoxIcon from '@material-ui/icons/AddBox';
@@ -655,7 +653,7 @@ export default withStyles((theme) => ({
 		},
 		'& .FilterSortItem_select_filters_childcontainer': {
 			marginLeft: 20,
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex()
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.15)
 		}
 	}
 }))(SSFilterSort);

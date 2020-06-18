@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Color from 'color';
-import convert from 'color-convert';
 import axios from 'axios';
 import { withStyles } from '@material-ui/core';
 import { blue } from '@material-ui/core/colors';
@@ -101,10 +99,10 @@ class ReportHeader extends Component {
 
 export default withStyles((theme) => ({
 	root: {
-		background: Color.rgb(convert.hex.rgb(theme.palette.background.main)).darken(0.25).hex(),
+		background: theme.darken(theme.palette.background.main, 0.25),
 
 		'& .report_header_row_item': {
-			background: Color.rgb(convert.hex.rgb(theme.palette.background.main)).lighten(0.1).hex(),
+			background: theme.lighten(theme.palette.background.main, 0.1),
 
 			'&--correct .text-data': {
 				color: theme.palette.success.main

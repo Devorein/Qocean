@@ -9,49 +9,21 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { withTheme } from '@material-ui/core/styles';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { difference } from 'lodash';
-import Color from 'color';
-import convert from 'color-convert';
-import shortid from 'shortid';
+import Composer from 'react-composer';
 
 import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
 import Pagination from '../../Pagination/Pagination';
+import DataView from '../../DataView/DataView';
 import List from '../../List/List';
-import InputSelect from '../../Input/InputSelect';
-import MultiSelect from '../../Input/MultiSelect';
+import ColList from '../../List/ColList';
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
 
 import './Effector.scss';
 class Effector extends Component {
-	state = {
-		view: this.context.user
-			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_view`].toLowerCase()
-			: 'list',
-		cols: this.props.cols || [],
-		selected_cols: this.props.cols || []
-	};
-
 	GLOBAL_ICONS = {};
 	static contextType = AppContext;
-
-	// ? Contained selectedIndex
-	UNSAFE_componentWillReceiveProps(props) {
-		let cols = null,
-			selected_cols = this.state.selected_cols;
-		if (props.cols.length > 0) {
-			cols = props.cols;
-			selected_cols = props.cols;
-		}
-		if (props.type !== this.props.type) {
-			selected_cols = [];
-		}
-		this.setState({
-			cols,
-			selected_cols
-		});
-	}
 
 	renderEffectorBottomBar = () => {
 		const {
@@ -118,7 +90,7 @@ class Effector extends Component {
 			) : null,
 			page === 'play' ? (
 				<AddCircleIcon
-					key={shortid.generate()}
+					key={'addtobucket'}
 					onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))}
 				/>
 			) : null
@@ -189,7 +161,7 @@ class Effector extends Component {
 			) : null,
 			page === 'play' ? (
 				<AddCircleIcon
-					key={shortid.generate()}
+					key={'addtobucketselected'}
 					onClick={this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id))}
 				/>
 			) : null
@@ -237,48 +209,8 @@ class Effector extends Component {
 					{this.AllCheckbox}
 					{this.SelectStat}
 				</div>
-				<InputSelect
-					className="Effector_Topbar_view"
-					name="Data view"
-					value={this.state.view}
-					onChange={(e) => {
-						this.setState({ view: e.target.value });
-					}}
-					selectItems={[ 'table', 'list', 'board', 'gallery' ].map((value) => ({
-						value,
-						text: value.charAt(0).toUpperCase() + value.substr(1)
-					}))}
-				/>
-
-				<MultiSelect
-					customRenderValue={(selected) => `${selected ? selected.length : 0} Shown`}
-					useSwitch={true}
-					labelClass="Effector_Topbar_properties"
-					name="Toggle Properties"
-					selected={this.state.cols ? this.state.selected_cols : []}
-					handleChange={(e, child) => {
-						let selected_cols = e.target.value;
-						if (e.altKey) selected_cols = [ child.props.value ];
-						else if (e.shiftKey) {
-							const { menuitem } = child.props;
-							selected_cols = [];
-							Array(menuitem + 1).fill(0).forEach((_, index) => selected_cols.push(this.state.cols[index]));
-						}
-						this.setState({
-							selected_cols
-						});
-					}}
-					items={
-						this.state.cols ? (
-							this.state.cols.map((col) => ({
-								_id: col,
-								name: col.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')
-							}))
-						) : (
-							[]
-						)
-					}
-				/>
+				{this.DataViewSelect}
+				{this.ColListSelect}
 				<div className="Effector_Topbar_hidden">{this.props.data.length - this.filteredContents.length} hidden</div>
 				{this.LocalFilterSearch}
 				{checked.length > 0 ? this.renderSelectedEffectors() : this.renderGlobalEffectors()}
@@ -286,10 +218,8 @@ class Effector extends Component {
 		);
 	};
 
-	deleteModalMessage = () => {
+	deleteModalMessage = (selectedItems) => {
 		const { type } = this.props;
-		const { filteredContents, checked } = this;
-		const selectedItems = checked.map((index) => filteredContents[index]);
 		return (
 			<Fragment>
 				<div>
@@ -302,72 +232,68 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { selected_cols, view, itemsPerPage, currentPage } = this.state;
+		const { type, page, data, filter_sort, refetchData, totalCount } = this.props;
 		return (
-			<Pagination
-				prefix={'Effector_Bottombar'}
-				filter_sort={this.props.filter_sort}
-				refetchData={this.props.refetchData}
-				totalCount={this.props.totalCount}
-				page={this.props.page}
+			<Composer
+				components={[
+					<Pagination
+						prefix={'Effector_Bottombar'}
+						filter_sort={filter_sort}
+						refetchData={refetchData}
+						totalCount={totalCount}
+						page={page}
+					/>,
+					<LocalFilter data={data} className="Effector_Topbar_search" />,
+					({ results, render }) => (
+						<List prefix={'Effector_Topbar'} totalItems={results[1].filteredContents.length} children={render} />
+					),
+					({ results, render }) => {
+						const selectedDatas = results[2].checked.map((index) => results[1].filteredContents[index]);
+						return (
+							<ModalRP
+								onAccept={() => {
+									this.props.deleteResource(selectedDatas.map(({ _id }) => _id));
+									results[2].resetChecked();
+								}}
+								modalMsg={deleteModalMessage(selectedDatas)}
+								children={render}
+							/>
+						);
+					},
+					<DataView displayComponent="displayer" prefix="Effector_Topbar" page={page} />,
+					<ColList ColListSelectClass="Effector_Topbar_properties" data={data} page={page} type={type} />
+				]}
 			>
-				{(props) => {
-					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-					return (
-						<LocalFilter data={this.props.data} className="Effector_Topbar_search">
-							{(props) => {
-								Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-								return (
-									<List prefix={'Effector_Topbar'} totalItems={this.filteredContents.length}>
-										{(props) => {
-											Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-											return (
-												<ModalRP
-													onAccept={() => {
-														const selectedDatas = this.checked.map((index) => this.filteredContents[index]._id);
-														this.props.deleteResource(selectedDatas);
-														this.resetChecked();
-													}}
-													modalMsg={deleteModalMessage()}
-												>
-													{({ setIsOpen }) => {
-														const style = {
-															backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark))
-																.darken(0.15)
-																.hex()
-														};
-														this.setIsOpen = setIsOpen;
-														return this.props.children({
-															removed_cols: difference(this.props.cols, selected_cols),
-															selectedIndex: this.checked,
-															view,
-															setSelectedIndex: this.setSelectedIndex,
-															EffectorTopBar: (
-																<div className="Effector_Topbar" style={style}>
-																	{renderEffectorTopBar()}
-																</div>
-															),
-															EffectorBottomBar: (
-																<div className="Effector_Bottombar" style={style}>
-																	{renderEffectorBottomBar()}
-																</div>
-															),
-															GLOBAL_ICONS: this.GLOBAL_ICONS,
-															limit: itemsPerPage,
-															currentPage,
-															filteredContents: this.filteredContents
-														});
-													}}
-												</ModalRP>
-											);
-										}}
-									</List>
-								);
-							}}
-						</LocalFilter>
-					);
+				{(ComposedProps) => {
+					ComposedProps.forEach((ComposedProp) => {
+						Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
+					});
+
+					const style = {
+						backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
+					};
+					return this.props.children({
+						removed_cols: this.ColListState.removed_cols,
+						selectedIndex: this.checked,
+						view: this.DataViewState.view,
+						setSelectedIndex: this.setSelectedIndex,
+						EffectorTopBar: (
+							<div className="Effector_Topbar" style={style}>
+								{renderEffectorTopBar()}
+							</div>
+						),
+						EffectorBottomBar: (
+							<div className="Effector_Bottombar" style={style}>
+								{renderEffectorBottomBar()}
+							</div>
+						),
+						GLOBAL_ICONS: this.GLOBAL_ICONS,
+						limit: this.itemsPerPage,
+						currentPage: this.currentPage,
+						filteredContents: this.filteredContents
+					});
 				}}
-			</Pagination>
+			</Composer>
 		);
 	}
 }

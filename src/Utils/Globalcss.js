@@ -1,17 +1,15 @@
 import { green, red } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
-import Color from 'color';
-import convert from 'color-convert';
 
 export default withStyles(
 	(theme) => {
 		return {
 			'@global': {
 				'.App': {
-					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.15).hex()
+					backgroundColor: theme.lighten(theme.palette.background.dark, 0.15)
 				},
 				'.MuiPaper-root': {
-					backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
+					backgroundColor: theme.lighten(theme.palette.background.dark, 0.25)
 				},
 				'.MuiTab-root': {
 					minWidth: 100
@@ -101,7 +99,7 @@ export default withStyles(
 				'.MuiButton-contained.MuiButton-containedPrimary': {
 					backgroundColor: theme.palette.primary.dark,
 					'&:hover': {
-						backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.primary.dark)).darken(0.05).hex()
+						backgroundColor: theme.darken(theme.palette.primary.dark, 0.05)
 					}
 				},
 				'.MuiAlert': {
