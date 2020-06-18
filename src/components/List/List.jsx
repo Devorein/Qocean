@@ -19,6 +19,10 @@ class List extends React.Component {
 		selectedIndex: 0
 	};
 
+	UNSAFE_componentWillReceiveProps(props) {
+		if (props.totalItems === 0) this.setState({ checked: [] });
+	}
+
 	handleChecked = (index, e) => {
 		const { checked } = this.state;
 		const { totalItems } = this.props;
@@ -96,16 +100,9 @@ class List extends React.Component {
 					handleCheckedAll,
 					moveUp: handlers.MOVE_UP,
 					moveDown: handlers.MOVE_DOWN,
-					setSelectedIndex: (index, useGiven = false) => {
-						let { checked } = this.state;
-						if (useGiven) checked = index;
-						else {
-							const indexOf = checked.indexOf(index);
-							if (indexOf === -1) checked.push(index);
-							else checked.splice(indexOf, 1);
-						}
+					setSelectedIndex: (selectedIndex, useGiven = false) => {
 						this.setState({
-							checked
+							selectedIndex
 						});
 					},
 					resetChecked: () => {
