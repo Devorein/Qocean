@@ -15,8 +15,8 @@ import Composer from 'react-composer';
 import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
 import Pagination from '../../Pagination/Pagination';
+import DataView from '../../DataView/DataView';
 import List from '../../List/List';
-import InputSelect from '../../Input/InputSelect';
 import MultiSelect from '../../Input/MultiSelect';
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
@@ -24,9 +24,6 @@ import exportData from '../../../Utils/exportData';
 import './Effector.scss';
 class Effector extends Component {
 	state = {
-		view: this.context.user
-			? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_view`].toLowerCase()
-			: 'list',
 		cols: this.props.cols || [],
 		selected_cols: this.props.cols || []
 	};
@@ -235,19 +232,8 @@ class Effector extends Component {
 					{this.AllCheckbox}
 					{this.SelectStat}
 				</div>
-				<InputSelect
-					className="Effector_Topbar_view"
-					name="Data view"
-					value={this.state.view}
-					onChange={(e) => {
-						this.setState({ view: e.target.value });
-					}}
-					selectItems={[ 'table', 'list', 'board', 'gallery' ].map((value) => ({
-						value,
-						text: value.charAt(0).toUpperCase() + value.substr(1)
-					}))}
-				/>
-
+				{/* "Effector_Topbar_view" */}
+				{this.DataViewSelect}
 				<MultiSelect
 					customRenderValue={(selected) => `${selected ? selected.length : 0} Shown`}
 					useSwitch={true}
@@ -298,7 +284,7 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { selected_cols, view, itemsPerPage, currentPage } = this.state;
+		const { selected_cols, itemsPerPage, currentPage } = this.state;
 		return (
 			<Composer
 				components={[
@@ -325,7 +311,8 @@ class Effector extends Component {
 								children={render}
 							/>
 						);
-					}
+					},
+					<DataView displayComponent="displayer" prefix="Effector_Topbar" page={this.props.page} />
 				]}
 			>
 				{(ComposedProps) => {
@@ -340,7 +327,7 @@ class Effector extends Component {
 					return this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
 						selectedIndex: this.checked,
-						view,
+						view: this.DataViewState.view,
 						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: (
 							<div className="Effector_Topbar" style={style}>

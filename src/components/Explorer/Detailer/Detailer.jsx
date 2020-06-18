@@ -20,7 +20,6 @@ import populateQueryParams from '../../../Utils/populateQueryParams';
 import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
 import TextInput from '../../Input/TextInput/TextInput';
-import DataDisplayer from '../../Visualizations/DataDisplayer/DataDisplayer';
 
 import './Detailer.scss';
 
