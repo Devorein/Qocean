@@ -1,9 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withTheme } from '@material-ui/core';
-import { difference } from 'lodash';
 import axios from 'axios';
 import pluralize from 'pluralize';
-import { HotKeys } from 'react-hotkeys';
 
 import TableDisplayer from './TableDisplayer/TableDisplayer';
 import ListDisplayer from './ListDisplayer/ListDisplayer';
@@ -13,7 +11,6 @@ import Effector from '../Effector/Effector';
 import { AppContext } from '../../../context/AppContext';
 
 import exportData from '../../../Utils/exportData';
-import filterSort from '../../../Utils/filterSort';
 
 import CustomSnackbars from '../../Snackbars/CustomSnackbars';
 import './Displayer.scss';
@@ -143,22 +140,13 @@ class Displayer extends Component {
 			});
 	};
 
-	decideShortcut = (e, { selectedIndex, setSelectedIndex, index }) => {
-		const { altKey, shiftKey } = e.nativeEvent;
-		if (shiftKey && altKey) {
-			const indexes = Array(index + 1).fill(0).map((_, _index) => _index);
-			setSelectedIndex(difference(indexes, selectedIndex), true);
-		} else if (shiftKey) setSelectedIndex(Array(index + 1).fill(0).map((_, _index) => _index), true);
-		else if (altKey) setSelectedIndex([ index ], true);
-		else setSelectedIndex(index);
-	};
-
-	decideDisplayer = (data, view) => {
+	decideDisplayer = () => {
+		const { manipulatedData, view, selected } = this;
 		const { type, page } = this.props;
 		const props = {
-			data,
+			data: manipulatedData,
 			type,
-			selected: this.selected,
+			selected,
 			page
 		};
 
@@ -170,7 +158,6 @@ class Displayer extends Component {
 
 	render() {
 		const { decideDisplayer, updateResource, deleteResource, watchToggle } = this;
-		const { page, type, filter_sort } = this.props;
 		return (
 			<div className="Displayer">
 				<CustomSnackbars>
@@ -183,20 +170,8 @@ class Displayer extends Component {
 								watchToggle={watchToggle}
 								{...this.props}
 							>
-								{({
-									EffectorTopBar,
-									EffectorBottomBar,
-									view,
-									setSelectedIndex,
-									GLOBAL_ICONS,
-									currentPage,
-									selected,
-									limit,
-									manipulatedData
-								}) => {
-									this.selected = selected;
-									this.queryParams = { currentPage, limit, ...filterSort(filter_sort) };
-
+								{(props) => {
+									Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
 									{
 										/* const handlers = {
 										ACTION_1: (e) => {
@@ -225,18 +200,18 @@ class Displayer extends Component {
 									}
 									return (
 										<Fragment>
-											{EffectorTopBar}
+											{this.EffectorTopBar}
 											<div
-												className={`Displayer_data Displayer_data-${view}`}
+												className={`Displayer_data Displayer_data-${this.view}`}
 												style={{
 													backgroundColor: this.props.theme.palette.background.main
 												}}
 											>
 												{/* <HotKeys keyMap={keyMap} handlers={handlers} className="React-hotkeys"> */}
-												{decideDisplayer(manipulatedData, view)}
+												{decideDisplayer()}
 												{/* </HotKeys> */}
 											</div>
-											{EffectorBottomBar}
+											{this.EffectorBottomBar}
 										</Fragment>
 									);
 								}}

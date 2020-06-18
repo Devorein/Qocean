@@ -22,6 +22,7 @@ import DataTransformer from '../../DataTransformer/DataTransformer';
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
 import sectorizeData from '../../../Utils/sectorizeData';
+import filterSort from '../../../Utils/filterSort';
 
 import './Effector.scss';
 
@@ -310,31 +311,25 @@ class Effector extends Component {
 					});
 
 					let { manipulatedData } = this;
-					if (this.DataViewState.view !== 'table')
-						manipulatedData = sectorizeData(manipulatedData, type, {
-							authenticated: this.context.user,
-							blacklist: this.ColListState.removed_cols,
-							page
-						});
-					else {
-						manipulatedData = sectorizeData(manipulatedData, type, {
-							authenticated: this.context.user,
-							blacklist: this.ColListState.removed_cols,
-							flatten: true,
-							page
-						});
-					}
+					manipulatedData = sectorizeData(manipulatedData, type, {
+						authenticated: this.context.user,
+						blacklist: this.ColListState.removed_cols,
+						page,
+						flatten: this.DataViewState.view === 'table'
+					});
+
 					return this.props.children({
 						manipulatedData,
 						selected: this.selected,
-						selectedIndex: this.checked,
 						view: this.DataViewState.view,
-						setSelectedIndex: this.setSelectedIndex,
 						EffectorTopBar: renderEffectorTopBar(),
 						EffectorBottomBar: renderEffectorBottomBar(),
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
-						limit: this.itemsPerPage,
-						currentPage: this.currentPage
+						queryParams: {
+							currentPage: this.PaginationState.currentPage,
+							limit: this.PaginationState.limit,
+							...filterSort(filter_sort)
+						}
 					});
 				}}
 			</Composer>
