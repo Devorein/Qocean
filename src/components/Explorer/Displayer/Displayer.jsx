@@ -29,10 +29,6 @@ const keyMap = {
 class Displayer extends Component {
 	static contextType = AppContext;
 
-	state = {
-		currentSelected: 0
-	};
-
 	componentDidMount() {
 		this.props.refetchData({
 			limit: this.context.user
@@ -187,16 +183,7 @@ class Displayer extends Component {
 											this.deleteResource([ data[this.state.currentSelected]._id ]);
 										}
 									};
-									[ 1, 2, 3, 4 ].forEach((item) => {
-										handlers[`GLOBAL_ACTION_${item}`] = (e) => {
-											const evt = new MouseEvent('click', {
-												bubbles: true,
-												cancelable: true,
-												view: window
-											});
-											GLOBAL_ICONS[`GLOBAL_ACTION_${item}`].dispatchEvent(evt);
-										};
-									}); */
+									 */
 									}
 									return (
 										<Fragment>
@@ -207,9 +194,7 @@ class Displayer extends Component {
 													backgroundColor: this.props.theme.palette.background.main
 												}}
 											>
-												{/* <HotKeys keyMap={keyMap} handlers={handlers} className="React-hotkeys"> */}
 												{decideDisplayer()}
-												{/* </HotKeys> */}
 											</div>
 											{this.EffectorBottomBar}
 										</Fragment>

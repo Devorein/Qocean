@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { RotateLeft } from '@material-ui/icons';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import StarIcon from '@material-ui/icons/Star';
 import PublicIcon from '@material-ui/icons/Public';
@@ -18,6 +18,7 @@ import DataView from '../../DataView/DataView';
 import List from '../../List/List';
 import ColList from '../../List/ColList';
 import DataTransformer from '../../DataTransformer/DataTransformer';
+import ActionShortcut from '../../ActionShortcut/ActionShortcut';
 
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
@@ -75,50 +76,31 @@ class Effector extends Component {
 		page = page.toLowerCase();
 		type = type.toLowerCase();
 		const effectors = [
-			<RotateLeftIcon
-				key={'refetch'}
-				ref={(ref) => {
-					this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
-				}}
+			<RotateLeft
 				onClick={(e) => {
 					this.refetchData();
 				}}
 			/>,
 			type !== 'user' && page !== 'play' ? (
 				<GetAppIcon
-					key={'export'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-					}}
 					onClick={(e) => {
 						exportData(type, filteredContents);
 					}}
 				/>
 			) : null,
 			page === 'play' ? (
-				<AddCircleIcon
-					key={'addtobucket'}
-					onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))}
-				/>
+				<AddCircleIcon onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))} />
 			) : null
 		];
 		const array = Array(filteredContents.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
 				<StarIcon
-					key={'favourite'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
-					}}
 					onClick={(e) => {
 						updateResource(array, 'favourite');
 					}}
 				/>,
 				<PublicIcon
-					key={'public'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
-					}}
 					onClick={(e) => {
 						updateResource(array, 'public');
 					}}
@@ -128,7 +110,6 @@ class Effector extends Component {
 			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user && page !== 'play') {
 				effectors.push(
 					<VisibilityIcon
-						key={'watch'}
 						onClick={(e) => {
 							this.props.watchToggle(array);
 						}}
@@ -136,7 +117,21 @@ class Effector extends Component {
 				);
 			}
 		}
-		return <div className="Effector_Topbar_globals">{effectors.map((eff) => eff)}</div>;
+		return (
+			<div className="Effector_Topbar_globals">
+				{effectors.map((eff, index) => {
+					if (eff) {
+						const clonedEff = React.cloneElement(eff, {
+							...eff.props,
+							key: `${eff.type.displayName}${index}`,
+							ref: (ref) => (this.GLOBAL_ICONS[eff.type.displayName] = ref)
+						});
+						return clonedEff;
+					}
+					return null;
+				})}
+			</div>
+		);
 	};
 
 	renderSelectedEffectors = () => {
@@ -302,12 +297,13 @@ class Effector extends Component {
 							watchToggle={watchToggle}
 							children={render}
 						/>
-					)
+					),
+					<ActionShortcut actions={this.GLOBAL_ICONS} />
 				]}
 			>
 				{(ComposedProps) => {
 					ComposedProps.forEach((ComposedProp) => {
-						Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
+						if (ComposedProp) Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
 					});
 
 					let { manipulatedData } = this;
