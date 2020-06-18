@@ -10,8 +10,6 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import { withTheme } from '@material-ui/core/styles';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { difference } from 'lodash';
-import Color from 'color';
-import convert from 'color-convert';
 import Composer from 'react-composer';
 
 import LocalFilter from '../../FilterSort/LocalFilter';
@@ -336,8 +334,9 @@ class Effector extends Component {
 					});
 
 					const style = {
-						backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark)).darken(0.15).hex()
+						backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
 					};
+
 					return this.props.children({
 						removed_cols: difference(this.props.cols, selected_cols),
 						selectedIndex: this.checked,

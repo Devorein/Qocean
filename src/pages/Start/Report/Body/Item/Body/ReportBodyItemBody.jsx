@@ -3,12 +3,10 @@ import styled from 'styled-components';
 import shortid from 'shortid';
 import { withTheme } from '@material-ui/core';
 import { orange } from '@material-ui/core/colors';
-import Color from 'color';
-import convert from 'color-convert';
 
 const ReportBodyItemBody = styled.div`
 	& .report_body_item_body_option {
-		background: ${(props) => Color.rgb(convert.hex.rgb(props.theme.palette.background.dark)).lighten(0.1).hex()};
+		background: ${(props) => props.theme.lighten(props.theme.palette.background.dark, 0.1)};
 		&--correct_selected .color {
 			background: ${(props) => props.theme.palette.success.main};
 		}

@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Color from 'color';
-import convert from 'color-convert';
-
 class DataDisplayer extends Component {
 	renderSectorKey = (sector, key) => {
 		const { view } = this.props;
@@ -95,9 +92,9 @@ class DataDisplayer extends Component {
 export default withStyles((theme) => ({
 	DataDisplayer_Item: (props) => {
 		return {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex(),
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5),
 			[`&.${props.view}Displayer_Item--selected`]: {
-				backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
+				backgroundColor: theme.darken(theme.palette.background.dark, 0.25)
 			}
 		};
 	}

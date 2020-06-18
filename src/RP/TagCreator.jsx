@@ -2,17 +2,16 @@ import React, { Component } from 'react';
 import { SketchPicker } from 'react-color';
 import axios from 'axios';
 import Button from '@material-ui/core/Button';
-import { AppContext } from '../context/AppContext';
 import styled from 'styled-components';
-import DeletableChip from '../components/Chip/DeletableChip';
 import { withStyles } from '@material-ui/core/styles';
-import validateColor from 'validate-color';
 import { FormLabel, TextField } from '@material-ui/core';
+import validateColor from 'validate-color';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+
+import DeletableChip from '../components/Chip/DeletableChip';
+import { AppContext } from '../context/AppContext';
 import MultiSelect from '../components/Input/MultiSelect';
 import RegularChip from '../components/Chip/RegularChip';
-import AddBoxIcon from '@material-ui/icons/AddBox';
-import Color from 'color';
-import convert from 'color-convert';
 
 const PrevTagSelection = styled.div`
 	width: 100%;
@@ -273,7 +272,7 @@ export default withStyles((theme) => ({
 			fontFamily: theme.typography.fontFamily
 		},
 		'& .flexbox-fix:last-child': {
-			background: `${Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()} !important`,
+			background: `${theme.darken(theme.palette.background.dark, 0.25)} !important`,
 			borderTop: `0px !important`
 		}
 	}

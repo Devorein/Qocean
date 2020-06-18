@@ -1,5 +1,7 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 import { blue, red, pink } from '@material-ui/core/colors';
+import Color from 'color';
+import convert from 'color-convert';
 
 const decideBackground = (theme) => {
 	if (theme === 'Dark') return [ '#212121', '#424242', '#616161' ];
@@ -40,7 +42,9 @@ const theme = (current_environment) => {
 		},
 		typography: {
 			fontFamily: display_font
-		}
+		},
+		darken: (color, amnt) => Color.rgb(convert.hex.rgb(color)).darken(amnt).hex(),
+		lighten: (color, amnt) => Color.rgb(convert.hex.rgb(color)).lighten(amnt).hex()
 	});
 };
 export default theme;

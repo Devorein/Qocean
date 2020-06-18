@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import qs from 'qs';
-import Color from 'color';
-import convert from 'color-convert';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import StarIcon from '@material-ui/icons/Star';
@@ -285,15 +283,15 @@ class Detailer extends Component {
 
 export default withStyles((theme) => ({
 	Detailer: {
-		backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.15).hex(),
+		backgroundColor: theme.darken(theme.palette.background.dark, 0.15),
 		'& .Detailer_container-tertiary': {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5)
 		},
 		'& .Detailer_container-tertiary_item_value': {
 			backgroundColor: theme.palette.background.light
 		},
 		'& .Detailer_container-refs_item_value_container_item': {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5)
 		}
 	}
 }))(Detailer);

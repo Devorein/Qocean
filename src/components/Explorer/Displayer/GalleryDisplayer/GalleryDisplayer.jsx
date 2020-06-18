@@ -1,7 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Color from 'color';
-import convert from 'color-convert';
 import InputSelect from '../../../Input/InputSelect';
 
 import DataDisplayer from '../../../Visualizations/DataDisplayer/DataDisplayer';
@@ -50,13 +48,13 @@ class GalleryDisplayer extends Component {
 export default withStyles((theme) => ({
 	GalleryDisplayer_item: {
 		'& .GalleryDisplayer_Item': {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.5).hex()
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5)
 		},
 		'&. GalleryDisplayer_Item--selected': {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).darken(0.25).hex()
+			backgroundColor: theme.darken(theme.palette.background.dark, 0.25)
 		},
 		'& .GalleryDisplayer_Item_Sector-tertiary': {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.dark)).lighten(0.25).hex()
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.25)
 		},
 		'& .GalleryDisplayer_Item_Sector-tertiary_Item_value': {
 			backgroundColor: theme.palette.background.light

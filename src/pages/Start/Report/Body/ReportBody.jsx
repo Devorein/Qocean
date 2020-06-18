@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Color from 'color';
-import convert from 'color-convert';
 import axios from 'axios';
 import { withStyles } from '@material-ui/core';
 
@@ -56,7 +54,7 @@ class ReportBody extends Component {
 export default withStyles((theme) => ({
 	root: {
 		'& .report_body_item': {
-			backgroundColor: Color.rgb(convert.hex.rgb(theme.palette.background.main)).darken(0.1).hex()
+			backgroundColor: theme.darken(theme.palette.background.main, 0.1)
 		}
 	}
 }))(ReportBody);
