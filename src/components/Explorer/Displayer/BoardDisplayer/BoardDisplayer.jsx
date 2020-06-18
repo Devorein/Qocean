@@ -7,8 +7,8 @@ import './BoardDisplayer.scss';
 
 class BoardDisplayer extends Component {
 	render() {
-		const { type, page, data, currentSelected } = this.props;
-		return <DataDisplayer type={type} page={page} currentSelected={currentSelected} view={'Board'} data={data} />;
+		const { type, page, data, selected } = this.props;
+		return <DataDisplayer type={type} page={page} view={'Board'} data={data} selected={selected} />;
 	}
 }
 

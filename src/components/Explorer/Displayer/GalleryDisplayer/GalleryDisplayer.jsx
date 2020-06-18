@@ -27,15 +27,15 @@ class GalleryDisplayer extends Component {
 	};
 
 	render() {
-		const { type, page, data, currentSelected, classes } = this.props;
+		const { type, page, data, classes, selected } = this.props;
 		return (
 			<Fragment>
 				{this.renderColSelection()}
 				<DataDisplayer
 					className={classes.GalleryDisplayer_item}
 					type={type}
+					selected={selected}
 					page={page}
-					currentSelected={currentSelected}
 					view={'Gallery'}
 					data={data}
 					style={{ gridTemplateColumns: `${'1fr '.repeat(this.state.colsCount)}` }}

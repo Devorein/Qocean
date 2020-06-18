@@ -60,6 +60,7 @@ class Pagination extends React.Component {
 
 		return children({
 			refetchData,
+			PaginationState: this.state,
 			PaginationIppSelect: (
 				<InputSelect
 					className={`${IppSelectClass} ${prefix}_ippselect Pagination_ippselect`}

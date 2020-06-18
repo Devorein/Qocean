@@ -1,44 +1,24 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
-import TextField from '@material-ui/core/TextField';
 import clsx from 'clsx';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
-import getIcons from '../../Utils/getIcons';
 import List from './List';
+import LocalFilter from '../FilterSort/LocalFilter';
+import getIcons from '../../Utils/getIcons';
 
 import './CustomList.scss';
 
 class CustomList extends React.Component {
-	state = {
-		manipulated: false,
-		filteredItems: this.props.listItems || []
-	};
-
-	UNSAFE_componentWillReceiveProps(props) {
-		this.setState({
-			filteredItems: props.listItems
-		});
-	}
-
-	filterList = (e) => {
-		this.setState({
-			filteredItems: this.props.listItems.filter(({ primary }) => primary.includes(e.target.value)),
-			manipulated: true
-		});
-	};
-
 	renderList = () => {
-		const { filterList } = this;
+		const { classes, className, title, containsCheckbox = true, icons } = this.props;
+		const { filteredContents } = this;
 
-		const { classes, className, title, containsCheckbox = true, icons, listItems } = this.props;
-		const { manipulated, filteredItems } = this.state;
-
-		const items = manipulated ? filteredItems : listItems;
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
 		const { checked, moveUp, moveDown, handleChecked, selectedIndex, setSelectedIndex } = this;
+
 		return (
 			<div className={rootClass}>
 				<div className={clsx('CustomList_Header', classes.Header)}>
@@ -47,7 +27,7 @@ class CustomList extends React.Component {
 							{title}
 						</h1>
 					) : null}
-					<TextField onChange={filterList} className="CustomList_Header_search" />
+					{this.LocalFilterSearch}
 					<div className="CustomList_Header_Icons">
 						{icons && icons.length !== 0 ? (
 							icons.map(({ icon, onClick }) => {
@@ -56,7 +36,9 @@ class CustomList extends React.Component {
 										{React.createElement(icon, {
 											onClick: onClick.bind(
 												null,
-												checked.length > 0 ? checked : Array(items.length).fill(0).map((_, i) => items[i]._id || i)
+												checked.length > 0
+													? checked
+													: Array(filteredContents.length).fill(0).map((_, i) => filteredContents[i]._id || i)
 											)
 										})}
 									</div>
@@ -71,7 +53,7 @@ class CustomList extends React.Component {
 				</div>
 
 				<div className={clsx('CustomList_Body', classes.Body)}>
-					{items.map((listItem, index) => {
+					{filteredContents.map((listItem, index) => {
 						const { primary, secondary, primaryIcon } = listItem;
 						return (
 							<div
@@ -82,7 +64,6 @@ class CustomList extends React.Component {
 								}}
 							>
 								<div className={'CustomList_Body_Item_index'}>{index + 1}</div>
-
 								{containsCheckbox ? (
 									<div onClick={handleChecked.bind(null, index)} className={'CustomList_Body_Item_checkbox'}>
 										<Checkbox
@@ -125,19 +106,31 @@ class CustomList extends React.Component {
 	render() {
 		const { renderList } = this;
 		return (
-			<List totalItems={this.props.listItems.length} prefix="CustomList">
+			<LocalFilter
+				data={this.props.listItems.map((item) => ({ ...item, name: item.primary }))}
+				LocalFilterSearchClass="CustomList_Header_search"
+				fixedTargetType="string"
+				checkAgainst={[ 'name' ]}
+			>
 				{(props) => {
 					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
+					return (
+						<List totalItems={this.filteredContents.length} prefix="CustomList">
+							{(props) => {
+								Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
 
-					return this.props.children
-						? this.props.children({
-								list: renderList(),
-								checked: props.checked,
-								selectedIndex: props.selectedIndex
-							})
-						: renderList();
+								return this.props.children
+									? this.props.children({
+											list: renderList(),
+											checked: props.checked,
+											selectedIndex: props.selectedIndex
+										})
+									: renderList();
+							}}
+						</List>
+					);
 				}}
-			</List>
+			</LocalFilter>
 		);
 	}
 }

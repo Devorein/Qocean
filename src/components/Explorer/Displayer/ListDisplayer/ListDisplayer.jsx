@@ -5,8 +5,8 @@ import DataDisplayer from '../../../Visualizations/DataDisplayer/DataDisplayer';
 import './ListDisplayer.scss';
 class ListDisplayer extends Component {
 	render() {
-		const { type, page, data, currentSelected } = this.props;
-		return <DataDisplayer type={type} page={page} currentSelected={currentSelected} view={'List'} data={data} />;
+		const { type, page, data, selected } = this.props;
+		return <DataDisplayer type={type} page={page} view={'List'} data={data} selected={selected} />;
 	}
 }
 

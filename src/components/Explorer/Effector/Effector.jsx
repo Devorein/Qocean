@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { RotateLeft } from '@material-ui/icons';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import StarIcon from '@material-ui/icons/Star';
 import PublicIcon from '@material-ui/icons/Public';
@@ -17,10 +17,16 @@ import Pagination from '../../Pagination/Pagination';
 import DataView from '../../DataView/DataView';
 import List from '../../List/List';
 import ColList from '../../List/ColList';
+import DataTransformer from '../../DataTransformer/DataTransformer';
+import ActionShortcut from '../../ActionShortcut/ActionShortcut';
+
 import { AppContext } from '../../../context/AppContext';
 import exportData from '../../../Utils/exportData';
+import sectorizeData from '../../../Utils/sectorizeData';
+import filterSort from '../../../Utils/filterSort';
 
 import './Effector.scss';
+
 class Effector extends Component {
 	GLOBAL_ICONS = {};
 	static contextType = AppContext;
@@ -33,9 +39,11 @@ class Effector extends Component {
 			PaginationPageCount,
 			PaginationItemCount
 		} = this;
-
+		const style = {
+			backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
+		};
 		return (
-			<Fragment>
+			<div className="Effector_Bottombar" style={style}>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
 					{PaginationPageInput}
 					{PaginationGoToPageButton}
@@ -57,7 +65,7 @@ class Effector extends Component {
 					{PaginationPageCount}
 					{PaginationItemCount}
 				</div>
-			</Fragment>
+			</div>
 		);
 	};
 
@@ -68,50 +76,31 @@ class Effector extends Component {
 		page = page.toLowerCase();
 		type = type.toLowerCase();
 		const effectors = [
-			<RotateLeftIcon
-				key={'refetch'}
-				ref={(ref) => {
-					this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
-				}}
+			<RotateLeft
 				onClick={(e) => {
 					this.refetchData();
 				}}
 			/>,
 			type !== 'user' && page !== 'play' ? (
 				<GetAppIcon
-					key={'export'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-					}}
 					onClick={(e) => {
 						exportData(type, filteredContents);
 					}}
 				/>
 			) : null,
 			page === 'play' ? (
-				<AddCircleIcon
-					key={'addtobucket'}
-					onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))}
-				/>
+				<AddCircleIcon onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))} />
 			) : null
 		];
 		const array = Array(filteredContents.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
 				<StarIcon
-					key={'favourite'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
-					}}
 					onClick={(e) => {
 						updateResource(array, 'favourite');
 					}}
 				/>,
 				<PublicIcon
-					key={'public'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
-					}}
 					onClick={(e) => {
 						updateResource(array, 'public');
 					}}
@@ -121,7 +110,6 @@ class Effector extends Component {
 			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user && page !== 'play') {
 				effectors.push(
 					<VisibilityIcon
-						key={'watch'}
 						onClick={(e) => {
 							this.props.watchToggle(array);
 						}}
@@ -129,7 +117,21 @@ class Effector extends Component {
 				);
 			}
 		}
-		return <div className="Effector_Topbar_globals">{effectors.map((eff) => eff)}</div>;
+		return (
+			<div className="Effector_Topbar_globals">
+				{effectors.map((eff, index) => {
+					if (eff) {
+						const clonedEff = React.cloneElement(eff, {
+							...eff.props,
+							key: `${eff.type.displayName}${index}`,
+							ref: (ref) => (this.GLOBAL_ICONS[eff.type.displayName] = ref)
+						});
+						return clonedEff;
+					}
+					return null;
+				})}
+			</div>
+		);
 	};
 
 	renderSelectedEffectors = () => {
@@ -203,8 +205,11 @@ class Effector extends Component {
 
 	renderEffectorTopBar = () => {
 		const { checked } = this;
+		const style = {
+			backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
+		};
 		return (
-			<Fragment>
+			<div className="Effector_Topbar" style={style}>
 				<div style={{ display: 'flex', alignItems: 'center' }}>
 					{this.AllCheckbox}
 					{this.SelectStat}
@@ -214,7 +219,7 @@ class Effector extends Component {
 				<div className="Effector_Topbar_hidden">{this.props.data.length - this.filteredContents.length} hidden</div>
 				{this.LocalFilterSearch}
 				{checked.length > 0 ? this.renderSelectedEffectors() : this.renderGlobalEffectors()}
-			</Fragment>
+			</div>
 		);
 	};
 
@@ -232,7 +237,21 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const { type, page, data, filter_sort, refetchData, totalCount } = this.props;
+		const {
+			type,
+			page,
+			customHandlers,
+			data,
+			filter_sort,
+			refetchData,
+			totalCount,
+			enableFormFiller,
+			fetchData,
+			hideDetailer,
+			updateResource,
+			deleteResource,
+			watchToggle
+		} = this.props;
 		return (
 			<Composer
 				components={[
@@ -243,7 +262,7 @@ class Effector extends Component {
 						totalCount={totalCount}
 						page={page}
 					/>,
-					<LocalFilter data={data} className="Effector_Topbar_search" />,
+					<LocalFilter data={data} LocalFilterSearchClass="Effector_Topbar_search" />,
 					({ results, render }) => (
 						<List prefix={'Effector_Topbar'} totalItems={results[1].filteredContents.length} children={render} />
 					),
@@ -261,36 +280,52 @@ class Effector extends Component {
 						);
 					},
 					<DataView displayComponent="displayer" prefix="Effector_Topbar" page={page} />,
-					<ColList ColListSelectClass="Effector_Topbar_properties" data={data} page={page} type={type} />
+					<ColList ColListSelectClass="Effector_Topbar_properties" data={data} page={page} type={type} />,
+					({ results, render }) => (
+						<DataTransformer
+							data={results[1].filteredContents}
+							checked={results[2].checked}
+							handleChecked={results[2].handleChecked}
+							type={type}
+							page={page}
+							customHandlers={customHandlers}
+							enableFormFiller={enableFormFiller}
+							getDetails={fetchData}
+							hideDetailer={hideDetailer}
+							updateResource={updateResource}
+							deleteResource={deleteResource}
+							watchToggle={watchToggle}
+							children={render}
+						/>
+					),
+					<ActionShortcut actions={this.GLOBAL_ICONS} />
 				]}
 			>
 				{(ComposedProps) => {
 					ComposedProps.forEach((ComposedProp) => {
-						Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
+						if (ComposedProp) Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
 					});
 
-					const style = {
-						backgroundColor: this.props.theme.darken(this.props.theme.palette.background.dark, 0.15)
-					};
+					let { manipulatedData } = this;
+					manipulatedData = sectorizeData(manipulatedData, type, {
+						authenticated: this.context.user,
+						blacklist: this.ColListState.removed_cols,
+						page,
+						flatten: this.DataViewState.view === 'table'
+					});
+
 					return this.props.children({
-						removed_cols: this.ColListState.removed_cols,
-						selectedIndex: this.checked,
+						manipulatedData,
+						selected: this.selected,
 						view: this.DataViewState.view,
-						setSelectedIndex: this.setSelectedIndex,
-						EffectorTopBar: (
-							<div className="Effector_Topbar" style={style}>
-								{renderEffectorTopBar()}
-							</div>
-						),
-						EffectorBottomBar: (
-							<div className="Effector_Bottombar" style={style}>
-								{renderEffectorBottomBar()}
-							</div>
-						),
+						EffectorTopBar: renderEffectorTopBar(),
+						EffectorBottomBar: renderEffectorBottomBar(),
 						GLOBAL_ICONS: this.GLOBAL_ICONS,
-						limit: this.itemsPerPage,
-						currentPage: this.currentPage,
-						filteredContents: this.filteredContents
+						queryParams: {
+							currentPage: this.PaginationState.currentPage,
+							limit: this.PaginationState.limit,
+							...filterSort(filter_sort)
+						}
 					});
 				}}
 			</Composer>
