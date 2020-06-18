@@ -12,7 +12,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { difference } from 'lodash';
 import Color from 'color';
 import convert from 'color-convert';
-import shortid from 'shortid';
+import Composer from 'react-composer';
 
 import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
@@ -118,7 +118,7 @@ class Effector extends Component {
 			) : null,
 			page === 'play' ? (
 				<AddCircleIcon
-					key={shortid.generate()}
+					key={'addtobucket'}
 					onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))}
 				/>
 			) : null
@@ -189,7 +189,7 @@ class Effector extends Component {
 			) : null,
 			page === 'play' ? (
 				<AddCircleIcon
-					key={shortid.generate()}
+					key={'addtobucketselected'}
 					onClick={this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id))}
 				/>
 			) : null
@@ -286,10 +286,8 @@ class Effector extends Component {
 		);
 	};
 
-	deleteModalMessage = () => {
+	deleteModalMessage = (selectedItems) => {
 		const { type } = this.props;
-		const { filteredContents, checked } = this;
-		const selectedItems = checked.map((index) => filteredContents[index]);
 		return (
 			<Fragment>
 				<div>
@@ -304,70 +302,64 @@ class Effector extends Component {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
 		const { selected_cols, view, itemsPerPage, currentPage } = this.state;
 		return (
-			<Pagination
-				prefix={'Effector_Bottombar'}
-				filter_sort={this.props.filter_sort}
-				refetchData={this.props.refetchData}
-				totalCount={this.props.totalCount}
-				page={this.props.page}
+			<Composer
+				components={[
+					<Pagination
+						prefix={'Effector_Bottombar'}
+						filter_sort={this.props.filter_sort}
+						refetchData={this.props.refetchData}
+						totalCount={this.props.totalCount}
+						page={this.props.page}
+					/>,
+					<LocalFilter data={this.props.data} className="Effector_Topbar_search" />,
+					({ results, render }) => (
+						<List prefix={'Effector_Topbar'} totalItems={results[1].filteredContents.length} children={render} />
+					),
+					({ results, render }) => {
+						const selectedDatas = results[2].checked.map((index) => results[1].filteredContents[index]);
+						return (
+							<ModalRP
+								onAccept={() => {
+									this.props.deleteResource(selectedDatas.map(({ _id }) => _id));
+									results[2].resetChecked();
+								}}
+								modalMsg={deleteModalMessage(selectedDatas)}
+								children={render}
+							/>
+						);
+					}
+				]}
 			>
-				{(props) => {
-					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-					return (
-						<LocalFilter data={this.props.data} className="Effector_Topbar_search">
-							{(props) => {
-								Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-								return (
-									<List prefix={'Effector_Topbar'} totalItems={this.filteredContents.length}>
-										{(props) => {
-											Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-											return (
-												<ModalRP
-													onAccept={() => {
-														const selectedDatas = this.checked.map((index) => this.filteredContents[index]._id);
-														this.props.deleteResource(selectedDatas);
-														this.resetChecked();
-													}}
-													modalMsg={deleteModalMessage()}
-												>
-													{({ setIsOpen }) => {
-														const style = {
-															backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark))
-																.darken(0.15)
-																.hex()
-														};
-														this.setIsOpen = setIsOpen;
-														return this.props.children({
-															removed_cols: difference(this.props.cols, selected_cols),
-															selectedIndex: this.checked,
-															view,
-															setSelectedIndex: this.setSelectedIndex,
-															EffectorTopBar: (
-																<div className="Effector_Topbar" style={style}>
-																	{renderEffectorTopBar()}
-																</div>
-															),
-															EffectorBottomBar: (
-																<div className="Effector_Bottombar" style={style}>
-																	{renderEffectorBottomBar()}
-																</div>
-															),
-															GLOBAL_ICONS: this.GLOBAL_ICONS,
-															limit: itemsPerPage,
-															currentPage,
-															filteredContents: this.filteredContents
-														});
-													}}
-												</ModalRP>
-											);
-										}}
-									</List>
-								);
-							}}
-						</LocalFilter>
-					);
+				{(ComposedProps) => {
+					ComposedProps.forEach((ComposedProp) => {
+						Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
+					});
+
+					const style = {
+						backgroundColor: Color.rgb(convert.hex.rgb(this.props.theme.palette.background.dark)).darken(0.15).hex()
+					};
+					return this.props.children({
+						removed_cols: difference(this.props.cols, selected_cols),
+						selectedIndex: this.checked,
+						view,
+						setSelectedIndex: this.setSelectedIndex,
+						EffectorTopBar: (
+							<div className="Effector_Topbar" style={style}>
+								{renderEffectorTopBar()}
+							</div>
+						),
+						EffectorBottomBar: (
+							<div className="Effector_Bottombar" style={style}>
+								{renderEffectorBottomBar()}
+							</div>
+						),
+						GLOBAL_ICONS: this.GLOBAL_ICONS,
+						limit: itemsPerPage,
+						currentPage,
+						filteredContents: this.filteredContents
+					});
 				}}
-			</Pagination>
+			</Composer>
 		);
 	}
 }
