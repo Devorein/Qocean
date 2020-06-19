@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 import qs from 'qs';
 import axios from 'axios';
 import pluralize from 'pluralize';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import PublicIcon from '@material-ui/icons/Public';
 import { withStyles } from '@material-ui/core/styles';
 
 import StackComps from '../../Stack/StackComps';
 import { AppContext } from '../../../context/AppContext';
+import DataTransformer from '../../DataTransformer/DataTransformer';
+
 import sectorizeData from '../../../Utils/sectorizeData';
 import populateQueryParams from '../../../Utils/populateQueryParams';
-import getColoredIcons from '../../../Utils/getColoredIcons';
-import ChipContainer from '../../../components/Chip/ChipContainer';
 
 import './Detailer.scss';
 
@@ -45,6 +41,7 @@ class Detailer extends Component {
 				}
 			})
 			.then(({ data: { data } }) => {
+				console.log(data);
 				this.addToStack(url);
 				this.setState({
 					data,
@@ -105,38 +102,11 @@ class Detailer extends Component {
 		}
 	};
 
-	renderValue = (key, value) => {
-		const page = this.props.page.toLowerCase();
-		if (key.match(/^(created_at|updated_at|joined_at)$/)) value = moment(value).fromNow();
-		else if (key.match(/(tags)/)) value = <ChipContainer chips={value} type={'regular'} height={50} />;
-		else if (key === 'icon') value = getColoredIcons(this.state.type, value);
-		else if (key === 'image') {
-			let src = null;
-			const isLink = value ? value.match(/^(http|data)/) : `http://localhost:5001/uploads/none.png`;
-			if (isLink) src = value;
-			else src = `http://localhost:5001/uploads/${value}`;
-			value = <img src={src} alt={`${this.state.type}`} />;
-		} else if (value !== null) value = value.toString();
-
-		if (page === 'self') {
-			if (key === 'public')
-				value = <PublicIcon style={{ fill: value.toString() === 'true' ? '#00a3e6' : '#f4423c' }} />;
-			else if (key === 'favourite')
-				value =
-					value.toString() === 'true' ? (
-						<StarIcon style={{ fill: '#f0e744' }} />
-					) : (
-						<StarBorderIcon style={{ fill: '#ead50f' }} />
-					);
-		}
-		return value;
-	};
-
-	renderDetailer = (StackComps) => {
+	renderDetailer = () => {
 		const { page, detailerLocation } = this.props;
-		const { data, type } = this.state;
-		const sectorizedData = data
-			? sectorizeData(data, type, {
+		const { type } = this.state;
+		const sectorizedData = this.manipulatedData
+			? sectorizeData(this.manipulatedData, type, {
 					authenticated: this.context.user,
 					purpose: 'detail',
 					page
@@ -149,7 +119,7 @@ class Detailer extends Component {
 					className={`Detailer ${this.props.classes.Detailer}`}
 					style={{ order: detailerLocation.view === 'left' ? 0 : 1 }}
 				>
-					<div className="Detailer_stats">{StackComps.map((StackComp) => StackComp)}</div>
+					<div className="Detailer_stats">{this.StackComps.map((StackComp) => StackComp)}</div>
 					<div className="Detailer_content">
 						{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (
 							<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
@@ -162,7 +132,7 @@ class Detailer extends Component {
 											{key.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
 										</span>
 										<span className={`Detailer_container_item_value Detailer_container-${sector}_item_value`}>
-											{this.renderValue(key, value)}
+											{value}
 										</span>
 									</div>
 								))}
@@ -198,15 +168,23 @@ class Detailer extends Component {
 	};
 
 	render() {
+		const { data } = this.state;
 		return (
 			<StackComps refetchData={this.refetchData}>
 				{(props) => {
 					Object.keys(props).forEach((key) => (this[key] = props[key]));
 					const { renderDetailer, fetchData, props: { children } } = this;
-					return children({
-						fetchData,
-						Detailer: renderDetailer(props.StackComps)
-					});
+					return (
+						<DataTransformer data={data} page={this.props.page} type={this.props.type} targetComp={'detailer'}>
+							{({ manipulatedData }) => {
+								this.manipulatedData = manipulatedData;
+								return children({
+									fetchData,
+									Detailer: renderDetailer()
+								});
+							}}
+						</DataTransformer>
+					);
 				}}
 			</StackComps>
 		);

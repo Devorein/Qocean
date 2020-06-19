@@ -31,12 +31,12 @@ class Explorer extends Component {
 	};
 
 	renderDetailer = (DataViewState, DataViewSelect) => {
-		const { isFormFillerOpen, formFillerIndex, detailerIndex } = this.state;
+		const { isFormFillerOpen, formFillerIndex } = this.state;
 		const { data, refetchData, totalCount, type, page, updateDataLocally, hideDetailer = false } = this.props;
 		const formFillerMsg = page === 'Self' ? 'Update' : 'Create';
 
 		return (
-			<Detailer page={page} data={data[detailerIndex]} type={type} detailerLocation={DataViewState}>
+			<Detailer page={page} type={type} detailerLocation={DataViewState}>
 				{({ fetchData, Detailer }) => {
 					return (
 						<div className="Explorer_content">

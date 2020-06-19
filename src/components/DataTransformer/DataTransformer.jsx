@@ -44,7 +44,6 @@ class DataTransformer extends Component {
 		let {
 			type,
 			page,
-			data,
 			checked,
 			hideDetailer,
 			fetchData,
@@ -54,82 +53,89 @@ class DataTransformer extends Component {
 			deleteResource,
 			updateResource,
 			watchToggle,
-			handleChecked
+			handleChecked,
+			targetComp = 'displayer'
 		} = this.props;
 		type = type.toLowerCase();
 		page = page.toLowerCase();
 
-		return data.map((item, index) => {
-			const actions = [
-				!hideDetailer ? (
-					<InfoIcon
-						className="Displayer_actions-info"
-						onClick={(e) => {
-							fetchData(type, item._id);
-						}}
-					/>
-				) : null
-			];
-			if (type !== 'user')
+		const transformData = (item, index) => {
+			const actions = [];
+			if (targetComp === 'displayer') {
 				actions.push(
-					<GetAppIcon
-						className="Displayer_actions-export"
-						onClick={(e) => {
-							exportData(type, [ item ]);
-						}}
-					/>
+					!hideDetailer ? (
+						<InfoIcon
+							className="Displayer_actions-info"
+							onClick={(e) => {
+								fetchData(type, item._id);
+							}}
+						/>
+					) : null
 				);
-
-			if (page === 'self') {
-				actions.push(
-					<UpdateIcon
-						className="Displayer_actions-update"
-						onClick={(e) => {
-							enableFormFiller(index);
-						}}
-					/>,
-					<DeleteIcon
-						className="Displayer_actions-delete"
-						onClick={(e) => {
-							deleteResource([ item._id ]);
-						}}
-					/>
-				);
-			} else if (page.match(/(watchlist|explore)/)) {
-				if (type !== 'user' && this.context.user)
+				if (type !== 'user')
 					actions.push(
-						<NoteAddIcon
-							className="Displayer_actions-create"
+						<GetAppIcon
+							className="Displayer_actions-export"
+							onClick={(e) => {
+								exportData(type, [ item ]);
+							}}
+						/>
+					);
+
+				if (page === 'self') {
+					actions.push(
+						<UpdateIcon
+							className="Displayer_actions-update"
 							onClick={(e) => {
 								enableFormFiller(index);
 							}}
-						/>
-					);
-				if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
-					type = pluralize(type, 2);
-					const isWatched = this.context.user.watchlist[
-						`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
-					].includes(item._id);
-					actions.push(
-						<VisibilityIcon
-							style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
+						/>,
+						<DeleteIcon
+							className="Displayer_actions-delete"
 							onClick={(e) => {
-								watchToggle([ index ]);
+								deleteResource([ item._id ]);
 							}}
 						/>
 					);
+				} else if (page.match(/(watchlist|explore)/)) {
+					if (type !== 'user' && this.context.user)
+						actions.push(
+							<NoteAddIcon
+								className="Displayer_actions-create"
+								onClick={(e) => {
+									enableFormFiller(index);
+								}}
+							/>
+						);
+					if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
+						type = pluralize(type, 2);
+						const isWatched = this.context.user.watchlist[
+							`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
+						].includes(item._id);
+						actions.push(
+							<VisibilityIcon
+								style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
+								onClick={(e) => {
+									watchToggle([ index ]);
+								}}
+							/>
+						);
+					}
 				}
+				if (page === 'play')
+					actions.push(
+						<AddCircleIcon
+							style={{ fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }}
+							onClick={customHandlers.add.bind(null, [ item._id ])}
+						/>
+					);
 			}
-			if (page === 'play')
-				actions.push(
-					<AddCircleIcon
-						style={{ fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }}
-						onClick={customHandlers.add.bind(null, [ item._id ])}
-					/>
-				);
+
 			const temp = {
-				...item,
-				checked: (
+				...item
+			};
+			if (targetComp === 'displayer') {
+				temp.checked = (
 					<div className="Displayer_checked">
 						<CheckboxInput
 							checked={checked.includes(index)}
@@ -138,9 +144,17 @@ class DataTransformer extends Component {
 							}}
 						/>
 					</div>
-				),
-				actions: <div className="Displayer_actions">{this.cloneIcons(actions, index)}</div>
-			};
+				);
+				temp.actions = <div className="Displayer_actions">{this.cloneIcons(actions, index)}</div>;
+			}
+			if (item.image) {
+				let src = null;
+				const isLink = item.image ? item.image.match(/^(http|data)/) : `http://localhost:5001/uploads/none.png`;
+				if (isLink) src = item.image;
+				else src = `http://localhost:5001/uploads/${item.image}`;
+				temp.image = <img src={src} alt={`${type}`} />;
+			}
+
 			if (item.icon) temp.icon = getColouredIcons(type, item.icon);
 			if (item.quiz) temp.quiz = item.quiz.name;
 			if (item.user) temp.user = item.user.username;
@@ -148,15 +162,27 @@ class DataTransformer extends Component {
 			if (page.match(/(self|play)/)) {
 				if (item.public !== undefined)
 					temp.public = item.public ? (
-						<PublicIcon onClick={updateResource.bind(null, [ index ], 'public')} style={{ fill: '#00a3e6' }} />
+						<PublicIcon
+							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
+							style={{ fill: '#00a3e6' }}
+						/>
 					) : (
-						<PublicIcon onClick={updateResource.bind(null, [ index ], 'public')} style={{ fill: '#f4423c' }} />
+						<PublicIcon
+							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
+							style={{ fill: '#f4423c' }}
+						/>
 					);
 				if (item.favourite !== undefined)
 					temp.favourite = item.favourite ? (
-						<StarIcon onClick={updateResource.bind(null, [ index ], 'favourite')} style={{ fill: '#f0e744' }} />
+						<StarIcon
+							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
+							style={{ fill: '#f0e744' }}
+						/>
 					) : (
-						<StarBorderIcon onClick={updateResource.bind(null, [ index ], 'favourite')} style={{ fill: '#ead50f' }} />
+						<StarBorderIcon
+							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
+							style={{ fill: '#ead50f' }}
+						/>
 					);
 			}
 			if (item.watchers) temp.watchers = item.watchers.length;
@@ -174,7 +200,9 @@ class DataTransformer extends Component {
 				);
 			}
 			return temp;
-		});
+		};
+		const { data } = this.props;
+		return data && data.length !== 0 ? (Array.isArray(data) ? data.map(transformData) : transformData(data, 0)) : null;
 	};
 
 	render() {
