@@ -31,6 +31,20 @@ class Effector extends Component {
 	GLOBAL_ICONS = {};
 	static contextType = AppContext;
 
+	cloneIcons = (effectors) => {
+		return effectors.map((eff, index) => {
+			if (eff) {
+				const clonedEff = React.cloneElement(eff, {
+					...eff.props,
+					key: `${eff.type.displayName}${index}`,
+					ref: (ref) => (this.GLOBAL_ICONS[eff.type.displayName] = ref)
+				});
+				return clonedEff;
+			}
+			return null;
+		});
+	};
+
 	renderEffectorBottomBar = () => {
 		const {
 			PaginationPageInput,
@@ -117,21 +131,7 @@ class Effector extends Component {
 				);
 			}
 		}
-		return (
-			<div className="Effector_Topbar_globals">
-				{effectors.map((eff, index) => {
-					if (eff) {
-						const clonedEff = React.cloneElement(eff, {
-							...eff.props,
-							key: `${eff.type.displayName}${index}`,
-							ref: (ref) => (this.GLOBAL_ICONS[eff.type.displayName] = ref)
-						});
-						return clonedEff;
-					}
-					return null;
-				})}
-			</div>
-		);
+		return <div className="Effector_Topbar_globals">{this.cloneIcons(effectors)}</div>;
 	};
 
 	renderSelectedEffectors = () => {
@@ -144,10 +144,6 @@ class Effector extends Component {
 		const effectors = [
 			type !== 'user' && page !== 'play' ? (
 				<GetAppIcon
-					key={'export'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_4 = ref;
-					}}
 					onClick={(e) => {
 						exportData(type, selectedItems);
 					}}
@@ -155,7 +151,6 @@ class Effector extends Component {
 			) : null,
 			this.context.user && page !== 'play' ? (
 				<VisibilityIcon
-					key={'watch'}
 					onClick={(e) => {
 						this.props.watchToggle(checked);
 					}}
@@ -163,7 +158,6 @@ class Effector extends Component {
 			) : null,
 			page === 'play' ? (
 				<AddCircleIcon
-					key={'addtobucketselected'}
 					onClick={this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id))}
 				/>
 			) : null
@@ -172,35 +166,23 @@ class Effector extends Component {
 		if (page === 'self') {
 			effectors.push(
 				<DeleteIcon
-					key={'delete'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_1 = ref;
-					}}
 					onClick={(e) => {
 						this.setIsOpen(true);
 					}}
 				/>,
 				<StarIcon
-					key={'favourite'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_2 = ref;
-					}}
 					onClick={(e) => {
 						updateResource(checked, 'favourite');
 					}}
 				/>,
 				<PublicIcon
-					key={'public'}
-					ref={(ref) => {
-						this.GLOBAL_ICONS.GLOBAL_ACTION_3 = ref;
-					}}
 					onClick={(e) => {
 						updateResource(checked, 'public');
 					}}
 				/>
 			);
 		}
-		return <div className="Effector_Topbar_selected">{effectors.map((eff) => eff)}</div>;
+		return <div className="Effector_Topbar_selected">{this.cloneIcons(effectors)}</div>;
 	};
 
 	renderEffectorTopBar = () => {
@@ -237,21 +219,7 @@ class Effector extends Component {
 
 	render() {
 		const { renderEffectorTopBar, renderEffectorBottomBar, deleteModalMessage } = this;
-		const {
-			type,
-			page,
-			customHandlers,
-			data,
-			filter_sort,
-			refetchData,
-			totalCount,
-			enableFormFiller,
-			fetchData,
-			hideDetailer,
-			updateResource,
-			deleteResource,
-			watchToggle
-		} = this.props;
+		const { type, page, data, filter_sort, refetchData, totalCount } = this.props;
 		return (
 			<Composer
 				components={[
@@ -286,15 +254,7 @@ class Effector extends Component {
 							data={results[1].filteredContents}
 							checked={results[2].checked}
 							handleChecked={results[2].handleChecked}
-							type={type}
-							page={page}
-							customHandlers={customHandlers}
-							enableFormFiller={enableFormFiller}
-							getDetails={fetchData}
-							hideDetailer={hideDetailer}
-							updateResource={updateResource}
-							deleteResource={deleteResource}
-							watchToggle={watchToggle}
+							{...this.props}
 							children={render}
 						/>
 					),
