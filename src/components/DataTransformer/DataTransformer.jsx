@@ -23,6 +23,23 @@ import { AppContext } from '../../context/AppContext';
 
 class DataTransformer extends Component {
 	static contextType = AppContext;
+	LOCAL_ICONS = {};
+	cloneIcons = (effectors, index) => {
+		return effectors.map((eff) => {
+			let ref = null;
+			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.type.displayName}`] = ref);
+			if (eff) {
+				const clonedEff = React.cloneElement(eff, {
+					...eff.props,
+					key: `${eff.type.displayName}${this.props.page}`,
+					ref
+				});
+				return clonedEff;
+			}
+			return null;
+		});
+	};
+
 	transformData = () => {
 		let {
 			type,
@@ -30,7 +47,7 @@ class DataTransformer extends Component {
 			data,
 			checked,
 			hideDetailer,
-			getDetails,
+			fetchData,
 			enableFormFiller,
 			theme,
 			customHandlers,
@@ -47,9 +64,8 @@ class DataTransformer extends Component {
 				!hideDetailer ? (
 					<InfoIcon
 						className="Displayer_actions-info"
-						key={'info'}
 						onClick={(e) => {
-							getDetails(type, item._id);
+							fetchData(type, item._id);
 						}}
 					/>
 				) : null
@@ -58,7 +74,6 @@ class DataTransformer extends Component {
 				actions.push(
 					<GetAppIcon
 						className="Displayer_actions-export"
-						key={'export'}
 						onClick={(e) => {
 							exportData(type, [ item ]);
 						}}
@@ -69,14 +84,12 @@ class DataTransformer extends Component {
 				actions.push(
 					<UpdateIcon
 						className="Displayer_actions-update"
-						key={'update'}
 						onClick={(e) => {
 							enableFormFiller(index);
 						}}
 					/>,
 					<DeleteIcon
 						className="Displayer_actions-delete"
-						key={'delete'}
 						onClick={(e) => {
 							deleteResource([ item._id ]);
 						}}
@@ -87,7 +100,6 @@ class DataTransformer extends Component {
 					actions.push(
 						<NoteAddIcon
 							className="Displayer_actions-create"
-							key={'create'}
 							onClick={(e) => {
 								enableFormFiller(index);
 							}}
@@ -101,7 +113,6 @@ class DataTransformer extends Component {
 					actions.push(
 						<VisibilityIcon
 							style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
-							key={'watch'}
 							onClick={(e) => {
 								watchToggle([ index ]);
 							}}
@@ -113,7 +124,6 @@ class DataTransformer extends Component {
 				actions.push(
 					<AddCircleIcon
 						style={{ fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }}
-						key={`addtobucketlist${page}`}
 						onClick={customHandlers.add.bind(null, [ item._id ])}
 					/>
 				);
@@ -121,10 +131,15 @@ class DataTransformer extends Component {
 				...item,
 				checked: (
 					<div className="Displayer_checked">
-						<CheckboxInput checked={checked.includes(index)} onChange={handleChecked.bind(null, index)} />
+						<CheckboxInput
+							checked={checked.includes(index)}
+							onChange={(e) => {
+								handleChecked(index, e.nativeEvent);
+							}}
+						/>
 					</div>
 				),
-				actions: <div className="Displayer_actions">{actions.map((action) => action)}</div>
+				actions: <div className="Displayer_actions">{this.cloneIcons(actions, index)}</div>
 			};
 			if (item.icon) temp.icon = getColouredIcons(type, item.icon);
 			if (item.quiz) temp.quiz = item.quiz.name;
@@ -164,7 +179,8 @@ class DataTransformer extends Component {
 
 	render() {
 		return this.props.children({
-			manipulatedData: this.transformData()
+			manipulatedData: this.transformData(),
+			LOCAL_ICONS: this.LOCAL_ICONS
 		});
 	}
 }

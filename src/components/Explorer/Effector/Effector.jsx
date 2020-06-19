@@ -37,7 +37,7 @@ class Effector extends Component {
 				const clonedEff = React.cloneElement(eff, {
 					...eff.props,
 					key: `${eff.type.displayName}${index}`,
-					ref: (ref) => (this.GLOBAL_ICONS[eff.type.displayName] = ref)
+					ref: (ref) => (this.GLOBAL_ICONS[`GLOBAL_${eff.type.displayName}`] = ref)
 				});
 				return clonedEff;
 			}
@@ -252,13 +252,15 @@ class Effector extends Component {
 					({ results, render }) => (
 						<DataTransformer
 							data={results[1].filteredContents}
-							checked={results[2].checked}
-							handleChecked={results[2].handleChecked}
 							{...this.props}
+							checked={results[2].checked}
+							selected={results[2].selected}
+							handleChecked={results[2].handleChecked}
 							children={render}
 						/>
 					),
-					<ActionShortcut actions={this.GLOBAL_ICONS} />
+					({ results, render }) => <ActionShortcut actions={results[6].LOCAL_ICONS} children={render} />,
+					<ActionShortcut actions={this.GLOBAL_ICONS} prefix={'shift'} />
 				]}
 			>
 				{(ComposedProps) => {

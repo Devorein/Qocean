@@ -10,8 +10,6 @@ import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
 import Effector from '../Effector/Effector';
 import { AppContext } from '../../../context/AppContext';
 
-import exportData from '../../../Utils/exportData';
-
 import CustomSnackbars from '../../Snackbars/CustomSnackbars';
 import './Displayer.scss';
 
@@ -157,23 +155,6 @@ class Displayer extends Component {
 							>
 								{(props) => {
 									Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-									{
-										/* const handlers = {
-										ACTION_1: (e) => {
-											this.props.setDetailerIndex(this.state.currentSelected);
-										},
-										ACTION_2: (e) => {
-											exportData(type, [ data[this.state.currentSelected] ]);
-										},
-										ACTION_3: (e) => {
-											this.props.enableFormFiller(this.state.currentSelected);
-										},
-										ACTION_4: (e) => {
-											this.deleteResource([ data[this.state.currentSelected]._id ]);
-										}
-									};
-									 */
-									}
 									return (
 										<Fragment>
 											{this.EffectorTopBar}
