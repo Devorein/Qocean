@@ -13,6 +13,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import UIfx from 'uifx';
+
+import MouseClickSound from '../../sounds/Mouse Click.mp3';
 
 import Popover from '../Popover/Popover';
 import CheckboxInput from '../Input/Checkbox/CheckboxInput';
@@ -21,6 +24,10 @@ import ChipContainer from '../../components/Chip/ChipContainer';
 import getColouredIcons from '../../Utils/getColoredIcons';
 import exportData from '../../Utils/exportData';
 import { AppContext } from '../../context/AppContext';
+
+const MouseClick = new UIfx(MouseClickSound, {
+	volume: 0.5
+});
 
 class DataTransformer extends Component {
 	static contextType = AppContext;
@@ -69,6 +76,7 @@ class DataTransformer extends Component {
 							<InfoIcon
 								className="Displayer_actions-info"
 								onClick={(e) => {
+									MouseClick.play();
 									fetchData(type, item._id);
 								}}
 							/>
@@ -81,6 +89,7 @@ class DataTransformer extends Component {
 							<GetAppIcon
 								className="Displayer_actions-export"
 								onClick={(e) => {
+									MouseClick.play();
 									exportData(type, [ item ]);
 								}}
 							/>
@@ -93,6 +102,7 @@ class DataTransformer extends Component {
 							<UpdateIcon
 								className="Displayer_actions-update"
 								onClick={(e) => {
+									MouseClick.play();
 									enableFormFiller(index);
 								}}
 							/>
@@ -113,6 +123,7 @@ class DataTransformer extends Component {
 								<NoteAddIcon
 									className="Displayer_actions-create"
 									onClick={(e) => {
+										MouseClick.play();
 										enableFormFiller(index);
 									}}
 								/>
@@ -128,6 +139,7 @@ class DataTransformer extends Component {
 								<VisibilityIcon
 									style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
 									onClick={(e) => {
+										MouseClick.play();
 										watchToggle([ index ]);
 									}}
 								/>
