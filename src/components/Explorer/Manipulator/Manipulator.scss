@@ -1,11 +1,18 @@
-.Manipulator{
+.Manipulator {
   display: flex;
   justify-content: space-between;
-  .DataView_select{
+  &--DataViewSelect {
+    .FilterSort {
+      width: calc(100% - 110px);
+    }
+  }
+  &--regular {
+    .FilterSort {
+      width: 100%;
+    }
+  }
+  .DataView_select {
     width: 100px;
     margin-right: 10px;
-  }
-  .FilterSort{
-    width: calc(100% - 110px);
   }
 }
