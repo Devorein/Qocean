@@ -25,6 +25,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.53",
     "@material-ui/pickers": "^3.2.10",
+    "@nivo/bar": "^0.62.0",
     "@nivo/heatmap": "^0.62.0",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^10.0.4",

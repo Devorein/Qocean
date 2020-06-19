@@ -15,6 +15,7 @@ class DataView extends Component {
 				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'list';
 			else if (this.context.user && displayComponent === 'visualizer')
 				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'table';
+			else return 'list';
 		})()
 	};
 
@@ -31,7 +32,7 @@ class DataView extends Component {
 					}}
 					selectItems={(displayComponent === 'displayer'
 						? [ 'table', 'list', 'board', 'gallery' ]
-						: [ 'table', 'heatmap' ]).map((value) => ({
+						: [ 'table', 'heatmap', 'bar' ]).map((value) => ({
 						value,
 						text: value.charAt(0).toUpperCase() + value.substr(1)
 					}))}

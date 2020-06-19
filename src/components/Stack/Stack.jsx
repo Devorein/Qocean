@@ -33,6 +33,22 @@ class Stack extends React.Component {
 		});
 	};
 
+	removeCurrentIndex = () => {
+		let { stack, currentIndex } = this.state;
+		let changed = false;
+		if (currentIndex !== -1) {
+			changed = true;
+			stack.splice(currentIndex, 1);
+			currentIndex--;
+		}
+		if (changed) {
+			this.setState({
+				stack,
+				currentIndex
+			});
+		}
+	};
+
 	removeDuplicates = () => {
 		let { stack, currentIndex } = this.state;
 		stack = Array.from(new Set(stack));
@@ -44,12 +60,13 @@ class Stack extends React.Component {
 	};
 
 	move = (dir) => {
+		debugger;
 		let { currentIndex, stack } = this.state;
 		let changed = false;
 		if (currentIndex !== stack.length - 1 && dir === 'right') {
 			currentIndex++;
 			changed = true;
-		} else if (currentIndex !== 0 && dir === 'left') {
+		} else if (currentIndex > 0 && dir === 'left') {
 			currentIndex--;
 			changed = true;
 		}
@@ -58,7 +75,15 @@ class Stack extends React.Component {
 	};
 
 	render() {
-		const { props: { children }, removeDuplicates, removeFromStack, changeCurrentIndex, move, addToStack } = this;
+		const {
+			props: { children },
+			removeDuplicates,
+			removeFromStack,
+			changeCurrentIndex,
+			move,
+			addToStack,
+			removeCurrentIndex
+		} = this;
 		return children({
 			StackState: this.state,
 			removeDuplicates,
@@ -66,7 +91,8 @@ class Stack extends React.Component {
 			moveRight: move.bind(null, 'right'),
 			moveLeft: move.bind(null, 'left'),
 			addToStack,
-			removeFromStack
+			removeFromStack,
+			removeCurrentIndex
 		});
 	}
 }

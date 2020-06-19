@@ -10,21 +10,8 @@ import GalleryDisplayer from './GalleryDisplayer/GalleryDisplayer';
 import Effector from '../Effector/Effector';
 import { AppContext } from '../../../context/AppContext';
 
-import exportData from '../../../Utils/exportData';
-
 import CustomSnackbars from '../../Snackbars/CustomSnackbars';
 import './Displayer.scss';
-
-const keyMap = {
-	ACTION_1: '1',
-	ACTION_2: '2',
-	ACTION_3: '3',
-	ACTION_4: '4',
-	GLOBAL_ACTION_1: 'shift+1',
-	GLOBAL_ACTION_2: 'shift+2',
-	GLOBAL_ACTION_3: 'shift+3',
-	GLOBAL_ACTION_4: 'shift+4'
-};
 
 class Displayer extends Component {
 	static contextType = AppContext;
@@ -168,23 +155,6 @@ class Displayer extends Component {
 							>
 								{(props) => {
 									Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-									{
-										/* const handlers = {
-										ACTION_1: (e) => {
-											this.props.setDetailerIndex(this.state.currentSelected);
-										},
-										ACTION_2: (e) => {
-											exportData(type, [ data[this.state.currentSelected] ]);
-										},
-										ACTION_3: (e) => {
-											this.props.enableFormFiller(this.state.currentSelected);
-										},
-										ACTION_4: (e) => {
-											this.deleteResource([ data[this.state.currentSelected]._id ]);
-										}
-									};
-									 */
-									}
 									return (
 										<Fragment>
 											{this.EffectorTopBar}

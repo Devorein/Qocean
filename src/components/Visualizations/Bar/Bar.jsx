@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { HeatMap } from '@nivo/heatmap';
+import { Bar } from '@nivo/bar';
 
-class CustomHeatmap extends Component {
+class CustomBar extends Component {
 	render() {
 		const { toolTipStyle, commonProperties } = this.props;
 
 		return (
 			<div className="Heatmap">
-				<HeatMap
+				<Bar
 					{...commonProperties}
-					forceSquare={true}
 					axisTop={{
 						orient: 'top',
 						tickSize: 0,
@@ -17,9 +16,16 @@ class CustomHeatmap extends Component {
 						legend: '',
 						legendOffset: 36
 					}}
-					tooltip={({ xKey, yKey, value }) => (
+					axisLeft={{
+						format: (value) => {
+							if (Number.isInteger(value)) return value;
+							else return null;
+						}
+					}}
+					groupMode="grouped"
+					tooltip={(value) => (
 						<span style={toolTipStyle}>
-							{yKey} - {xKey}: {value}
+							{value.data.name} - {value.id}: {value.value}
 						</span>
 					)}
 				/>
@@ -28,4 +34,4 @@ class CustomHeatmap extends Component {
 	}
 }
 
-export default CustomHeatmap;
+export default CustomBar;
