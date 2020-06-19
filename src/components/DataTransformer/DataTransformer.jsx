@@ -13,13 +13,21 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import UIfx from 'uifx';
 
+import MouseClickSound from '../../sounds/Mouse Click.mp3';
+
+import Popover from '../Popover/Popover';
 import CheckboxInput from '../Input/Checkbox/CheckboxInput';
 import ChipContainer from '../../components/Chip/ChipContainer';
 
 import getColouredIcons from '../../Utils/getColoredIcons';
 import exportData from '../../Utils/exportData';
 import { AppContext } from '../../context/AppContext';
+
+const MouseClick = new UIfx(MouseClickSound, {
+	volume: 0.5
+});
 
 class DataTransformer extends Component {
 	static contextType = AppContext;
@@ -31,7 +39,7 @@ class DataTransformer extends Component {
 			if (eff) {
 				const clonedEff = React.cloneElement(eff, {
 					...eff.props,
-					key: `${eff.type.displayName}${this.props.page}`,
+					key: `${eff.props.children.type.displayName}${this.props.page}`,
 					ref
 				});
 				return clonedEff;
@@ -64,48 +72,62 @@ class DataTransformer extends Component {
 			if (targetComp === 'displayer') {
 				actions.push(
 					!hideDetailer ? (
-						<InfoIcon
-							className="Displayer_actions-info"
-							onClick={(e) => {
-								fetchData(type, item._id);
-							}}
-						/>
+						<Popover text="Show details">
+							<InfoIcon
+								className="Displayer_actions-info"
+								onClick={(e) => {
+									MouseClick.play();
+									fetchData(type, item._id);
+								}}
+							/>
+						</Popover>
 					) : null
 				);
 				if (type !== 'user')
 					actions.push(
-						<GetAppIcon
-							className="Displayer_actions-export"
-							onClick={(e) => {
-								exportData(type, [ item ]);
-							}}
-						/>
+						<Popover text="Export item">
+							<GetAppIcon
+								className="Displayer_actions-export"
+								onClick={(e) => {
+									MouseClick.play();
+									exportData(type, [ item ]);
+								}}
+							/>
+						</Popover>
 					);
 
 				if (page === 'self') {
 					actions.push(
-						<UpdateIcon
-							className="Displayer_actions-update"
-							onClick={(e) => {
-								enableFormFiller(index);
-							}}
-						/>,
-						<DeleteIcon
-							className="Displayer_actions-delete"
-							onClick={(e) => {
-								deleteResource([ item._id ]);
-							}}
-						/>
+						<Popover text="Update item">
+							<UpdateIcon
+								className="Displayer_actions-update"
+								onClick={(e) => {
+									MouseClick.play();
+									enableFormFiller(index);
+								}}
+							/>
+						</Popover>,
+						<Popover text="Delete item">
+							<DeleteIcon
+								className="Displayer_actions-delete"
+								onClick={(e) => {
+									deleteResource([ item._id ]);
+								}}
+							/>
+						</Popover>
 					);
 				} else if (page.match(/(watchlist|explore)/)) {
 					if (type !== 'user' && this.context.user)
 						actions.push(
-							<NoteAddIcon
-								className="Displayer_actions-create"
-								onClick={(e) => {
-									enableFormFiller(index);
-								}}
-							/>
+							<Popover text="Create from item">
+								<NoteAddIcon
+									className="Displayer_actions-create"
+									onClick={(e) => {
+										MouseClick.play();
+										enableFormFiller(index);
+									}}
+								/>
+							</Popover>
 						);
 					if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
 						type = pluralize(type, 2);
@@ -113,21 +135,26 @@ class DataTransformer extends Component {
 							`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
 						].includes(item._id);
 						actions.push(
-							<VisibilityIcon
-								style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
-								onClick={(e) => {
-									watchToggle([ index ]);
-								}}
-							/>
+							<Popover text="Toggle watch">
+								<VisibilityIcon
+									style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
+									onClick={(e) => {
+										MouseClick.play();
+										watchToggle([ index ]);
+									}}
+								/>
+							</Popover>
 						);
 					}
 				}
 				if (page === 'play')
 					actions.push(
-						<AddCircleIcon
-							style={{ fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }}
-							onClick={customHandlers.add.bind(null, [ item._id ])}
-						/>
+						<Popover text="Add to quiz">
+							<AddCircleIcon
+								style={{ fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }}
+								onClick={customHandlers.add.bind(null, [ item._id ])}
+							/>
+						</Popover>
 					);
 			}
 
@@ -137,12 +164,14 @@ class DataTransformer extends Component {
 			if (targetComp === 'displayer') {
 				temp.checked = (
 					<div className="Displayer_checked">
-						<CheckboxInput
-							checked={checked.includes(index)}
-							onChange={(e) => {
-								handleChecked(index, e.nativeEvent);
-							}}
-						/>
+						<Popover text="Check item">
+							<CheckboxInput
+								checked={checked.includes(index)}
+								onChange={(e) => {
+									handleChecked(index, e.nativeEvent);
+								}}
+							/>
+						</Popover>
 					</div>
 				);
 				temp.actions = <div className="Displayer_actions">{this.cloneIcons(actions, index)}</div>;
@@ -162,27 +191,35 @@ class DataTransformer extends Component {
 			if (page.match(/(self|play)/)) {
 				if (item.public !== undefined)
 					temp.public = item.public ? (
-						<PublicIcon
-							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
-							style={{ fill: '#00a3e6' }}
-						/>
+						<Popover text="Unpublicize item">
+							<PublicIcon
+								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
+								style={{ fill: '#00a3e6' }}
+							/>
+						</Popover>
 					) : (
-						<PublicIcon
-							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
-							style={{ fill: '#f4423c' }}
-						/>
+						<Popover text="Publicize item">
+							<PublicIcon
+								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
+								style={{ fill: '#f4423c' }}
+							/>
+						</Popover>
 					);
 				if (item.favourite !== undefined)
 					temp.favourite = item.favourite ? (
-						<StarIcon
-							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
-							style={{ fill: '#f0e744' }}
-						/>
+						<Popover text="Unstar item">
+							<StarIcon
+								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
+								style={{ fill: '#f0e744' }}
+							/>
+						</Popover>
 					) : (
-						<StarBorderIcon
-							onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
-							style={{ fill: '#ead50f' }}
-						/>
+						<Popover text="Star item">
+							<StarBorderIcon
+								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
+								style={{ fill: '#ead50f' }}
+							/>
+						</Popover>
 					);
 			}
 			if (item.watchers) temp.watchers = item.watchers.length;

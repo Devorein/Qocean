@@ -10,7 +10,7 @@ class Manipulator extends Component {
 				{({ SSFilterSort, filter_sort }) => {
 					return this.props.children({
 						Manipulator: (
-							<div className="Manipulator">
+							<div className={`Manipulator Manipulator--${DataViewSelect ? 'DataViewSelect' : 'regular'}`}>
 								{DataViewSelect}
 								{SSFilterSort}
 							</div>

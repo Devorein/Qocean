@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { Spring, animated } from 'react-spring/renderprops';
+
 class DataDisplayer extends Component {
 	renderSectorKey = (sector, key) => {
 		const { view } = this.props;
@@ -63,23 +65,33 @@ class DataDisplayer extends Component {
 			>
 				{data.map((item, index) => {
 					return (
-						<div
-							className={`${view}Displayer_Item ${classes.DataDisplayer_Item} ${selected === index
-								? `${view}Displayer_Item--selected`
-								: ''}`}
+						<Spring
 							key={item._id}
+							from={{ transform: 'translateX(-100%)', opacity: 0 }}
+							to={{ transform: 'translateX(0)', opacity: 1 }}
+							delay={index * 250}
+							native
 						>
-							{sectors.map((sector, index) => {
-								return (
-									<div
-										key={`${type}${page}${sector}${index}`}
-										className={`${view}Displayer_Item_Sector ${view}Displayer_Item_Sector-${sector}`}
-									>
-										{this.renderSector(sector, item)}
-									</div>
-								);
-							})}
-						</div>
+							{(style) => (
+								<animated.div
+									className={`${view}Displayer_Item ${classes.DataDisplayer_Item} ${selected === index
+										? `${view}Displayer_Item--selected`
+										: ''}`}
+									style={style}
+								>
+									{sectors.map((sector, index) => {
+										return (
+											<div
+												key={`${type}${page}${sector}${index}`}
+												className={`${view}Displayer_Item_Sector ${view}Displayer_Item_Sector-${sector}`}
+											>
+												{this.renderSector(sector, item)}
+											</div>
+										);
+									})}
+								</animated.div>
+							)}
+						</Spring>
 					);
 				})}
 			</div>

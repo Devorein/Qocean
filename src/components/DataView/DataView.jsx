@@ -11,12 +11,9 @@ class DataView extends Component {
 			const { displayComponent, page = '' } = this.props;
 			const pageprop = `default_${page.toLowerCase()}_view`;
 			const currentenvpageprop = this.context.user ? this.context.user.current_environment[pageprop] : null;
-			if (this.context.user && displayComponent === 'displayer')
-				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'list';
-			else if (this.context.user && displayComponent === 'visualizer')
-				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'table';
-			else if (this.context.user && displayComponent === 'explorer')
-				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'right';
+			if (displayComponent === 'displayer') return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'list';
+			else if (displayComponent === 'visualizer') return 'table';
+			else if (displayComponent === 'explorer') return 'right';
 			else return 'list';
 		})()
 	};

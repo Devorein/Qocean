@@ -1,9 +1,10 @@
 .Explorer {
   display: flex;
   height: calc(100% - 50px);
-  &_content{
+  &_content {
     display: flex;
-    .Detailer{
+    width: 100%;
+    .Detailer {
       width: 350px;
     }
     .Displayer_container {

@@ -2,6 +2,13 @@ import React from 'react';
 import { HotKeys } from 'react-hotkeys';
 import { difference } from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
+import uifx from 'uifx';
+
+import PopSound from '../../sounds/Pop.mp3';
+import MenuSelectionSound from '../../sounds/Menu Selection.mp3';
+
+const Pop = new uifx(PopSound, { volume: 0.5 });
+const MenuSelection = new uifx(MenuSelectionSound, { volume: 0.5 });
 
 const keyMap = {
 	MOVE_UP: 'up',
@@ -26,6 +33,8 @@ class List extends React.Component {
 	handleChecked = (index, e) => {
 		const { checked } = this.state;
 		const { totalItems } = this.props;
+		Pop.setVolume(0.5);
+		Pop.play();
 		if (e.shiftKey && e.altKey) {
 			this.setState({
 				checked: difference(Array.create(index + 1), checked)
@@ -60,6 +69,8 @@ class List extends React.Component {
 	};
 
 	handleCheckedAll = () => {
+		Pop.setVolume(0.75);
+		Pop.play();
 		const { totalItems } = this.props;
 		const shouldCheck = this.state.checked.length < totalItems;
 		if (shouldCheck && totalItems !== 0)
@@ -74,12 +85,14 @@ class List extends React.Component {
 
 	handlers = {
 		MOVE_UP: (e) => {
+			MenuSelection.play();
 			this.setState({
 				selected: this.state.selected > 0 ? this.state.selected - 1 : this.props.totalItems - 1
 			});
 		},
 
 		MOVE_DOWN: (e) => {
+			MenuSelection.play();
 			this.setState({
 				selected: this.state.selected < this.props.totalItems - 1 ? this.state.selected + 1 : 0
 			});
