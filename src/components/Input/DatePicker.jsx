@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import MomentUtils from '@date-io/moment';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import shortid from 'shortid';
 class DatePicker extends Component {
 	render() {
 		let { value, onChange, disabled = false } = this.props;
@@ -16,7 +15,6 @@ class DatePicker extends Component {
 					variant="inline"
 					format="DD/MM/YYYY"
 					margin="normal"
-					id={shortid.generate()}
 					label="Pick date"
 					value={value}
 					onChange={onChange}

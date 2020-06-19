@@ -5,7 +5,6 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Icon from '@material-ui/core/Icon';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import shortId from 'shortid';
 
 class InputSelect extends Component {
 	render() {
@@ -28,9 +27,9 @@ class InputSelect extends Component {
 								{name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ')}
 							</InputLabel>
 							<Select disabled={disabledSelect} name={name} value={value ? value : ''} onChange={onChange}>
-								{selectItems.map(({ value, text, icon }) => {
+								{selectItems.map(({ value, text, icon }, index) => {
 									return (
-										<MenuItem key={shortId.generate()} value={value ? value : text}>
+										<MenuItem key={`${text}${index}`} value={value ? value : text}>
 											{icon ? <Icon>{icon}</Icon> : null}
 											{text}
 										</MenuItem>

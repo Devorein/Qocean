@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
-import shortid from 'shortid';
 import { withTheme } from '@material-ui/core';
 import { orange } from '@material-ui/core/colors';
 
@@ -52,7 +51,7 @@ class ReportBodyItemBodyClass extends Component {
 				}
 				const props = {
 					className: `report_body_item_body_option report_body_item_body_option--${status}`,
-					key: shortid.generate()
+					key: `${stat._id}${index}`
 				};
 				return (
 					<div {...props}>
@@ -66,8 +65,7 @@ class ReportBodyItemBodyClass extends Component {
 			if (!answers[0].includes(user_answers[0])) {
 				status = 'incorrect';
 				const props = {
-					className: `report_body_item_body_option report_body_item_body_option--${status}`,
-					key: shortid.generate()
+					className: `report_body_item_body_option report_body_item_body_option--${status}`
 				};
 				user_answer = (
 					<div {...props}>
@@ -82,8 +80,7 @@ class ReportBodyItemBodyClass extends Component {
 						if (answer === user_answers[0]) status = 'correct_selected';
 						else status = 'correct';
 						const props = {
-							className: `report_body_item_body_option report_body_item_body_option--${status}`,
-							key: shortid.generate()
+							className: `report_body_item_body_option report_body_item_body_option--${status}`
 						};
 						return (
 							<div {...props}>
@@ -101,8 +98,7 @@ class ReportBodyItemBodyClass extends Component {
 				if (!answer.includes(user_answers[index])) {
 					status = 'incorrect';
 					const props = {
-						className: `report_body_item_body_option report_body_item_body_option--${status}`,
-						key: shortid.generate()
+						className: `report_body_item_body_option report_body_item_body_option--${status}`
 					};
 					user_answer = (
 						<div {...props}>
@@ -114,14 +110,12 @@ class ReportBodyItemBodyClass extends Component {
 				return (
 					<div
 						className={`report_body_item_body_row report_body_item_body_row--${answer.length + (user_answer ? 1 : 0)}`}
-						key={shortid.generate()}
 					>
 						{answer.map((chunk) => {
 							if (chunk.toString() === user_answers[index]) status = 'correct_selected';
 							else status = 'correct';
 							const props = {
-								className: `report_body_item_body_option report_body_item_body_option--${status}`,
-								key: shortid.generate()
+								className: `report_body_item_body_option report_body_item_body_option--${status}`
 							};
 							return (
 								<div {...props}>
@@ -139,8 +133,7 @@ class ReportBodyItemBodyClass extends Component {
 				if (user_answers.includes(index)) status = 'correct_selected';
 				else status = 'correct';
 				const props = {
-					className: `report_body_item_body_option report_body_item_body_option--${status}`,
-					key: shortid.generate()
+					className: `report_body_item_body_option report_body_item_body_option--${status}`
 				};
 				return (
 					<div {...props}>

@@ -5,10 +5,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormGroup from '@material-ui/core/FormGroup';
-import shortid from 'shortid';
 import TextInput from './TextInput';
-
-const TextGroup_id = shortid.generate();
 
 class TextInputGroup extends Component {
 	state = {
@@ -36,7 +33,7 @@ class TextInputGroup extends Component {
 		);
 
 		return (
-			<div key={TextGroup_id} className={className}>
+			<div className={className}>
 				<div>{name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}</div>
 				{helperText !== '' ? <FormHelperText>{helperText}</FormHelperText> : null}
 				{errorText !== '' ? <FormHelperText error={true}>{errorText}</FormHelperText> : null}

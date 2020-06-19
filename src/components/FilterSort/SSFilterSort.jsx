@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
-import shortid from 'shortid';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Menu from '@material-ui/core/Menu';
 import AddBoxIcon from '@material-ui/icons/AddBox';
@@ -320,7 +319,7 @@ class SSFilterSort extends Component {
 				? Array(mod.match(/^(exact)$/) ? 1 : 2).fill(0).map((_, _index) => (
 						<DatePicker
 							disabled={disabled || shutdown}
-							key={`datepicker_${_index}${shortid.generate()}`}
+							key={`datepicker_${_index}}`}
 							value={value[_index]}
 							onChange={(date) => {
 								target.value[_index] = date.toISOString();

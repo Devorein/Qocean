@@ -282,7 +282,6 @@ class Effector extends Component {
 						view: this.DataViewState.view,
 						EffectorTopBar: renderEffectorTopBar(),
 						EffectorBottomBar: renderEffectorBottomBar(),
-						GLOBAL_ICONS: this.GLOBAL_ICONS,
 						queryParams: {
 							currentPage: this.PaginationState.currentPage,
 							limit: this.PaginationState.limit,
