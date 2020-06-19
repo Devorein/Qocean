@@ -12,6 +12,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import Stack from '../../Stack/Stack';
 import { AppContext } from '../../../context/AppContext';
@@ -145,7 +146,7 @@ class Detailer extends Component {
 				<ChevronLeftIcon
 					className="Detailer_stats_left"
 					onClick={(e) => {
-						if (currentIndex !== 0) {
+						if (currentIndex > 0) {
 							moveLeft();
 							this.refetchData(currentIndex - 1);
 						}
@@ -183,6 +184,7 @@ class Detailer extends Component {
 						this.removeFromStack('left');
 					}}
 				/>
+				<DeleteIcon onClick={this.removeCurrentIndex} />
 				<DeleteSweepIcon
 					className="Detailer_stats_deleteright"
 					onClick={(e) => {

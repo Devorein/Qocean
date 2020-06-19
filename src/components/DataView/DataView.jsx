@@ -15,6 +15,7 @@ class DataView extends Component {
 				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'list';
 			else if (this.context.user && displayComponent === 'visualizer')
 				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'table';
+			else return 'list';
 		})()
 	};
 
