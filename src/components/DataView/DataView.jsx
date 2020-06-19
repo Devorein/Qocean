@@ -15,8 +15,22 @@ class DataView extends Component {
 				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'list';
 			else if (this.context.user && displayComponent === 'visualizer')
 				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'table';
+			else if (this.context.user && displayComponent === 'explorer')
+				return currentenvpageprop ? currentenvpageprop.toLowerCase() : 'right';
 			else return 'list';
 		})()
+	};
+
+	decideView = () => {
+		const { displayComponent } = this.props;
+		let viewItems = [];
+		if (displayComponent === 'displayer') viewItems.push('table', 'list', 'board', 'gallery');
+		else if (displayComponent === 'visualizer') viewItems.push('table', 'heatmap', 'bar');
+		else if (displayComponent === 'explorer') viewItems.push('left', 'right');
+		return viewItems.map((value) => ({
+			value,
+			text: value.charAt(0).toUpperCase() + value.substr(1)
+		}));
 	};
 
 	render() {
@@ -25,17 +39,12 @@ class DataView extends Component {
 			DataViewSelect: (
 				<InputSelect
 					className={`${DataViewSelectClass || ''} ${prefix ? prefix + '_select' : ''} DataView_select`}
-					name="Data view"
+					name={`${displayComponent.charAt(0).toUpperCase() + displayComponent.substr(1)} View`}
 					value={this.state.view}
 					onChange={(e) => {
 						this.setState({ view: e.target.value });
 					}}
-					selectItems={(displayComponent === 'displayer'
-						? [ 'table', 'list', 'board', 'gallery' ]
-						: [ 'table', 'heatmap', 'bar' ]).map((value) => ({
-						value,
-						text: value.charAt(0).toUpperCase() + value.substr(1)
-					}))}
+					selectItems={this.decideView()}
 				/>
 			),
 			DataViewState: this.state

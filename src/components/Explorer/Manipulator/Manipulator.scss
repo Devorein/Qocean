@@ -1,0 +1,11 @@
+.Manipulator{
+  display: flex;
+  justify-content: space-between;
+  .DataView_select{
+    width: 100px;
+    margin-right: 10px;
+  }
+  .FilterSort{
+    width: calc(100% - 110px);
+  }
+}

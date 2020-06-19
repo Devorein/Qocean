@@ -205,7 +205,7 @@ class Detailer extends Component {
 	};
 
 	renderDetailer = () => {
-		const { page } = this.props;
+		const { page, detailerLocation } = this.props;
 		const { data, type } = this.state;
 		const sectorizedData = data
 			? sectorizeData(data, type, {
@@ -217,7 +217,10 @@ class Detailer extends Component {
 
 		if (sectorizedData) {
 			return (
-				<div className={`Detailer ${this.props.classes.Detailer}`}>
+				<div
+					className={`Detailer ${this.props.classes.Detailer}`}
+					style={{ order: detailerLocation.view === 'left' ? 0 : 1 }}
+				>
 					{this.renderDetailerStats()}
 					<div className="Detailer_content">
 						{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (

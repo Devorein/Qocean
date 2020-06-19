@@ -1,14 +1,17 @@
 .Explorer {
   display: flex;
   height: calc(100% - 50px);
-  .Detailer{
-    width: 350px;
-  }
-  .Displayer_container {
-    height: 100%;
-    width: 100%;
-    .Manipulator {
-      height: 75px;
+  &_content{
+    display: flex;
+    .Detailer{
+      width: 350px;
+    }
+    .Displayer_container {
+      height: 100%;
+      width: 100%;
+      .Manipulator {
+        height: 75px;
+      }
     }
   }
 }
