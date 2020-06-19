@@ -7,20 +7,13 @@ import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import PublicIcon from '@material-ui/icons/Public';
 import { withStyles } from '@material-ui/core/styles';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import DeleteIcon from '@material-ui/icons/Delete';
 
-import Stack from '../../Stack/Stack';
+import StackComps from '../../Stack/StackComps';
 import { AppContext } from '../../../context/AppContext';
 import sectorizeData from '../../../Utils/sectorizeData';
 import populateQueryParams from '../../../Utils/populateQueryParams';
 import getColoredIcons from '../../../Utils/getColoredIcons';
 import ChipContainer from '../../../components/Chip/ChipContainer';
-import TextInput from '../../Input/TextInput/TextInput';
 
 import './Detailer.scss';
 
@@ -139,72 +132,7 @@ class Detailer extends Component {
 		return value;
 	};
 
-	renderDetailerStats = () => {
-		const { StackState: { stack, currentIndex }, removeDuplicates, moveLeft, moveRight } = this;
-		return (
-			<div className="Detailer_stats">
-				<ChevronLeftIcon
-					className="Detailer_stats_left"
-					onClick={(e) => {
-						if (currentIndex > 0) {
-							moveLeft();
-							this.refetchData(currentIndex - 1);
-						}
-					}}
-				/>
-				<ChevronRightIcon
-					className="Detailer_stats_right"
-					onClick={(e) => {
-						if (currentIndex !== stack.length - 1) {
-							moveRight();
-							this.refetchData(currentIndex + 1);
-						}
-					}}
-				/>
-				<TextInput
-					className="Detailer_stats_goto"
-					fullWidth={false}
-					name={'History'}
-					type="number"
-					inputProps={{
-						min: 1,
-						max: stack.length
-					}}
-					ref={(r) => (this.TextInput = r)}
-				/>
-				<PlayCircleFilledIcon
-					className="Detailer_stats_gotobutton"
-					onClick={(e) => {
-						this.refetchData(parseInt(this.TextInput.TextField.value) - 1);
-					}}
-				/>
-				<DeleteSweepIcon
-					className="Detailer_stats_deleteleft"
-					onClick={(e) => {
-						this.removeFromStack('left');
-					}}
-				/>
-				<DeleteIcon onClick={this.removeCurrentIndex} />
-				<DeleteSweepIcon
-					className="Detailer_stats_deleteright"
-					onClick={(e) => {
-						this.removeFromStack('right');
-					}}
-				/>
-				<FileCopyIcon
-					className="Detailer_stats_removedup"
-					onClick={(e) => {
-						removeDuplicates();
-					}}
-				/>
-				<div className="Detailer_stats_count">
-					{currentIndex + 1}/{stack.length} Items
-				</div>
-			</div>
-		);
-	};
-
-	renderDetailer = () => {
+	renderDetailer = (StackComps) => {
 		const { page, detailerLocation } = this.props;
 		const { data, type } = this.state;
 		const sectorizedData = data
@@ -221,7 +149,7 @@ class Detailer extends Component {
 					className={`Detailer ${this.props.classes.Detailer}`}
 					style={{ order: detailerLocation.view === 'left' ? 0 : 1 }}
 				>
-					{this.renderDetailerStats()}
+					<div className="Detailer_stats">{StackComps.map((StackComp) => StackComp)}</div>
 					<div className="Detailer_content">
 						{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (
 							<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
@@ -270,17 +198,17 @@ class Detailer extends Component {
 	};
 
 	render() {
-		const { renderDetailer, fetchData, props: { children } } = this;
 		return (
-			<Stack>
+			<StackComps refetchData={this.refetchData}>
 				{(props) => {
-					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
+					Object.keys(props).forEach((key) => (this[key] = props[key]));
+					const { renderDetailer, fetchData, props: { children } } = this;
 					return children({
 						fetchData,
-						Detailer: renderDetailer()
+						Detailer: renderDetailer(props.StackComps)
 					});
 				}}
-			</Stack>
+			</StackComps>
 		);
 	}
 }
