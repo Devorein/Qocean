@@ -132,11 +132,12 @@ class Displayer extends Component {
 			selected,
 			page
 		};
-
-		if (view === 'table') return <TableDisplayer {...props} />;
-		else if (view === 'list') return <ListDisplayer {...props} />;
-		else if (view === 'board') return <BoardDisplayer {...props} />;
-		else if (view === 'gallery') return <GalleryDisplayer {...props} />;
+		if (manipulatedData) {
+			if (view === 'table') return <TableDisplayer {...props} />;
+			else if (view === 'list') return <ListDisplayer {...props} />;
+			else if (view === 'board') return <BoardDisplayer {...props} />;
+			else if (view === 'gallery') return <GalleryDisplayer {...props} />;
+		} else return null;
 	};
 
 	render() {

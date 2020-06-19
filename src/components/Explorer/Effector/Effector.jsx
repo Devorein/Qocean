@@ -267,14 +267,14 @@ class Effector extends Component {
 					ComposedProps.forEach((ComposedProp) => {
 						if (ComposedProp) Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
 					});
-
 					let { manipulatedData } = this;
-					manipulatedData = sectorizeData(manipulatedData, type, {
-						authenticated: this.context.user,
-						blacklist: this.ColListState.removed_cols,
-						page,
-						flatten: this.DataViewState.view === 'table'
-					});
+					if (manipulatedData)
+						manipulatedData = sectorizeData(manipulatedData, type, {
+							authenticated: this.context.user,
+							blacklist: this.ColListState.removed_cols,
+							page,
+							flatten: this.DataViewState.view === 'table'
+						});
 
 					return this.props.children({
 						manipulatedData,
