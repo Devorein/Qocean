@@ -1,14 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import moment from 'moment';
-import CancelIcon from '@material-ui/icons/Cancel';
 import Menu from '@material-ui/core/Menu';
-import AddBoxIcon from '@material-ui/icons/AddBox';
 import { withStyles } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import axios from 'axios';
 
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import GenericButton from '../Buttons/GenericButton';
 import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
@@ -19,6 +16,7 @@ import decideTargetType from '../../Utils/decideTargetType';
 import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
 import FSManip from './FSManip';
 import AutoCompleteInput from '../../components/Input/AutoCompleteInput';
+import getIcons from '../../Utils/getIcons';
 
 import './SSFilterSort.scss';
 
@@ -140,16 +138,18 @@ class SSFilterSort extends Component {
 				/>
 				{index !== 0 ? (
 					<div className="FilterSortItem_select_delete">
-						<CancelIcon
-							onClick={() => {
+						{getIcons({
+							icon: 'cancel',
+							popoverText: 'Delete filter',
+							onClick: () => {
 								if (!disabled) {
 									this.state.sorts.splice(index, 1);
 									this.setState({
 										sorts: this.state.sorts
 									});
 								}
-							}}
-						/>
+							}
+						})}
 					</div>
 				) : null}
 			</Fragment>
@@ -440,8 +440,9 @@ class SSFilterSort extends Component {
 					<div className="FilterSortItem_select_value">{valueItem}</div>
 					{index !== 0 || isChild ? (
 						<div className="FilterSortItem_select_delete">
-							<CancelIcon
-								onClick={() => {
+							{getIcons({
+								icon: 'cancel',
+								onClick: () => {
 									if (!disabled && !shutdown) {
 										if (isChild) this.state.filters[parentIndex].children.splice(childIndex, 1);
 										else this.state.filters.splice(index, 1);
@@ -449,14 +450,16 @@ class SSFilterSort extends Component {
 											filters: this.state.filters
 										});
 									}
-								}}
-							/>
+								},
+								popoverText: 'Remove child filter'
+							})}
 						</div>
 					) : null}
 					{!isChild && currentTarget.children.length < 2 ? (
-						<AddBoxIcon
-							className="FilterSortItem_select_add"
-							onClick={(e) => {
+						getIcons({
+							className: 'FilterSortItem_select_add',
+							icon: 'AddBox',
+							onClick: (e) => {
 								if (!disabled && !shutdown) {
 									const newTarget = { ...DEFAULT_FILTER };
 									delete newTarget.children;
@@ -465,8 +468,8 @@ class SSFilterSort extends Component {
 										filters: this.state.filters
 									});
 								}
-							}}
-						/>
+							}
+						})
 					) : null}
 				</div>
 			);
@@ -503,8 +506,10 @@ class SSFilterSort extends Component {
 					>
 						{totalActive}/{this.state[item].length} {`${item}`}{' '}
 					</div>
-					<RotateLeftIcon
-						onClick={(e) => {
+					{getIcons({
+						icon: 'rotateleft',
+						popoverText: `Reset ${item}`,
+						onClick: (e) => {
 							if (item === 'filters') {
 								this.setState({
 									filters: [
@@ -523,8 +528,8 @@ class SSFilterSort extends Component {
 									]
 								});
 							}
-						}}
-					/>
+						}
+					})}
 					<Menu
 						anchorEl={this.state[`anchorEl${item}`]}
 						keepMounted
@@ -570,8 +575,10 @@ class SSFilterSort extends Component {
 						})}
 						{items.length < 5 ? (
 							<div className="SSFilterSort_apply-button">
-								<AddBoxIcon
-									onClick={(e) => {
+								{getIcons({
+									icon: 'addbox',
+									popoverText: `Add ${item}`,
+									onClick: (e) => {
 										items.push(
 											item === 'filters'
 												? { ...DEFAULT_FILTER, children: [], cond: this.state.filters[0].cond }
@@ -580,8 +587,8 @@ class SSFilterSort extends Component {
 										this.setState({
 											[item]: items
 										});
-									}}
-								/>
+									}
+								})}
 							</div>
 						) : null}
 					</Menu>

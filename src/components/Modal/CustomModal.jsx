@@ -3,9 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import DialogContent from '@material-ui/core/DialogContent';
-import CancelIcon from '@material-ui/icons/Cancel';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+
+import getIcons from '../../Utils/getIcons';
 
 const useStyles = makeStyles((theme) => ({
 	modal: {
@@ -30,9 +29,25 @@ export default function CustomModal(props) {
 			<Modal className={classes.modal} open={isOpen} closeAfterTransition>
 				<Fade in={isOpen}>
 					<DialogContent>
-						<CancelIcon onClick={handleClose} />
-						<ChevronLeftIcon onClick={onArrowClick ? onArrowClick.bind(null, 'left') : null} />
-						<ChevronRightIcon onClick={onArrowClick ? onArrowClick.bind(null, 'right') : null} />
+						{getIcons({
+							icon: 'cancel',
+							onClick: handleClose,
+							popoverText: 'Close Modal'
+						})}
+						{onArrowClick ? (
+							getIcons({
+								icon: 'chevronleft',
+								onClick: onArrowClick.bind(null, 'left'),
+								popoverText: 'Go to prev item'
+							})
+						) : null}
+						{onArrowClick ? (
+							getIcons({
+								icon: 'chevronright',
+								onClick: onArrowClick.bind(null, 'right'),
+								popoverText: 'Go to next item'
+							})
+						) : null}
 						<div className="modal_content">{props.children}</div>
 					</DialogContent>
 				</Fade>

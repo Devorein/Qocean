@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import PublishIcon from '@material-ui/icons/Publish';
 import { withSnackbar } from 'notistack';
 
 import Upload from '../../components/Buttons/Upload';
@@ -100,8 +99,9 @@ class Import extends Component {
 												listItems={this.transformList()}
 												icons={[
 													{
-														icon: PublishIcon,
-														onClick: this.submitForm
+														icon: 'publish',
+														onClick: this.submitForm,
+														popoverText: 'Create item'
 													}
 												]}
 											>

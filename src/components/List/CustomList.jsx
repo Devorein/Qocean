@@ -2,8 +2,6 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import clsx from 'clsx';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import List from './List';
 import LocalFilter from '../FilterSort/LocalFilter';
@@ -30,23 +28,36 @@ class CustomList extends React.Component {
 					{this.LocalFilterSearch}
 					<div className="CustomList_Header_Icons">
 						{icons && icons.length !== 0 ? (
-							icons.map(({ icon, onClick }) => {
+							icons.map(({ icon, onClick, popoverText }, index) => {
 								return (
-									<div key={icon.displayName} className={`CustomList_Header_Icons_${icon.displayName}`}>
-										{React.createElement(icon, {
+									<div
+										key={`${getIcons({ icon, onlyIcon: true }).type.displayName}${index}`}
+										className={`CustomList_Header_Icons_${icon.displayName}`}
+									>
+										{getIcons({
+											icon,
 											onClick: onClick.bind(
 												null,
 												checked.length > 0
 													? checked
 													: Array(filteredContents.length).fill(0).map((_, i) => filteredContents[i]._id || i)
-											)
+											),
+											popoverText
 										})}
 									</div>
 								);
 							})
 						) : null}
-						<ChevronLeftIcon onClick={moveUp} />
-						<ChevronRightIcon onClick={moveDown} />
+						{getIcons({
+							icon: 'chevronleft',
+							onClick: moveUp,
+							popoverText: 'Move up'
+						})}
+						{getIcons({
+							icon: 'chevronright',
+							onClick: moveDown,
+							popoverText: 'Move down'
+						})}
 						{this.AllCheckbox}
 						{this.SelectStat}
 					</div>
@@ -77,15 +88,19 @@ class CustomList extends React.Component {
 									</div>
 								) : null}
 								<div className={'CustomList_Body_Item_Icons'}>
-									<div className={'CustomList_Body_Item_Icons_primary'}>{getIcons(primaryIcon)}</div>
+									<div className={'CustomList_Body_Item_Icons_primary'}>{getIcons({ icon: primaryIcon })}</div>
 									{icons && icons.length !== 0 ? (
-										icons.map(({ icon, onClick }) => {
+										icons.map(({ icon, onClick, popoverText }) => {
 											return (
 												<div
 													className={`CustomList_Body_Item_Icons_${icon.displayName}`}
 													key={listItem._id + icon.displayName}
 												>
-													{React.createElement(icon, { onClick: onClick.bind(null, [ listItem._id || index ]) })}
+													{getIcons({
+														icon,
+														onClick: onClick.bind(null, [ listItem._id || index ]),
+														popoverText
+													})}
 												</div>
 											);
 										})

@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
-import DeleteIcon from '@material-ui/icons/Delete';
 
+import getIcons from '../../Utils/getIcons';
 import TextInput from '../Input/TextInput/TextInput';
 
 import Stack from './Stack';
@@ -32,30 +27,29 @@ class StackComps extends Component {
 				{(props) => {
 					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
 					const { StackState: { stack, currentIndex }, removeDuplicates, moveLeft, moveRight } = this;
-					const StackCompsLeft = (
-						<ChevronLeftIcon
-							className={`${StackCompsLeftClass + ' ' || ''}${prefix ? prefix + 'left ' : ''}StackComps_left`}
-							onClick={(e) => {
-								if (currentIndex > 0) {
-									moveLeft();
-									if (refetchData) refetchData(currentIndex - 1);
-								}
-							}}
-						/>
-					);
+					const StackCompsLeft = getIcons({
+						icon: 'chevronleft',
+						className: `${StackCompsLeftClass + ' ' || ''}${prefix ? prefix + 'left ' : ''}StackComps_left`,
+						onClick: (e) => {
+							if (currentIndex > 0) {
+								moveLeft();
+								if (refetchData) refetchData(currentIndex - 1);
+							}
+						},
+						popoverText: 'Move left'
+					});
 
-					const StackCompsRight = (
-						<ChevronRightIcon
-							className={`${StackCompsRightClass + ' ' || ''}${prefix ? prefix + 'right ' : ''}StackComps_right`}
-							onClick={(e) => {
-								if (currentIndex !== stack.length - 1) {
-									moveRight();
-									if (refetchData) refetchData(currentIndex + 1);
-								}
-							}}
-						/>
-					);
-
+					const StackCompsRight = getIcons({
+						icon: 'chevronright',
+						className: `${StackCompsRightClass + ' ' || ''}${prefix ? prefix + 'right ' : ''}StackComps_right`,
+						onClick: (e) => {
+							if (currentIndex !== stack.length - 1) {
+								moveRight();
+								if (refetchData) refetchData(currentIndex + 1);
+							}
+						},
+						popoverText: 'Move right'
+					});
 					const StackCompsGotoInput = (
 						<TextInput
 							className={`${StackCompsGotoInputClass + ' ' || ''}${prefix
@@ -69,62 +63,66 @@ class StackComps extends Component {
 								max: stack.length
 							}}
 							ref={(r) => (this.TextInput = r)}
+							key={'StackComps_gotoinput'}
 						/>
 					);
 
-					const StackCompsGotoButton = (
-						<PlayCircleFilledIcon
-							className={`${StackCompsGotoButtonClass + ' ' || ''}${prefix
-								? prefix + 'gotobutton '
-								: ''}StackComps_gotobutton`}
-							onClick={(e) => {
-								if (refetchData) refetchData(parseInt(this.TextInput.TextField.value) - 1);
-							}}
-						/>
-					);
+					const StackCompsGotoButton = getIcons({
+						icon: 'playcirclefilled',
+						className: `${StackCompsGotoButtonClass + ' ' || ''}${prefix
+							? prefix + 'gotobutton '
+							: ''}StackComps_gotobutton`,
+						onClick: (e) => {
+							if (refetchData) refetchData(parseInt(this.TextInput.TextField.value) - 1);
+						},
+						popoverText: `Go to stack ${this.TextInput ? this.TextInput.TextField.value : '0'} item`
+					});
 
-					const StackCompsDeleteLeft = (
-						<DeleteSweepIcon
-							className={`${StackCompsDeleteLeftClass + ' ' || ''}${prefix
-								? prefix + 'deleteleft '
-								: ''}StackComps_deleteleft`}
-							onClick={(e) => {
-								this.removeFromStack('left');
-							}}
-						/>
-					);
+					const StackCompsDeleteLeft = getIcons({
+						icon: 'deletesweep',
+						className: `${StackCompsDeleteLeftClass + ' ' || ''}${prefix
+							? prefix + 'deleteleft '
+							: ''}StackComps_deleteleft`,
+						onClick: (e) => {
+							this.removeFromStack('left');
+						},
+						popoverText: `Remove leftwards stack items`,
+						appendToKey: 'DeleteLeft'
+					});
 
-					const StackCompsDelete = (
-						<DeleteIcon
-							onClick={this.removeCurrentIndex}
-							className={`${StackCompsDeleteClass + ' ' || ''}${prefix ? prefix + 'delete ' : ''}StackComps_delete`}
-						/>
-					);
+					const StackCompsDelete = getIcons({
+						icon: 'delete',
+						className: `${StackCompsDeleteClass + ' ' || ''}${prefix ? prefix + 'delete ' : ''}StackComps_delete`,
+						onClick: this.removeCurrentIndex,
+						popoverText: `Remove current stack item`
+					});
 
-					const StackCompsDeleteRight = (
-						<DeleteSweepIcon
-							className={`${StackCompsDeleteRightClass + ' ' || ''}${prefix
-								? prefix + 'deleteright '
-								: ''}StackComps_deleteright`}
-							onClick={(e) => {
-								this.removeFromStack('right');
-							}}
-						/>
-					);
+					const StackCompsDeleteRight = getIcons({
+						icon: 'deletesweep',
+						className: `${StackCompsDeleteRightClass + ' ' || ''}${prefix
+							? prefix + 'deleteright '
+							: ''}StackComps_deleteright`,
+						onClick: (e) => {
+							this.removeFromStack('right');
+						},
+						popoverText: `Remove rightwards stack items`,
+						appendToKey: 'DeleteRight'
+					});
 
-					const StackCompsRemoveDups = (
-						<FileCopyIcon
-							className={`${StackCompsRemoveDupsClass + ' ' || ''}${prefix
-								? prefix + 'removedups '
-								: ''}StackComps_removedups`}
-							onClick={(e) => {
-								removeDuplicates();
-							}}
-						/>
-					);
+					const StackCompsRemoveDups = getIcons({
+						icon: 'filecopy',
+						className: `${StackCompsRemoveDupsClass + ' ' || ''}${prefix
+							? prefix + 'removedups '
+							: ''}StackComps_removedups`,
+						onClick: removeDuplicates,
+						popoverText: `Remove duplicates`
+					});
 
 					const StackCompsStat = (
-						<div className={`${StackCompsStatClass + ' ' || ''}${prefix ? prefix + 'stat ' : ''}StackComps_stat`}>
+						<div
+							key={'StackComps_stat'}
+							className={`${StackCompsStatClass + ' ' || ''}${prefix ? prefix + 'stat ' : ''}StackComps_stat`}
+						>
 							{currentIndex + 1}/{stack.length} Items
 						</div>
 					);

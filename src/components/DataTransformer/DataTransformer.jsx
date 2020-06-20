@@ -2,32 +2,16 @@ import React, { Component } from 'react';
 import pluralize from 'pluralize';
 import moment from 'moment';
 import { withTheme } from '@material-ui/core/styles';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import PublicIcon from '@material-ui/icons/Public';
-import UpdateIcon from '@material-ui/icons/Update';
-import InfoIcon from '@material-ui/icons/Info';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import NoteAddIcon from '@material-ui/icons/NoteAdd';
-import UIfx from 'uifx';
-
-import MouseClickSound from '../../sounds/Mouse Click.mp3';
 
 import Popover from '../Popover/Popover';
 import CheckboxInput from '../Input/Checkbox/CheckboxInput';
 import ChipContainer from '../../components/Chip/ChipContainer';
 
+import getIcons from '../../Utils/getIcons';
 import getColouredIcons from '../../Utils/getColoredIcons';
 import exportData from '../../Utils/exportData';
 import { AppContext } from '../../context/AppContext';
-
-const MouseClick = new UIfx(MouseClickSound, {
-	volume: 0.5
-});
 
 class DataTransformer extends Component {
 	static contextType = AppContext;
@@ -35,15 +19,8 @@ class DataTransformer extends Component {
 	cloneIcons = (effectors, index) => {
 		return effectors.map((eff) => {
 			let ref = null;
-			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.type.displayName}`] = ref);
-			if (eff) {
-				const clonedEff = React.cloneElement(eff, {
-					...eff.props,
-					key: `${eff.props.children.type.displayName}${this.props.page}`,
-					ref
-				});
-				return clonedEff;
-			}
+			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.icon}`] = ref);
+			if (eff) return getIcons({ ...eff, appendToKey: `${this.props.page}${index}`, ref });
 			return null;
 		});
 	};
@@ -71,91 +48,76 @@ class DataTransformer extends Component {
 			const actions = [];
 			if (targetComp === 'displayer') {
 				actions.push(
-					!hideDetailer ? (
-						<Popover text="Show details">
-							<InfoIcon
-								className="Displayer_actions-info"
-								onClick={(e) => {
-									MouseClick.play();
+					!hideDetailer
+						? {
+								icon: 'Info',
+								onClick: () => {
 									fetchData(type, item._id);
-								}}
-							/>
-						</Popover>
-					) : null
+								},
+								popoverText: 'Show Details'
+							}
+						: null
 				);
 				if (type !== 'user')
-					actions.push(
-						<Popover text="Export item">
-							<GetAppIcon
-								className="Displayer_actions-export"
-								onClick={(e) => {
-									MouseClick.play();
-									exportData(type, [ item ]);
-								}}
-							/>
-						</Popover>
-					);
+					actions.push({
+						icon: 'GetApp',
+						onClick: () => {
+							exportData(type, [ item ]);
+						},
+						popoverText: 'Export Item'
+					});
 
 				if (page === 'self') {
 					actions.push(
-						<Popover text="Update item">
-							<UpdateIcon
-								className="Displayer_actions-update"
-								onClick={(e) => {
-									MouseClick.play();
-									enableFormFiller(index);
-								}}
-							/>
-						</Popover>,
-						<Popover text="Delete item">
-							<DeleteIcon
-								className="Displayer_actions-delete"
-								onClick={(e) => {
-									deleteResource([ item._id ]);
-								}}
-							/>
-						</Popover>
+						{
+							icon: 'Update',
+							onClick: () => {
+								enableFormFiller(index);
+							},
+							popoverText: 'Update Item'
+						},
+						{
+							icon: 'Delete',
+							onClick: () => {
+								deleteResource([ item._id ]);
+							},
+							popoverText: 'Delete Item',
+							style: {
+								fill: theme.darken(theme.palette.error.main, 0.25)
+							}
+						}
 					);
 				} else if (page.match(/(watchlist|explore)/)) {
 					if (type !== 'user' && this.context.user)
-						actions.push(
-							<Popover text="Create from item">
-								<NoteAddIcon
-									className="Displayer_actions-create"
-									onClick={(e) => {
-										MouseClick.play();
-										enableFormFiller(index);
-									}}
-								/>
-							</Popover>
-						);
+						actions.push({
+							icon: 'NoteAdd',
+							onClick: () => {
+								enableFormFiller(index);
+							},
+							popoverText: 'Create from Item'
+						});
 					if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
 						type = pluralize(type, 2);
 						const isWatched = this.context.user.watchlist[
 							`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
 						].includes(item._id);
-						actions.push(
-							<Popover text="Toggle watch">
-								<VisibilityIcon
-									style={{ fill: isWatched ? theme.palette.success.main : theme.palette.error.main }}
-									onClick={(e) => {
-										MouseClick.play();
-										watchToggle([ index ]);
-									}}
-								/>
-							</Popover>
-						);
+						actions.push({
+							icon: 'Visibility',
+							onClick: () => {
+								watchToggle([ index ]);
+							},
+							popoverText: 'Toggle watch',
+							style: { fill: isWatched ? theme.palette.success.main : theme.palette.error.main }
+						});
 					}
 				}
 				if (page === 'play')
-					actions.push(
-						<Popover text="Add to quiz">
-							<AddCircleIcon
-								style={{ fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }}
-								onClick={customHandlers.add.bind(null, [ item._id ])}
-							/>
-						</Popover>
-					);
+					actions.push({
+						icon: 'AddCircle',
+						onClick: customHandlers.add.bind(null, [ item._id ]),
+						popoverText: 'Add to quiz',
+						style: { fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }
+					});
 			}
 
 			const temp = {
@@ -187,38 +149,27 @@ class DataTransformer extends Component {
 			if (item.icon) temp.icon = getColouredIcons(type, item.icon);
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
 			if (page.match(/(self|play)/)) {
-				if (item.public !== undefined)
-					temp.public = item.public ? (
-						<Popover text="Unpublicize item">
-							<PublicIcon
-								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
-								style={{ fill: '#00a3e6' }}
-							/>
-						</Popover>
-					) : (
-						<Popover text="Publicize item">
-							<PublicIcon
-								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}}
-								style={{ fill: '#f4423c' }}
-							/>
-						</Popover>
-					);
-				if (item.favourite !== undefined)
-					temp.favourite = item.favourite ? (
-						<Popover text="Unstar item">
-							<StarIcon
-								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
-								style={{ fill: '#f0e744' }}
-							/>
-						</Popover>
-					) : (
-						<Popover text="Star item">
-							<StarBorderIcon
-								onClick={targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}}
-								style={{ fill: '#ead50f' }}
-							/>
-						</Popover>
-					);
+				if (item.public !== undefined) {
+					const style = { fill: item.public ? '#00a3e6' : '#f4423c' };
+					const popoverText = item.public ? 'Unpublicize item' : 'Publicize item';
+					temp.public = getIcons({
+						style,
+						popoverText,
+						icon: 'Public',
+						onClick: targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}
+					});
+				}
+				if (item.favourite !== undefined) {
+					const style = { fill: item.favourite ? '#f0e744' : '#ead50f' };
+					const popoverText = item.favourite ? 'Unstar item' : 'Star item';
+					const icon = item.favourite ? 'star' : 'starborder';
+					temp.favourite = getIcons({
+						style,
+						popoverText,
+						icon,
+						onClick: targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}
+					});
+				}
 			}
 			// if (item.watchers) temp.watchers = item.watchers.length;
 

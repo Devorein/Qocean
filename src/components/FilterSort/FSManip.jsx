@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
-import NoteAddIcon from '@material-ui/icons/NoteAdd';
+
 import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
-import CancelIcon from '@material-ui/icons/Cancel';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
-import UpdateIcon from '@material-ui/icons/Update';
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+
+import getIcons from '../../Utils/getIcons';
 
 import { AppContext } from '../../context/AppContext';
 
@@ -187,10 +186,30 @@ class FSManip extends Component {
 		return (
 			<Fragment>
 				<div className="FilterSort_icons">
-					<RotateLeftIcon className="FilterSort_reset" onClick={this.resetFS} />
-					<NoteAddIcon className="FilterSort_add" onClick={this.createPreset} />
-					<UpdateIcon className="FilterSort_update" onClick={this.updatePreset} />
-					<CancelIcon className="FilterSort_delete" onClick={this.deletePreset} />
+					{getIcons({
+						icon: 'RotateLeft',
+						onClick: this.resetFS,
+						className: 'FilterSort_reset',
+						popoverText: 'Reset filter and sort'
+					})}
+					{getIcons({
+						icon: 'noteadd',
+						onClick: this.createPreset,
+						className: 'FilterSort_add',
+						popoverText: 'Create preset'
+					})}
+					{getIcons({
+						icon: 'Update',
+						onClick: this.updatePreset,
+						className: 'FilterSort_update',
+						popoverText: 'Update preset'
+					})}
+					{getIcons({
+						icon: 'Cancel',
+						onClick: this.deletePreset,
+						className: 'FilterSort_reset',
+						popoverText: 'Delete preset'
+					})}
 				</div>
 				<InputSelect
 					className="FilterSort_preset"

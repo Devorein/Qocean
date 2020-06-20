@@ -1,16 +1,8 @@
 import React, { Component, Fragment } from 'react';
-import { RotateLeft } from '@material-ui/icons';
-import GetAppIcon from '@material-ui/icons/GetApp';
-import StarIcon from '@material-ui/icons/Star';
-import PublicIcon from '@material-ui/icons/Public';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import { withTheme } from '@material-ui/core/styles';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import Composer from 'react-composer';
 
+import getIcons from '../../../Utils/getIcons';
 import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
 import Pagination from '../../Pagination/Pagination';
@@ -65,16 +57,20 @@ class Effector extends Component {
 				<div className="Effector_Bottombar_container">
 					{PaginationIppSelect}
 					<div className="Effector_Bottombar-pagenavigation">
-						<ChevronLeftIcon
-							onClick={(e) => {
+						{getIcons({
+							icon: 'ChevronLeft',
+							onClick: () => {
 								this.movePage('prev');
-							}}
-						/>
-						<ChevronRightIcon
-							onClick={(e) => {
+							},
+							popoverText: 'Go to prev page'
+						})}
+						{getIcons({
+							icon: 'ChevronRight',
+							onClick: () => {
 								this.movePage('next');
-							}}
-						/>
+							},
+							popoverText: 'Go to next page'
+						})}
 					</div>
 					{PaginationPageCount}
 					{PaginationItemCount}
@@ -90,44 +86,56 @@ class Effector extends Component {
 		page = page.toLowerCase();
 		type = type.toLowerCase();
 		const effectors = [
-			<RotateLeft
-				onClick={(e) => {
-					this.refetchData();
-				}}
-			/>,
-			type !== 'user' && page !== 'play' ? (
-				<GetAppIcon
-					onClick={(e) => {
-						exportData(type, filteredContents);
-					}}
-				/>
-			) : null,
-			page === 'play' ? (
-				<AddCircleIcon onClick={this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id))} />
-			) : null
+			getIcons({
+				icon: 'RotateLeft',
+				onClick: this.refetchData,
+				popoverText: 'Refetch data'
+			}),
+			type !== 'user' && page !== 'play'
+				? getIcons({
+						icon: 'GetApp',
+						onClick: () => {
+							exportData(type, filteredContents);
+						},
+						popoverText: `Export ${filteredContents.length} items`
+					})
+				: null,
+			page === 'play'
+				? getIcons({
+						icon: 'AddCircle',
+						onClick: () => this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id)),
+						popoverText: `Add ${this.props.data.length} items to quiz list`
+					})
+				: null
 		];
 		const array = Array(filteredContents.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
-				<StarIcon
-					onClick={(e) => {
+				getIcons({
+					icon: 'star',
+					onClick: () => {
 						updateResource(array, 'favourite');
-					}}
-				/>,
-				<PublicIcon
-					onClick={(e) => {
+					},
+					popoverText: `Reverse toggle favourite ${filteredContents.length} items`
+				}),
+				getIcons({
+					icon: 'public',
+					onClick: () => {
 						updateResource(array, 'public');
-					}}
-				/>
+					},
+					popoverText: `Reverse toggle publicize ${filteredContents.length} items`
+				})
 			);
 		} else {
 			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user && page !== 'play') {
 				effectors.push(
-					<VisibilityIcon
-						onClick={(e) => {
+					getIcons({
+						icon: 'Visibility',
+						onClick: () => {
 							this.props.watchToggle(array);
-						}}
-					/>
+						},
+						popoverText: `Reverse toggle watch ${filteredContents.length} items`
+					})
 				);
 			}
 		}
@@ -142,44 +150,57 @@ class Effector extends Component {
 		type = type.toLowerCase();
 		const selectedItems = checked.map((index) => filteredContents[index]);
 		const effectors = [
-			type !== 'user' && page !== 'play' ? (
-				<GetAppIcon
-					onClick={(e) => {
-						exportData(type, selectedItems);
-					}}
-				/>
-			) : null,
-			this.context.user && page !== 'play' ? (
-				<VisibilityIcon
-					onClick={(e) => {
-						this.props.watchToggle(checked);
-					}}
-				/>
-			) : null,
-			page === 'play' ? (
-				<AddCircleIcon
-					onClick={this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id))}
-				/>
-			) : null
+			type !== 'user' && page !== 'play'
+				? getIcons({
+						icon: 'GetApp',
+						onClick: () => {
+							exportData(type, selectedItems);
+						},
+						popoverText: `Export ${checked.length} items`
+					})
+				: null,
+			this.context.user && page !== 'play'
+				? getIcons({
+						icon: 'Visibility',
+						onClick: () => {
+							this.props.watchToggle(checked);
+						},
+						popoverText: `Watch toggle ${checked.length} items`
+					})
+				: null,
+			page === 'play'
+				? getIcons({
+						icon: 'AddCircle',
+						onClick: () =>
+							this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id)),
+						popoverText: `Add ${checked.length} to quiz list`
+					})
+				: null
 		];
 
 		if (page === 'self') {
 			effectors.push(
-				<DeleteIcon
-					onClick={(e) => {
+				getIcons({
+					icon: 'Delete',
+					onClick: () => {
 						this.setIsOpen(true);
-					}}
-				/>,
-				<StarIcon
-					onClick={(e) => {
+					},
+					popoverText: `Delete ${checked.length} items`
+				}),
+				getIcons({
+					icon: 'Star',
+					onClick: () => {
 						updateResource(checked, 'favourite');
-					}}
-				/>,
-				<PublicIcon
-					onClick={(e) => {
+					},
+					popoverText: `Reverse favourite ${checked.length} items`
+				}),
+				getIcons({
+					icon: 'Public',
+					onClick: () => {
 						updateResource(checked, 'public');
-					}}
-				/>
+					},
+					popoverText: `Reverse publicize ${checked.length} items`
+				})
 			);
 		}
 		return <div className="Effector_Topbar_selected">{this.cloneIcons(effectors)}</div>;
