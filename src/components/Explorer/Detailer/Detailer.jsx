@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import StackComps from '../../Stack/StackComps';
 import { AppContext } from '../../../context/AppContext';
 import DataTransformer from '../../DataTransformer/DataTransformer';
+import DataDisplayer from '../../Visualizations/DataDisplayer/DataDisplayer';
 
 import sectorizeData from '../../../Utils/sectorizeData';
 import populateQueryParams from '../../../Utils/populateQueryParams';
@@ -41,7 +42,6 @@ class Detailer extends Component {
 				}
 			})
 			.then(({ data: { data } }) => {
-				console.log(data);
 				this.addToStack(url);
 				this.setState({
 					data,
@@ -75,33 +75,6 @@ class Detailer extends Component {
 			});
 	};
 
-	renderRefs = (data, ref, sector) => {
-		const renderRefItems = (item) => {
-			const name = item.username || item.name;
-			return (
-				<div
-					className={`Detailer_container-${sector}_item_value_container_item Detailer_container-${sector}_item-${ref}_value_container_item`}
-					key={item._id}
-					onClick={(e) => {
-						this.fetchData(ref, item._id);
-					}}
-				>
-					{name}
-				</div>
-			);
-		};
-		const className = `Detailer_container-${sector}_item_value_container Detailer_container-${sector}_item-${ref}_value_container`;
-		if (data) {
-			if (data.length === 0) return <div className={className}>N/A</div>;
-			else
-				return (
-					<div className={className}>
-						{Array.isArray(data) ? data.map((item) => renderRefItems(item)) : renderRefItems(data)}
-					</div>
-				);
-		}
-	};
-
 	renderDetailer = () => {
 		const { page, detailerLocation } = this.props;
 		const { type } = this.state;
@@ -120,48 +93,15 @@ class Detailer extends Component {
 					style={{ order: detailerLocation.view === 'left' ? 0 : 1 }}
 				>
 					<div className="Detailer_stats">{this.StackComps.map((StackComp) => StackComp)}</div>
-					<div className="Detailer_content">
-						{[ 'primary', 'secondary', 'tertiary' ].map((sector) => (
-							<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
-								{Object.entries(sectorizedData[sector]).map(([ key, value ]) => (
-									<div
-										className={`Detailer_container_item Detailer_container-${sector}_item Detailer_container_item-${key}`}
-										key={key}
-									>
-										<span className={`Detailer_container_item_key Detailer_container-${sector}_item_key`}>
-											{key.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
-										</span>
-										<span className={`Detailer_container_item_value Detailer_container-${sector}_item_value`}>
-											{value}
-										</span>
-									</div>
-								))}
-							</div>
-						))}
-						{[ 'ref', 'refs' ].map((sector) => (
-							<div className={`Detailer_container Detailer_container-${sector}`} key={sector}>
-								{Object.keys(sectorizedData[sector]).map((ref) => {
-									return (
-										<div key={ref} className={`Detailer_container-${sector}_item Detailer_container_item`}>
-											<div
-												className={`Detailer_container-${sector}_item_key Detailer_container-${sector}_item-${ref}_key`}
-											>
-												{ref.split('_').map((c) => c.charAt(0).toUpperCase() + c.substr(1)).join(' ')}
-												{sector === 'refs' ? (
-													<div
-														className={`Detailer_container-${sector}_item_key_count Detailer_container-${sector}_item-${ref}_key_count`}
-													>
-														{sectorizedData[sector][ref].length}
-													</div>
-												) : null}
-											</div>
-											{this.renderRefs(sectorizedData[sector][ref], ref, sector)}
-										</div>
-									);
-								})}
-							</div>
-						))}
-					</div>
+					<DataDisplayer
+						targetComp="Detailer"
+						className="Detailer_Content"
+						data={[ sectorizedData ]}
+						page={this.props.page}
+						type={this.props.type}
+						view=""
+						onRefClick={this.fetchData}
+					/>
 				</div>
 			);
 		}
@@ -194,14 +134,14 @@ class Detailer extends Component {
 export default withStyles((theme) => ({
 	Detailer: {
 		backgroundColor: theme.darken(theme.palette.background.dark, 0.15),
-		'& .Detailer_container-tertiary': {
-			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5)
+		'& .Detailer_Item_Sector-tertiary': {
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.25)
 		},
-		'& .Detailer_container-tertiary_item_value': {
+		'& .Detailer_Item_Sector-tertiary_Item_value': {
 			backgroundColor: theme.palette.background.light
 		},
-		'& .Detailer_container-refs_item_value_container_item': {
-			backgroundColor: theme.lighten(theme.palette.background.dark, 0.5)
+		'& .Detailer_Item_Sector-refs_Item_value': {
+			backgroundColor: theme.lighten(theme.palette.background.dark, 0.25)
 		}
 	}
 }))(Detailer);

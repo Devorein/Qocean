@@ -185,8 +185,6 @@ class DataTransformer extends Component {
 			}
 
 			if (item.icon) temp.icon = getColouredIcons(type, item.icon);
-			if (item.quiz) temp.quiz = item.quiz.name;
-			if (item.user) temp.user = item.user.username;
 			if (item.tags) temp.tags = <ChipContainer chips={item.tags} type={'regular'} height={50} />;
 			if (page.match(/(self|play)/)) {
 				if (item.public !== undefined)
@@ -222,7 +220,7 @@ class DataTransformer extends Component {
 						</Popover>
 					);
 			}
-			if (item.watchers) temp.watchers = item.watchers.length;
+			// if (item.watchers) temp.watchers = item.watchers.length;
 
 			if (item.updated_at) temp.updated_at = moment(item.updated_at).fromNow();
 			if (item.created_at) temp.created_at = moment(item.created_at).fromNow();

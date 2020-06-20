@@ -60,7 +60,6 @@ class Stack extends React.Component {
 	};
 
 	move = (dir) => {
-		debugger;
 		let { currentIndex, stack } = this.state;
 		let changed = false;
 		if (currentIndex !== stack.length - 1 && dir === 'right') {

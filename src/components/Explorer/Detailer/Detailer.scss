@@ -22,117 +22,118 @@
       }
     }
   }
-  &_content {
+  &_Content {
     height: calc(100% - 30px);
     overflow-y: auto;
   }
-  &_container {
-    padding: 5px;
-    &-refs,
-    &-ref {
+  &_Item{
+    &_Sector {
       padding: 5px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      &_item {
-        width: 100%;
-        align-items: center;
+      &-refs,
+      &-ref {
+        padding: 5px;
+        display: flex;
         flex-direction: column;
-        margin-bottom: 10px;
-        &_key {
-          font-weight: bolder;
-          text-transform: capitalize;
-          font-size: 16px;
-          text-align: center;
-        }
-        &_value_container {
-          max-height: 200px;
-          overflow-y: auto;
+        align-items: center;
+        &_Item {
           width: 100%;
-          display: flex;
+          align-items: center;
           flex-direction: column;
-          justify-content: center;
-          text-align: center;
-          &_item {
-            padding: 3px;
-            display: flex;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
+          margin-bottom: 10px;
+          &_key {
+            font-weight: bolder;
+            text-transform: capitalize;
+            font-size: 16px;
             text-align: center;
+          }
+          &_value {
+            max-height: 200px;
+            overflow-y: auto;
+            width: fit-content;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            &_item {
+              padding: 3px;
+              display: flex;
+              justify-content: center;
+              cursor: pointer;
+              font-size: 14px;
+              text-align: center;
+            }
           }
         }
       }
-    }
-
-    &-ref {
-      &_item {
-        align-items: center;
-        flex-direction: row;
-        justify-content: space-around;
-        margin-bottom: 0px;
-        &_value_container {
-          width: fit-content;
-          margin-bottom: 3px;
+  
+      &-ref {
+        &_Item {
+          align-items: center;
+          flex-direction: row;
+          justify-content: space-around;
+          margin-bottom: 0px;
+          &_value_container {
+            width: fit-content;
+            margin-bottom: 3px;
+          }
         }
       }
-    }
-    &-refs {
-      &_item {
-        &_key {
+      &-refs {
+        &_Item {
+          &_key {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+          }
+        }
+      }
+  
+      &-primary {
+        text-align: center;
+        margin-bottom: 20px;
+        &_Item {
+          font-size: 20px;
+          font-weight: bolder;
           display: flex;
-          justify-content: space-between;
-          width: 100%;
+          justify-content: center !important;
+          &_key {
+            display: none;
+          }
         }
       }
-    }
-
-    &-primary {
-      text-align: center;
-      margin-bottom: 20px;
-      &_item {
-        font-size: 20px;
-        font-weight: bolder;
+      &-secondary {
+        &_Item {
+          &_key,
+          &_value {
+            font-size: 16px;
+          }
+        }
+      }
+      &-tertiary {
+        margin-top: 10px;
+        border-radius: 3px;
+        &_Item {
+          align-items: center;
+          &_value {
+            padding: 3px;
+            margin: 3px;
+          }
+        }
+      }
+      &_Item {
         display: flex;
-        justify-content: center !important;
-        &_key {
-          display: none;
+        justify-content: space-between;
+  
+        &-image {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          width: 50%;
+          margin: 0 auto;
         }
-      }
-    }
-    &-secondary {
-      &_item {
-        &_key,
-        &_value {
-          font-size: 16px;
+        &-tags {
+          display: flex;
+          align-items: center;
         }
-      }
-    }
-    &-tertiary {
-      margin-top: 10px;
-      border-radius: 3px;
-      &_item {
-        align-items: center;
-        &_value {
-          padding: 3px;
-          margin: 3px;
-        }
-      }
-    }
-    &_item {
-      display: flex;
-      justify-content: space-between;
-
-      &-image {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 50%;
-        margin: 0 auto;
-      }
-      &-tags {
-        display: flex;
-        align-items: center;
       }
     }
   }
