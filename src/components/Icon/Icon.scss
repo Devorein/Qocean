@@ -1,0 +1,9 @@
+.icon.MuiSvgIcon-root{
+  transform: scale(1);
+  transition: transform 200ms ease-in-out;
+  cursor: pointer;
+  &:hover{
+    transform: scale(1.25);
+    transition: transform 200ms ease-in-out;
+  }
+}

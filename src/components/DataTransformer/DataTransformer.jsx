@@ -7,8 +7,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import Popover from '../Popover/Popover';
 import CheckboxInput from '../Input/Checkbox/CheckboxInput';
 import ChipContainer from '../../components/Chip/ChipContainer';
+import Icon from '../../components/Icon/Icon';
 
-import getIcons from '../../Utils/getIcons';
 import getColouredIcons from '../../Utils/getColoredIcons';
 import exportData from '../../Utils/exportData';
 import { AppContext } from '../../context/AppContext';
@@ -20,7 +20,7 @@ class DataTransformer extends Component {
 		return effectors.map((eff) => {
 			let ref = null;
 			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.icon}`] = ref);
-			if (eff) return getIcons({ ...eff, appendToKey: `${this.props.page}${index}`, ref });
+			if (eff) return <Icon {...eff} key={`${this.props.page}${index}${eff.icon}`} iconRef={ref} />;
 			return null;
 		});
 	};
@@ -152,23 +152,25 @@ class DataTransformer extends Component {
 				if (item.public !== undefined) {
 					const style = { fill: item.public ? '#00a3e6' : '#f4423c' };
 					const popoverText = item.public ? 'Unpublicize item' : 'Publicize item';
-					temp.public = getIcons({
+					const props = {
 						style,
 						popoverText,
 						icon: 'Public',
 						onClick: targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}
-					});
+					};
+					temp.public = <Icon {...props} />;
 				}
 				if (item.favourite !== undefined) {
 					const style = { fill: item.favourite ? '#f0e744' : '#ead50f' };
 					const popoverText = item.favourite ? 'Unstar item' : 'Star item';
 					const icon = item.favourite ? 'star' : 'starborder';
-					temp.favourite = getIcons({
+					const props = {
 						style,
 						popoverText,
 						icon,
 						onClick: targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}
-					});
+					};
+					temp.favourite = <Icon {...props} />;
 				}
 			}
 			// if (item.watchers) temp.watchers = item.watchers.length;

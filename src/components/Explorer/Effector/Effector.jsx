@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { withTheme } from '@material-ui/core/styles';
 import Composer from 'react-composer';
 
-import getIcons from '../../../Utils/getIcons';
+import Icon from '../../../components/Icon/Icon';
 import LocalFilter from '../../FilterSort/LocalFilter';
 import ModalRP from '../../../RP/ModalRP';
 import Pagination from '../../Pagination/Pagination';
@@ -25,14 +25,14 @@ class Effector extends Component {
 
 	cloneIcons = (effectors) => {
 		return effectors.map((eff, index) => {
-			if (eff) {
-				const clonedEff = React.cloneElement(eff, {
-					...eff.props,
-					key: `${eff.type.displayName}${index}`,
-					ref: (ref) => (this.GLOBAL_ICONS[`GLOBAL_${eff.type.displayName}`] = ref)
-				});
-				return clonedEff;
-			}
+			if (eff)
+				return (
+					<Icon
+						{...eff}
+						key={`${this.props.page}${index}${eff.icon}`}
+						iconRef={(ref) => (this.GLOBAL_ICONS[`GLOBAL_${eff.icon}`] = ref)}
+					/>
+				);
 			return null;
 		});
 	};
@@ -57,20 +57,20 @@ class Effector extends Component {
 				<div className="Effector_Bottombar_container">
 					{PaginationIppSelect}
 					<div className="Effector_Bottombar-pagenavigation">
-						{getIcons({
-							icon: 'ChevronLeft',
-							onClick: () => {
+						<Icon
+							icon="ChevronLeft"
+							onCLick={() => {
 								this.movePage('prev');
-							},
-							popoverText: 'Go to prev page'
-						})}
-						{getIcons({
-							icon: 'ChevronRight',
-							onClick: () => {
+							}}
+							popoverText="Go to prev page"
+						/>
+						<Icon
+							icon="ChevronRight"
+							onCLick={() => {
 								this.movePage('next');
-							},
-							popoverText: 'Go to next page'
-						})}
+							}}
+							popoverText="Go to next page"
+						/>
 					</div>
 					{PaginationPageCount}
 					{PaginationItemCount}
@@ -86,57 +86,51 @@ class Effector extends Component {
 		page = page.toLowerCase();
 		type = type.toLowerCase();
 		const effectors = [
-			getIcons({
-				icon: 'RotateLeft',
-				onClick: this.refetchData,
-				popoverText: 'Refetch data'
-			}),
+			{ icon: 'RotateLeft', onClick: this.refetchData, popoverText: 'Refetch data' },
 			type !== 'user' && page !== 'play'
-				? getIcons({
+				? {
 						icon: 'GetApp',
 						onClick: () => {
 							exportData(type, filteredContents);
 						},
 						popoverText: `Export ${filteredContents.length} items`
-					})
+					}
 				: null,
 			page === 'play'
-				? getIcons({
+				? {
 						icon: 'AddCircle',
-						onClick: () => this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id)),
+						onClick: this.props.customHandlers.add.bind(null, this.props.data.map((item) => item._id)),
 						popoverText: `Add ${this.props.data.length} items to quiz list`
-					})
+					}
 				: null
 		];
 		const array = Array(filteredContents.length).fill(0).map((_, i) => i);
 		if (page === 'self') {
 			effectors.push(
-				getIcons({
+				{
 					icon: 'star',
 					onClick: () => {
 						updateResource(array, 'favourite');
 					},
 					popoverText: `Reverse toggle favourite ${filteredContents.length} items`
-				}),
-				getIcons({
+				},
+				{
 					icon: 'public',
 					onClick: () => {
 						updateResource(array, 'public');
 					},
 					popoverText: `Reverse toggle publicize ${filteredContents.length} items`
-				})
+				}
 			);
 		} else {
 			if (type.match(/(folders|folder|quiz|quizzes)/) && this.context.user && page !== 'play') {
-				effectors.push(
-					getIcons({
-						icon: 'Visibility',
-						onClick: () => {
-							this.props.watchToggle(array);
-						},
-						popoverText: `Reverse toggle watch ${filteredContents.length} items`
-					})
-				);
+				effectors.push({
+					icon: 'Visibility',
+					onClick: () => {
+						this.props.watchToggle(array);
+					},
+					popoverText: `Reverse toggle watch ${filteredContents.length} items`
+				});
 			}
 		}
 		return <div className="Effector_Topbar_globals">{this.cloneIcons(effectors)}</div>;
@@ -151,56 +145,53 @@ class Effector extends Component {
 		const selectedItems = checked.map((index) => filteredContents[index]);
 		const effectors = [
 			type !== 'user' && page !== 'play'
-				? getIcons({
+				? {
 						icon: 'GetApp',
 						onClick: () => {
 							exportData(type, selectedItems);
 						},
 						popoverText: `Export ${checked.length} items`
-					})
+					}
 				: null,
 			this.context.user && page !== 'play'
-				? getIcons({
+				? {
 						icon: 'Visibility',
 						onClick: () => {
 							this.props.watchToggle(checked);
 						},
 						popoverText: `Watch toggle ${checked.length} items`
-					})
+					}
 				: null,
 			page === 'play'
-				? getIcons({
+				? {
 						icon: 'AddCircle',
-						onClick: () =>
-							this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id)),
+						onClick: this.props.customHandlers.add.bind(null, selectedItems.map((selectedItem) => selectedItem._id)),
 						popoverText: `Add ${checked.length} to quiz list`
-					})
+					}
 				: null
 		];
 
 		if (page === 'self') {
 			effectors.push(
-				getIcons({
+				{
 					icon: 'Delete',
-					onClick: () => {
-						this.setIsOpen(true);
-					},
+					onClick: this.setIsOpen.bind(null, true),
 					popoverText: `Delete ${checked.length} items`
-				}),
-				getIcons({
+				},
+				{
 					icon: 'Star',
 					onClick: () => {
 						updateResource(checked, 'favourite');
 					},
 					popoverText: `Reverse favourite ${checked.length} items`
-				}),
-				getIcons({
+				},
+				{
 					icon: 'Public',
 					onClick: () => {
 						updateResource(checked, 'public');
 					},
 					popoverText: `Reverse publicize ${checked.length} items`
-				})
+				}
 			);
 		}
 		return <div className="Effector_Topbar_selected">{this.cloneIcons(effectors)}</div>;

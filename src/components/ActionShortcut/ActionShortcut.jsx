@@ -18,7 +18,6 @@ class ActionShortcut extends Component {
 				actions[key].dispatchEvent(evt);
 			};
 		});
-
 		return (
 			<HotKeys className="React-hotkeys" keyMap={keyMap} handlers={handlers} allowChanges={true}>
 				{this.props.children()}

@@ -16,7 +16,7 @@ import decideTargetType from '../../Utils/decideTargetType';
 import getPropsBasedOnType from '../../Utils/getSelectItemsBasedOnType';
 import FSManip from './FSManip';
 import AutoCompleteInput from '../../components/Input/AutoCompleteInput';
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 import './SSFilterSort.scss';
 
@@ -138,18 +138,18 @@ class SSFilterSort extends Component {
 				/>
 				{index !== 0 ? (
 					<div className="FilterSortItem_select_delete">
-						{getIcons({
-							icon: 'cancel',
-							popoverText: 'Delete filter',
-							onClick: () => {
+						<Icon
+							icon="cancel"
+							popoverText="Delete filter"
+							onClick={() => {
 								if (!disabled) {
 									this.state.sorts.splice(index, 1);
 									this.setState({
 										sorts: this.state.sorts
 									});
 								}
-							}
-						})}
+							}}
+						/>
 					</div>
 				) : null}
 			</Fragment>
@@ -440,9 +440,9 @@ class SSFilterSort extends Component {
 					<div className="FilterSortItem_select_value">{valueItem}</div>
 					{index !== 0 || isChild ? (
 						<div className="FilterSortItem_select_delete">
-							{getIcons({
-								icon: 'cancel',
-								onClick: () => {
+							<Icon
+								icon={'cancel'}
+								onClick={() => {
 									if (!disabled && !shutdown) {
 										if (isChild) this.state.filters[parentIndex].children.splice(childIndex, 1);
 										else this.state.filters.splice(index, 1);
@@ -450,16 +450,15 @@ class SSFilterSort extends Component {
 											filters: this.state.filters
 										});
 									}
-								},
-								popoverText: 'Remove child filter'
-							})}
+								}}
+								popoverText={'Remove child filter'}
+							/>
 						</div>
 					) : null}
 					{!isChild && currentTarget.children.length < 2 ? (
-						getIcons({
-							className: 'FilterSortItem_select_add',
-							icon: 'AddBox',
-							onClick: (e) => {
+						<Icon
+							icon={'AddBox'}
+							onClick={() => {
 								if (!disabled && !shutdown) {
 									const newTarget = { ...DEFAULT_FILTER };
 									delete newTarget.children;
@@ -468,8 +467,10 @@ class SSFilterSort extends Component {
 										filters: this.state.filters
 									});
 								}
-							}
-						})
+							}}
+							popoverText={'Remove child filter'}
+							className="FilterSortItem_select_add"
+						/>
 					) : null}
 				</div>
 			);
@@ -506,10 +507,10 @@ class SSFilterSort extends Component {
 					>
 						{totalActive}/{this.state[item].length} {`${item}`}{' '}
 					</div>
-					{getIcons({
-						icon: 'rotateleft',
-						popoverText: `Reset ${item}`,
-						onClick: (e) => {
+					<Icon
+						icon={'rotateleft'}
+						popoverText={`Reset ${item}`}
+						onClick={(e) => {
 							if (item === 'filters') {
 								this.setState({
 									filters: [
@@ -528,8 +529,9 @@ class SSFilterSort extends Component {
 									]
 								});
 							}
-						}
-					})}
+						}}
+					/>
+
 					<Menu
 						anchorEl={this.state[`anchorEl${item}`]}
 						keepMounted
@@ -575,10 +577,10 @@ class SSFilterSort extends Component {
 						})}
 						{items.length < 5 ? (
 							<div className="SSFilterSort_apply-button">
-								{getIcons({
-									icon: 'addbox',
-									popoverText: `Add ${item}`,
-									onClick: (e) => {
+								<Icon
+									icon={'addbox'}
+									popoverText={`Add ${item}`}
+									onClick={(e) => {
 										items.push(
 											item === 'filters'
 												? { ...DEFAULT_FILTER, children: [], cond: this.state.filters[0].cond }
@@ -587,8 +589,8 @@ class SSFilterSort extends Component {
 										this.setState({
 											[item]: items
 										});
-									}
-								})}
+									}}
+								/>
 							</div>
 						) : null}
 					</Menu>

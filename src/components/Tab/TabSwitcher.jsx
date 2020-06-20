@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import CustomTabs from '../../components/Tab/Tabs';
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 class TabSwitcher extends Component {
 	state = {
@@ -27,7 +27,7 @@ class TabSwitcher extends Component {
 		const headers = this.decideHeaders().map((header) => {
 			return {
 				name: header,
-				icon: getIcons({ icon: header })
+				icon: <Icon icon={header} />
 			};
 		});
 

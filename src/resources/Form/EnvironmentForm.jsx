@@ -39,6 +39,7 @@ class EnvironmentForm extends Component {
 			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
+			{ name: 'hovertips', type: 'checkbox', defaultValue: true },
 			{
 				type: 'group',
 				name: 'environment',

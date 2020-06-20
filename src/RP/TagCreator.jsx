@@ -11,7 +11,7 @@ import DeletableChip from '../components/Chip/DeletableChip';
 import { AppContext } from '../context/AppContext';
 import MultiSelect from '../components/Input/MultiSelect';
 import RegularChip from '../components/Chip/RegularChip';
-import getIcons from '../Utils/getIcons';
+import Icon from '../components/Icon/Icon';
 
 const PrevTagSelection = styled.div`
 	width: 100%;
@@ -201,16 +201,16 @@ class TagCreator extends Component {
 							)
 						}
 					/>
-					{getIcons({
-						icon: 'addbox',
-						onClick: () => {
+					<Icon
+						icon={'addbox'}
+						onCLick={() => {
 							this.setState({
 								tags: Array.from(new Set(this.state.tags.concat(this.state.selectedTags))),
 								selectedTags: []
 							});
-						},
-						popoverText: 'Add selected tags'
-					})}
+						}}
+						popoverText="Add selected tags"
+					/>
 				</PrevTagSelection>
 				<TagContainer>
 					{tags.map((tag, index) => {
