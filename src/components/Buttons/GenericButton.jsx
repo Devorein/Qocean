@@ -11,7 +11,6 @@ function GenericButton({ disabled, text, classes, onClick, buttonRef, icon, size
 			color={color ? color : 'primary'}
 			size={size ? size : 'medium'}
 			className={_classes}
-			// startIcon={<PlayArrowIcon />}
 			onClick={onClick}
 			ref={(r) => (buttonRef ? buttonRef(r) : null)}
 			disabled={disabled}

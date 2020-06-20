@@ -17,6 +17,14 @@ import InfoIcon from '@material-ui/icons/Info';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import RotateLeft from '@material-ui/icons/RotateLeft';
+import CancelIcon from '@material-ui/icons/Cancel';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import Popover from '../components/Popover/Popover';
 import SOUNDS from './getSounds';
@@ -27,9 +35,13 @@ export default function getIcons({
 	onClick,
 	key,
 	style = {},
-	sound,
+	sound = 'MouseClick',
+	useSound = true,
 	usePopover = false,
-	popoverText = 'N/A'
+	popoverText = 'N/A',
+	onlyIcon = false,
+	ref,
+	appendToKey
 }) {
 	if (popoverText !== 'N/A') usePopover = true;
 	icon = icon.toLowerCase();
@@ -58,17 +70,34 @@ export default function getIcons({
 		getapp: GetAppIcon,
 		visibility: VisibilityIcon,
 		watch: VisibilityIcon,
-		noteadd: NoteAddIcon
+		noteadd: NoteAddIcon,
+		chevronleft: ChevronLeftIcon,
+		chevronright: ChevronRightIcon,
+		rotateleft: RotateLeft,
+		cancel: CancelIcon,
+		addbox: AddBoxIcon,
+		playcirclefilled: PlayCircleFilledIcon,
+		deletesweep: DeleteSweepIcon,
+		filecopy: FileCopyIcon
 	};
-	const target_icon = React.createElement(ICONS[icon], {
-		className,
-		onClick: () => {
-			if (sound) SOUNDS[sound].play();
-			onClick();
-		},
-		style,
-		key: key ? key : ICONS[icon].displayName
-	});
-	if (usePopover) return <Popover text={popoverText}>{target_icon}</Popover>;
+	let target_icon = ICONS[icon];
+	let keyProp = { key: key ? key : appendToKey ? `${appendToKey}${ICONS[icon].displayName}` : ICONS[icon].displayName };
+	if (!onlyIcon)
+		target_icon = React.createElement(ICONS[icon], {
+			className,
+			ref,
+			onClick: (e) => {
+				if (useSound) SOUNDS[sound].play();
+				onClick(e);
+			},
+			style,
+			...keyProp
+		});
+	if (usePopover)
+		return (
+			<Popover key={keyProp.key} text={popoverText}>
+				{target_icon}
+			</Popover>
+		);
 	return target_icon;
 }

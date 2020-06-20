@@ -4,9 +4,9 @@ import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
-import CancelIcon from '@material-ui/icons/Cancel';
 import clxs from 'clsx';
 
+import getIcons from '../../Utils/getIcons';
 class WarnModal extends Component {
 	render() {
 		const { cancelMsg, acceptMsg, isOpen, onAccept, classes, children } = this.props;
@@ -19,7 +19,7 @@ class WarnModal extends Component {
 				<Modal className={classes.modal} open={isOpen} closeAfterTransition>
 					<Fade in={isOpen}>
 						<DialogContent>
-							<CancelIcon onClick={onClose} />
+							{getIcons({ icon: 'cancel', onClick: onClose, popoverText: 'Close Modal' })}
 							<div className="modal_content">{children}</div>
 							<div className={clxs('modal_buttons', classes.buttons)}>
 								<Button className="modal_buttons--cancel" onClick={onCancel}>

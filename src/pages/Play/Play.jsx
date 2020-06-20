@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import { Route, withRouter } from 'react-router-dom';
-import DeleteIcon from '@material-ui/icons/Delete';
 
 import DataFetcher from '../../components/DataFetcher/DataFetcher';
 import Explorer from '../../components/Explorer/Explorer';
@@ -44,8 +43,9 @@ class Play extends Component {
 															listItems={this.transformList(quizzes, ids)}
 															icons={[
 																{
-																	icon: DeleteIcon,
-																	onClick: removeFromList
+																	icon: 'delete',
+																	onClick: removeFromList,
+																	popoverText: 'Delete from list'
 																}
 															]}
 														>

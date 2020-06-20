@@ -19,15 +19,8 @@ class DataTransformer extends Component {
 	cloneIcons = (effectors, index) => {
 		return effectors.map((eff) => {
 			let ref = null;
-			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.type.displayName}`] = ref);
-			if (eff) {
-				const clonedEff = React.cloneElement(eff, {
-					...eff.props,
-					key: `${eff.props.children.type.displayName}${this.props.page}`,
-					ref
-				});
-				return clonedEff;
-			}
+			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.icon}`] = ref);
+			if (eff) return getIcons({ ...eff, appendToKey: `${this.props.page}${index}`, ref });
 			return null;
 		});
 	};
@@ -56,92 +49,75 @@ class DataTransformer extends Component {
 			if (targetComp === 'displayer') {
 				actions.push(
 					!hideDetailer
-						? getIcons({
+						? {
 								icon: 'Info',
 								onClick: () => {
 									fetchData(type, item._id);
 								},
-								popoverText: 'Show Details',
-								sound: 'MouseClick'
-							})
+								popoverText: 'Show Details'
+							}
 						: null
 				);
 				if (type !== 'user')
-					actions.push(
-						getIcons({
-							icon: 'GetApp',
-							onClick: () => {
-								exportData(type, [ item ]);
-							},
-							popoverText: 'Export Item',
-							sound: 'MouseClick'
-						})
-					);
+					actions.push({
+						icon: 'GetApp',
+						onClick: () => {
+							exportData(type, [ item ]);
+						},
+						popoverText: 'Export Item'
+					});
 
 				if (page === 'self') {
 					actions.push(
-						getIcons({
+						{
 							icon: 'Update',
 							onClick: () => {
 								enableFormFiller(index);
 							},
-							popoverText: 'Update Item',
-							sound: 'MouseClick'
-						}),
-						getIcons({
+							popoverText: 'Update Item'
+						},
+						{
 							icon: 'Delete',
 							onClick: () => {
 								deleteResource([ item._id ]);
 							},
 							popoverText: 'Delete Item',
-							sound: 'MouseClick',
 							style: {
 								fill: theme.darken(theme.palette.error.main, 0.25)
 							}
-						})
+						}
 					);
 				} else if (page.match(/(watchlist|explore)/)) {
 					if (type !== 'user' && this.context.user)
-						actions.push(
-							getIcons({
-								icon: 'NoteAdd',
-								onClick: () => {
-									enableFormFiller(index);
-								},
-								popoverText: 'Create from Item',
-								sound: 'MouseClick'
-							})
-						);
+						actions.push({
+							icon: 'NoteAdd',
+							onClick: () => {
+								enableFormFiller(index);
+							},
+							popoverText: 'Create from Item'
+						});
 					if (type.match(/(folder|folders|quiz|quizzes)/) && this.context.user) {
 						type = pluralize(type, 2);
 						const isWatched = this.context.user.watchlist[
 							`watched_${type.charAt(0).toLowerCase() + type.substr(1)}`
 						].includes(item._id);
-						actions.push(
-							getIcons({
-								icon: 'NoteAdd',
-								onClick: () => {
-									watchToggle([ index ]);
-								},
-								popoverText: 'Toggle watch',
-								sound: 'MouseClick',
-								style: { fill: isWatched ? theme.palette.success.main : theme.palette.error.main }
-							})
-						);
+						actions.push({
+							icon: 'Visibility',
+							onClick: () => {
+								watchToggle([ index ]);
+							},
+							popoverText: 'Toggle watch',
+							style: { fill: isWatched ? theme.palette.success.main : theme.palette.error.main }
+						});
 					}
 				}
 				if (page === 'play')
-					actions.push(
-						getIcons({
-							icon: 'AddCircle',
-							onClick: () => {
-								customHandlers.add.bind(null, [ item._id ]);
-							},
-							popoverText: 'Add to quiz',
-							sound: 'MouseClick',
-							style: { fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }
-						})
-					);
+					actions.push({
+						icon: 'AddCircle',
+						onClick: customHandlers.add.bind(null, [ item._id ]),
+						popoverText: 'Add to quiz',
+						style: { fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }
+					});
 			}
 
 			const temp = {
@@ -180,18 +156,18 @@ class DataTransformer extends Component {
 						style,
 						popoverText,
 						icon: 'Public',
-						onClick: () => (targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {})
+						onClick: targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'public') : () => {}
 					});
 				}
 				if (item.favourite !== undefined) {
-					const style = { fill: item.public ? '#f0e744' : '#ead50f' };
-					const popoverText = item.public ? 'Unstar item' : 'Star item';
-					const icon = item.public ? 'star' : 'starborder';
+					const style = { fill: item.favourite ? '#f0e744' : '#ead50f' };
+					const popoverText = item.favourite ? 'Unstar item' : 'Star item';
+					const icon = item.favourite ? 'star' : 'starborder';
 					temp.favourite = getIcons({
 						style,
 						popoverText,
 						icon,
-						onClick: () => (targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {})
+						onClick: targetComp === 'displayer' ? updateResource.bind(null, [ index ], 'favourite') : () => {}
 					});
 				}
 			}
