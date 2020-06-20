@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Chip from '@material-ui/core/Chip';
 import changeColor from '../../Utils/changeColor';
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 class DeletableChip extends Component {
 	render() {
@@ -12,7 +12,7 @@ class DeletableChip extends Component {
 		return (
 			<Chip
 				label={label}
-				deleteIcon={getIcons({ icon: 'cancel', style: { fill: changeColor(bg) }, popoverText: 'Delete chip' })}
+				deleteIcon={<Icon icon="cancel" style={{ fill: changeColor(bg) }} popoverText="Delete chip" />}
 				style={{ backgroundColor: bg, color: changeColor(bg) }}
 				onDelete={onDelete.bind(null, label)}
 			/>

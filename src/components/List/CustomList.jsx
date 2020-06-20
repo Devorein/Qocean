@@ -5,7 +5,7 @@ import clsx from 'clsx';
 
 import List from './List';
 import LocalFilter from '../FilterSort/LocalFilter';
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 import './CustomList.scss';
 
@@ -15,7 +15,7 @@ class CustomList extends React.Component {
 		const { filteredContents } = this;
 
 		const rootClass = clsx(className, classes.listContainer, 'CustomList');
-		const { checked, moveUp, moveDown, handleChecked, selectedIndex, setSelectedIndex } = this;
+		const { checked, moveUp, moveDown, handleChecked, selected, setSelectedIndex } = this;
 
 		return (
 			<div className={rootClass}>
@@ -30,34 +30,24 @@ class CustomList extends React.Component {
 						{icons && icons.length !== 0 ? (
 							icons.map(({ icon, onClick, popoverText }, index) => {
 								return (
-									<div
-										key={`${getIcons({ icon, onlyIcon: true }).type.displayName}${index}`}
-										className={`CustomList_Header_Icons_${icon.displayName}`}
-									>
-										{getIcons({
-											icon,
-											onClick: onClick.bind(
+									<div key={`${index}`} className={`CustomList_Header_Icons_${icon.displayName}`}>
+										<Icon
+											icon={icon}
+											onClick={onClick.bind(
 												null,
 												checked.length > 0
 													? checked
 													: Array(filteredContents.length).fill(0).map((_, i) => filteredContents[i]._id || i)
-											),
-											popoverText
-										})}
+											)}
+											popoverText={popoverText}
+										/>
 									</div>
 								);
 							})
 						) : null}
-						{getIcons({
-							icon: 'chevronleft',
-							onClick: moveUp,
-							popoverText: 'Move up'
-						})}
-						{getIcons({
-							icon: 'chevronright',
-							onClick: moveDown,
-							popoverText: 'Move down'
-						})}
+						<Icon icon="chevronleft" onClick={moveUp} popoverText="Move up" />
+						<Icon icon="chevronright" onClick={moveDown} popoverText="Move down" />
+
 						{this.AllCheckbox}
 						{this.SelectStat}
 					</div>
@@ -69,7 +59,7 @@ class CustomList extends React.Component {
 						return (
 							<div
 								key={listItem._id || `${listItem.primary}${index}`}
-								className={clsx(selectedIndex === index ? 'selected' : null, classes.BodyItem, 'CustomList_Body_Item')}
+								className={clsx(selected === index ? 'selected' : null, classes.BodyItem, 'CustomList_Body_Item')}
 								onClick={(e) => {
 									setSelectedIndex(index);
 								}}
@@ -88,7 +78,9 @@ class CustomList extends React.Component {
 									</div>
 								) : null}
 								<div className={'CustomList_Body_Item_Icons'}>
-									<div className={'CustomList_Body_Item_Icons_primary'}>{getIcons({ icon: primaryIcon })}</div>
+									<div className={'CustomList_Body_Item_Icons_primary'}>
+										<Icon icon={primaryIcon} />
+									</div>
 									{icons && icons.length !== 0 ? (
 										icons.map(({ icon, onClick, popoverText }) => {
 											return (
@@ -96,11 +88,11 @@ class CustomList extends React.Component {
 													className={`CustomList_Body_Item_Icons_${icon.displayName}`}
 													key={listItem._id + icon.displayName}
 												>
-													{getIcons({
-														icon,
-														onClick: onClick.bind(null, [ listItem._id || index ]),
-														popoverText
-													})}
+													<Icon
+														icon={icon}
+														onClick={onClick.bind(null, [ listItem._id || index ])}
+														popoverText={popoverText}
+													/>
 												</div>
 											);
 										})
@@ -133,12 +125,11 @@ class CustomList extends React.Component {
 						<List totalItems={this.filteredContents.length} prefix="CustomList">
 							{(props) => {
 								Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
-
 								return this.props.children
 									? this.props.children({
 											list: renderList(),
-											checked: props.checked,
-											selectedIndex: props.selectedIndex
+											checked: this.checked,
+											selectedIndex: this.selected
 										})
 									: renderList();
 							}}

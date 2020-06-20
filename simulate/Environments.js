@@ -25,6 +25,7 @@ casual.define('environment', function() {
 		public: casual.boolean,
 		theme: [ 'Light', 'Dark', 'Navy' ][getRandomInt(0, 2)],
 		animation: casual.boolean,
+		hovertips: casual.boolean,
 		sound: casual.boolean,
 		default_question_timing: time,
 		default_question_type: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ][getRandomInt(0, 5)],

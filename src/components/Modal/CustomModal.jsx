@@ -4,7 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import Fade from '@material-ui/core/Fade';
 import DialogContent from '@material-ui/core/DialogContent';
 
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 const useStyles = makeStyles((theme) => ({
 	modal: {
@@ -29,24 +29,13 @@ export default function CustomModal(props) {
 			<Modal className={classes.modal} open={isOpen} closeAfterTransition>
 				<Fade in={isOpen}>
 					<DialogContent>
-						{getIcons({
-							icon: 'cancel',
-							onClick: handleClose,
-							popoverText: 'Close Modal'
-						})}
+						<Icon icon="cancel" onClick={handleClose} popoverText="Close Modal" />
+
 						{onArrowClick ? (
-							getIcons({
-								icon: 'chevronleft',
-								onClick: onArrowClick.bind(null, 'left'),
-								popoverText: 'Go to prev item'
-							})
+							<Icon icon="chevronleft" onClick={onArrowClick.bind(null, 'left')} popoverText="Go to prev item" />
 						) : null}
 						{onArrowClick ? (
-							getIcons({
-								icon: 'chevronright',
-								onClick: onArrowClick.bind(null, 'right'),
-								popoverText: 'Go to next item'
-							})
+							<Icon icon="chevronright" onClick={onArrowClick.bind(null, 'right')} popoverText="Go to next item" />
 						) : null}
 						<div className="modal_content">{props.children}</div>
 					</DialogContent>

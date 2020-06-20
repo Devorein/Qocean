@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 const useStyles = makeStyles({
 	tabs: {
@@ -39,7 +39,7 @@ function CustomTabs(props) {
 					classes={{ root: tab }}
 					key={name}
 					label={name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}
-					icon={addIcon ? getIcons({ icon: name.includes('_') ? name.split('_')[1] : name }) : icon}
+					icon={addIcon ? <Icon icon={name.includes('_') ? name.split('_')[1] : name} /> : icon}
 				/>
 			))}
 		</Tabs>

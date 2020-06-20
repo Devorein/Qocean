@@ -33,6 +33,10 @@ const envSchema = {
 		type: Boolean,
 		default: true
 	},
+	hovertips: {
+		type: Boolean,
+		default: true
+	},
 	default_question_type: {
 		type: String,
 		default: 'MCQ',

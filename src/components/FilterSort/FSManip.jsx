@@ -5,7 +5,7 @@ import InputSelect from '../Input/InputSelect';
 import TextInput from '../Input/TextInput/TextInput';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 
-import getIcons from '../../Utils/getIcons';
+import Icon from '../../components/Icon/Icon';
 
 import { AppContext } from '../../context/AppContext';
 
@@ -186,30 +186,20 @@ class FSManip extends Component {
 		return (
 			<Fragment>
 				<div className="FilterSort_icons">
-					{getIcons({
-						icon: 'RotateLeft',
-						onClick: this.resetFS,
-						className: 'FilterSort_reset',
-						popoverText: 'Reset filter and sort'
-					})}
-					{getIcons({
-						icon: 'noteadd',
-						onClick: this.createPreset,
-						className: 'FilterSort_add',
-						popoverText: 'Create preset'
-					})}
-					{getIcons({
-						icon: 'Update',
-						onClick: this.updatePreset,
-						className: 'FilterSort_update',
-						popoverText: 'Update preset'
-					})}
-					{getIcons({
-						icon: 'Cancel',
-						onClick: this.deletePreset,
-						className: 'FilterSort_reset',
-						popoverText: 'Delete preset'
-					})}
+					<Icon
+						icon="RotateLeft"
+						onClick={this.resetFS}
+						className="FilterSort_reset"
+						popoverText="Reset filter and sort"
+					/>
+					<Icon icon="noteadd" onClick={this.createPreset} className="FilterSort_add" popoverText="Create preset" />
+					<Icon
+						icon="Update"
+						onClick={this.updatePreset}
+						className="FilterSort_update"
+						popoverText="Reset filter and sort"
+					/>
+					<Icon icon="Cancel" onClick={this.deletePreset} className="FilterSort_delete" popoverText="Delete preset" />
 				</div>
 				<InputSelect
 					className="FilterSort_preset"
