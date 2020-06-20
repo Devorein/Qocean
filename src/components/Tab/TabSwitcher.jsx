@@ -27,7 +27,7 @@ class TabSwitcher extends Component {
 		const headers = this.decideHeaders().map((header) => {
 			return {
 				name: header,
-				icon: getIcons(header)
+				icon: getIcons({ icon: header })
 			};
 		});
 

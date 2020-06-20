@@ -77,7 +77,7 @@ class CustomList extends React.Component {
 									</div>
 								) : null}
 								<div className={'CustomList_Body_Item_Icons'}>
-									<div className={'CustomList_Body_Item_Icons_primary'}>{getIcons(primaryIcon)}</div>
+									<div className={'CustomList_Body_Item_Icons_primary'}>{getIcons({ icon: primaryIcon })}</div>
 									{icons && icons.length !== 0 ? (
 										icons.map(({ icon, onClick }) => {
 											return (
