@@ -39,6 +39,7 @@ class GalleryDisplayer extends Component {
 					view={'Gallery'}
 					data={data}
 					style={{ gridTemplateColumns: `${'1fr '.repeat(this.state.colsCount)}` }}
+					targetComp="Displayer"
 				/>
 			</Fragment>
 		);
