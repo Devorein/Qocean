@@ -17,7 +17,13 @@ class Explorer extends Component {
 		formFillerIndex: null,
 		isFormFillerOpen: false
 	};
-
+	UNSAFE_componentWillReceiveProps(props) {
+		if (this.props.type !== props.type)
+			this.setState({
+				formFillerIndex: null,
+				isFormFillerOpen: false
+			});
+	}
 	switchData = (dir, e) => {
 		const { formFillerIndex } = this.state;
 		const { data } = this.props;

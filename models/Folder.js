@@ -87,6 +87,7 @@ FolderSchema.pre('save', async function(next) {
 					op: 1
 				});
 		});
+
 		for (let i = 0; i < manip.length; i++) {
 			const { id, op } = manip[i];
 			await this.manipulateQuiz(op, id);

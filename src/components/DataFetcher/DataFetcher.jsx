@@ -18,7 +18,7 @@ class DataFetcher extends React.Component {
 		}
 	}
 
-	refetchData = (type, queryParams) => {
+	refetchData = (type, queryParams, cb) => {
 		const page = this.props.page.toLowerCase();
 		type = type.toLowerCase();
 		populateQueryParams(type, queryParams, this.context.user, page);
@@ -40,10 +40,15 @@ class DataFetcher extends React.Component {
 							...headers
 						})
 						.then(({ data: { data } }) => {
-							this.setState({
-								data,
-								totalCount
-							});
+							this.setState(
+								{
+									data,
+									totalCount
+								},
+								() => {
+									if (cb) cb();
+								}
+							);
 						});
 				})
 				.catch((err) => {
@@ -59,10 +64,15 @@ class DataFetcher extends React.Component {
 					axios
 						.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}?${queryString}`, { ...header })
 						.then(({ data: { data } }) => {
-							this.setState({
-								data,
-								totalCount
-							});
+							this.setState(
+								{
+									data,
+									totalCount
+								},
+								() => {
+									if (cb) cb();
+								}
+							);
 						});
 				})
 				.catch((err) => {
@@ -75,10 +85,15 @@ class DataFetcher extends React.Component {
 					axios
 						.get(`http://localhost:5001/api/v1/watchlist/${pluralize(type, 2)}?${queryString}`, { ...headers })
 						.then(({ data: { data } }) => {
-							this.setState({
-								data,
-								totalCount
-							});
+							this.setState(
+								{
+									data,
+									totalCount
+								},
+								() => {
+									if (cb) cb();
+								}
+							);
 						});
 				})
 				.catch((err) => {

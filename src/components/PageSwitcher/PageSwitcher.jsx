@@ -21,15 +21,20 @@ class PageSwitcher extends Component {
 		this.props.history.push(`/${page.link}`);
 		if (runAfterSwitch) runAfterSwitch(page.name);
 		if (refetchData)
-			refetchData(page.name, {
-				page: 1,
-				limit: this.context.user
-					? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_ipp`]
-					: 15
-			});
-		this.setState({
-			type: page.name
-		});
+			refetchData(
+				page.name,
+				{
+					page: 1,
+					limit: this.context.user
+						? this.context.user.current_environment[`default_${this.props.page.toLowerCase()}_ipp`]
+						: 15
+				},
+				() => {
+					this.setState({
+						type: page.name
+					});
+				}
+			);
 	};
 
 	decideHeaders = () => {

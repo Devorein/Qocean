@@ -41,7 +41,6 @@ module.exports = async function(model, id, user, next, body) {
 		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
 	body.updated_at = Date.now();
 	Object.entries(body).forEach(([ key, value ]) => {
-		if (key === 'quizzes' && model === 'folder') resource._quizzes = [ ...resource.quizzes ];
 		resource[key] = value;
 	});
 	return await resource.save();
