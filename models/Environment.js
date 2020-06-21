@@ -99,6 +99,33 @@ const envSchema = {
 		default: 'Quantico'
 	}
 };
+
+envSchema.keybindings = {
+	CHECK: {
+		type: String,
+		default: 's'
+	},
+	MOVE_UP: {
+		type: String,
+		default: 'up'
+	},
+	MOVE_DOWN: {
+		type: String,
+		default: 'down'
+	}
+};
+
+Array(5).fill(0).forEach((_, i) => {
+	envSchema.keybindings[`LOCAL_ACTION_${i + 1}`] = {
+		type: String,
+		default: `${i + 1}`
+	};
+	envSchema.keybindings[`GLOBAL_ACTION_${i + 1}`] = {
+		type: String,
+		default: `shift+${i + 1}`
+	};
+});
+
 [ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
 	envSchema[`default_${page}_ipp`] = {
 		type: Number,

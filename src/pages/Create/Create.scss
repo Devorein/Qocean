@@ -19,7 +19,7 @@
       grid-area: 2/2/3/3;
       width: 100%;
       max-height: 300px;
-      height: 100%;
+      height: calc(100% - 200px);
       display: grid;
       grid-template: 50px 50px/1fr;
       max-width: 600px;
@@ -75,6 +75,7 @@
       width: 100%;
       max-width: 700px;
       margin: 0 auto;
+      height: calc(100% - 200px);
       grid-area: 1/2/3/3;
     }
   }

@@ -101,8 +101,8 @@ class Upload extends React.Component {
 export default withStyles((theme) => ({
 	root: {
 		textAlign: 'center',
-		height: 'fit-content',
 		padding: '5px',
+		height: 100,
 		'& .Upload_text': {
 			width: '100%',
 			padding: '10px',

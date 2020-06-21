@@ -3,18 +3,13 @@ import { HotKeys } from 'react-hotkeys';
 import { difference } from 'lodash';
 import Checkbox from '@material-ui/core/Checkbox';
 import uifx from 'uifx';
+import { AppContext } from '../../context/AppContext';
 
 import PopSound from '../../sounds/Pop.mp3';
 import MenuSelectionSound from '../../sounds/Menu Selection.mp3';
 
 const Pop = new uifx(PopSound, { volume: 0.5 });
 const MenuSelection = new uifx(MenuSelectionSound, { volume: 0.5 });
-
-const keyMap = {
-	MOVE_UP: 'up',
-	MOVE_DOWN: 'down',
-	CHECK: [ 'shift+s', 'alt+s', 'shift+alt+s', 's' ]
-};
 
 Array.create = function(length) {
 	return new Array(length).fill(0).map((_, index) => index);
@@ -25,6 +20,7 @@ class List extends React.Component {
 		checked: [],
 		selected: 0
 	};
+	static contextType = AppContext;
 
 	UNSAFE_componentWillReceiveProps(props) {
 		if (props.totalItems === 0) this.setState({ checked: [] });
@@ -101,6 +97,17 @@ class List extends React.Component {
 	};
 
 	render() {
+		const keyMap = {
+			MOVE_UP: 'up',
+			MOVE_DOWN: 'down',
+			CHECK: [ 'shift+s', 'alt+s', 'shift+alt+s', 's' ]
+		};
+		if (this.context.user) {
+			const { keybindings: { MOVE_UP, MOVE_DOWN, CHECK } } = this.context.user.current_environment;
+			keyMap.MOVE_UP = MOVE_UP;
+			keyMap.MOVE_DOWN = MOVE_DOWN;
+			keyMap.CHECK = [ `shift+${CHECK}`, `alt+${CHECK}`, `shift+alt+${CHECK}`, `${CHECK}` ];
+		}
 		const { checked, selected } = this.state;
 		const { handleChecked, handleCheckedAll, handlers } = this;
 		const { AllCheckboxClass, children, totalItems, SelectStatClass, prefix } = this.props;
