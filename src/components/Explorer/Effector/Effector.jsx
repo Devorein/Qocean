@@ -30,7 +30,7 @@ class Effector extends Component {
 					<Icon
 						{...eff}
 						key={`${this.props.page}${index}${eff.icon}`}
-						iconRef={(ref) => (this.GLOBAL_ICONS[`GLOBAL_${eff.icon}`] = ref)}
+						iconRef={(ref) => (this.GLOBAL_ICONS[`GLOBAL_ACTION_${index + 1}`] = ref)}
 					/>
 				);
 			return null;

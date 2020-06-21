@@ -10,7 +10,7 @@
 		}
 	}
 	.image_preview {
-		height: 100%;
+		height: calc(100% - 150px);
 		font-weight: bold;
 		font-family: "Quantico";
 		color: #ddd;

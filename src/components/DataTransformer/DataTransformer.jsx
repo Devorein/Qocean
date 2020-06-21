@@ -16,11 +16,11 @@ import { AppContext } from '../../context/AppContext';
 class DataTransformer extends Component {
 	static contextType = AppContext;
 	LOCAL_ICONS = {};
-	cloneIcons = (effectors, index) => {
-		return effectors.map((eff) => {
+	cloneIcons = (effectors, itemIndex) => {
+		return effectors.map((eff, index) => {
 			let ref = null;
-			if (this.props.selected === index) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_${eff.icon}`] = ref);
-			if (eff) return <Icon {...eff} key={`${this.props.page}${index}${eff.icon}`} iconRef={ref} />;
+			if (this.props.selected === itemIndex) ref = (ref) => (this.LOCAL_ICONS[`LOCAL_ACTION_${index + 1}`] = ref);
+			if (eff) return <Icon {...eff} key={`${this.props.page}${itemIndex}${index}${eff.icon}`} iconRef={ref} />;
 			return null;
 		});
 	};

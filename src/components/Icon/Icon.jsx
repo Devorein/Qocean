@@ -91,7 +91,7 @@ class Icon extends Component {
 				ref: iconRef,
 				onClick: (e) => {
 					if (useSound) SOUNDS[sound].play();
-					onClick(e);
+					if (onClick) onClick(e);
 				},
 				style
 			});

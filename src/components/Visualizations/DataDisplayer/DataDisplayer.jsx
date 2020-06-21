@@ -40,17 +40,21 @@ class DataDisplayer extends Component {
 
 	renderSectorValue = (sector, val, key) => {
 		const { view, targetComp } = this.props;
-
 		const renderValue = (val) => {
-			return (
+			const isRef = sector.match(/(refs|ref)/);
+			const props = {};
+			if (isRef && val) {
+				props.key = val._id;
+				props.onClick = this.props.onRefClick ? this.props.onRefClick.bind(null, key, val._id) : null;
+			}
+			return val ? (
 				<div
 					className={`${view}${targetComp}_Item_Sector_Item_value_item ${view}${targetComp}_Item_Sector-${sector}_Item_value_item ${view}${targetComp}_Item_Sector-${sector}_Item-${key}_value_item ${view}${targetComp}_Item_Sector_Item-${key}_value_item`}
-					key={val._id}
-					onClick={this.props.onRefClick ? this.props.onRefClick.bind(null, key, val._id) : null}
+					{...props}
 				>
 					{val.username || val.name}
 				</div>
-			);
+			) : null;
 		};
 		let sectorValue = null;
 		if (!sector.match(/(refs|ref)/)) sectorValue = renderValue({ name: val });

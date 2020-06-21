@@ -123,13 +123,14 @@ class CustomList extends React.Component {
 					Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
 					return (
 						<List totalItems={this.filteredContents.length} prefix="CustomList">
-							{(props) => {
-								Object.entries(props).forEach(([ key, value ]) => (this[key] = value));
+							{(ListProps) => {
+								Object.entries(ListProps).forEach(([ key, value ]) => (this[key] = value));
 								return this.props.children
 									? this.props.children({
 											list: renderList(),
 											checked: this.checked,
-											selectedIndex: this.selected
+											selectedIndex: this.selected,
+											...ListProps
 										})
 									: renderList();
 							}}
