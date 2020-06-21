@@ -64,10 +64,12 @@ class FolderForm extends Component {
 		return [ values, true ];
 	};
 
-	postSubmit = () => {
-		this.setState({
-			selected_quizzes: []
-		});
+	postSubmit = (data, operation) => {
+		if (operation === 'Create') {
+			this.setState({
+				selected_quizzes: []
+			});
+		}
 	};
 
 	render() {

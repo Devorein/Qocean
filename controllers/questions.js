@@ -114,7 +114,7 @@ exports.deleteQuestions = asyncHandler(async function(req, res, next) {
 	const { questions } = req.body;
 	for (let i = 0; i < questions.length; i++) {
 		const questionId = questions[i];
-		let question = await Question.findById(questionId).select('question user type image');
+		let question = await Question.findById(questionId).select('question user type image quiz');
 		if (!question) return next(new ErrorResponse(`No question with id ${questionId} exists`, 404));
 		if (question.user.toString() !== req.user._id.toString())
 			return next(new ErrorResponse(`User not authorized to delete question`, 401));

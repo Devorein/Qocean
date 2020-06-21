@@ -16,17 +16,16 @@ function formSubmitUtil({ reset, resetForm, setSubmitting, postSubmit, data }) {
 	setTimeout(() => {
 		setSubmitting(false);
 	}, 2500);
-	if (postSubmit) postSubmit(data);
+	if (postSubmit) postSubmit(data, 'Create');
 }
 
 class FormFiller extends Component {
 	static contextType = AppContext;
 
-	updateResource = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+	updateResource = ([ type, preSubmit, postSubmit ], values, { setSubmitting }) => {
 		type = type.toLowerCase();
 		const { refetchData, data } = this.props;
 		const id = data._id;
-		const { reset_on_success, reset_on_error } = this.context.user.current_environment;
 		let canSubmit = true;
 		if (preSubmit) {
 			let [ transformedValue, shouldSubmit ] = preSubmit(values);
@@ -36,7 +35,7 @@ class FormFiller extends Component {
 		if (canSubmit) {
 			updateResource(type, id, values)
 				.then((data) => {
-					formSubmitUtil({ reset: reset_on_success, resetForm, setSubmitting, postSubmit, data });
+					if (postSubmit) postSubmit(data, 'Update');
 					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
 						setEnvAsCurrent(data.data.data._id).then(() => {
@@ -45,7 +44,6 @@ class FormFiller extends Component {
 					} else if (refetchData) refetchData();
 				})
 				.catch((err) => {
-					formSubmitUtil({ reset: reset_on_error, resetForm, setSubmitting, postSubmit, data: err });
 					this.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to update ${type}`,

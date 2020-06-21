@@ -37,7 +37,11 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	quizzes: [
 		{
 			type: mongoose.Schema.ObjectId,
-			ref: 'Quiz'
+			ref: 'Quiz',
+			set: function(quizzes) {
+				this._quizzes = this.quizzes;
+				return quizzes;
+			}
 		}
 	],
 	watchers: [
@@ -48,37 +52,47 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	]
 });
 
-FolderSchema.methods.quiz = async function(op, quizId) {
-	function quizRelation(self, quiz, quizId) {
-		if (op === 1) {
-			self.quizzes.push(quizId);
-			quiz.folders.push(self._id);
-			quiz.total_folders++;
-			self.total_quizzes++;
-			self.total_questions += quiz.total_questions;
-		} else if (op === 0) {
-			self.quizzes = self.quizzes.filter((_quizId) => quizId.toString() !== _quizId.toString());
-			quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== self._id.toString());
-			quiz.total_folders--;
-			self.total_quizzes--;
-			self.total_questions -= quiz.total_questions;
-		}
-	}
-	if (Array.isArray(quizId)) {
-		for (let i = 0; i < quizId.length; i++) {
-			const quiz = await this.model('Quiz').findById(quizId[i]);
-			quizRelation(this, quiz, quizId[i]);
-			await quiz.save();
-		}
+FolderSchema.methods.manipulateQuiz = async function(shouldAdd, quizId) {
+	const quiz = await this.model('Quiz').findById(quizId);
+	if (shouldAdd) {
+		quiz.folders.push(this._id);
+		quiz.total_folders++;
+		this.total_questions += quiz.total_questions;
 	} else {
-		const quiz = await this.model('Quiz').findById(quizId);
-		quizRelation(this, quiz, quizId);
-		await quiz.save();
+		quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== this._id.toString());
+		quiz.total_folders--;
+		this.total_questions -= quiz.total_questions;
 	}
+	this.total_quizzes = this.quizzes.length;
+	await quiz.save();
 };
 
 FolderSchema.pre('save', async function(next) {
 	if (this.isModified('user')) await this.model('User').add(this.user, 'quizzes', this._id);
+	if (this.isModified('quizzes')) {
+		const manip = [];
+		if (this._quizzes)
+			this._quizzes.forEach((_quiz) => {
+				if (!this.quizzes.includes(_quiz))
+					manip.push({
+						id: _quiz,
+						op: 0
+					});
+			});
+
+		this.quizzes.forEach((quiz) => {
+			if (!this._quizzes.includes(quiz))
+				manip.push({
+					id: quiz,
+					op: 1
+				});
+		});
+
+		for (let i = 0; i < manip.length; i++) {
+			const { id, op } = manip[i];
+			await this.manipulateQuiz(op, id);
+		}
+	}
 	next();
 });
 
