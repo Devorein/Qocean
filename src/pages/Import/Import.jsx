@@ -117,20 +117,18 @@ class Import extends Component {
 					const { CustomTabs, type, Upload, selectedIndex, list, transformedData } = this;
 
 					return (
-						<Fragment>
+						<div className={`Import Import-${type} page`}>
 							{CustomTabs}
-							<div className={`Import Import-${type}`}>
-								{Upload}
-								{transformedData.length !== 0 ? (
-									<div style={{ display: 'flex' }}>
-										{list}
-										<FormFiller useModal={false} type={type} page={'Import'} data={transformedData[selectedIndex]} />
-									</div>
-								) : (
-									<div>Nothing imported</div>
-								)}
-							</div>
-						</Fragment>
+							{Upload}
+							{transformedData.length !== 0 ? (
+								<div className="Import_Content">
+									{list}
+									<FormFiller useModal={false} type={type} page={'Import'} data={transformedData[selectedIndex]} />
+								</div>
+							) : (
+								<div className="Import_nocontent">Nothing imported</div>
+							)}
+						</div>
 					);
 				}}
 			</Composer>

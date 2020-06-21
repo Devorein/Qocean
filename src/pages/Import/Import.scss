@@ -1,19 +1,42 @@
 .Import {
+  &.page{
+    height: 100%;
+  }
 	.React-hotkeys {
 		height: calc(100% - 50px);
 		display: flex;
-	}
-	.CustomList {
-		width: 30%;
-		min-width: 300px;
-		margin-right: 10px;
-	}
-	.FormFiller {
-		flex-grow: 1;
-	}
+  }
+  &_Content{
+    display: flex;
+    height: calc(100% - 200px);
+
+    .CustomList {
+      width: 30%;
+      min-width: 300px;
+      margin-right: 10px;
+    }
+    .FormFiller {
+      flex-grow: 1;
+      .form{
+        height: 100%;
+      }
+    }
+
+  }
 	.upload_button {
-		width: 150px;
+    width: 100%;
 		margin: 0px;
-		padding: 0px;
-	}
+    padding: 0px;
+    .Upload_button{
+      max-width: fit-content;
+    }
+  }
+  &_nocontent{
+    height: calc(100% - 150px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    font-size: 50px;
+  }
 }
