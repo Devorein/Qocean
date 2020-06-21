@@ -111,11 +111,12 @@ class DataTransformer extends Component {
 						});
 					}
 				}
+
 				if (page === 'play')
 					actions.push({
 						icon: 'AddCircle',
 						onClick: customHandlers.add.bind(null, [ item._id ]),
-						popoverText: 'Add to quiz',
+						popoverText: item.added ? 'Remove from bucket' : 'Add to bucket',
 						style: { fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }
 					});
 			}
