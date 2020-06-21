@@ -7,13 +7,13 @@ class TabSwitcher extends Component {
 		type: this.props.type
 	};
 
-	switchPage = (page) => {
+	switchTab = (tab) => {
 		const { runBeforeSwitch, runAfterSwitch } = this.props;
 		if (runBeforeSwitch) runBeforeSwitch();
-		if (runAfterSwitch) runAfterSwitch(page.name);
+		if (runAfterSwitch) runAfterSwitch(tab.name);
 
 		this.setState({
-			type: page.name
+			type: tab.name
 		});
 	};
 
@@ -21,6 +21,7 @@ class TabSwitcher extends Component {
 		let { comp } = this.props;
 		comp = comp.toLowerCase();
 		if (comp === 'fileinput') return [ 'Link', 'Upload' ];
+		else if (comp === 'play') return [ 'Quiz', 'Folder' ];
 	};
 
 	render() {
@@ -35,7 +36,7 @@ class TabSwitcher extends Component {
 			<CustomTabs
 				against={this.state.type}
 				onChange={(e, value) => {
-					this.switchPage(headers[value]);
+					this.switchTab(headers[value]);
 				}}
 				height={50}
 				headers={headers}

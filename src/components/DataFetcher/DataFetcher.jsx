@@ -12,6 +12,12 @@ class DataFetcher extends React.Component {
 		totalCount: 0
 	};
 
+	UNSAFE_componentWillReceiveProps(props) {
+		if (props.type !== this.props.type) {
+			this.refetchData();
+		}
+	}
+
 	refetchData = (type, queryParams) => {
 		const page = this.props.page.toLowerCase();
 		type = type.toLowerCase();

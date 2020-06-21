@@ -12,24 +12,25 @@ export default function(quizzes, prop) {
 		headers.forEach((header) => {
 			temp[header] = 0;
 		});
-
-		quiz.questions.forEach((question) => {
-			let targetProp = question[prop];
-			if (prop === 'time_allocated') {
-				const index = Math.floor(parseInt(question[prop]) / 15);
-				targetProp = headers[index - (index === 1 ? 1 : 2)];
-			}
-			temp[targetProp] = temp[targetProp] ? temp[targetProp] + 1 : 1;
-		});
-		rows.push({
-			name: quiz.name,
-			...temp
-		});
+		if (quiz.questions && quiz.questions.length !== 0) {
+			quiz.questions.forEach((question) => {
+				let targetProp = question[prop];
+				if (prop === 'time_allocated') {
+					const index = Math.floor(parseInt(question[prop]) / 15);
+					targetProp = headers[index - (index === 1 ? 1 : 2)];
+				}
+				temp[targetProp] = temp[targetProp] ? temp[targetProp] + 1 : 1;
+			});
+			rows.push({
+				name: quiz.name,
+				...temp
+			});
+		}
 	}
 	headers.unshift('name');
 	const footers = headers.slice(1).map((header) => {
 		let total = 0;
-		rows.forEach((row) => (total += row[header]));
+		rows.forEach((row) => (total += row[header] || 0));
 		return total;
 	});
 	return {

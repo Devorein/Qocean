@@ -133,7 +133,7 @@ class PlaySettings extends Component {
 							errors,
 							isValid
 						},
-						inputs: (
+						PlaySettingsForm: (
 							<div className="play_settings">
 								{inputs}
 								<div className="play_button">
