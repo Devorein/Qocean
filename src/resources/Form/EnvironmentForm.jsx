@@ -167,6 +167,38 @@ class EnvironmentForm extends Component {
 			},
 			{
 				type: 'group',
+				name: 'keybindings',
+				extra: { treeView: true, coalesce: true, groupType: 'text', helperText: 'Provide Custom keybindings' },
+				children: [
+					{
+						name: 'MOVE_UP',
+						type: 'text',
+						defaultValue: 'up'
+					},
+					{
+						name: 'MOVE_DOWN',
+						type: 'text',
+						defaultValue: 'down'
+					},
+					{
+						name: 'CHECK',
+						type: 'text',
+						defaultValue: 's'
+					},
+					...Array(5).fill(0).map((_, i) => ({
+						name: `LOCAL_ACTION_${i + 1}`,
+						type: 'text',
+						defaultValue: `${i + 1}`
+					})),
+					...Array(5).fill(0).map((_, i) => ({
+						name: `GLOBAL_ACTION_${i + 1}`,
+						type: 'text',
+						defaultValue: `shift+${i + 1}`
+					}))
+				]
+			},
+			{
+				type: 'group',
 				name: 'notification_groups',
 				extra: { treeView: true },
 				children: [
