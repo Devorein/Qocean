@@ -16,8 +16,8 @@ mongoose.connect(process.env.MONGO_URI, {
 	useUnifiedTopology: true
 });
 
-function decideType(type) {
-	switch (type.toLowerCase()) {
+function decideModel(model) {
+	switch (model.toLowerCase()) {
 		case 'user':
 			return User;
 		case 'quiz':
@@ -33,13 +33,16 @@ function decideType(type) {
 	}
 }
 
-module.exports = async function(type, id, user, next, body) {
-	const Type = decideType(type);
-	const resource = await Type.findById(id);
-	if (!resource) return next(new ErrorResponse(`Quiz not found with id of ${id}`, 404));
+module.exports = async function(model, id, user, next, body) {
+	const Model = decideModel(model);
+	const resource = await Model.findById(id);
+	if (!resource) return next(new ErrorResponse(`Resource not found with id of ${id}`, 404));
 	if (resource.user.toString() !== user._id.toString())
 		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
 	body.updated_at = Date.now();
-	const updatedResource = await Type.findByIdAndUpdate(id, body, { new: true, runValidators: true });
-	return updatedResource;
+	Object.entries(body).forEach(([ key, value ]) => {
+		if (key === 'quizzes' && model === 'folder') resource._quizzes = [ ...resource.quizzes ];
+		resource[key] = value;
+	});
+	return await resource.save();
 };
