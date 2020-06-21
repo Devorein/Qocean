@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { withSnackbar } from 'notistack';
+import Composer from 'react-composer';
 
 import Upload from '../../components/Buttons/Upload';
 import CustomList from '../../components/List/CustomList';
@@ -73,62 +74,66 @@ class Import extends Component {
 	};
 
 	render() {
+		const { submitForm, transformList, transformData } = this;
 		return (
-			<PageSwitcher
-				page="Import"
-				runAfterSwitch={() => {
-					this.setState({
-						selectedIndex: null
-					});
-				}}
+			<Composer
+				components={[
+					<PageSwitcher
+						page="Import"
+						runAfterSwitch={() => {
+							this.resetUploadState();
+							this.resetListState();
+						}}
+					/>,
+					({ results, render }) => (
+						<Upload msg={`Import ${results[0].type}`} accept={'application/json'} children={render} />
+					),
+					({ results, render }) => {
+						let transformedData = [];
+						if (results[1].UploadState.data)
+							transformedData = transformData(results[0].type, results[1].UploadState.data);
+						this.currentType = results[0].type;
+						this.transformedData = transformedData;
+						return (
+							<CustomList
+								listItems={transformList()}
+								icons={[
+									{
+										icon: 'publish',
+										onClick: submitForm,
+										popoverText: 'Create item'
+									}
+								]}
+								children={render}
+							/>
+						);
+					}
+				]}
 			>
-				{({ CustomTabs, type }) => (
-					<Fragment>
-						{CustomTabs}
-						<Upload msg={`Import ${type}`} accept={'application/json'}>
-							{({ Upload, data }) => {
-								let transformedData = [];
-								if (data) transformedData = this.transformData(type, data);
-								this.currentType = type;
-								this.transformedData = transformedData;
-								return (
-									<div className={`Import Import-${type}`}>
-										{Upload}
-										{transformedData.length !== 0 ? (
-											<CustomList
-												listItems={this.transformList()}
-												icons={[
-													{
-														icon: 'publish',
-														onClick: this.submitForm,
-														popoverText: 'Create item'
-													}
-												]}
-											>
-												{({ selectedIndex, list }) => {
-													return (
-														<Fragment>
-															{list}
-															<FormFiller
-																useModal={false}
-																type={type}
-																page={'Import'}
-																data={transformedData[selectedIndex]}
-															/>
-														</Fragment>
-													);
-												}}
-											</CustomList>
-										) : (
-											<div>Nothing imported</div>
-										)}
+				{(ComposedProps) => {
+					ComposedProps.forEach((ComposedProp) => {
+						if (ComposedProp) Object.entries(ComposedProp).forEach(([ key, value ]) => (this[key] = value));
+					});
+					const { CustomTabs, type, Upload, selectedIndex, list, transformedData } = this;
+
+					return (
+						<Fragment>
+							{CustomTabs}
+							<div className={`Import Import-${type}`}>
+								{Upload}
+								{transformedData.length !== 0 ? (
+									<div style={{ display: 'flex' }}>
+										{list}
+										<FormFiller useModal={false} type={type} page={'Import'} data={transformedData[selectedIndex]} />
 									</div>
-								);
-							}}
-						</Upload>
-					</Fragment>
-				)}
-			</PageSwitcher>
+								) : (
+									<div>Nothing imported</div>
+								)}
+							</div>
+						</Fragment>
+					);
+				}}
+			</Composer>
 		);
 	}
 }

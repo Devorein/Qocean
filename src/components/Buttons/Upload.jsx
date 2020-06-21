@@ -9,14 +9,15 @@ class Upload extends React.Component {
 		data: null
 	};
 
-	onChange = (e) => {
+	onChange = (accept, e) => {
 		e.persist();
 		const reader = new FileReader();
 		const { files } = e.target;
 		reader.onload = (e) => {
 			this.setState({ data: e.target.result, file: files[0] });
 		};
-		reader.readAsDataURL(files[0]);
+		if (accept.includes('image/*')) reader.readAsDataURL(files[0]);
+		else if (accept.includes('json')) reader.readAsText(files[0]);
 	};
 
 	resetUploadState = () => {
@@ -41,7 +42,7 @@ class Upload extends React.Component {
 						className={classes.input}
 						id="contained-button-file"
 						type="file"
-						onChange={onChange}
+						onChange={onChange.bind(null, accept)}
 						ref={(input) => {
 							this.input = input;
 							if (inputRef) inputRef(input);

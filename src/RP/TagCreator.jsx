@@ -203,7 +203,7 @@ class TagCreator extends Component {
 					/>
 					<Icon
 						icon={'addbox'}
-						onCLick={() => {
+						onClick={() => {
 							this.setState({
 								tags: Array.from(new Set(this.state.tags.concat(this.state.selectedTags))),
 								selectedTags: []

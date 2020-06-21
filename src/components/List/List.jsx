@@ -123,6 +123,17 @@ class List extends React.Component {
 							checked: []
 						});
 					},
+					resetSelected: () => {
+						this.setState({
+							selected: 0
+						});
+					},
+					resetListState: () => {
+						this.setState({
+							checked: [],
+							selected: 0
+						});
+					},
 					AllCheckbox: (
 						<div className={`${AllCheckboxClass || ''} ${prefix ? prefix + 'AllCheckbox' : ''} List_AllCheckbox`}>
 							<Checkbox
