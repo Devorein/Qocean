@@ -1,4 +1,4 @@
-module.exports = (user, statusCode, res) => {
+module.exports = (user) => {
 	const token = user.getSignedJwtToken();
 
 	const options = {
@@ -6,6 +6,5 @@ module.exports = (user, statusCode, res) => {
 		httpOnly: true
 	};
 	if (process.env.NODE_ENV === 'production') options.secure = true;
-
-	res.status(statusCode).cookie('token', token, options).json({ success: true, token, _id: user._id });
+	return { token, id: user._id };
 };

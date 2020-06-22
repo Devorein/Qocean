@@ -17,8 +17,11 @@ const { merge } = require('lodash');
 
 const { typeDefs } = require('./schema.js');
 const UserSchema = require('./schemas/User.js');
+const FolderSchema = require('./schemas/Folder.js');
+const AuthSchema = require('./schemas/Auth.js');
 const { resolvers } = require('./resolvers.js');
 const UserResolvers = require('./resolvers/user');
+const AuthResolvers = require('./resolvers/auth');
 const UserModel = require('./models/User');
 const QuizModel = require('./models/Quiz');
 const QuestionModel = require('./models/Question');
@@ -99,23 +102,26 @@ GRAPHQL.use(cors());
 GRAPHQL.use(validate);
 GRAPHQL.use(hpp());
 GRAPHQL.use(mongoSanitize());
+GRAPHQL.use(errorHandler);
 
 const GRAPHQL_SERVER = new ApolloServer({
 	schema: makeExecutableSchema({
-		typeDefs: [ typeDefs, UserSchema ],
-		resolvers: merge(resolvers, UserResolvers),
+		typeDefs: [ typeDefs, UserSchema, FolderSchema, AuthSchema ],
+		resolvers: merge(resolvers, UserResolvers, AuthResolvers),
 		resolverValidationOptions: {
 			requireResolversForResolveType: false
 		}
 	}),
-	context: ({ req }) => {
+	context: ({ req, res }) => {
 		return {
 			user: req.user,
 			User: UserModel,
 			Quiz: QuizModel,
 			Question: QuestionModel,
 			Folder: FolderModel,
-			Environment: EnvironmentModel
+			Environment: EnvironmentModel,
+			req,
+			res
 		};
 	},
 	playground: {
