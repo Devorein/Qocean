@@ -17,6 +17,7 @@ const { merge } = require('lodash');
 
 const { typeDefs } = require('./schema.js');
 const UserSchema = require('./schemas/User.js');
+const FolderSchema = require('./schemas/Folder.js');
 const { resolvers } = require('./resolvers.js');
 const UserResolvers = require('./resolvers/user');
 const UserModel = require('./models/User');
@@ -102,7 +103,7 @@ GRAPHQL.use(mongoSanitize());
 
 const GRAPHQL_SERVER = new ApolloServer({
 	schema: makeExecutableSchema({
-		typeDefs: [ typeDefs, UserSchema ],
+		typeDefs: [ typeDefs, UserSchema, FolderSchema ],
 		resolvers: merge(resolvers, UserResolvers),
 		resolverValidationOptions: {
 			requireResolversForResolveType: false
