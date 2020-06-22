@@ -15,7 +15,8 @@ const {
 	deleteQuestions,
 	questionPhotoUpload,
 	sendAnswer,
-	sendAnswers
+	sendAnswers,
+	getOthersQuestions
 } = require('../controllers/questions');
 
 router.route('/countAll').get(advancedResults(Question));
@@ -23,7 +24,7 @@ router.route('/answers/:id').get(protect, sendAnswer);
 router.route('/countMine').get(protect, advancedResults(Question));
 router.route('/countOthers').get(protect, advancedResults(Question));
 router.route('/me').get(protect, advancedResults(Question));
-router.route('/others').get(protect, advancedResults(Question));
+router.route('/others').post(protect, getOthersQuestions);
 router.route('/_/validation').put(validateQuestion);
 router.route('/_/validations').put(validateQuestions);
 router.route('/_/answers').put(protect, sendAnswers);

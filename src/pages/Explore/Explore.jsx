@@ -10,10 +10,10 @@ class Explore extends Component {
 	render() {
 		return (
 			<DataFetcher page="Explore">
-				{({ data, totalCount, refetchData, updateDataLocally }) => {
+				{({ data, totalCount, refetchData, updateDataLocally, type }) => {
 					return (
 						<PageSwitcher page="explore" refetchData={refetchData}>
-							{({ CustomTabs, type }) => (
+							{({ CustomTabs }) => (
 								<div className="Explore page">
 									{CustomTabs}
 									<Explorer

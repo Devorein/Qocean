@@ -75,6 +75,87 @@ async function updateQuiz(id) {
 	await quiz.save();
 }
 
+exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
+	const page = parseInt(req.body.page) || 1;
+	const limit = parseInt(req.body.limit) || 10;
+	const startIndex = (page - 1) * limit;
+	const endIndex = page * limit;
+
+	const sort = {};
+	if (req.body.sort) {
+		req.body.sort.split(',').forEach((field) => {
+			const isDescending = field.startsWith('-');
+			if (isDescending) sort[field.replace('-', '')] = -1;
+			else sort[field] = 1;
+		});
+	} else {
+		sort.created_at = -1;
+		sort.name = -1;
+	}
+
+	const questions = await Question.aggregate([
+		{
+			$match: {
+				...req.body.filters,
+				user: { $ne: req.user._id },
+				public: true
+			}
+		},
+		{ $project: { public: 0, favourite: 0, answers: 0 } },
+		{
+			$lookup: {
+				from: 'quizzes',
+				let: { quizId: '$quiz' },
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$and: [ { $eq: [ '$_id', '$$quizId' ] }, { $eq: [ '$public', true ] } ]
+							}
+						}
+					},
+					{
+						$project: {
+							name: 1
+						}
+					}
+				],
+				as: 'quiz'
+			}
+		},
+		{ $unwind: '$quiz' },
+		{
+			$sort: sort
+		}
+	]);
+	const total = questions.length;
+	const pagination = {};
+	if (endIndex < total) {
+		pagination.next = {
+			page: page + 1,
+			limit
+		};
+	}
+
+	if (startIndex > 0) {
+		pagination.prev = {
+			page: page - 1,
+			limit
+		};
+	}
+	const resquestion = [];
+	res.advancedResults = {
+		success: true,
+		count: questions.length,
+		pagination,
+		data: resquestion
+	};
+	for (let i = startIndex; i < Math.min(endIndex, questions.length); i++) {
+		resquestion.push(questions[i]);
+	}
+	res.status(200).json(res.advancedResults);
+});
+
 exports.updateQuestion = asyncHandler(async function(req, res, next) {
 	const question = await updateResource('question', req.params.id, req.user, next, req.body);
 	await updateQuiz(question.quiz);

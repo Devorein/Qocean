@@ -10,10 +10,15 @@ class DataFetcher extends React.Component {
 	state = {
 		data: [],
 		totalCount: 0,
-		type: this.props.type
+		type: (() => {
+			const prop = `default_${this.props.page.toLowerCase()}_landing`;
+			return this.context.user && this.context.user.current_environment[prop]
+				? this.context.user.current_environment[prop]
+				: 'Quiz';
+		})()
 	};
 
-	refetchData = (type, queryParams, cb) => {
+	refetchData = (type, queryParams) => {
 		const page = this.props.page.toLowerCase();
 		type = type.toLowerCase();
 		populateQueryParams(type, queryParams, this.context.user, page);
@@ -35,16 +40,11 @@ class DataFetcher extends React.Component {
 							...headers
 						})
 						.then(({ data: { data } }) => {
-							this.setState(
-								{
-									data,
-									totalCount,
-									type
-								},
-								() => {
-									if (cb) cb();
-								}
-							);
+							this.setState({
+								data,
+								totalCount,
+								type
+							});
 						});
 				})
 				.catch((err) => {
@@ -54,26 +54,37 @@ class DataFetcher extends React.Component {
 			const [ count, endpoint, header ] = this.context.user
 				? [ `countOthers`, '/others/', headers ]
 				: [ 'countAll', '/', {} ];
-			axios
-				.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}?${queryString}`, { ...header })
-				.then(({ data: { data: totalCount } }) => {
-					axios
-						.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}?${queryString}`, { ...header })
-						.then(({ data: { data } }) => {
-							this.setState(
-								{
+			if (type === 'question') {
+				axios
+					.post(`http://localhost:5001/api/v1/questions/others`, queryParams, {
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem('token')}`
+						}
+					})
+					.then(({ data: { data, count } }) => {
+						this.setState({
+							data,
+							totalCount: count,
+							type
+						});
+					});
+			} else {
+				axios
+					.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}/${count}?${queryString}`, { ...header })
+					.then(({ data: { data: totalCount } }) => {
+						axios
+							.get(`http://localhost:5001/api/v1/${pluralize(type, 2)}${endpoint}?${queryString}`, { ...header })
+							.then(({ data: { data } }) => {
+								this.setState({
 									data,
 									totalCount
-								},
-								() => {
-									if (cb) cb();
-								}
-							);
-						});
-				})
-				.catch((err) => {
-					console.log(err);
-				});
+								});
+							});
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			}
 		} else if (page === 'watchlist') {
 			axios
 				.get(`http://localhost:5001/api/v1/watchlist/${pluralize(type, 2)}/count?${queryString}`, { ...headers })
@@ -81,15 +92,10 @@ class DataFetcher extends React.Component {
 					axios
 						.get(`http://localhost:5001/api/v1/watchlist/${pluralize(type, 2)}?${queryString}`, { ...headers })
 						.then(({ data: { data } }) => {
-							this.setState(
-								{
-									data,
-									totalCount
-								},
-								() => {
-									if (cb) cb();
-								}
-							);
+							this.setState({
+								data,
+								totalCount
+							});
 						});
 				})
 				.catch((err) => {
