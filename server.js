@@ -11,9 +11,15 @@ const rateLimiter = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const mongoSanitize = require('express-mongo-sanitize');
+const { makeExecutableSchema } = require('graphql-tools');
+const { ApolloServer } = require('apollo-server-express');
+const { merge } = require('lodash');
 
+const { typeDefs } = require('./server/schema.js');
+const { resolvers } = require('./server/resolvers.js');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
+const { validate } = require('./middleware/auth');
 
 dotenv.config({ path: './config/config.env' });
 
@@ -29,12 +35,12 @@ const filtersort = require('./routes/filtersort');
 
 connectDB();
 
-const app = express();
+const REST = express();
 
 let limiter = null;
 
 if (process.env.NODE_ENV === 'development') {
-	app.use(morgan('dev'));
+	REST.use(morgan('dev'));
 	limiter = rateLimiter({
 		windowMs: 10 * 60 * 1000,
 		max: 1000
@@ -46,34 +52,67 @@ if (process.env.NODE_ENV === 'development') {
 	});
 }
 
-app.use(cors());
-app.use(express.json());
-app.use(fileupload());
-// app.use(mongoSanitize());
-app.use(helmet());
-app.use(xssClean());
-// app.use(hpp());
-app.use(limiter);
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/api/v1/quizzes', quizzes);
-app.use('/api/v1/questions', questions);
-app.use('/api/v1/auth', auth);
-app.use('/api/v1/users', user);
-app.use('/api/v1/folders', folder);
-app.use('/api/v1/environments', environment);
-app.use('/api/v1/reports', report);
-app.use('/api/v1/watchlist', watchlist);
-app.use('/api/v1/filtersort', filtersort);
-app.use(cookieParser);
-app.use(errorHandler);
+// REST server
+REST.use(cors());
+REST.use(express.json());
+REST.use(fileupload());
+// REST.use(mongoSanitize());
+REST.use(helmet());
+REST.use(xssClean());
+// REST.use(hpp());
+REST.use(limiter);
+REST.use(express.static(path.join(__dirname, 'public')));
+REST.use('/api/v1/quizzes', quizzes);
+REST.use('/api/v1/questions', questions);
+REST.use('/api/v1/auth', auth);
+REST.use('/api/v1/users', user);
+REST.use('/api/v1/folders', folder);
+REST.use('/api/v1/environments', environment);
+REST.use('/api/v1/reports', report);
+REST.use('/api/v1/watchlist', watchlist);
+REST.use('/api/v1/filtersort', filtersort);
+REST.use(cookieParser);
+REST.use(errorHandler);
 
-const { PORT = 5000 } = process.env;
+const { REST_PORT = 5000 } = process.env;
 
-const server = app.listen(PORT, () => {
-	console.log(colors.yellow.bold(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
+const REST_SERVER = REST.listen(REST_PORT, () => {
+	console.log(colors.blue.bold(`REST Server running in ${process.env.NODE_ENV} mode on port ${REST_PORT}`));
 });
 
 process.on('unhandledRejection', (err, promise) => {
 	console.log(`Error: ${err.message}`.red);
-	server.close(() => process.exit(1));
+	REST_SERVER.close(() => process.exit(1));
+});
+
+// GRAPHQL Server
+const GRAPHQL = express();
+GRAPHQL.use(cors());
+GRAPHQL.use(validate);
+GRAPHQL.use(hpp());
+GRAPHQL.use(mongoSanitize());
+
+const GRAPHQL_SERVER = new ApolloServer({
+	schema: makeExecutableSchema({
+		typeDefs: [ typeDefs ],
+		resolvers: merge(resolvers),
+		resolverValidationOptions: {
+			requireResolversForResolveType: false
+		}
+	}),
+	context: ({ req }) => {
+		return {
+			user: req.user
+		};
+	},
+	playground: {
+		endpoint: '/graphql'
+	}
+});
+
+const { GRAPHQL_PORT = 5002 } = process.env;
+GRAPHQL_SERVER.applyMiddleware({ app: GRAPHQL });
+
+GRAPHQL.listen(GRAPHQL_PORT, () => {
+	console.log(colors.magenta.bold(`Graphql Server running in ${process.env.NODE_ENV} mode on port ${GRAPHQL_PORT}`));
 });
