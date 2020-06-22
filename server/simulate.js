@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const colors = require('colors');
 const dotenv = require('dotenv');
 const fs = require('fs');
+const path = require('path');
+
 const { createUsers } = require('./simulate/Users');
 const { createQuizzes } = require('./simulate/Quizzes');
 const { createQuestions } = require('./simulate/Questions');
@@ -15,7 +17,7 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-dotenv.config({ path: './config/config.env' });
+dotenv.config({ path: path.join(__dirname, 'config', 'config.env') });
 
 const Quiz = require('./models/Quiz');
 const Question = require('./models/Question');

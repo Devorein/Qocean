@@ -1,11 +1,12 @@
+const { flatten } = require('lodash');
+const fs = require('fs');
+const path = require('path');
+
 const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
-const fs = require('fs');
-const path = require('path');
 const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
-const { flatten } = require('lodash');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes

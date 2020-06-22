@@ -1,8 +1,7 @@
 node_modules
-config/config.env
-Qocean.code-workspace
+/server/config/config.env
 feature.md
 public/uploads
-store
+/server/store
 .vscode
 debug.log

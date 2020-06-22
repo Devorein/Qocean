@@ -15,8 +15,8 @@ const { makeExecutableSchema } = require('graphql-tools');
 const { ApolloServer } = require('apollo-server-express');
 const { merge } = require('lodash');
 
-const { typeDefs } = require('./server/schema.js');
-const { resolvers } = require('./server/resolvers.js');
+const { typeDefs } = require('./schema.js');
+const { resolvers } = require('./resolvers.js');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
 const { validate } = require('./middleware/auth');
