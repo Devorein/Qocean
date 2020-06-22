@@ -10,11 +10,15 @@ class TabSwitcher extends Component {
 	switchTab = (tab) => {
 		const { runBeforeSwitch, runAfterSwitch } = this.props;
 		if (runBeforeSwitch) runBeforeSwitch();
-		if (runAfterSwitch) runAfterSwitch(tab.name);
-
-		this.setState({
-			type: tab.name
-		});
+		if (runAfterSwitch)
+			this.setState(
+				{
+					type: tab.name
+				},
+				() => {
+					runAfterSwitch(tab.name);
+				}
+			);
 	};
 
 	decideHeaders = () => {

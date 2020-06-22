@@ -2,6 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import clsx from 'clsx';
+import { Spring, animated } from 'react-spring/renderprops';
 
 import List from './List';
 import LocalFilter from '../FilterSort/LocalFilter';
@@ -57,52 +58,62 @@ class CustomList extends React.Component {
 					{filteredContents.map((listItem, index) => {
 						const { primary, secondary, primaryIcon } = listItem;
 						return (
-							<div
-								key={listItem._id || `${listItem.primary}${index}`}
-								className={clsx(selected === index ? 'selected' : null, classes.BodyItem, 'CustomList_Body_Item')}
-								onClick={(e) => {
-									setSelectedIndex(index);
-								}}
+							<Spring
+								key={listItem._id}
+								from={{ transform: 'translateX(-100%)', opacity: 0 }}
+								to={{ transform: 'translateX(0)', opacity: 1 }}
+								delay={index * 200}
+								native
 							>
-								<div className={'CustomList_Body_Item_index'}>{index + 1}</div>
-								{containsCheckbox ? (
-									<div onClick={handleChecked.bind(null, index)} className={'CustomList_Body_Item_checkbox'}>
-										<Checkbox
-											edge="start"
-											checked={checked.indexOf(index) !== -1}
-											tabIndex={-1}
-											disableRipple
-											color="primary"
-											inputProps={{ 'aria-labelledby': primary }}
-										/>
-									</div>
-								) : null}
-								<div className={'CustomList_Body_Item_Icons'}>
-									<div className={'CustomList_Body_Item_Icons_primary'}>
-										<Icon icon={primaryIcon} />
-									</div>
-									{icons && icons.length !== 0 ? (
-										icons.map(({ icon, onClick, popoverText }) => {
-											return (
-												<div
-													className={`CustomList_Body_Item_Icons_${icon.displayName}`}
-													key={listItem._id + icon.displayName}
-												>
-													<Icon
-														icon={icon}
-														onClick={onClick.bind(null, [ listItem._id || index ])}
-														popoverText={popoverText}
-													/>
-												</div>
-											);
-										})
-									) : null}
-								</div>
-								<div className={'CustomList_Body_Item_Content'}>
-									<div className={'CustomList_Body_Item_Content_primary'}>{primary}</div>
-									<div className={'CustomList_Body_Item_Content_secondary'}>{secondary}</div>
-								</div>
-							</div>
+								{(style) => (
+									<animated.div
+										key={listItem._id || `${listItem.primary}${index}`}
+										className={clsx(selected === index ? 'selected' : null, classes.BodyItem, 'CustomList_Body_Item')}
+										onClick={(e) => {
+											setSelectedIndex(index);
+										}}
+									>
+										<div className={'CustomList_Body_Item_index'}>{index + 1}</div>
+										{containsCheckbox ? (
+											<div onClick={handleChecked.bind(null, index)} className={'CustomList_Body_Item_checkbox'}>
+												<Checkbox
+													edge="start"
+													checked={checked.indexOf(index) !== -1}
+													tabIndex={-1}
+													disableRipple
+													color="primary"
+													inputProps={{ 'aria-labelledby': primary }}
+												/>
+											</div>
+										) : null}
+										<div className={'CustomList_Body_Item_Icons'}>
+											<div className={'CustomList_Body_Item_Icons_primary'}>
+												<Icon icon={primaryIcon} />
+											</div>
+											{icons && icons.length !== 0 ? (
+												icons.map(({ icon, onClick, popoverText }) => {
+													return (
+														<div
+															className={`CustomList_Body_Item_Icons_${icon.displayName}`}
+															key={listItem._id + icon.displayName}
+														>
+															<Icon
+																icon={icon}
+																onClick={onClick.bind(null, [ listItem._id || index ])}
+																popoverText={popoverText}
+															/>
+														</div>
+													);
+												})
+											) : null}
+										</div>
+										<div className={'CustomList_Body_Item_Content'}>
+											<div className={'CustomList_Body_Item_Content_primary'}>{primary}</div>
+											<div className={'CustomList_Body_Item_Content_secondary'}>{secondary}</div>
+										</div>
+									</animated.div>
+								)}
+							</Spring>
 						);
 					})}
 				</div>

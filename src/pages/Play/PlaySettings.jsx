@@ -89,31 +89,33 @@ class PlaySettings extends Component {
 		[ 'Beginner', 'Intermediate', 'Advanced' ].forEach(
 			(type) => (settings[type] ? disabled.difficulty.push(type) : void 0)
 		);
-
-		quizzes = quizzes.map((quiz) => {
-			quiz.filteredQuestions = quiz.questions.filter((question) => {
-				let shouldReturn = true;
-				shouldReturn = shouldReturn && !disabled.type.includes(question.type);
-				shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
-				shouldReturn =
-					shouldReturn &&
-					question.time_allocated <= settings.disable_by_time_allocated[1] &&
-					question.time_allocated >= settings.disable_by_time_allocated[0];
-				return shouldReturn;
+		if (quizzes.length !== 0) {
+			quizzes = quizzes.map((quiz) => {
+				quiz.filteredQuestions = quiz.questions.filter((question) => {
+					let shouldReturn = true;
+					shouldReturn = shouldReturn && !disabled.type.includes(question.type);
+					shouldReturn = shouldReturn && !disabled.difficulty.includes(question.difficulty);
+					shouldReturn =
+						shouldReturn &&
+						question.time_allocated <= settings.disable_by_time_allocated[1] &&
+						question.time_allocated >= settings.disable_by_time_allocated[0];
+					return shouldReturn;
+				});
+				return quiz;
 			});
-			return quiz;
-		});
-		if (settings.randomized_quiz) quizzes = arrayShuffler(quizzes);
-		if (settings.randomized_question)
-			quizzes = quizzes.map((quiz) => ({ ...quiz, questions: arrayShuffler(quiz.questions) }));
+			if (settings.randomized_quiz) quizzes = arrayShuffler(quizzes);
+			if (settings.randomized_question)
+				quizzes = quizzes.map((quiz) => ({ ...quiz, questions: arrayShuffler(quiz.questions) }));
+		}
 		return quizzes;
 	};
 
 	render() {
 		const { selectedQuizIds, quizzes, history, match } = this.props;
-		const selectedQuizzes = selectedQuizIds.map((selectedQuizId) =>
-			quizzes.find((quiz) => quiz._id === selectedQuizId)
-		);
+		const selectedQuizzes =
+			quizzes.length > 0
+				? selectedQuizIds.map((selectedQuizId) => quizzes.find((quiz) => quiz._id === selectedQuizId))
+				: [];
 
 		return (
 			<InputForm formButtons={false} inputs={inputs} passFormAsProp>
@@ -148,7 +150,8 @@ class PlaySettings extends Component {
 						),
 						setValues,
 						selectedQuizzes,
-						filteredQuizzes
+						filteredQuizzes,
+						quizzes
 					});
 				}}
 			</InputForm>

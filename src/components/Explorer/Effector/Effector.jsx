@@ -59,14 +59,14 @@ class Effector extends Component {
 					<div className="Effector_Bottombar-pagenavigation">
 						<Icon
 							icon="ChevronLeft"
-							onCLick={() => {
+							onClick={() => {
 								this.movePage('prev');
 							}}
 							popoverText="Go to prev page"
 						/>
 						<Icon
 							icon="ChevronRight"
-							onCLick={() => {
+							onClick={() => {
 								this.movePage('next');
 							}}
 							popoverText="Go to next page"

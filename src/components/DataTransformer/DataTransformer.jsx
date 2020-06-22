@@ -112,13 +112,24 @@ class DataTransformer extends Component {
 					}
 				}
 
-				if (page === 'play')
-					actions.push({
+				if (page === 'play') {
+					const icon = {
 						icon: 'AddCircle',
-						onClick: customHandlers.add.bind(null, [ item._id ]),
-						popoverText: item.added ? 'Remove from bucket' : 'Add to bucket',
-						style: { fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main }
-					});
+						style: { fill: item.added ? theme.palette.success.main : this.props.theme.palette.error.main },
+						popoverText: item.added ? 'Remove from bucket' : 'Add to bucket'
+					};
+					if (type === 'folder') {
+						actions.push({
+							...icon,
+							onClick: customHandlers.add.bind(null, [ ...item.quizzes.map((quiz) => quiz._id) ])
+						});
+					} else {
+						actions.push({
+							...icon,
+							onClick: customHandlers.add.bind(null, [ item._id ])
+						});
+					}
+				}
 			}
 
 			const temp = {

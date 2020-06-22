@@ -17,14 +17,18 @@ class IdList extends React.Component {
 
 	addToList = (selectedIds) => {
 		const { ids } = this.state;
-		selectedIds.forEach((selectedId) => {
-			const index = ids.indexOf(selectedId);
-			if (index === -1) ids.push(selectedId);
-			else ids.splice(index, 1);
-		});
-		this.setState({
-			ids
-		});
+		if (selectedIds.length !== 0) {
+			selectedIds.forEach((selectedId) => {
+				if (selectedId) {
+					const index = ids.indexOf(selectedId);
+					if (index === -1) ids.push(selectedId);
+					else ids.splice(index, 1);
+				}
+			});
+			this.setState({
+				ids
+			});
+		}
 	};
 
 	render() {
