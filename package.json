@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "server": "nodemon server.js",
+    "server": "nodemon ./server/server.js",
     "client": "react-scripts start",
     "dev": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\"",
     "build": "react-scripts build",
