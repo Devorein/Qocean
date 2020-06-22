@@ -158,6 +158,16 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, total_rated: ratingsData });
 });
 
+exports.playPageQuiz = asyncHandler(async (req, res, next) => {
+	const quizzes = await Quiz.find({ user: req.user._id })
+		.populate({
+			path: 'questions',
+			select: 'difficulty time_allocated name type'
+		})
+		.select('name questions');
+	res.status(200).json({ success: true, data: quizzes });
+});
+
 exports.watchQuizzes = asyncHandler(async (req, res, next) => {
 	const manipulated = await watchAction('quizzes', req.body, req.user);
 	res.status(200).json({ success: true, data: manipulated });

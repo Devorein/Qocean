@@ -9,14 +9,9 @@ class DataFetcher extends React.Component {
 	static contextType = AppContext;
 	state = {
 		data: [],
-		totalCount: 0
+		totalCount: 0,
+		type: this.props.type
 	};
-
-	UNSAFE_componentWillReceiveProps(props) {
-		if (props.type !== this.props.type) {
-			this.refetchData();
-		}
-	}
 
 	refetchData = (type, queryParams, cb) => {
 		const page = this.props.page.toLowerCase();
@@ -43,7 +38,8 @@ class DataFetcher extends React.Component {
 							this.setState(
 								{
 									data,
-									totalCount
+									totalCount,
+									type
 								},
 								() => {
 									if (cb) cb();
@@ -103,14 +99,15 @@ class DataFetcher extends React.Component {
 	};
 
 	render() {
-		const { data, totalCount } = this.state;
+		const { data, totalCount, type } = this.state;
 		return this.props.children({
 			data,
 			totalCount,
 			refetchData: this.refetchData,
 			updateDataLocally: (data) => {
 				this.setState({ data });
-			}
+			},
+			type
 		});
 	}
 }
