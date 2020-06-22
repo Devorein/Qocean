@@ -4,7 +4,7 @@ module.exports = {
 	Query: {
 		async getPublicUsers(parent, { pagination }, { User }) {
 			const { page, limit, sort, filter } = parsePagination(pagination);
-			const users = await User.find(JSON.parse(filter)).sort(sort).skip(page).limit(limit);
+			const users = await User.find(JSON.strin(filter)).sort(sort).skip(page).limit(limit);
 			return users;
 		},
 

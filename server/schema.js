@@ -19,4 +19,8 @@ exports.typeDefs = gql`
 		sort: String
 		filter: JSON
 	}
+
+	type Status {
+		success: Boolean!
+	}
 `;

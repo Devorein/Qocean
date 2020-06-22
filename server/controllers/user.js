@@ -52,7 +52,8 @@ exports.updateUserPassword = asyncHandler(async function(req, res, next) {
 
 	user.password = req.body.newPassword;
 	await user.save();
-	sendTokenResponse(user, 200, res);
+	const { token, id } = sendTokenResponse(user);
+	res.status(200).json({ token, id });
 });
 
 // @desc     Delete current user
