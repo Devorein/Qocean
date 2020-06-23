@@ -1,9 +1,8 @@
 const parsePagination = require('../utils/parsePagination');
+const updateQuiz = require('../utils/updateResource');
 const {
-	createQuiz,
-	updateQuiz,
-	deleteQuiz,
-	deleteQuizzes,
+	createQuizHandler,
+	deleteQuizHandler,
 	quizPhotoUpload,
 	updatePlayedTimes,
 	updateQuizRatings,
@@ -12,6 +11,7 @@ const {
 	getAllTags,
 	playPageQuiz
 } = require('../controllers/quizzes');
+const updateResource = require('../utils/updateResource');
 
 module.exports = {
 	Query: {
@@ -133,6 +133,40 @@ module.exports = {
 			const [ quiz ] = await Quiz.find({ _id: id, user: user.id });
 			if (!quiz) throw new Error('Resource with that Id doesnt exist');
 			return quiz;
+		}
+	},
+	Mutation: {
+		async createQuiz(parent, { data }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await createQuizHandler(user.id, data, (err) => {
+				throw err;
+			});
+		},
+		async updateQuiz(parent, { data }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			const [ updated_quiz ] = await updateResource(Quiz, [ data ], user.id, (err) => {
+				throw err;
+			});
+			return updated_quiz;
+		},
+		async updateQuizzes(parent, { data }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await updateResource(Quiz, data, user.id, (err) => {
+				throw err;
+			});
+		},
+		async deleteQuiz(parent, { id }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			const [ quiz ] = await deleteQuizHandler([ id ], user.id, (err) => {
+				throw err;
+			});
+			return quiz;
+		},
+		async deleteQuizzes(parent, { ids }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await deleteQuizHandler(ids, user.id, (err) => {
+				throw err;
+			});
 		}
 	}
 };

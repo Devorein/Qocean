@@ -1,6 +1,5 @@
 const Folder = require('../models/Folder');
 const Quiz = require('../models/Quiz');
-const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const updateResource = require('../utils/updateResource');
@@ -25,18 +24,14 @@ exports.createFolder = asyncHandler(async (req, res, next) => {
 // @route: PUT /api/v1/folders/:id
 // @access: Private
 exports.updateFolder = asyncHandler(async (req, res, next) => {
-	const folder = await updateResource('folder', req.params.id, req.user, next, req.body);
+	req.body.id = req.params.id;
+	const folder = await updateResource(Folder, req.body, req.user._id, next);
 	res.status(200).json({ success: true, data: folder });
 });
 
 exports.updateFolders = asyncHandler(async (req, res, next) => {
-	const { folders } = req.body;
-	const updated_folders = [];
-	for (let i = 0; i < folders.length; i++) {
-		const { id, body } = folders[i];
-		updated_folders.push(await updateResource('folder', id, req.user, next, body));
-	}
-	res.status(200).json({ success: true, data: updated_folders });
+	const folders = await updateResource('folder', req.body.data, req.user, next);
+	res.status(200).json({ success: true, data: folders });
 });
 
 // @desc: Delete single folder

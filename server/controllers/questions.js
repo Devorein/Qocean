@@ -69,12 +69,6 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // @route: PUT /api/v1/questions/:id
 // @access: Private
 
-async function updateQuiz(id) {
-	const quiz = await Quiz.findOne(id);
-	quiz.updated_at = Date.now();
-	await quiz.save();
-}
-
 exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
 	const page = parseInt(req.body.page) || 1;
 	const limit = parseInt(req.body.limit) || 10;
@@ -157,21 +151,14 @@ exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
 });
 
 exports.updateQuestion = asyncHandler(async function(req, res, next) {
-	const question = await updateResource('question', req.params.id, req.user, next, req.body);
-	await updateQuiz(question.quiz);
-	res.status(200).json({ success: true, data: 1 });
+	req.body.id = req.params.id;
+	const question = await updateResource(Question, req.body, req.user._id, next);
+	res.status(200).json({ success: true, data: question });
 });
 
 exports.updateQuestions = asyncHandler(async (req, res, next) => {
-	const { questions } = req.body;
-	const updated_questions = [];
-	for (let i = 0; i < questions.length; i++) {
-		const { id, body } = questions[i];
-		const question = await updateResource('question', id, req.user, next, body);
-		updated_questions.push(question);
-		await updateQuiz(question.quiz);
-	}
-	res.status(200).json({ success: true, data: updated_questions });
+	const questions = await updateResource(Question, req.body.data, req.user._id, next);
+	res.status(200).json({ success: true, data: questions });
 });
 
 // @desc: Delete a question

@@ -11,32 +11,20 @@ const watchAction = require('../utils/watchAction');
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
 // @access: Private
-exports.createQuiz = asyncHandler(async (req, res, next) => {
-	req.body.user = req.user._id;
-	const prevQuiz = await Quiz.countDocuments({ name: req.body.name.trim(), user: req.user._id });
-	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${req.body.name}`, 400));
-	const targetquizzes = req.body.quizzes;
-	delete req.body.quizzes;
-	const [ success, message ] = await Quiz.validate(req.body);
+async function createQuizHandler(userId, body, next) {
+	body.user = userId;
+	const prevQuiz = await Quiz.countDocuments({ name: body.name.trim(), user: userId });
+	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${body.name}`, 400));
+
+	const [ success, message ] = await Quiz.validate(body);
 	if (!success) return next(new ErrorResponse(message, 400));
-	const quiz = await Quiz.create(req.body);
-	if (targetquizzes) {
-		const quizzesPromise = [];
-		for (let i = 0; i < targetquizzes.length; i++) {
-			const quizId = targetquizzes[i];
-			quizzesPromise.push(Quiz.findById(quizId));
-		}
-		try {
-			const quizzes = await Promise.all(quizzesPromise);
-			for (let i = 0; i < quizzes.length; i++) {
-				const quiz = quizzes[i];
-				await quiz.quiz(1, quiz._id);
-				await quiz.save();
-			}
-		} catch (err) {
-			return next(new ErrorResponse(err), 404);
-		}
-	}
+	return await Quiz.create(body);
+}
+
+exports.createQuizHandler = createQuizHandler;
+
+exports.createQuiz = asyncHandler(async (req, res, next) => {
+	const quiz = await createQuizHandler(req.user._id, req.body, next);
 	res.status(201).json({ success: true, data: quiz });
 });
 
@@ -45,18 +33,14 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 // @access: Private
 
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
-	const quiz = await updateResource('quiz', req.params.id, req.user, next, req.body);
+	req.body.id = req.params.id;
+	const [ quiz ] = await updateResource(Quiz, [ req.body ], req.user._id, next);
 	res.status(200).json({ success: true, data: quiz });
 });
 
 exports.updateQuizzes = asyncHandler(async (req, res, next) => {
-	const { quizzes } = req.body;
-	const updated_quizzes = [];
-	for (let i = 0; i < quizzes.length; i++) {
-		const { id, body } = quizzes[i];
-		updated_quizzes.push(await updateResource('quiz', id, req.user, next, body));
-	}
-	res.status(200).json({ success: true, data: updated_quizzes });
+	const quizzes = await updateResource(Quiz, req.body.data, req.user._id, next);
+	res.status(200).json({ success: true, data: quizzes });
 });
 
 exports.getAllTags = asyncHandler(async (req, res, next) => {
@@ -69,37 +53,39 @@ exports.getAllTags = asyncHandler(async (req, res, next) => {
 	tags = Array.from(new Set(flatten(tags.map(({ tags }) => tags)).map((tag) => tag.split(':')[0])));
 	res.status(200).json({ success: true, data: tags });
 });
+
 // @desc: Delete single quiz
 // @route: DELETE /api/v1/quizzes/:id
 // @access: Private
-exports.deleteQuiz = asyncHandler(async (req, res, next) => {
-	const quiz = await Quiz.findById(req.params.id);
-	if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${req.params.id}`, 404));
-	if (quiz.user.toString() !== req.user._id.toString())
-		return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
-	if (quiz.image && (!quiz.image.match(/^(http|data:)/) && quiz.image !== 'none.png')) {
-		const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${quiz.image}`);
-		if (fs.existsSync(location)) fs.unlinkSync(location);
-	}
-	await quiz.remove();
-	res.status(200).json({ success: true, data: quiz });
-});
 
-exports.deleteQuizzes = asyncHandler(async (req, res, next) => {
-	const { quizzes } = req.body;
-	for (let i = 0; i < quizzes.length; i++) {
-		const quizId = quizzes[i];
+async function deleteQuizHandler(quizIds, userId, next) {
+	const deleted_quizzes = [];
+	for (let i = 0; i < quizIds.length; i++) {
+		const quizId = quizIds[i];
 		const quiz = await Quiz.findById(quizId);
 		if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${quizId}`, 404));
-		if (quiz.user.toString() !== req.user._id.toString())
+		if (quiz.user.toString() !== userId.toString())
 			return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
 		if (quiz.image && (!quiz.image.match(/^(http|data:)/) && quiz.image !== 'none.png')) {
 			const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${quiz.image}`);
 			if (fs.existsSync(location)) fs.unlinkSync(location);
 		}
 		await quiz.remove();
+		deleted_quizzes.push(quiz);
 	}
-	res.status(200).json({ success: true, data: quizzes.length });
+	return deleted_quizzes;
+}
+
+exports.deleteQuizHandler = deleteQuizHandler;
+
+exports.deleteQuiz = asyncHandler(async (req, res, next) => {
+	const [ quiz ] = await deleteQuizHandler([ req.params.id ], req.user._id, next);
+	res.status(200).json({ success: true, data: quiz });
+});
+
+exports.deleteQuizzes = asyncHandler(async (req, res, next) => {
+	const quizzes = await deleteQuizHandler(req.body.data, req.user._id, next);
+	res.status(200).json({ success: true, data: quizzes });
 });
 
 // @desc: Upload a single quiz photo
