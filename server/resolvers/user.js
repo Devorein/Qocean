@@ -12,7 +12,19 @@ module.exports = {
 	Query: {
 		async getPublicUsers(parent, { pagination }, { User }) {
 			const { page, limit, sort, filter } = parsePagination(pagination);
-			const users = await User.find(JSON.parse(filter)).sort(sort).skip(page).limit(limit);
+			const users = await User.find(filter).sort(sort).skip(page).limit(limit);
+			return users;
+		},
+
+		async getPublicUsersCount(parent, { filter }, { User }) {
+			const count = await User.countDocuments(filter);
+			return count;
+		},
+
+		async getPublicUsersExceptLoggedin(parent, { pagination }, { user, User }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			const { page, limit, sort, filter } = parsePagination(pagination);
+			const users = await User.find({ ...filter, _id: { $ne: user.id } }).sort(sort).skip(page).limit(limit);
 			return users;
 		},
 
