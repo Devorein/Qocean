@@ -1,6 +1,6 @@
 module.exports = function(sort) {
 	const transformed_sort = {};
-	if (sort !== '') {
+	if (sort && sort !== '') {
 		sort.split(',').forEach((field) => {
 			const isDescending = field.startsWith('-');
 			if (isDescending) transformed_sort[field.replace('-', '')] = -1;

@@ -18,22 +18,77 @@ module.exports = gql`
 		favourite: Boolean!
 	}
 
-	# extend type Query {
-	# # "Get paginated quizzes (U)"
-	# # getPaginatedQuizzes(pagination: PaginationInput!): [OthersQuiz!]!
+	extend type Query {
+    # All mixed
+    "Get all mixed quizzes (U)"
+		getAllMixedQuizzes: [OthersQuiz!]!
 
-	# # "Get filtered quizzes count (U)"
-	# # getFilteredQuizzesCount(filter: JSON): Int!
+    "Get all mixed quizzes name and id (U)"
+		getAllMixedQuizzesName: [NameAndId!]!
 
-	# # "Get paginated quizzes excluding current logged in users"
-	# # getPaginatedOthersQuizzes(pagination: PaginationInput!): [OthersQuiz!]!
+    "Get all mixed quizzes count (U)"
+		getAllMixedQuizzesCount: Int!
 
-	# # "Get filtered quizzes count excluding current logged in users"
-	# # getFilteredOthersQuizzesCount(filter:JSON): Int!
+    # All Others
+    "Get all other quizzes"
+		getAllOthersQuizzes: [OthersQuiz!]!
 
-	# # "Get all quizzes name"
-	# # getAllQuizzesName: [NameAndId!]!
+    "Get all other quizzes name and id"
+		getAllOthersQuizzesName: [NameAndId!]!
 
-	# # "Get all quizzes (U)"
-	# }
+    "Get all others quizzes count"
+		getAllOthersQuizzesCount: Int!
+
+    # All Self
+    "Get all self quizzes"
+		getAllSelfQuizzes: [SelfQuiz!]!
+
+    "Get all self quizzes name and id"
+		getAllSelfQuizzesName: [NameAndId!]!
+
+    "Get all self quizzes count"
+		getAllSelfQuizzesCount: Int!
+
+    # Paginated mixed
+    "Get paginated mixed quizzes (U)"
+		getPaginatedMixedQuizzes(pagination: PaginationInput!): [OthersQuiz!]!
+
+    "Get paginated mixed quizzes name and id (U)"
+		getPaginatedMixedQuizzesName(pagination: PaginationInput!): [NameAndId!]!
+
+    "Get filtered mixed quizzes count (U)"
+    getFilteredMixedQuizzesCount(filter: JSON): Int!
+
+    # Paginated others
+    "Get paginated others quizzes"
+		getPaginatedOthersQuizzes(pagination: PaginationInput!): [OthersQuiz!]!
+
+    "Get paginated others quizzes name and id"
+		getPaginatedOthersQuizzesName(pagination: PaginationInput!): [NameAndId!]!
+
+    "Get filtered others quizzes count"
+    getFilteredOthersQuizzesCount(filter: JSON): Int!
+
+    # Paginated Self
+    "Get paginated self quizzes"
+		getPaginatedSelfQuizzes(pagination: PaginationInput!): [SelfQuiz!]!
+
+    "Get paginated self quizzes name and id"
+		getPaginatedSelfQuizzesName(pagination: PaginationInput!): [NameAndId!]!
+
+    "Get filtered self quizzes count"
+    getFilteredSelfQuizzesCount(filter: JSON): Int!
+
+    # Id mixed
+    "Get mixed quiz by id (U)"
+    getMixedQuizzesById(id:ID!): OthersQuiz!
+
+    # Id others
+    "Get others quiz by id"
+    getOthersQuizzesById(id: ID!): OthersQuiz!
+
+    # Id self
+    "Get others quiz by id"
+    getSelfQuizzesById(id: ID!): SelfQuiz!
+	}
 `;

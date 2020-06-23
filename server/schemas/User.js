@@ -103,7 +103,7 @@ module.exports = gql`
 		getPaginatedMixedUsers(pagination: PaginationInput!): [OthersUser!]!
 
     "Get paginated mixed users username and id (U)"
-		getPaginatedMixedUsersUsername: [UsernameAndId!]!
+		getPaginatedMixedUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
 
     "Get filtered mixed users count (U)"
     getFilteredMixedUsersCount(filter: JSON): Int!
@@ -113,7 +113,7 @@ module.exports = gql`
 		getPaginatedOthersUsers(pagination: PaginationInput!): [OthersUser!]!
 
     "Get paginated others users username and id"
-		getPaginatedOthersUsersUsername: [UsernameAndId!]!
+		getPaginatedOthersUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
 
     "Get filtered others users count"
     getFilteredOthersUsersCount(filter: JSON): Int!

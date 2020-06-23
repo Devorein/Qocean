@@ -64,7 +64,7 @@ module.exports = {
 			return await User.find(filter).sort(sort).skip(page).limit(limit).select('username');
 		},
 
-		async getFilteredMixedUsersCount(parent, { filter }, { User }) {
+		async getFilteredMixedUsersCount(parent, { filter = '{}' }, { User }) {
 			return await User.countDocuments(JSON.parse(filter));
 		},
 
@@ -85,7 +85,7 @@ module.exports = {
 				.select('username');
 		},
 
-		async getFilteredOthersUsersCount(parent, { filter }, { user, User }) {
+		async getFilteredOthersUsersCount(parent, { filter = '{}' }, { user, User }) {
 			if (!user) throw new Error('Not authorized to access this route');
 			const count = await User.countDocuments({ ...JSON.parse(filter), _id: { $ne: user.id } });
 			return count;
