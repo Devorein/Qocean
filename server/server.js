@@ -17,12 +17,15 @@ const { merge } = require('lodash');
 
 const { typeDefs } = require('./schema.js');
 const UserSchema = require('./schemas/User.js');
-const FolderSchema = require('./schemas/Folder.js');
 const QuizSchema = require('./schemas/Quiz.js');
+const QuestionSchema = require('./schemas/Question.js');
+const FolderSchema = require('./schemas/Folder.js');
 const AuthSchema = require('./schemas/Auth.js');
 const { resolvers } = require('./resolvers.js');
 const UserResolvers = require('./resolvers/user');
 const QuizResolvers = require('./resolvers/quiz');
+const QuestionResolvers = require('./resolvers/question');
+const FolderResolvers = require('./resolvers/folder');
 const AuthResolvers = require('./resolvers/auth');
 const UserModel = require('./models/User');
 const QuizModel = require('./models/Quiz');
@@ -108,8 +111,8 @@ GRAPHQL.use(errorHandler);
 
 const GRAPHQL_SERVER = new ApolloServer({
 	schema: makeExecutableSchema({
-		typeDefs: [ typeDefs, AuthSchema, UserSchema, QuizSchema, FolderSchema ],
-		resolvers: merge(resolvers, AuthResolvers, UserResolvers, QuizResolvers),
+		typeDefs: [ typeDefs, AuthSchema, UserSchema, QuizSchema, QuestionSchema, FolderSchema ],
+		resolvers: merge(resolvers, AuthResolvers, UserResolvers, QuizResolvers, QuestionResolvers, FolderResolvers),
 		resolverValidationOptions: {
 			requireResolversForResolveType: false
 		}
