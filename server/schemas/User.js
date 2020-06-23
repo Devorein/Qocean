@@ -76,6 +76,12 @@ module.exports = gql`
     "Get paginated public users"
 		getPublicUsers(pagination: PaginationInput!): [PublicUser!]!
 
+    "Get filtered public users count"
+    getPublicUsersCount(filter: JSON): Int!
+
+    "Get paginated public user excluding current logged in user"
+    getPublicUsersExceptLoggedin(pagination: PaginationInput!): [PublicUser!]!
+
     "Get all public users username"
 		getAllPublicUsersUsername: [UserNameAndId!]!
 
