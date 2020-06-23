@@ -15,7 +15,7 @@ module.exports = gql`
     folders: [Folder!]!
 	}
 
-	type PublicUser implements User {
+	type OthersUser implements User {
 		id: ID!
 		email: String!
 		username: String!
@@ -28,7 +28,7 @@ module.exports = gql`
     folders: [Folder!]!
 	}
 
-  type PrivateUser implements User{
+  type SelfUser implements User{
     id: ID!
 		email: String!
 		username: String!
@@ -39,11 +39,6 @@ module.exports = gql`
     total_folders: Int!
     total_environments: Int!
     folders: [Folder!]!
-  }
-
-  type UserNameAndId {
-    username: String!
-    id: ID!
   }
 
   type TagOutput{
@@ -73,45 +68,79 @@ module.exports = gql`
   }
 
 	extend type Query {
-    "Get paginated public users"
-		getPublicUsers(pagination: PaginationInput!): [PublicUser!]!
+    # All mixed
+    "Get all mixed users (U)"
+		getAllMixedUsers: [OthersUser!]!
 
-    "Get filtered public users count"
-    getPublicUsersCount(filter: JSON): Int!
+    "Get all mixed users username and id (U)"
+		getAllMixedUsersUsername: [UsernameAndId!]!
 
-    "Get paginated public user excluding current logged in user"
-    getPublicUsersExceptLoggedin(pagination: PaginationInput!): [PublicUser!]!
+    "Get all mixed users tags (U)"
+    getAllMixedUsersTags(config:TagConfigInput): TagOutput!
 
-    "Get all public users username"
-		getAllPublicUsersUsername: [UserNameAndId!]!
+    "Get all mixed users count (U)"
+		getAllMixedUsersCount: Int!
 
-    "Get all public users"
-		getAllPublicUsers: [PublicUser!]!
+    # All others
+    "Get all other users"
+		getAllOthersUsers: [OthersUser!]!
 
-    "Get public user by id"
-    getPublicUserById(id: ID!): PublicUser!
+    "Get all other users username and id"
+		getAllOthersUsersUsername: [UsernameAndId!]!
 
-    "Get the current logged in User"
-    getCurrentUser: PrivateUser!
+    "Get all other users tags"
+    getAllOthersUsersTags(config: TagConfigInput): TagOutput!
 
-    "Get the tags of a specific user"
-    getUserTags(config: TagConfigInput,userId:ID!): TagOutput!
+    "Get all others users count"
+		getAllOthersUsersCount: Int!
 
-    "Get my tags"
-    getMyTags(config: TagConfigInput): TagOutput!
+    # All self
+    "Get all self user tags"
+    getAllSelfUsersTags(config: TagConfigInput): TagOutput!
 
-    "Get all tags"
-    getAllTags: [String!]!
+    # Paginated mixed
+    "Get paginated mixed users (U)"
+		getPaginatedMixedUsers(pagination: PaginationInput!): [OthersUser!]!
+
+    "Get paginated mixed users username and id (U)"
+		getPaginatedMixedUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
+
+    "Get filtered mixed users count (U)"
+    getFilteredMixedUsersCount(filter: JSON): Int!
+
+    # Paginated others
+    "Get paginated others users"
+		getPaginatedOthersUsers(pagination: PaginationInput!): [OthersUser!]!
+
+    "Get paginated others users username and id"
+		getPaginatedOthersUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
+
+    "Get filtered others users count"
+    getFilteredOthersUsersCount(filter: JSON): Int!
+
+    # Id mixed
+    "Get mixed user by id (U)"
+    getMixedUsersById(id:ID!): OthersUser!
+
+    # Id others
+    "Get others users by id"
+    getOthersUsersById(id: ID!): OthersUser!
+
+    "Get others users by id tags"
+    getOthersUsersByIdTags(id:ID!,config:TagConfigInput): TagOutput! 
+
+    "Get self User"
+    getSelfUser: SelfUser!
 	}
 
   extend type Mutation{
     "Update user Details"
-    updateUserDetails(data: UpdateUserDetailsInput!): PrivateUser!
+    updateUserDetails(data: UpdateUserDetailsInput!): SelfUser!
 
     "Update user password"
     updateUserPassword(data:updateUserPasswordInput!): AuthPayload!
 
     "Delete user"
-    deleteUser: PrivateUser!
+    deleteUser: SelfUser!
   }
 `;
