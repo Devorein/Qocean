@@ -99,11 +99,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 	});
 });
 
-async function getUserTagsHandler(userId, config = {}, next, useUser = false) {
-	const user = useUser
-		? userId
-		: await User.findById(userId).select('_id,quizzes').populate({ path: 'quizzes', select: 'tags' });
-	if (!user) return next(new ErrorResponse(`User not found`, 404));
+async function getUsersTagsHandler(filter, config = {}) {
 	const {
 		uniqueWithoutColor = false,
 		originalWithoutColor = false,
@@ -112,7 +108,8 @@ async function getUserTagsHandler(userId, config = {}, next, useUser = false) {
 	} = config;
 
 	const tags = [];
-	user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag)));
+	const users = await User.find(filter).select('quizzes').populate({ path: 'quizzes', select: 'tags' });
+	users.forEach((user) => user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag))));
 	const noncolouredTags = tags.map((tag) => tag.split(':')[0]);
 	return {
 		uniqueWithoutColor: uniqueWithoutColor ? Array.from(new Set(noncolouredTags)) : [],
@@ -122,29 +119,18 @@ async function getUserTagsHandler(userId, config = {}, next, useUser = false) {
 	};
 }
 
-exports.getUserTagsHandler = getUserTagsHandler;
+exports.getUsersTagsHandler = getUsersTagsHandler;
 
 exports.getUserTags = asyncHandler(async (req, res, next) => {
-	const data = await getUserTagsHandler(req.params.id, req.body, next);
+	const data = await getUsersTagsHandler({ _id: req.params.id }, req.body);
 	res.status(200).json({
 		success: true,
 		data
 	});
 });
 
-async function getAllUserTagsHandler() {
-	const users = await User.find({}).select('quizzes').populate({ path: 'quizzes', select: 'tags' });
-	const tags = [];
-	users.forEach((user) => {
-		user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag.split(':')[0])));
-	});
-	return Array.from(new Set(tags));
-}
-
-exports.getAllUserTagsHandler = getAllUserTagsHandler;
-
 exports.getAllTags = asyncHandler(async (req, res, next) => {
-	const data = await getAllUserTagsHandler();
+	const data = await getUsersTagsHandler({}, req.body);
 	res.status(200).json({
 		success: true,
 		data
@@ -152,7 +138,7 @@ exports.getAllTags = asyncHandler(async (req, res, next) => {
 });
 
 exports.getMyTags = asyncHandler(async (req, res, next) => {
-	const data = await getUserTagsHandler(req.user._id, req.body, next);
+	const data = await getUsersTagsHandler({ _id: req.user._id }, req.body, next);
 	res.status(200).json({
 		success: true,
 		data
