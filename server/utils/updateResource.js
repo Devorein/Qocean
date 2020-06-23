@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 
-const Quiz = require('../models/Quiz');
-const Folder = require('../models/Folder');
-const User = require('../models/User');
-const Environment = require('../models/Environment');
-const Question = require('../models/Question');
 const ErrorResponse = require('./errorResponse');
+const { model } = require('../models/Quiz');
 
 dotenv.config({ path: path.join(path.dirname(__dirname), 'config', 'config.env') });
 
@@ -18,32 +14,20 @@ mongoose.connect(process.env.MONGO_URI, {
 	useUnifiedTopology: true
 });
 
-function decideModel(model) {
-	switch (model.toLowerCase()) {
-		case 'user':
-			return User;
-		case 'quiz':
-			return Quiz;
-		case 'question':
-			return Question;
-		case 'folder':
-			return Folder;
-		case 'environment':
-			return Environment;
-		default:
-			return User;
+module.exports = async function(Model, datas, userId, next) {
+	const updated_resources = [];
+	for (let i = 0; i < datas.length; i++) {
+		const data = datas[i];
+		const resource = await Model.findById(data.id);
+		if (!resource) return next(new ErrorResponse(`Resource not found with id of ${data.id}`, 404));
+		if (resource.user.toString() !== userId.toString())
+			return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
+		data.updated_at = Date.now();
+		delete data.id;
+		Object.entries(data).forEach(([ key, value ]) => {
+			resource[key] = value;
+		});
+		updated_resources.push(await resource.save());
 	}
-}
-
-module.exports = async function(model, id, user, next, body) {
-	const Model = decideModel(model);
-	const resource = await Model.findById(id);
-	if (!resource) return next(new ErrorResponse(`Resource not found with id of ${id}`, 404));
-	if (resource.user.toString() !== user._id.toString())
-		return next(new ErrorResponse(`User not authorized to update this quiz`, 401));
-	body.updated_at = Date.now();
-	Object.entries(body).forEach(([ key, value ]) => {
-		resource[key] = value;
-	});
-	return await resource.save();
+	return updated_resources;
 };

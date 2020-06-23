@@ -44,18 +44,14 @@ exports.createEnvironment = asyncHandler(async (req, res, next) => {
 // @route: PUT /api/v1/environments/:id
 // @access: Private
 exports.updateEnvironment = asyncHandler(async (req, res, next) => {
-	const environment = await updateResource('environment', req.params.id, req.user, next, req.body);
+	req.body.id = req.params.id;
+	const environment = await updateResource(Environment, req.body, req.user._id, next);
 	res.status(200).json({ success: true, data: environment });
 });
 
 exports.updateEnvironments = asyncHandler(async (req, res, next) => {
-	const { environments } = req.body;
-	const updated_environments = [];
-	for (let i = 0; i < environments.length; i++) {
-		const { id, body } = environments[i];
-		updated_environments.push(await updateResource('environment', id, req.user, next, body));
-	}
-	res.status(200).json({ success: true, data: updated_environments });
+	const environments = await updateResource(Environment, req.body.data, req.user._id, next);
+	res.status(200).json({ success: true, data: environments });
 });
 
 // @desc: Delete single environment

@@ -4,11 +4,19 @@ module.exports = gql`
 	interface Quiz {
 		id: ID!
 		name: String!
+    subject: String!
+    tags: [String]!
+    image: String
+    source: String
 	}
 
 	type OthersQuiz implements Quiz {
 		id: ID!
 		name: String!
+    tags: [String]!
+    subject: String!
+    image: String
+    source: String
 	}
 
 	type SelfQuiz implements Quiz {
@@ -16,7 +24,28 @@ module.exports = gql`
 		name: String!
 		public: Boolean!
 		favourite: Boolean!
+    subject: String!
+    tags: [String]!
+    image: String
+    source: String
 	}
+
+  input CreateQuizInput{
+    name: String!
+    tags: [String]!
+    subject: String!
+    image: String
+    source: String
+  }
+
+  input UpdateQuizInput{
+    id: ID!
+    name: String
+    tags: [String]
+    subject: String
+    image: String
+    source: String
+  }
 
 	extend type Query {
     # All mixed
@@ -91,4 +120,21 @@ module.exports = gql`
     "Get others quiz by id"
     getSelfQuizzesById(id: ID!): SelfQuiz!
 	}
+
+  extend type Mutation{
+    "Create a new quiz"
+    createQuiz(data: CreateQuizInput!): SelfQuiz!
+
+    "Update single quiz"
+    updateQuiz(data: UpdateQuizInput!): SelfQuiz!
+
+    "Update multiple quizzes"
+    updateQuizzes(data: [UpdateQuizInput!]): [SelfQuiz!]!
+
+    "Delete single quiz"
+    deleteQuiz(id: ID!): SelfQuiz!
+
+    "Delete multiple quizzes"
+    deleteQuizzes(ids: [ID!]): [SelfQuiz!]!
+  }
 `;
