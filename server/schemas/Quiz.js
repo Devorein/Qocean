@@ -54,6 +54,8 @@ module.exports = gql`
     watchers: [OthersUser]!
     questions:[SelfQuestion]!
     folders: [SelfFolder]!
+    public: Boolean!
+    favourite: Boolean!
 	}
 
   type QuestionStats{
@@ -68,7 +70,6 @@ module.exports = gql`
     questions: [QuestionStats!]!
   }
 
-  
   input CreateQuizInput{
     name: String!
     tags: [String]!
