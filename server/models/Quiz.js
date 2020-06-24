@@ -33,7 +33,10 @@ const QuizSchema = extendSchema(
 			default: 'Beginner',
 			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
 		},
-		tags: [ String ],
+		tags: {
+			type: [ String ],
+			default: []
+		},
 		subject: {
 			type: String,
 			required: [ true, 'Please provide a subject' ]

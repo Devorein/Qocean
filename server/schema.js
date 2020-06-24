@@ -1,9 +1,20 @@
 const { gql } = require('apollo-server-express');
 
 exports.typeDefs = gql`
-	scalar JSON
+	enum QuestionTypeEnum {
+		FIB
+		Snippet
+		MCQ
+		MS
+		FC
+		TF
+	}
 
-	scalar JSONObject
+	enum QuestionDifficultyEnum {
+		Beginner
+		Intermediate
+		Advanced
+	}
 
 	type Query {
 		_empty: Boolean

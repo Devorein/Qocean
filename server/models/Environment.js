@@ -127,19 +127,27 @@ Array(5).fill(0).forEach((_, i) => {
 });
 
 [ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
-	envSchema[`default_${page}_ipp`] = {
+	const target = {};
+	envSchema[`${page}_page`] = target;
+
+	target[`default_ipp`] = {
 		type: Number,
 		default: 15
 	};
-	envSchema[`default_${page}_view`] = {
+
+	target[`default_view`] = {
 		type: String,
 		default: 'List'
 	};
 
 	if (page !== 'play') {
-		envSchema[`default_${page}_landing`] = {
+		target[`default_landing`] = {
 			type: String,
 			default: 'Quiz'
+		};
+		target[`default_layout`] = {
+			type: String,
+			default: 'Left'
 		};
 	}
 });

@@ -4,18 +4,43 @@ module.exports = gql`
 	interface Question {
 		id: ID!
 		name: String!
+    type: QuestionTypeEnum!
+    format: String!
+    weight: PositiveInt!
+    add_to_score: Boolean!
+    time_allocated: PositiveInt!
+    difficulty: QuestionDifficultyEnum!
+    image: String!
 	}
 
 	type OthersQuestion implements Question {
 		id: ID!
 		name: String!
+    type: QuestionTypeEnum!
+    format: String!
+    weight: PositiveInt!
+    add_to_score: Boolean!
+    time_allocated: PositiveInt!
+    difficulty: QuestionDifficultyEnum!
+    image: String!
+    quiz: [OthersQuiz!]!
 	}
 
 	type SelfQuestion implements Question {
 		id: ID!
 		name: String!
+    type: QuestionTypeEnum!
+    format: String!
+    weight: PositiveInt!
+    add_to_score: Boolean!
+    time_allocated: PositiveInt!
+    difficulty: QuestionDifficultyEnum!
+    image: String!
 		public: Boolean!
 		favourite: Boolean!
+    answers: [[String]]
+    options: [String]
+    quiz: [SelfQuiz!]!
 	}
 
   type QuestionAnswersOutput{
@@ -30,29 +55,35 @@ module.exports = gql`
 
   input CreateQuestionInput{
     name: String!
-    type: String!
+    type: QuestionTypeEnum!
     format: String
-    weight: Int
+    weight: PositiveInt
     quiz: ID!
     add_to_score: Boolean
-    time_allocated: Int
+    time_allocated: PositiveInt
+    difficulty: QuestionDifficultyEnum
     image: String
-    answers: [[String!]!]!
-    options: [String]
+    answers: [[String]]!
+    options: [String!]!
+    public: Boolean
+    favourite: Boolean
   }
 
   input UpdateQuestionInput{
     id: ID!
     name: String
-    type: String
+    type: QuestionTypeEnum
     format: String
-    weight: Int
+    weight: PositiveInt
     quiz: ID
     add_to_score: Boolean
-    time_allocated: Int
+    time_allocated: PositiveInt
+    difficulty: QuestionDifficultyEnum
     image: String
     answers: [[String]]
     options: [String]
+    public: Boolean
+    favourite: Boolean
   }
 
   input IdAnswer{
@@ -69,7 +100,7 @@ module.exports = gql`
 		getAllMixedQuestionsName: [NameAndId!]!
 
     "Get all mixed questions count (U)"
-		getAllMixedQuestionsCount: Int!
+		getAllMixedQuestionsCount: NonNegativeInt!
 
     # All Others
     "Get all other questions"
@@ -79,7 +110,7 @@ module.exports = gql`
 		getAllOthersQuestionsName: [NameAndId!]!
 
     "Get all others questions count"
-		getAllOthersQuestionsCount: Int!
+		getAllOthersQuestionsCount: NonNegativeInt!
 
     # All Self
     "Get all self questions"
@@ -89,7 +120,7 @@ module.exports = gql`
 		getAllSelfQuestionsName: [NameAndId!]!
 
     "Get all self questions count"
-		getAllSelfQuestionsCount: Int!
+		getAllSelfQuestionsCount: NonNegativeInt!
 
     # Paginated mixed
     "Get paginated mixed questions (U)"
@@ -99,7 +130,7 @@ module.exports = gql`
 		getPaginatedMixedQuestionsName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered mixed questions count (U)"
-    getFilteredMixedQuestionsCount(filter: JSON): Int!
+    getFilteredMixedQuestionsCount(filter: JSON): NonNegativeInt!
 
     # Paginated others
     "Get paginated others questions"
@@ -109,7 +140,7 @@ module.exports = gql`
 		getPaginatedOthersQuestionsName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered others questions count"
-    getFilteredOthersQuestionsCount(filter: JSON): Int!
+    getFilteredOthersQuestionsCount(filter: JSON): NonNegativeInt!
 
     # Paginated Self
     "Get paginated self questions"
@@ -119,7 +150,7 @@ module.exports = gql`
 		getPaginatedSelfQuestionsName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered self questions count"
-    getFilteredSelfQuestionsCount(filter: JSON): Int!
+    getFilteredSelfQuestionsCount(filter: JSON): NonNegativeInt!
 
     # Id mixed
     "Get mixed question by id (U)"

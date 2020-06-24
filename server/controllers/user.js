@@ -11,12 +11,11 @@ const path = require('path');
 // @access   Private
 
 async function updateUserDetailsHandler(body, userId) {
-	const updateFields = {
-		name: body.name,
-		email: body.email,
-		username: body.username,
-		image: body.image
-	};
+	const updateFields = {};
+	Object.keys(body).forEach((key) => {
+		updateFields[key] = body[key];
+	});
+	console.log();
 	return await User.findByIdAndUpdate(userId, updateFields, {
 		new: true,
 		runValidators: true

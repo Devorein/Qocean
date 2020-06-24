@@ -14,6 +14,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const { makeExecutableSchema } = require('graphql-tools');
 const { ApolloServer } = require('apollo-server-express');
 const { merge } = require('lodash');
+const { typeDefs: ExternalTypeDefs, resolvers: ExternalResolvers } = require('graphql-scalars');
 
 const { typeDefs } = require('./schema.js');
 const AuthSchema = require('./schemas/Auth.js');
@@ -111,10 +112,18 @@ GRAPHQL.use(validate);
 GRAPHQL.use(hpp());
 GRAPHQL.use(mongoSanitize());
 GRAPHQL.use(errorHandler);
-
 const GRAPHQL_SERVER = new ApolloServer({
 	schema: makeExecutableSchema({
-		typeDefs: [ typeDefs, AuthSchema, UserSchema, QuizSchema, QuestionSchema, FolderSchema, EnvironmentSchema ],
+		typeDefs: [
+			...ExternalTypeDefs,
+			typeDefs,
+			AuthSchema,
+			UserSchema,
+			QuizSchema,
+			QuestionSchema,
+			FolderSchema,
+			EnvironmentSchema
+		],
 		resolvers: merge(
 			resolvers,
 			AuthResolvers,
@@ -122,7 +131,8 @@ const GRAPHQL_SERVER = new ApolloServer({
 			QuizResolvers,
 			QuestionResolvers,
 			FolderResolvers,
-			EnvironmentResolvers
+			EnvironmentResolvers,
+			ExternalResolvers
 		),
 		resolverValidationOptions: {
 			requireResolversForResolveType: false
