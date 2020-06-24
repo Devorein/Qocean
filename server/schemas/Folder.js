@@ -4,19 +4,37 @@ module.exports = gql`
 	interface Folder {
 		id: ID!
 		name: String!
+    icon: String
 	}
 
 	type OthersFolder implements Folder {
 		id: ID!
 		name: String!
+    icon: String
+    quizzes: [OthersQuiz!]!
 	}
 
 	type SelfFolder implements Folder {
 		id: ID!
 		name: String!
+    icon: String
 		public: Boolean!
 		favourite: Boolean!
+    quizzes: [SelfQuiz!]!
 	}
+
+  input CreateFolderInput{
+    name: String!
+    icon: String
+    quizzes:[ID]
+  }
+
+  input UpdateFolderInput{
+    id: ID!
+    name: String
+    icon: String
+    quizzes:[ID]
+  }
 
 	extend type Query {
     # All mixed
@@ -91,4 +109,27 @@ module.exports = gql`
     "Get others folder by id"
     getSelfFoldersById(id: ID!): SelfFolder!
 	}
+
+  extend type Mutation{
+    "Create a new folder"
+    createFolder(data: CreateFolderInput!): SelfFolder!
+
+    "Update single folder"
+    updateFolder(data: UpdateFolderInput!): SelfFolder!
+
+    "Update multiple folders"
+    updateFolders(data: [UpdateFolderInput!]): [SelfFolder!]!
+
+    "Update folder ratings"
+    updateFolderRatings(data:RatingsInput!): [RatingsOutput!]!
+
+    "Update folder watch"
+    updateFolderWatch(ids: [ID!]!): Int!
+
+    "Delete single folder"
+    deleteFolder(id: ID!): SelfFolder!
+
+    "Delete multiple folders"
+    deleteFolders(ids: [ID!]): [SelfFolder!]!
+  }
 `;
