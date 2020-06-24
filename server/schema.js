@@ -5,6 +5,21 @@ exports.typeDefs = gql`
 
 	scalar JSONObject
 
+	enum QuestionTypeEnum {
+		FIB
+		Snippet
+		MCQ
+		MS
+		FC
+		TF
+	}
+
+	enum QuestionDifficultyEnum {
+		Beginner
+		Intermediate
+		Advanced
+	}
+
 	type Query {
 		_empty: Boolean
 	}

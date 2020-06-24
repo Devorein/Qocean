@@ -49,9 +49,9 @@ module.exports = gql`
   }
 
   input UpdateUserDetailsInput{
-    name: String!
-    email: String!
-    username: String!
+    name: String
+    email: String
+    username: String
     image: String
   }
 
