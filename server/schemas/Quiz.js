@@ -8,33 +8,59 @@ module.exports = gql`
     tags: [String]!
     image: String
     source: URL
+    ratings: NonNegativeInt!
+    raters: NonNegativeInt!
+    average_quiz_time: NonNegativeInt!
+    average_difficulty: QuestionDifficultyEnum!
+    total_questions: NonNegativeInt!
+    total_folders: NonNegativeInt!
+    total_played: NonNegativeInt!
+    watchers: [OthersUser]!
 	}
 
 	type OthersQuiz implements Quiz {
 		id: ID!
 		name: String!
-    tags: [String]!
     subject: String!
+    tags: [String]!
     image: String
     source: URL
+    ratings: NonNegativeInt!
+    raters: NonNegativeInt!
+    average_quiz_time: NonNegativeInt!
+    average_difficulty: QuestionDifficultyEnum!
+    total_questions: NonNegativeInt!
+    total_folders: NonNegativeInt!
+    total_played: NonNegativeInt!
+    watchers: [OthersUser]!
+    questions:[OthersQuestion]!
+    folders: [OthersFolder]!
 	}
 
 	type SelfQuiz implements Quiz {
 		id: ID!
 		name: String!
-		public: Boolean!
-		favourite: Boolean!
     subject: String!
     tags: [String]!
     image: String
     source: URL
+    ratings: NonNegativeInt!
+    raters: NonNegativeInt!
+    average_quiz_time: NonNegativeInt!
+    average_difficulty: QuestionDifficultyEnum!
+    total_questions: NonNegativeInt!
+    total_folders: NonNegativeInt!
+    total_played: NonNegativeInt!
+    watchers: [OthersUser]!
+    questions:[SelfQuestion]!
+    folders: [SelfFolder]!
 	}
 
   type QuestionStats{
     name: String!
-    type: String!
-    time_allocated: Int!
-    difficulty: String!
+    type: QuestionTypeEnum
+    time_allocated: NonNegativeInt!
+    difficulty: QuestionDifficultyEnum!
   }
 
   type QuizQuestionStats{
@@ -69,7 +95,7 @@ module.exports = gql`
 		getAllMixedQuizzesName: [NameAndId!]!
 
     "Get all mixed quizzes count (U)"
-		getAllMixedQuizzesCount: Int!
+		getAllMixedQuizzesCount: NonNegativeInt!
 
     # All Others
     "Get all other quizzes"
@@ -79,7 +105,7 @@ module.exports = gql`
 		getAllOthersQuizzesName: [NameAndId!]!
 
     "Get all others quizzes count"
-		getAllOthersQuizzesCount: Int!
+		getAllOthersQuizzesCount: NonNegativeInt!
 
     # All Self
     "Get all self quizzes"
@@ -89,7 +115,7 @@ module.exports = gql`
 		getAllSelfQuizzesName: [NameAndId!]!
 
     "Get all self quizzes count"
-		getAllSelfQuizzesCount: Int!
+		getAllSelfQuizzesCount: NonNegativeInt!
 
     "Get all self quizzes questions stats"
     getAllSelfQuizzesQuestionsStats: [QuizQuestionStats!]
@@ -102,7 +128,7 @@ module.exports = gql`
 		getPaginatedMixedQuizzesName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered mixed quizzes count (U)"
-    getFilteredMixedQuizzesCount(filter: JSON): Int!
+    getFilteredMixedQuizzesCount(filter: JSON): NonNegativeInt!
 
     # Paginated others
     "Get paginated others quizzes"
@@ -112,7 +138,7 @@ module.exports = gql`
 		getPaginatedOthersQuizzesName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered others quizzes count"
-    getFilteredOthersQuizzesCount(filter: JSON): Int!
+    getFilteredOthersQuizzesCount(filter: JSON): NonNegativeInt!
 
     # Paginated Self
     "Get paginated self quizzes"
@@ -122,7 +148,7 @@ module.exports = gql`
 		getPaginatedSelfQuizzesName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered self quizzes count"
-    getFilteredSelfQuizzesCount(filter: JSON): Int!
+    getFilteredSelfQuizzesCount(filter: JSON): NonNegativeInt!
 
     # Id mixed
     "Get mixed quiz by id (U)"
@@ -148,13 +174,13 @@ module.exports = gql`
     updateQuizzes(data: [UpdateQuizInput!]): [SelfQuiz!]!
 
     "Update quiz played times"
-    updateQuizPlayedTimes(ids:[ID!]!): Int!
+    updateQuizPlayedTimes(ids:[ID!]!): NonNegativeInt!
 
     "Update quiz ratings"
     updateQuizRatings(data:[RatingsInput!]!): [RatingsOutput!]!
 
     "Update quiz watch"
-    updateQuizWatch(ids: [ID!]!): Int!
+    updateQuizWatch(ids: [ID!]!): NonNegativeInt!
 
     "Delete single quiz"
     deleteQuiz(id: ID!): SelfQuiz!
