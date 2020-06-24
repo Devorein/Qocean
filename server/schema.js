@@ -23,11 +23,23 @@ exports.typeDefs = gql`
 		id: ID!
 	}
 
+	type RatingsOutput {
+		id: ID!
+		prevRatings: Float!
+		newRatings: Float!
+		raters: Int!
+	}
+
 	input PaginationInput {
 		page: Int!
 		limit: Int!
 		sort: String
 		filter: JSON
+	}
+
+	input RatingsInput {
+		id: ID!
+		ratings: Float!
 	}
 
 	type Status {

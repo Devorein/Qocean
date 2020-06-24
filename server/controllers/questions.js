@@ -6,44 +6,53 @@ const fs = require('fs');
 const path = require('path');
 const updateResource = require('../utils/updateResource');
 
+async function sendAnswerHandler(ids, next) {
+	const all_answers = [];
+	for (let i = 0; i < ids.length; i++) {
+		const id = ids[i];
+		const { answers } = await Question.findOne({ _id: id }).select('+answers');
+		if (!answers) return next(new ErrorResponse(`Question doesnt exist`, 400));
+		all_answers.push({ id, answers });
+	}
+	return all_answers;
+}
+
+exports.sendAnswerHandler = sendAnswerHandler;
 exports.sendAnswer = asyncHandler(async (req, res, next) => {
-	const question = await Question.findOne({ _id: req.params.id, user: req.user._id }).select('+answers');
-	if (!question) return next(new ErrorResponse(`Question doesnt exist`, 400));
-	res.status(200).json({ success: true, data: question.answers });
+	const [ answers ] = await sendAnswerHandler([ req.params.id ]);
+	res.status(200).json({ success: true, data: answers });
 });
 
 exports.sendAnswers = asyncHandler(async (req, res, next) => {
-	const { questions } = req.body;
-	const responses = [];
-	for (let i = 0; i < questions.length; i++) {
-		const questionId = questions[i];
-		const { _id, answers } = await Question.findById(questionId).select('+answers');
-		responses.push({ _id, answers });
-	}
-	res.status(200).json({ success: true, data: responses });
+	const answers = await sendAnswerHandler(req.body.ids, next);
+	res.status(200).json({ success: true, data: answers });
 });
 
+async function validateQuestionHandler(ids, next) {
+	const responses = { correct: [], incorrect: [] };
+	for (let i = 0; i < ids.length; i++) {
+		const { id, answers } = ids[i];
+		const question = await Question.findById(id).select('+answers');
+		if (!answers) return next(new ErrorResponse(`Provide the answers`, 400));
+		if (question) {
+			let [ isCorrect ] = await question.validateAnswer(answers);
+			if (isCorrect) responses.correct.push(id);
+			else responses.incorrect.push(id);
+		} else return next(new ErrorResponse(`Question doesn't exist`, 404));
+	}
+	return responses;
+}
+
+exports.validateQuestionHandler = validateQuestionHandler;
+
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
-	const question = await Question.findById(req.body.id).select('+answers');
-	if (!question) return next(new ErrorResponse(`Question doesn't exist`, 404));
-	if (!req.body.answers) return next(new ErrorResponse(`Provide the answers`, 400));
-	const [ isCorrect, message ] = await question.validateAnswer(req.body.answers);
-	res.status(200).json({ success: true, isCorrect, message });
+	const [ response ] = await validateQuestionHandler([ req.body.id ], next);
+	res.status(200).json({ success: true, data: response });
 });
 
 exports.validateQuestions = asyncHandler(async (req, res, next) => {
-	const { questions } = req.body;
-	const response = { correct: [], incorrect: [] };
-	for (let i = 0; i < questions.length; i++) {
-		const { id, answers } = questions[i];
-		const question = await Question.findById(id).select('+answers');
-		if (question) {
-			let [ isCorrect ] = await question.validateAnswer(answers);
-			if (isCorrect) response.correct.push(id);
-			else response.incorrect.push(id);
-		}
-	}
-	res.status(200).json({ success: true, data: response });
+	const responses = await validateQuestionHandler(req.body.ids, next);
+	res.status(200).json({ success: true, data: responses });
 });
 
 // @desc: Create a question
@@ -74,33 +83,27 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // @route: PUT /api/v1/questions/:id
 // @access: Private
 
-exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
-	const page = parseInt(req.body.page) || 1;
-	const limit = parseInt(req.body.limit) || 10;
-	const startIndex = (page - 1) * limit;
-	const endIndex = page * limit;
-
-	const sort = {};
-	if (req.body.sort) {
-		req.body.sort.split(',').forEach((field) => {
-			const isDescending = field.startsWith('-');
-			if (isDescending) sort[field.replace('-', '')] = -1;
-			else sort[field] = 1;
-		});
-	} else {
+async function getOthersQuestionsHandler({ filters = {}, sort, limit, page, onlyCount = false, project }) {
+	const additional = [];
+	if (!sort) {
+		sort = {};
 		sort.created_at = -1;
 		sort.name = -1;
 	}
+	if (!project) project = { public: 0, favourite: 0, answers: 0 };
+	else project.quiz = 1;
 
-	const questions = await Question.aggregate([
+	if (page !== undefined && limit !== null) additional.push({ $skip: page });
+	if (limit !== undefined && limit !== null) additional.push({ $limit: limit });
+
+	const pipeline = [
 		{
 			$match: {
-				...req.body.filters,
-				user: { $ne: req.user._id },
+				...filters,
 				public: true
 			}
 		},
-		{ $project: { public: 0, favourite: 0, answers: 0 } },
+		{ $project: project },
 		{
 			$lookup: {
 				from: 'quizzes',
@@ -122,12 +125,45 @@ exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
 				as: 'quiz'
 			}
 		},
+		{ $set: { id: '$_id' } },
 		{ $unwind: '$quiz' },
 		{
 			$sort: sort
-		}
-	]);
+		},
+		...additional
+	];
+
+	const questions = await Question.aggregate(pipeline);
 	const total = questions.length;
+	if (!onlyCount) return { total, data: questions };
+	else return total;
+}
+
+exports.getOthersQuestionsHandler = getOthersQuestionsHandler;
+exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
+	const page = parseInt(req.body.page) || 1;
+	const limit = parseInt(req.body.limit) || 10;
+	const startIndex = (page - 1) * limit;
+	const endIndex = page * limit;
+	const sort = {};
+	if (req.body.sort) {
+		req.body.sort.split(',').forEach((field) => {
+			const isDescending = field.startsWith('-');
+			if (isDescending) sort[field.replace('-', '')] = -1;
+			else sort[field] = 1;
+		});
+	} else {
+		sort.created_at = -1;
+		sort.name = -1;
+	}
+
+	const { questions, total } = getOthersQuestionsHandler({
+		filters: { ...req.body.filters, user: { $ne: req.user._id } },
+		sort,
+		page: startIndex,
+		limit
+	});
+
 	const pagination = {};
 	if (endIndex < total) {
 		pagination.next = {

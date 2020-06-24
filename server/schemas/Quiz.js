@@ -42,13 +42,7 @@ module.exports = gql`
     questions: [QuestionStats!]!
   }
 
-  type QuizRatingsOutput{
-    id: ID!
-    prevRatings: Float!
-    newRatings: Float!
-    raters: Int!
-  }
-
+  
   input CreateQuizInput{
     name: String!
     tags: [String]!
@@ -64,11 +58,6 @@ module.exports = gql`
     subject: String
     image: String
     source: String
-  }
-
-  input UpdateQuizRatingsInput{
-    quizzes:[ID!]!
-    ratings: [Float!]!
   }
 
 	extend type Query {
@@ -162,7 +151,7 @@ module.exports = gql`
     updateQuizPlayedTimes(ids:[ID!]!): Int!
 
     "Update quiz ratings"
-    updateQuizRatings(data:UpdateQuizRatingsInput!): [QuizRatingsOutput!]!
+    updateQuizRatings(data:[RatingsInput!]!): [RatingsOutput!]!
 
     "Update quiz watch"
     updateQuizWatch(ids: [ID!]!): Int!

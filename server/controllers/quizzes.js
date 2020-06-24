@@ -1,12 +1,13 @@
-const { flatten } = require('lodash');
 const fs = require('fs');
 const path = require('path');
 
 const Quiz = require('../models/Quiz');
+const Question = require('../models/Question');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
+const addRatings = require('../utils/addRatings');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -59,6 +60,12 @@ async function deleteQuizHandler(quizIds, userId, next) {
 			const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${quiz.image}`);
 			if (fs.existsSync(location)) fs.unlinkSync(location);
 		}
+		const { questions } = quiz;
+		for (let i = 0; i < questions.length; i++) {
+			const questionId = questions[i];
+			const question = await Question.findById(questionId);
+			await question.remove();
+		}
 		await quiz.remove();
 		deleted_quizzes.push(quiz);
 	}
@@ -107,48 +114,9 @@ exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, total_updated });
 });
 
-async function updateQuizRatingsHandler(data, userId, next) {
-	let { quizzes, ratings } = data;
-	ratings = ratings.map((rating) => parseFloat(rating));
-	const safe_ratings = ratings.every((rating) => rating >= 0 && rating <= 10);
-	if (!safe_ratings) return next(new ErrorResponse(`You cannot have a rating more than 10 or less than 0`, 400));
-	const ratingsData = [];
-	if (ratings.length !== quizzes.length) {
-		const lastRatings = ratings[ratings.length - 1];
-		for (let i = 0; i < quizzes.length - ratings.length; i++) ratings.push(lastRatings);
-	}
-
-	if (quizzes) {
-		for (let i = 0; i < quizzes.length; i++) {
-			const quizId = quizzes[i];
-			const quiz = await Quiz.findById(quizId).select('user ratings raters');
-			const prevRatings = parseFloat(quiz.ratings);
-			let newRatings = prevRatings;
-			let raters = parseInt(quiz.raters);
-			if (quiz.user.toString() !== userId.toString()) {
-				raters++;
-				quiz.raters = raters;
-				newRatings = parseFloat(((prevRatings + ratings[i]) / (raters !== 1 ? 2 : 1)).toFixed(2));
-				quiz.ratings = newRatings;
-				await quiz.save();
-			}
-
-			ratingsData.push({
-				id: quiz._id,
-				prevRatings,
-				newRatings,
-				raters
-			});
-		}
-	}
-	return ratingsData;
-}
-
-exports.updateQuizRatingsHandler = updateQuizRatingsHandler;
-
 exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
-	const ratingsData = await updateQuizRatingsHandler(req.body, req.user._id, next);
-	res.status(200).json({ success: true, total_rated: ratingsData });
+	const ratingsData = await addRatings(Quiz, req.body.data, req.user._id, next);
+	res.status(200).json({ success: true, ratingsData });
 });
 
 exports.playPageQuiz = asyncHandler(async (req, res, next) => {
