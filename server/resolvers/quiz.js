@@ -1,17 +1,13 @@
 const parsePagination = require('../utils/parsePagination');
-const updateQuiz = require('../utils/updateResource');
 const {
 	createQuizHandler,
 	deleteQuizHandler,
 	quizPhotoUpload,
-	updatePlayedTimes,
-	updateQuizRatings,
-	watchQuizzes,
-	updateQuizzes,
-	getAllTags,
-	playPageQuiz
+	updatePlayedTimesHandler,
+	updateQuizRatingsHandler
 } = require('../controllers/quizzes');
 const updateResource = require('../utils/updateResource');
+const watchAction = require('../utils/watchAction');
 
 module.exports = {
 	Query: {
@@ -53,6 +49,12 @@ module.exports = {
 		async getAllSelfQuizzesCount(parent, args, { user, Quiz }) {
 			if (!user) throw new Error('Not authorized to access this route');
 			return await Quiz.countDocuments({ user: user.id });
+		},
+		async getAllSelfQuizzesQuestionsStats(parent, args, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await Quiz.find({ user: user.id })
+				.populate({ path: 'questions', select: 'difficulty time_allocated name type' })
+				.select('name questions');
 		},
 
 		// ? Paginated Mixed
@@ -149,11 +151,27 @@ module.exports = {
 			});
 			return updated_quiz;
 		},
+
 		async updateQuizzes(parent, { data }, { user, Quiz }) {
 			if (!user) throw new Error('Not authorized to access this route');
 			return await updateResource(Quiz, data, user.id, (err) => {
 				throw err;
 			});
+		},
+		async updateQuizPlayedTimes(parent, { ids }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await updatePlayedTimesHandler(ids, user.id);
+		},
+		async updateQuizRatings(parent, { data }, { user, Quiz }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await updateQuizRatingsHandler(data, user.id, (err) => {
+				throw err;
+			});
+		},
+		async updateQuizWatch(parent, { ids }, { user, User }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			user = await User.findById(user.id);
+			return watchAction('quizzes', { quizzes: ids }, user);
 		},
 		async deleteQuiz(parent, { id }, { user, Quiz }) {
 			if (!user) throw new Error('Not authorized to access this route');

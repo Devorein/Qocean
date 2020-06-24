@@ -18,6 +18,33 @@ module.exports = gql`
 		favourite: Boolean!
 	}
 
+  input CreateQuestionInput{
+    name: String!
+    type: String!
+    format: String
+    weight: Int
+    quiz: ID!
+    add_to_score: Boolean
+    time_allocated: Int
+    image: String
+    answers: [[String!]!]!
+    options: [String]
+  }
+
+  input UpdateQuestionInput{
+    id: ID!
+    name: String
+    type: String
+    format: String
+    weight: Int
+    quiz: ID
+    add_to_score: Boolean
+    time_allocated: Int
+    image: String
+    answers: [[String]]
+    options: [String]
+  }
+
 	extend type Query {
     # All mixed
     "Get all mixed questions (U)"
@@ -91,4 +118,21 @@ module.exports = gql`
     "Get others question by id"
     getSelfQuestionsById(id: ID!): SelfQuestion!
 	}
+
+  extend type Mutation{
+    "Create a new question"
+    createQuestion(data: CreateQuestionInput!): SelfQuestion!
+
+    "Update single question"
+    updateQuestion(data: UpdateQuestionInput!): SelfQuestion!
+
+    "Update multiple questions"
+    updateQuestions(data: [UpdateQuestionInput!]): [SelfQuestion!]!
+
+    "Delete single question"
+    deleteQuestion(id: ID!): SelfQuestion!
+
+    "Delete multiple questions"
+    deleteQuestions(ids: [ID!]): [SelfQuestion!]!
+  }
 `;

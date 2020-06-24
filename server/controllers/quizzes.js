@@ -43,17 +43,6 @@ exports.updateQuizzes = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: quizzes });
 });
 
-exports.getAllTags = asyncHandler(async (req, res, next) => {
-	let tags = await Quiz.find(
-		{
-			$nor: [ { tags: { $exists: false } }, { tags: { $size: 0 } } ]
-		},
-		{ tags: 1, _id: 0 }
-	);
-	tags = Array.from(new Set(flatten(tags.map(({ tags }) => tags)).map((tag) => tag.split(':')[0])));
-	res.status(200).json({ success: true, data: tags });
-});
-
 // @desc: Delete single quiz
 // @route: DELETE /api/v1/quizzes/:id
 // @access: Private
@@ -95,21 +84,31 @@ exports.quizPhotoUpload = asyncHandler(async (req, res, next) => {
 	res.status(200).json(res.imageUpload);
 });
 
-exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
-	const { quizzes } = req.body;
+async function updatePlayedTimesHandler(quizzes, userId) {
+	let total_updated = 0;
 	if (quizzes) {
 		for (let i = 0; i < quizzes.length; i++) {
 			const quizId = quizzes[i];
 			const quiz = await Quiz.findById(quizId);
-			if (quiz.user.toString() !== req.user._id.toString()) quiz.total_played = quiz.total_played + 1;
+			if (quiz.user.toString() !== userId.toString()) {
+				quiz.total_played++;
+				total_updated++;
+			}
 			await quiz.save();
 		}
 	}
-	res.status(200).json({ success: true, total_updated: quizzes.length });
+	return total_updated;
+}
+
+exports.updatePlayedTimesHandler = updatePlayedTimesHandler;
+
+exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
+	const total_updated = await updatePlayedTimesHandler(req.body, req.user._id);
+	res.status(200).json({ success: true, total_updated });
 });
 
-exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
-	let { quizzes, ratings } = req.body;
+async function updateQuizRatingsHandler(data, userId, next) {
+	let { quizzes, ratings } = data;
 	ratings = ratings.map((rating) => parseFloat(rating));
 	const safe_ratings = ratings.every((rating) => rating >= 0 && rating <= 10);
 	if (!safe_ratings) return next(new ErrorResponse(`You cannot have a rating more than 10 or less than 0`, 400));
@@ -126,7 +125,7 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 			const prevRatings = parseFloat(quiz.ratings);
 			let newRatings = prevRatings;
 			let raters = parseInt(quiz.raters);
-			if (quiz.user.toString() !== req.user._id.toString()) {
+			if (quiz.user.toString() !== userId.toString()) {
 				raters++;
 				quiz.raters = raters;
 				newRatings = parseFloat(((prevRatings + ratings[i]) / (raters !== 1 ? 2 : 1)).toFixed(2));
@@ -135,13 +134,20 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 			}
 
 			ratingsData.push({
-				_id: quiz._id,
+				id: quiz._id,
 				prevRatings,
 				newRatings,
 				raters
 			});
 		}
 	}
+	return ratingsData;
+}
+
+exports.updateQuizRatingsHandler = updateQuizRatingsHandler;
+
+exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
+	const ratingsData = await updateQuizRatingsHandler(req.body, req.user._id, next);
 	res.status(200).json({ success: true, total_rated: ratingsData });
 });
 

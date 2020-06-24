@@ -30,6 +30,25 @@ module.exports = gql`
     source: String
 	}
 
+  type QuestionStats{
+    name: String!
+    type: String!
+    time_allocated: Int!
+    difficulty: String!
+  }
+
+  type QuizQuestionStats{
+    name: String!
+    questions: [QuestionStats!]!
+  }
+
+  type QuizRatingsOutput{
+    id: ID!
+    prevRatings: Float!
+    newRatings: Float!
+    raters: Int!
+  }
+
   input CreateQuizInput{
     name: String!
     tags: [String]!
@@ -45,6 +64,11 @@ module.exports = gql`
     subject: String
     image: String
     source: String
+  }
+
+  input UpdateQuizRatingsInput{
+    quizzes:[ID!]!
+    ratings: [Float!]!
   }
 
 	extend type Query {
@@ -77,6 +101,9 @@ module.exports = gql`
 
     "Get all self quizzes count"
 		getAllSelfQuizzesCount: Int!
+
+    "Get all self quizzes questions stats"
+    getAllSelfQuizzesQuestionsStats: [QuizQuestionStats!]
 
     # Paginated mixed
     "Get paginated mixed quizzes (U)"
@@ -130,6 +157,15 @@ module.exports = gql`
 
     "Update multiple quizzes"
     updateQuizzes(data: [UpdateQuizInput!]): [SelfQuiz!]!
+
+    "Update quiz played times"
+    updateQuizPlayedTimes(ids:[ID!]!): Int!
+
+    "Update quiz ratings"
+    updateQuizRatings(data:UpdateQuizRatingsInput!): [QuizRatingsOutput!]!
+
+    "Update quiz watch"
+    updateQuizWatch(ids: [ID!]!): Int!
 
     "Delete single quiz"
     deleteQuiz(id: ID!): SelfQuiz!
