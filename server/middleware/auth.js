@@ -24,8 +24,9 @@ exports.validate = asyncHandler(async (req, res, next) => {
 	const token = req.headers.authorization ? req.headers.authorization.split(' ')[1] : '';
 	if (token) {
 		try {
-			const currentUser = await jwt.verify(token, process.env.JWT_SECRET);
-			req.user = currentUser;
+			const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+			req.user = await User.findById(decoded.id);
+			req.user.id = req.user._id;
 		} catch (err) {
 			console.log(colors.red(err.message));
 		}

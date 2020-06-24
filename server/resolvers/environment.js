@@ -1,40 +1,37 @@
-const parsePagination = require('../utils/parsePagination');
 const {
-	getCurrentEnvironment,
-	createEnvironment,
-	updateEnvironment,
-	deleteEnvironment,
-	deleteEnvironments,
-	setCurrentEnvironment,
-	updateEnvironments
+	createEnvironmentHandler,
+	deleteEnvironmentHandler,
+	setCurrentEnvironmentHandler
 } = require('../controllers/environment');
+const parsePagination = require('../utils/parsePagination');
+const updateResource = require('../utils/updateResource');
 
 module.exports = {
 	Query: {
 		// ? All mixed
 		async getAllMixedEnvironments(parent, args, { Environment }, info) {
-			return await Environment.find({}).select('-public -favourite');
+			return await Environment.find({ public: true }).select('-public -favourite');
 		},
 		async getAllMixedEnvironmentsName(parent, args, { Environment }) {
-			return await Environment.find({}).select('name');
+			return await Environment.find({ public: true }).select('name');
 		},
 
 		async getAllMixedEnvironmentsCount(parent, args, { Environment }) {
-			return await Environment.countDocuments({});
+			return await Environment.countDocuments({ public: true });
 		},
 
 		// ? All Others
 		async getAllOthersEnvironments(parent, args, { user, Environment }, info) {
 			if (!user) throw new Error('Not authorized to access this route').select('-public -favourite');
-			return await Environment.find({ user: { $ne: user.id } });
+			return await Environment.find({ public: true, user: { $ne: user.id } });
 		},
 		async getAllOthersEnvironmentsName(parent, args, { user, Environment }) {
 			if (!user) throw new Error('Not authorized to access this route');
-			return await Environment.find({ user: { $ne: user.id } }).select('name');
+			return await Environment.find({ public: true, user: { $ne: user.id } }).select('name');
 		},
 		async getAllOthersEnvironmentsCount(parent, args, { user, Environment }) {
 			if (!user) throw new Error('Not authorized to access this route');
-			return await Environment.countDocuments({ user: { $ne: user.id } });
+			return await Environment.countDocuments({ public: true, user: { $ne: user.id } });
 		},
 
 		// ? All Self
@@ -54,23 +51,27 @@ module.exports = {
 		// ? Paginated Mixed
 		async getPaginatedMixedEnvironments(parent, { pagination }, { Environment }) {
 			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Environment.find(filter).sort(sort).skip(page).limit(limit).select('-public -favourite');
+			return await Environment.find({ ...filter, public: true })
+				.sort(sort)
+				.skip(page)
+				.limit(limit)
+				.select('-public -favourite');
 		},
 
 		async getPaginatedMixedEnvironmentsName(parent, { pagination }, { user, Environment }) {
 			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Environment.find(filter).sort(sort).skip(page).limit(limit).select('name');
+			return await Environment.find({ ...filter, public: true }).sort(sort).skip(page).limit(limit).select('name');
 		},
 
 		async getFilteredMixedEnvironmentsCount(parent, { filter = '{}' }, { Environment }) {
-			return await Environment.countDocuments(JSON.parse(filter));
+			return await Environment.countDocuments({ ...JSON.parse(filter), public: true });
 		},
 
 		// ? Paginated Others
 		async getPaginatedOthersEnvironments(parent, { pagination }, { user, Environment }) {
 			if (!user) throw new Error('Not authorized to access this route');
 			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Environment.find({ ...filter, user: { $ne: user.id } })
+			return await Environment.find({ ...filter, user: { $ne: user.id }, public: true })
 				.sort(sort)
 				.skip(page)
 				.limit(limit)
@@ -80,7 +81,7 @@ module.exports = {
 		async getPaginatedOthersEnvironmentsName(parent, { pagination }, { user, Environment }) {
 			if (!user) throw new Error('Not authorized to access this route');
 			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Environment.find({ ...filter, user: { $ne: user.id } })
+			return await Environment.find({ ...filter, user: { $ne: user.id }, public: true })
 				.sort(sort)
 				.skip(page)
 				.limit(limit)
@@ -89,7 +90,7 @@ module.exports = {
 
 		async getFilteredOthersEnvironmentsCount(parent, { filter = '{}' }, { user, Environment }) {
 			if (!user) throw new Error('Not authorized to access this route');
-			const count = await Environment.countDocuments({ ...JSON.parse(filter), user: { $ne: user.id } });
+			const count = await Environment.countDocuments({ ...JSON.parse(filter), user: { $ne: user.id }, public: true });
 			return count;
 		},
 
@@ -114,7 +115,7 @@ module.exports = {
 
 		// ? Id mixed
 		async getMixedEnvironmentsById(parent, { id }, { Environment }) {
-			const environment = await Environment.findById(id).select('-public -favourite');
+			const [ environment ] = await Environment.find({ _id: id, public: true }).select('-public -favourite');
 			if (!environment) throw new Error('Resource with that Id doesnt exist');
 			return environment;
 		},
@@ -122,7 +123,7 @@ module.exports = {
 		// ? Id Others
 		async getOthersEnvironmentsById(parent, { id }, { user, Environment }) {
 			if (!user) throw new Error('Not authorized to access this route');
-			const [ environment ] = await Environment.find({ _id: id, user: { $ne: user.id } }).select(
+			const [ environment ] = await Environment.find({ _id: id, user: { $ne: user.id }, public: true }).select(
 				'-public -favourite'
 			)[0];
 			if (!environment) throw new Error('Resource with that Id doesnt exist');
@@ -135,6 +136,44 @@ module.exports = {
 			const [ environment ] = await Environment.find({ _id: id, user: user.id });
 			if (!environment) throw new Error('Resource with that Id doesnt exist');
 			return environment;
+		}
+	},
+	Mutation: {
+		async createEnvironment(parent, { data }, { user, Environment }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await createEnvironmentHandler(user.id, data, (err) => {
+				throw err;
+			});
+		},
+		async setCurrentEnvironment(parent, { id }, { user, Environment }) {
+			return await setCurrentEnvironmentHandler(user.id, id);
+		},
+		async updateEnvironment(parent, { data }, { user, Environment }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			const [ updated_environment ] = await updateResource(Environment, [ data ], user.id, (err) => {
+				throw err;
+			});
+			return updated_environment;
+		},
+
+		async updateEnvironments(parent, { data }, { user, Environment }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await updateResource(Environment, data, user.id, (err) => {
+				throw err;
+			});
+		},
+		async deleteEnvironment(parent, { id }, { user, Environment }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			const [ environment ] = await deleteEnvironmentHandler([ id ], user.id, user.current_environment, (err) => {
+				throw err;
+			});
+			return environment;
+		},
+		async deleteEnvironments(parent, { ids }, { user, Environment }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			return await deleteEnvironmentHandler(ids, user.id, user.current_environment, (err) => {
+				throw err;
+			});
 		}
 	}
 };
