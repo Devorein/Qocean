@@ -18,6 +18,16 @@ module.exports = gql`
 		favourite: Boolean!
 	}
 
+  type QuestionAnswersOutput{
+    id:ID!
+    answers: [[String]!]!
+  }
+
+  type QuestionValidationOutput{
+    correct: [ID]!
+    incorrect: [ID]!
+  }
+
   input CreateQuestionInput{
     name: String!
     type: String!
@@ -43,6 +53,11 @@ module.exports = gql`
     image: String
     answers: [[String]]
     options: [String]
+  }
+
+  input IdAnswer{
+    id: ID!
+    answers: [String]!
   }
 
 	extend type Query {
@@ -110,9 +125,21 @@ module.exports = gql`
     "Get mixed question by id (U)"
     getMixedQuestionsById(id:ID!): OthersQuestion!
 
+    "Get mixed question by id answers (U)"
+    getMixedQuestionsByIdAnswers(id:ID!): QuestionAnswersOutput!
+
+    "Get mixed question by ids answers (U)"
+    getMixedQuestionsByIdsAnswers(ids:[ID!]!): [QuestionAnswersOutput!]!
+    
+    "Get mixed question by id validation (U)"
+    getMixedQuestionsByIdValidation(data: IdAnswer!): QuestionValidationOutput!
+
+    "Get mixed question by ids validation (U)"
+    getMixedQuestionsByIdsValidation(data: [IdAnswer!]!): QuestionValidationOutput!
+
     # Id others
     "Get others question by id"
-    getOthersQuestionsById(id: ID!): OthersQuestion!
+    getOthersQuestionsById(id:ID!): OthersQuestion!
 
     # Id self
     "Get others question by id"
