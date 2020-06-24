@@ -104,6 +104,7 @@ process.on('unhandledRejection', (err, promise) => {
 });
 
 // GRAPHQL Server
+const GRAPHQL_OPS = {};
 const GRAPHQL = express();
 GRAPHQL.use(cors());
 GRAPHQL.use(validate);
@@ -128,7 +129,9 @@ const GRAPHQL_SERVER = new ApolloServer({
 		}
 	}),
 	context: ({ req, res }) => {
-		console.log(res.req.body.operationName);
+		const { operationName, variables } = res.req.body;
+		GRAPHQL_OPS[operationName] = GRAPHQL_OPS[operationName] ? GRAPHQL_OPS[operationName] + 1 : 1;
+		console.log(GRAPHQL_OPS[operationName], operationName, variables);
 		return {
 			user: req.user,
 			User: UserModel,
