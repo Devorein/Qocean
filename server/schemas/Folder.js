@@ -4,29 +4,42 @@ module.exports = gql`
 	interface Folder {
 		id: ID!
 		name: String!
-    icon: String
+    icon: String!
+    ratings: NonNegativeInt!
+    total_quizzes: NonNegativeInt!
+    total_questions: NonNegativeInt!
 	}
 
 	type OthersFolder implements Folder {
 		id: ID!
 		name: String!
-    icon: String
+    icon: String!
+    ratings: NonNegativeInt!
+    total_quizzes: NonNegativeInt!
+    total_questions: NonNegativeInt!
     quizzes: [OthersQuiz!]!
+    watchers: [OthersUser!]!
 	}
 
 	type SelfFolder implements Folder {
 		id: ID!
 		name: String!
-    icon: String
+    icon: String!
+    ratings: NonNegativeInt!
+    total_quizzes: NonNegativeInt!
+    total_questions: NonNegativeInt!
 		public: Boolean!
 		favourite: Boolean!
     quizzes: [SelfQuiz!]!
+    watchers: [OthersUser!]!
 	}
 
   input CreateFolderInput{
     name: String!
     icon: String
     quizzes:[ID]
+    public: Boolean
+    favourite: Boolean
   }
 
   input UpdateFolderInput{
@@ -34,6 +47,8 @@ module.exports = gql`
     name: String
     icon: String
     quizzes:[ID]
+    public: Boolean
+    favourite: Boolean
   }
 
 	extend type Query {
@@ -45,7 +60,7 @@ module.exports = gql`
 		getAllMixedFoldersName: [NameAndId!]!
 
     "Get all mixed folders count (U)"
-		getAllMixedFoldersCount: Int!
+		getAllMixedFoldersCount: NonNegativeInt!
 
     # All Others
     "Get all other folders"
@@ -55,7 +70,7 @@ module.exports = gql`
 		getAllOthersFoldersName: [NameAndId!]!
 
     "Get all others folders count"
-		getAllOthersFoldersCount: Int!
+		getAllOthersFoldersCount: NonNegativeInt!
 
     # All Self
     "Get all self folders"
@@ -65,7 +80,7 @@ module.exports = gql`
 		getAllSelfFoldersName: [NameAndId!]!
 
     "Get all self folders count"
-		getAllSelfFoldersCount: Int!
+		getAllSelfFoldersCount: NonNegativeInt!
 
     # Paginated mixed
     "Get paginated mixed folders (U)"
@@ -75,7 +90,7 @@ module.exports = gql`
 		getPaginatedMixedFoldersName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered mixed folders count (U)"
-    getFilteredMixedFoldersCount(filter: JSON): Int!
+    getFilteredMixedFoldersCount(filter: JSON): NonNegativeInt!
 
     # Paginated others
     "Get paginated others folders"
@@ -85,7 +100,7 @@ module.exports = gql`
 		getPaginatedOthersFoldersName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered others folders count"
-    getFilteredOthersFoldersCount(filter: JSON): Int!
+    getFilteredOthersFoldersCount(filter: JSON): NonNegativeInt!
 
     # Paginated Self
     "Get paginated self folders"
@@ -95,7 +110,7 @@ module.exports = gql`
 		getPaginatedSelfFoldersName(pagination: PaginationInput!): [NameAndId!]!
 
     "Get filtered self folders count"
-    getFilteredSelfFoldersCount(filter: JSON): Int!
+    getFilteredSelfFoldersCount(filter: JSON): NonNegativeInt!
 
     # Id mixed
     "Get mixed folder by id (U)"
@@ -124,7 +139,7 @@ module.exports = gql`
     updateFolderRatings(data:RatingsInput!): [RatingsOutput!]!
 
     "Update folder watch"
-    updateFolderWatch(ids: [ID!]!): Int!
+    updateFolderWatch(ids: [ID!]!): NonNegativeInt!
 
     "Delete single folder"
     deleteFolder(id: ID!): SelfFolder!

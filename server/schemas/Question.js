@@ -65,6 +65,8 @@ module.exports = gql`
     image: String
     answers: [[String]]!
     options: [String!]!
+    public: Boolean
+    favourite: Boolean
   }
 
   input UpdateQuestionInput{
@@ -80,6 +82,8 @@ module.exports = gql`
     image: String
     answers: [[String]]
     options: [String]
+    public: Boolean
+    favourite: Boolean
   }
 
   input IdAnswer{

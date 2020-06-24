@@ -72,10 +72,13 @@ module.exports = gql`
 
   input CreateQuizInput{
     name: String!
-    tags: [String]!
+    tags: [String]
     subject: String!
     image: String
     source: URL
+    folders:[ID]
+    public: Boolean
+    favourite: Boolean
   }
 
   input UpdateQuizInput{
@@ -85,6 +88,10 @@ module.exports = gql`
     subject: String
     image: String
     source: URL
+    folders:[ID]
+    public: Boolean
+    favourite: Boolean
+    questions: [ID]
   }
 
 	extend type Query {
