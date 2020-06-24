@@ -12,8 +12,7 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 module.exports = async function watchAction(rtype, body, user) {
-	const resources = body[rtype],
-		op = body.op;
+	const resources = body[rtype];
 	const watchlist = await mongoose.model('Watchlist').findById(user.watchlist);
 	let manipulated = 0;
 
@@ -50,13 +49,10 @@ module.exports = async function watchAction(rtype, body, user) {
 		const resource = await (rtype === 'quizzes' ? mongoose.model('Quiz') : mongoose.model('Folder')).findById(
 			resourceId
 		);
-		if (op === 0) removeFromWatched(resource);
-		else if (op === 1) addToWatched(resource);
-		else {
-			const status = detectWatchStatus(resource);
-			if (status === 'remove') removeFromWatched(resource);
-			else if (status === 'add') addToWatched(resource);
-		}
+
+		const status = detectWatchStatus(resource);
+		if (status === 'remove') removeFromWatched(resource);
+		else if (status === 'add') addToWatched(resource);
 		await resource.save();
 	}
 	await watchlist.save();
