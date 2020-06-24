@@ -1,44 +1,64 @@
 const { gql } = require('apollo-server-express');
 
 module.exports = gql`
-  
+  enum VersionEnum {
+    Rower
+    Sailor
+    Captain
+    Admin
+  }
+
 	interface User {
 		id: ID!
-		email: EmailAddress!
-		username: String!
-		joined_at: Float!
 		name: String!
-    total_quizzes: Int!
-    total_questions: Int!
-    total_folders: Int!
-    total_environments: Int!
+		username: String!
+		email: EmailAddress!
+		joined_at: Date!
+    total_quizzes: NonNegativeInt!
+    total_questions: NonNegativeInt!
+    total_folders: NonNegativeInt!
+    total_environments: NonNegativeInt!
     folders: [Folder!]!
+    version: VersionEnum!
+    image: String!
 	}
 
 	type OthersUser implements User {
 		id: ID!
 		email: EmailAddress!
 		username: String!
-		joined_at: Float!
+		joined_at: Date!
 		name: String!
-    total_quizzes: Int!
-    total_questions: Int!
-    total_folders: Int!
-    total_environments: Int!
-    folders: [Folder!]!
+    total_quizzes: NonNegativeInt!
+    total_questions: NonNegativeInt!
+    total_folders: NonNegativeInt!
+    total_environments: NonNegativeInt!
+    current_environment: OthersEnvironment!
+    version: VersionEnum!
+    image: String!
+    folders: [OthersFolder!]!
+    quizzes: [OthersQuiz!]!
+    questions: [OthersQuestion!]!
+    environments: [OthersEnvironment!]!
 	}
 
   type SelfUser implements User{
     id: ID!
 		email: EmailAddress!
 		username: String!
-		joined_at: Float!
+		joined_at: Date!
 		name: String!
-    total_quizzes: Int!
-    total_questions: Int!
-    total_folders: Int!
-    total_environments: Int!
-    folders: [Folder!]!
+    total_quizzes: NonNegativeInt!
+    total_questions: NonNegativeInt!
+    total_folders: NonNegativeInt!
+    total_environments: NonNegativeInt!
+    current_environment: SelfEnvironment!
+    version: VersionEnum!
+    image: String!
+    folders: [SelfFolder!]!
+    quizzes: [SelfQuiz!]!
+    questions: [SelfQuestion!]!
+    environments: [SelfEnvironment!]!
   }
 
   type TagOutput{
@@ -79,7 +99,7 @@ module.exports = gql`
     getAllMixedUsersTags(config:TagConfigInput): TagOutput!
 
     "Get all mixed users count (U)"
-		getAllMixedUsersCount: Int!
+		getAllMixedUsersCount: NonNegativeInt!
 
     # All others
     "Get all other users"
@@ -92,7 +112,7 @@ module.exports = gql`
     getAllOthersUsersTags(config: TagConfigInput): TagOutput!
 
     "Get all others users count"
-		getAllOthersUsersCount: Int!
+		getAllOthersUsersCount: NonNegativeInt!
 
     # All self
     "Get all self user tags"
@@ -106,7 +126,7 @@ module.exports = gql`
 		getPaginatedMixedUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
 
     "Get filtered mixed users count (U)"
-    getFilteredMixedUsersCount(filter: JSON): Int!
+    getFilteredMixedUsersCount(filter: JSON): NonNegativeInt!
 
     # Paginated others
     "Get paginated others users"
@@ -116,7 +136,7 @@ module.exports = gql`
 		getPaginatedOthersUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
 
     "Get filtered others users count"
-    getFilteredOthersUsersCount(filter: JSON): Int!
+    getFilteredOthersUsersCount(filter: JSON): NonNegativeInt!
 
     # Id mixed
     "Get mixed user by id (U)"
