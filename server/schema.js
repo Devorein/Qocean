@@ -1,10 +1,6 @@
 const { gql } = require('apollo-server-express');
 
 exports.typeDefs = gql`
-	scalar JSON
-
-	scalar JSONObject
-
 	enum QuestionTypeEnum {
 		FIB
 		Snippet

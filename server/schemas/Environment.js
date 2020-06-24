@@ -8,9 +8,16 @@ module.exports = gql`
     Navy
   }
 
+  enum ViewEnum{
+    Table
+    List
+    Board
+    Gallery
+  }
+
   type PageInfo{
-    default_ipp: Int!
-    default_view: String!
+    default_ipp: PositiveInt!
+    default_view: ViewEnum!
     default_landing: String!
     default_layout: String!
   }
@@ -48,8 +55,8 @@ module.exports = gql`
   }
 
   input PageInfoInput{
-    default_ipp: Int
-    default_view: String
+    default_ipp: PositiveInt
+    default_view: ViewEnum
     default_landing: String
     default_layout: String
   }
@@ -64,22 +71,24 @@ module.exports = gql`
     hovertips: Boolean!
     default_question_type: QuestionTypeEnum!
 	  default_question_difficulty: QuestionDifficultyEnum!
-    default_question_timing: Int!
-    default_question_weight: Int!
+    default_question_timing: PositiveInt!
+    default_question_weight: PositiveInt!
     default_create_landing: String!
     reset_on_success: Boolean!
     reset_on_error: Boolean!
-    max_notifications: Int!
-    notification_timing: Int!
-    default_tag_color: String!
-    primary_color: String!
-    secondary_color: String!
+    max_notifications: PositiveInt!
+    notification_timing: PositiveInt!
+    default_tag_color: HexColorCode!
+    primary_color: HexColorCode!
+    secondary_color: HexColorCode!
     display_font: String!
     keybindings: KeyBindingType!
     explore_page: PageInfo!
     play_page: PageInfo!
     self_page: PageInfo!
     watchlist_page: PageInfo!
+    created_at: Date!
+    updated_at: Date!
 	}
 
 	type OthersEnvironment implements Environment {
@@ -92,22 +101,24 @@ module.exports = gql`
     hovertips: Boolean!
     default_question_type: QuestionTypeEnum!
 	  default_question_difficulty: QuestionDifficultyEnum!
-    default_question_timing: Int!
-    default_question_weight: Int!
+    default_question_timing: PositiveInt!
+    default_question_weight: PositiveInt!
     default_create_landing: String!
     reset_on_success: Boolean!
     reset_on_error: Boolean!
-    max_notifications: Int!
-    notification_timing: Int!
-    default_tag_color: String!
-    primary_color: String!
-    secondary_color: String!
+    max_notifications: PositiveInt!
+    notification_timing: PositiveInt!
+    default_tag_color: HexColorCode!
+    primary_color: HexColorCode!
+    secondary_color: HexColorCode!
     display_font: String!
     keybindings: KeyBindingType!
     explore_page: PageInfo!
     play_page: PageInfo!
     self_page: PageInfo!
     watchlist_page: PageInfo!
+    created_at: Date!
+    updated_at: Date!
 	}
 
 	type SelfEnvironment implements Environment {
@@ -120,16 +131,16 @@ module.exports = gql`
     hovertips: Boolean!
     default_question_type: QuestionTypeEnum!
 	  default_question_difficulty: QuestionDifficultyEnum!
-    default_question_timing: Int!
-    default_question_weight: Int!
+    default_question_timing: PositiveInt!
+    default_question_weight: PositiveInt!
     default_create_landing: String!
     reset_on_success: Boolean!
     reset_on_error: Boolean!
-    max_notifications: Int!
-    notification_timing: Int!
-    default_tag_color: String!
-    primary_color: String!
-    secondary_color: String!
+    max_notifications: PositiveInt!
+    notification_timing: PositiveInt!
+    default_tag_color: HexColorCode!
+    primary_color: HexColorCode!
+    secondary_color: HexColorCode!
     display_font: String!
 		public: Boolean!
 		favourite: Boolean!
@@ -138,6 +149,8 @@ module.exports = gql`
     play_page: PageInfo!
     self_page: PageInfo!
     watchlist_page: PageInfo!
+    created_at: Date!
+    updated_at: Date!
 	}
 
 	input CreateEnvironmentInput {
@@ -149,16 +162,16 @@ module.exports = gql`
     hovertips: Boolean
     default_question_type: QuestionTypeEnum
 	  default_question_difficulty: QuestionDifficultyEnum
-    default_question_timing: Int
-    default_question_weight: Int
+    default_question_timing: PositiveInt
+    default_question_weight: PositiveInt
     default_create_landing: String
     reset_on_success: Boolean
     reset_on_error: Boolean
-    max_notifications: Int
-    notification_timing: Int
-    default_tag_color: String
-    primary_color: String
-    secondary_color: String
+    max_notifications: PositiveInt
+    notification_timing: PositiveInt
+    default_tag_color: HexColorCode
+    primary_color: HexColorCode
+    secondary_color: HexColorCode
     display_font: String
 		public: Boolean
 		favourite: Boolean
@@ -179,16 +192,16 @@ module.exports = gql`
     hovertips: Boolean
     default_question_type: QuestionTypeEnum
 	  default_question_difficulty: QuestionDifficultyEnum
-    default_question_timing: Int
-    default_question_weight: Int
+    default_question_timing: PositiveInt
+    default_question_weight: PositiveInt
     default_create_landing: String
     reset_on_success: Boolean
     reset_on_error: Boolean
-    max_notifications: Int
-    notification_timing: Int
-    default_tag_color: String
-    primary_color: String
-    secondary_color: String
+    max_notifications: PositiveInt
+    notification_timing: PositiveInt
+    default_tag_color: HexColorCode
+    primary_color: HexColorCode
+    secondary_color: HexColorCode
     display_font: String
 		public: Boolean
 		favourite: Boolean
@@ -208,7 +221,7 @@ module.exports = gql`
 		getAllMixedEnvironmentsName: [NameAndId!]!
 
 	  "Get all mixed environments count (U)"
-		getAllMixedEnvironmentsCount: Int!
+		getAllMixedEnvironmentsCount: NonNegativeInt!
 
 	  # All Others
 	  "Get all other environments"
@@ -218,7 +231,7 @@ module.exports = gql`
 		getAllOthersEnvironmentsName: [NameAndId!]!
 
 	  "Get all others environments count"
-		getAllOthersEnvironmentsCount: Int!
+		getAllOthersEnvironmentsCount: NonNegativeInt!
 
 	  # All Self
 	  "Get all self environments"
@@ -228,7 +241,7 @@ module.exports = gql`
 		getAllSelfEnvironmentsName: [NameAndId!]!
 
 	  "Get all self environments count"
-		getAllSelfEnvironmentsCount: Int!
+		getAllSelfEnvironmentsCount: NonNegativeInt!
 
 	  # Paginated mixed
 	  "Get paginated mixed environments (U)"
@@ -238,7 +251,7 @@ module.exports = gql`
 		getPaginatedMixedEnvironmentsName(pagination: PaginationInput!): [NameAndId!]!
 
 	  "Get filtered mixed environments count (U)"
-	  getFilteredMixedEnvironmentsCount(filter: JSON): Int!
+	  getFilteredMixedEnvironmentsCount(filter: JSON): NonNegativeInt!
 
 	  # Paginated others
 	  "Get paginated others environments"
@@ -248,7 +261,7 @@ module.exports = gql`
 		getPaginatedOthersEnvironmentsName(pagination: PaginationInput!): [NameAndId!]!
 
 	  "Get filtered others environments count"
-	  getFilteredOthersEnvironmentsCount(filter: JSON): Int!
+	  getFilteredOthersEnvironmentsCount(filter: JSON): NonNegativeInt!
 
 	  # Paginated Self
 	  "Get paginated self environments"
@@ -258,7 +271,7 @@ module.exports = gql`
 		getPaginatedSelfEnvironmentsName(pagination: PaginationInput!): [NameAndId!]!
 
 	  "Get filtered self environments count"
-	  getFilteredSelfEnvironmentsCount(filter: JSON): Int!
+	  getFilteredSelfEnvironmentsCount(filter: JSON): NonNegativeInt!
 
 	  # Id mixed
 	  "Get mixed environment by id (U)"

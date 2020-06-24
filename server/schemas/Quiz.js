@@ -7,7 +7,7 @@ module.exports = gql`
     subject: String!
     tags: [String]!
     image: String
-    source: String
+    source: URL
 	}
 
 	type OthersQuiz implements Quiz {
@@ -16,7 +16,7 @@ module.exports = gql`
     tags: [String]!
     subject: String!
     image: String
-    source: String
+    source: URL
 	}
 
 	type SelfQuiz implements Quiz {
@@ -27,7 +27,7 @@ module.exports = gql`
     subject: String!
     tags: [String]!
     image: String
-    source: String
+    source: URL
 	}
 
   type QuestionStats{
@@ -48,7 +48,7 @@ module.exports = gql`
     tags: [String]!
     subject: String!
     image: String
-    source: String
+    source: URL
   }
 
   input UpdateQuizInput{
@@ -57,7 +57,7 @@ module.exports = gql`
     tags: [String]
     subject: String
     image: String
-    source: String
+    source: URL
   }
 
 	extend type Query {

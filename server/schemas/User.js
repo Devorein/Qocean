@@ -4,7 +4,7 @@ module.exports = gql`
   
 	interface User {
 		id: ID!
-		email: String!
+		email: EmailAddress!
 		username: String!
 		joined_at: Float!
 		name: String!
@@ -17,7 +17,7 @@ module.exports = gql`
 
 	type OthersUser implements User {
 		id: ID!
-		email: String!
+		email: EmailAddress!
 		username: String!
 		joined_at: Float!
 		name: String!
@@ -30,7 +30,7 @@ module.exports = gql`
 
   type SelfUser implements User{
     id: ID!
-		email: String!
+		email: EmailAddress!
 		username: String!
 		joined_at: Float!
 		name: String!
@@ -50,7 +50,7 @@ module.exports = gql`
 
   input UpdateUserDetailsInput{
     name: String
-    email: String
+    email: EmailAddress
     username: String
     image: String
   }
