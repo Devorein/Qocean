@@ -5,8 +5,9 @@ const {
 } = require('../controllers/environment');
 const parsePagination = require('../utils/parsePagination');
 const updateResource = require('../utils/updateResource');
+const resolverCompose = require('../utils/resolverCompose');
 
-module.exports = {
+const EnvironmentResolvers = {
 	Query: {
 		// ? All mixed
 		async getAllMixedEnvironments(parent, args, { Environment }, info) {
@@ -200,3 +201,5 @@ module.exports = {
 		default_view: (parent) => parent.default_view
 	}
 };
+
+module.exports = resolverCompose(EnvironmentResolvers);

@@ -6,7 +6,6 @@ const {
 	getUsersTagsHandler,
 	userPhotoUpload
 } = require('../controllers/user');
-
 const resolverCompose = require('../utils/resolverCompose');
 
 const UserResolvers = {
