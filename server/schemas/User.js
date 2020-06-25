@@ -60,6 +60,7 @@ module.exports = gql`
     environments: [SelfEnvironment!]!
     watchlist: Watchlist!
     filtersort: [FilterSort!]!
+    reports: [Report!]!
   }
 
   type TagOutput{

@@ -138,6 +138,9 @@ const UserResolvers = {
 		},
 		async filtersort(parent, args, { user, FilterSort }) {
 			return await FilterSort.find({ user: user.id });
+		},
+		async reports(parent, args, { user, Report }) {
+			return await Report.find({ user: user.id });
 		}
 	},
 	OthersUser: {
