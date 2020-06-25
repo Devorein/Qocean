@@ -3,9 +3,9 @@ const {
 	updateUserDetailsHandler,
 	updateUserPasswordHandler,
 	deleteUserHandler,
-	getUsersTagsHandler,
-	userPhotoUpload
-} = require('../controllers/user');
+	getUsersTagsHandler
+} = require('../handlers/user');
+
 const resolverCompose = require('../utils/resolverCompose');
 
 const UserResolvers = {

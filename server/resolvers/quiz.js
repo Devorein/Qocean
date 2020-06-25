@@ -1,9 +1,5 @@
-const {
-	createQuizHandler,
-	deleteQuizHandler,
-	quizPhotoUpload,
-	updatePlayedTimesHandler
-} = require('../controllers/quizzes');
+const { createQuizHandler, deleteQuizHandler, updatePlayedTimesHandler } = require('../handlers/quiz');
+
 const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
 const addRatings = require('../utils/addRatings');

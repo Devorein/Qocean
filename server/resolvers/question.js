@@ -6,9 +6,9 @@ const {
 	deleteQuestionHandler,
 	validateQuestionHandler,
 	sendAnswerHandler,
-	questionPhotoUpload,
 	getOthersQuestionsHandler
-} = require('../controllers/questions');
+} = require('../handlers/question');
+
 const resolverCompose = require('../utils/resolverCompose');
 
 const QuestionResolvers = {

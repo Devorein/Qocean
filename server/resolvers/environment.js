@@ -2,7 +2,7 @@ const {
 	createEnvironmentHandler,
 	deleteEnvironmentHandler,
 	setCurrentEnvironmentHandler
-} = require('../controllers/environment');
+} = require('../handlers/environment');
 const parsePagination = require('../utils/parsePagination');
 const updateResource = require('../utils/updateResource');
 const resolverCompose = require('../utils/resolverCompose');

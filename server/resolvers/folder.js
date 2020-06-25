@@ -3,7 +3,7 @@ const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
 const addRatings = require('../utils/addRatings');
 
-const { createFolderHandler, deleteFolderHandler } = require('../controllers/folder');
+const { createFolderHandler, deleteFolderHandler } = require('../handlers/folder');
 const resolverCompose = require('../utils/resolverCompose');
 
 const FolderResolvers = {

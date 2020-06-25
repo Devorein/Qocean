@@ -1,10 +1,4 @@
-const {
-	registerHandler,
-	loginHandler,
-	forgotPassword,
-	resetPassword,
-	checkPasswordHandler
-} = require('../controllers/auth');
+const { registerHandler, loginHandler, checkPasswordHandler } = require('../handlers/auth');
 
 module.exports = {
 	Query: {
