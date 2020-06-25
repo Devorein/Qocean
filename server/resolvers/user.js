@@ -6,6 +6,7 @@ const {
 	getUsersTagsHandler,
 	userPhotoUpload
 } = require('../controllers/user');
+const { version } = require('mongoose');
 
 module.exports = {
 	Query: {
@@ -127,9 +128,44 @@ module.exports = {
 			return await deleteUserHandler(user.id);
 		}
 	},
-	User: {
+	SelfUser: {
 		async folders(parent, args, { Folder }, info) {
 			return await Folder.find({ user: parent.id, public: true });
+		},
+		async version(parent, args, { user }, info) {
+			return parent.version;
+		},
+		async current_environment(parent, args, { Environment }, info) {
+			return await Environment.findById(parent.current_environment);
+		},
+		async questions(parent, args, { Question }) {
+			return await Question.find({ user: parent._id });
+		},
+		async environments(parent, args, { Environment }) {
+			return await Environment.find({ user: parent._id });
+		},
+		async quizzes(parent, args, { Quiz }) {
+			return await Quiz.find({ user: parent._id });
+		}
+	},
+	OthersUser: {
+		async folders(parent, args, { Folder }, info) {
+			return await Folder.find({ user: parent._id, public: true }).select('-public -favourite');
+		},
+		async version(parent, args, { user }, info) {
+			return parent.version;
+		},
+		async current_environment(parent, args, { Environment }, info) {
+			return await Environment.findById(parent.current_environment).select('-public -favourite');
+		},
+		async questions(parent, args, { Question }) {
+			return await Question.find({ user: parent._id }).select('-public -favourite');
+		},
+		async environments(parent, args, { Environment }) {
+			return await Environment.find({ user: parent._id }).select('-public -favourite');
+		},
+		async quizzes(parent, args, { Quiz }) {
+			return await Quiz.find({ user: parent._id }).select('-public -favourite');
 		}
 	}
 };
