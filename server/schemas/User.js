@@ -59,6 +59,7 @@ module.exports = gql`
     questions: [SelfQuestion!]!
     environments: [SelfEnvironment!]!
     watchlist: Watchlist!
+    filtersort: [FilterSort!]!
   }
 
   type TagOutput{
