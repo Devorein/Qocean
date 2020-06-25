@@ -169,7 +169,8 @@ const FolderResolvers = {
 		},
 		async quizzes(parent, args, { Quiz }) {
 			return await Quiz.find({ user: parent.user });
-		}
+		},
+		icon: (parent) => parent.icon
 	},
 	OthersFolder: {
 		async watchers(parent, args, { User }) {
@@ -177,7 +178,8 @@ const FolderResolvers = {
 		},
 		async quizzes(parent, args, { Quiz }) {
 			return await Quiz.find({ user: parent.user, public: true }).select('-public -favourite');
-		}
+		},
+		icon: (parent) => parent.icon
 	}
 };
 

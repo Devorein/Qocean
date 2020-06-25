@@ -8,20 +8,20 @@ module.exports = gql`
 
 	input UserRegisterInput {
 		name: String!
-		email: String!
-		username: String!
-		password: String!
+		email: EmailAddress!
+		username: Username!
+		password: Password!
 		image: String
-		version: String
+		version: VersionEnum
 	}
 
 	input UserSigninInput {
-		email: String!
-		password: String!
+		email: EmailAddress!
+		password: Password!
 	}
 
 	extend type Query {
-		checkPassword(password: String!): Status!
+		checkPassword(password: Password!): Status!
 	}
 
 	extend type Mutation {

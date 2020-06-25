@@ -8,9 +8,9 @@ const {
 
 module.exports = {
 	Query: {
-		async checkPassword(parent, { password }, ctx) {
-			if (!ctx.user) throw new Error('Not authorized to access this route');
-			const isMatch = await checkPasswordHandler(ctx.user.id, password, (err) => {
+		async checkPassword(parent, { password }, { user }) {
+			if (!user) throw new Error('Not authorized to access this route');
+			const isMatch = await checkPasswordHandler(user.id, password, (err) => {
 				throw err;
 			});
 			return { success: isMatch };

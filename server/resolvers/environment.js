@@ -185,6 +185,7 @@ const EnvironmentResolvers = {
 		explore_page: (parent) => parent.explore_page,
 		play_page: (parent) => parent.play_page,
 		self_page: (parent) => parent.self_page,
+		icon: (parent) => parent.icon,
 		watchlist_page: (parent) => parent.watchlist_page
 	},
 	OthersEnvironment: {
@@ -195,7 +196,8 @@ const EnvironmentResolvers = {
 		explore_page: (parent) => parent.explore_page,
 		play_page: (parent) => parent.play_page,
 		self_page: (parent) => parent.self_page,
-		watchlist_page: (parent) => parent.watchlist_page
+		watchlist_page: (parent) => parent.watchlist_page,
+		icon: (parent) => parent.icon
 	},
 	PageInfo: {
 		default_view: (parent) => parent.default_view

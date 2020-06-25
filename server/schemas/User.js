@@ -11,7 +11,7 @@ module.exports = gql`
 	interface User {
 		id: ID!
 		name: String!
-		username: String!
+		username: Username!
 		email: EmailAddress!
 		joined_at: Date!
     total_quizzes: NonNegativeInt!
@@ -26,7 +26,7 @@ module.exports = gql`
 	type OthersUser implements User {
 		id: ID!
 		email: EmailAddress!
-		username: String!
+		username: Username!
 		joined_at: Date!
 		name: String!
     total_quizzes: NonNegativeInt!
@@ -45,7 +45,7 @@ module.exports = gql`
   type SelfUser implements User{
     id: ID!
 		email: EmailAddress!
-		username: String!
+		username: Username!
 		joined_at: Date!
 		name: String!
     total_quizzes: NonNegativeInt!
@@ -71,13 +71,13 @@ module.exports = gql`
   input UpdateUserDetailsInput{
     name: String
     email: EmailAddress
-    username: String
+    username: Username
     image: String
   }
 
   input updateUserPasswordInput{
-    currentPassword: String!
-    newPassword: String!
+    currentPassword: Password!
+    newPassword: Password!
   }
 
   input TagConfigInput{
