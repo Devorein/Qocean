@@ -6,22 +6,11 @@ const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
 const addRatings = require('../utils/addRatings');
 
+const { createFolderHandler, deleteFolderHandler } = require('../handlers/folder');
+
 // @desc: Create single folder
 // @route: POST /api/v1/folders
 // @access: Private
-
-async function createFolderHandler(userId, data, next) {
-	data.user = userId;
-	const prevFolder = await Folder.countDocuments({ name: data.name, user: userId });
-	if (prevFolder >= 1) return next(new ErrorResponse(`You alread have a folder named ${data.name}`, 400));
-	const targetQuizzes = data.quizzes;
-	delete data.quizzes;
-	const folder = await Folder.create(data);
-	if (targetQuizzes) await folder.quiz(1, targetQuizzes);
-	return await folder.save();
-}
-
-exports.createFolderHandler = createFolderHandler;
 exports.createFolder = asyncHandler(async (req, res, next) => {
 	const folder = await createFolderHandler(req.user._id, req.body, next);
 	res.status(201).json({ success: true, data: folder });
@@ -41,21 +30,6 @@ exports.updateFolders = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: folders });
 });
 
-async function deleteFolderHandler(folderIds, userId, next) {
-	const deleted_folders = [];
-	for (let i = 0; i < folderIds.length; i++) {
-		const folderId = folderIds[i];
-		const folder = await Folder.findById(folderId);
-		if (!folder) return next(new ErrorResponse(`Folder not found with id of ${folderId}`, 404));
-		if (folder.user.toString() !== userId.toString())
-			return next(new ErrorResponse(`User not authorized to delete folder`, 401));
-		await folder.remove();
-		deleted_folders.push(folder);
-	}
-	return deleted_folders;
-}
-
-exports.deleteFolderHandler = deleteFolderHandler;
 // @desc: Delete single folder
 // @route: DELETE /api/v1/folders/:id
 // @access: Private

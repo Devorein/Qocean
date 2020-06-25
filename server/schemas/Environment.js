@@ -64,7 +64,7 @@ module.exports = gql`
 	interface Environment {
 		id: ID!
 		name: String!
-    icon: String!
+    icon: IconColorEnum!
     theme: ThemeEnum!
     animation: Boolean!
     sound: Boolean!
@@ -94,7 +94,7 @@ module.exports = gql`
 	type OthersEnvironment implements Environment {
 		id: ID!
 		name: String!
-    icon: String!
+    icon: IconColorEnum!
     theme: ThemeEnum!
     animation: Boolean!
     sound: Boolean!
@@ -124,7 +124,7 @@ module.exports = gql`
 	type SelfEnvironment implements Environment {
 		id: ID!
 		name: String!
-    icon: String!
+    icon: IconColorEnum!
     theme: ThemeEnum!
     animation: Boolean!
     sound: Boolean!
@@ -155,7 +155,7 @@ module.exports = gql`
 
 	input CreateEnvironmentInput {
 		name: String!
-    icon: String
+    icon: IconColorEnum
     theme: ThemeEnum
     animation: Boolean
     sound: Boolean
@@ -185,7 +185,7 @@ module.exports = gql`
 	input UpdateEnvironmentInput {
 		id: ID!
 		name: String
-		icon: String
+		icon: IconColorEnum
     theme: ThemeEnum
     animation: Boolean
     sound: Boolean

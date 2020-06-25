@@ -1,65 +1,22 @@
 const crypto = require('crypto');
 const User = require('../models/User');
-const Environment = require('../models/Environment');
-const Inbox = require('../models/Inbox');
-const Watchlist = require('../models/Watchlist');
+
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const sendEmail = require('../utils/sendEmail');
 const sendTokenResponse = require('../utils/sendTokenResponse');
-const { ObjectID } = require('bson');
+
+const { registerHandler, checkPasswordHandler, loginHandler } = require('../handlers/auth');
+
 // @desc     Register
 // @route    POST /api/v1/auth/register
 // @access   Public
-
-async function registerHandler(body) {
-	const { name, email, password, version, username, image } = body;
-	const env_id = new ObjectID();
-	const inbox_id = new ObjectID();
-	const watchlist_id = new ObjectID();
-	const data = {
-		name,
-		email,
-		password,
-		version,
-		username,
-		current_environment: env_id.toString(),
-		inbox: inbox_id.toString(),
-		watchlist: watchlist_id.toString()
-	};
-	if (image) data.image = image;
-	const user = await User.create(data);
-	await Environment.create({ user: user._id, _id: env_id, name: 'Default Environment' });
-	await Inbox.create({ user: user._id, _id: inbox_id });
-	await Watchlist.create({ user: user._id, _id: watchlist_id });
-	return sendTokenResponse(user);
-}
-
-exports.registerHandler = registerHandler;
 
 exports.register = asyncHandler(async (req, res, next) => {
 	const { token, id } = await registerHandler(req.body);
 	res.status(200).json({ token, id });
 });
 
-async function loginHandler(body, next) {
-	const { email, password } = body;
-
-	// Validate email and password
-	if (!email || !password) return next(new ErrorResponse(`Please provide an email and password`, 400));
-
-	// Check for user
-	const user = await User.findOne({ email }).select('+password');
-
-	if (!user) return next(new ErrorResponse(`Invalid credentials`, 401));
-
-	// Check if pass matches
-	const isMatch = await user.matchPassword(password);
-	if (!isMatch) return next(new ErrorResponse(`Invalid credentials`, 401));
-	return sendTokenResponse(user);
-}
-
-exports.loginHandler = loginHandler;
 // @desc     Login user
 // @route    POST /api/v1/auth/login
 // @access   Public
@@ -67,15 +24,6 @@ exports.login = asyncHandler(async (req, res, next) => {
 	const { token, id } = await loginHandler(req.body, next);
 	res.status(200).json({ token, id });
 });
-
-async function checkPasswordHandler(userId, password, next) {
-	const user = await User.findById(userId).select('+password');
-	const isMatch = await user.matchPassword(password);
-	if (!isMatch) return next(new ErrorResponse(`Invalid credentials`, 400));
-	else return true;
-}
-
-exports.checkPasswordHandler = checkPasswordHandler;
 
 exports.checkPassword = asyncHandler(async (req, res, next) => {
 	await checkPasswordHandler(req.user._id, req.params.password, next);

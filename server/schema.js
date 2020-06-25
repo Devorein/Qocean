@@ -1,6 +1,10 @@
 const { gql } = require('apollo-server-express');
 
 exports.typeDefs = gql`
+	scalar Password
+
+	scalar Username
+
 	enum QuestionTypeEnum {
 		FIB
 		Snippet
@@ -8,6 +12,16 @@ exports.typeDefs = gql`
 		MS
 		FC
 		TF
+	}
+
+	enum IconColorEnum {
+		Red
+		Orange
+		Yellow
+		Green
+		Blue
+		Indigo
+		Violet
 	}
 
 	enum QuestionDifficultyEnum {

@@ -2,11 +2,12 @@ const {
 	createEnvironmentHandler,
 	deleteEnvironmentHandler,
 	setCurrentEnvironmentHandler
-} = require('../controllers/environment');
+} = require('../handlers/environment');
 const parsePagination = require('../utils/parsePagination');
 const updateResource = require('../utils/updateResource');
+const resolverCompose = require('../utils/resolverCompose');
 
-module.exports = {
+const EnvironmentResolvers = {
 	Query: {
 		// ? All mixed
 		async getAllMixedEnvironments(parent, args, { Environment }, info) {
@@ -184,6 +185,7 @@ module.exports = {
 		explore_page: (parent) => parent.explore_page,
 		play_page: (parent) => parent.play_page,
 		self_page: (parent) => parent.self_page,
+		icon: (parent) => parent.icon,
 		watchlist_page: (parent) => parent.watchlist_page
 	},
 	OthersEnvironment: {
@@ -194,9 +196,12 @@ module.exports = {
 		explore_page: (parent) => parent.explore_page,
 		play_page: (parent) => parent.play_page,
 		self_page: (parent) => parent.self_page,
-		watchlist_page: (parent) => parent.watchlist_page
+		watchlist_page: (parent) => parent.watchlist_page,
+		icon: (parent) => parent.icon
 	},
 	PageInfo: {
 		default_view: (parent) => parent.default_view
 	}
 };
+
+module.exports = resolverCompose(EnvironmentResolvers);

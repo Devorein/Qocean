@@ -4,7 +4,7 @@ module.exports = gql`
 	interface Folder {
 		id: ID!
 		name: String!
-    icon: String!
+    icon: IconColorEnum!
     ratings: NonNegativeInt!
     total_quizzes: NonNegativeInt!
     total_questions: NonNegativeInt!
@@ -13,7 +13,7 @@ module.exports = gql`
 	type OthersFolder implements Folder {
 		id: ID!
 		name: String!
-    icon: String!
+    icon: IconColorEnum!
     ratings: NonNegativeInt!
     total_quizzes: NonNegativeInt!
     total_questions: NonNegativeInt!
@@ -24,7 +24,7 @@ module.exports = gql`
 	type SelfFolder implements Folder {
 		id: ID!
 		name: String!
-    icon: String!
+    icon: IconColorEnum!
     ratings: NonNegativeInt!
     total_quizzes: NonNegativeInt!
     total_questions: NonNegativeInt!
@@ -36,7 +36,7 @@ module.exports = gql`
 
   input CreateFolderInput{
     name: String!
-    icon: String
+    icon: IconColorEnum
     quizzes:[ID]
     public: Boolean
     favourite: Boolean
@@ -45,7 +45,7 @@ module.exports = gql`
   input UpdateFolderInput{
     id: ID!
     name: String
-    icon: String
+    icon: IconColorEnum
     quizzes:[ID]
     public: Boolean
     favourite: Boolean
