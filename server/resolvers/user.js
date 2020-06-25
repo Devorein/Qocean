@@ -7,7 +7,9 @@ const {
 	userPhotoUpload
 } = require('../controllers/user');
 
-module.exports = {
+const resolverCompose = require('../utils/resolverCompose');
+
+const UserResolvers = {
 	Query: {
 		// ? All Mixed
 		async getAllMixedUsers(parent, args, { User }) {
@@ -28,28 +30,23 @@ module.exports = {
 
 		// ? All Others
 		async getAllOthersUsers(parent, args, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await User.find({ _id: { $ne: user.id } });
 		},
 
 		async getAllOthersUsersUsername(parent, args, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await User.find({ _id: { $ne: user.id } }).select('username');
 		},
 
 		async getAllOthersUsersTags(parent, { config }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await getUsersTagsHandler({ _id: { $ne: user.id } }, config);
 		},
 
 		async getAllOthersUsersCount(parent, args, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await User.countDocuments({ _id: { $ne: user.id } });
 		},
 
 		// ? All Self
 		async getAllSelfUsersTags(parent, { config }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await getUsersTagsHandler({ _id: user.id }, config);
 		},
 
@@ -70,13 +67,11 @@ module.exports = {
 
 		// ? Paginated Others
 		async getPaginatedOthersUsers(parent, { pagination }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			const { page, limit, sort, filter } = parsePagination(pagination);
 			return await User.find({ ...filter, _id: { $ne: user.id } }).sort(sort).skip(page).limit(limit);
 		},
 
 		async getPaginatedOthersUsersUsername(parent, { pagination }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			const { page, limit, sort, filter } = parsePagination(pagination);
 			return await User.find({ ...filter, _id: { $ne: user.id } })
 				.sort(sort)
@@ -86,7 +81,6 @@ module.exports = {
 		},
 
 		async getFilteredOthersUsersCount(parent, { filter = '{}' }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			const count = await User.countDocuments({ ...JSON.parse(filter), _id: { $ne: user.id } });
 			return count;
 		},
@@ -98,32 +92,26 @@ module.exports = {
 
 		// ? Id Others
 		async getOthersUsersById(parent, { id }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await User.findById(id);
 		},
 		async getOthersUsersByIdTags(parent, { id, config }, { user }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await getUsersTagsHandler({ _id: id }, config);
 		},
 
 		async getSelfUser(parent, args, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await User.findById(user.id);
 		}
 	},
 	Mutation: {
 		async updateUserDetails(parent, { data }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await updateUserDetailsHandler(data, user.id);
 		},
 		async updateUserPassword(parent, { data }, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await updateUserPasswordHandler(user.id, data, (err) => {
 				throw err;
 			});
 		},
 		async deleteUser(parent, data, { user, User }) {
-			if (!user) throw new Error('Not authorized to access this route');
 			return await deleteUserHandler(user.id);
 		}
 	},
@@ -170,3 +158,5 @@ module.exports = {
 		}
 	}
 };
+
+module.exports = resolverCompose(UserResolvers);
