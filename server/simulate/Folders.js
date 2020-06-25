@@ -14,7 +14,7 @@ casual.define('folder', function() {
 	while (name.length > 20) name = casual.array_of_words(2).join('');
 	return {
 		name,
-		icon: `${icons[getRandomInt(0, icons.length - 1)]}_folder.svg`,
+		icon: `${icons[getRandomInt(0, icons.length - 1)]}`,
 		favourite: casual.boolean,
 		public: casual.boolean
 	};

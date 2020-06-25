@@ -60,6 +60,7 @@ module.exports = gql`
 
   type QuestionStats{
     name: String!
+    id: ID!
     type: QuestionTypeEnum
     time_allocated: NonNegativeInt!
     difficulty: QuestionDifficultyEnum!
@@ -67,6 +68,7 @@ module.exports = gql`
 
   type QuizQuestionStats{
     name: String!
+    id: ID!
     questions: [QuestionStats!]!
   }
 

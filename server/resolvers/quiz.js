@@ -196,5 +196,46 @@ module.exports = {
 				throw err;
 			});
 		}
+	},
+	SelfQuiz: {
+		average_difficulty(parent, args) {
+			return parent.average_difficulty;
+		},
+		async watchers(parent, args, { User }) {
+			return await User.find({ user: parent._id });
+		},
+		async questions(parent, args, { Question }) {
+			return await Question.find({ user: parent._id });
+		},
+		async folders(parent, args, { Folder }) {
+			return await Folder.find({ user: parent._id });
+		}
+	},
+	OthersQuiz: {
+		average_difficulty(parent, args) {
+			return parent.average_difficulty;
+		},
+		async watchers(parent, args, { User }) {
+			return await User.find({ user: parent._id });
+		},
+		async questions(parent, args, { Question }) {
+			return await Question.find({ user: parent._id, public: true }).select('-public -favourite');
+		},
+		async folders(parent, args, { Folder }) {
+			return await Folder.find({ user: parent._id, public: true }).select('-public -favourite');
+		}
+	},
+	QuizQuestionStats: {
+		async questions(parent, args, { Question }) {
+			return await Question.find({ quiz: parent._id });
+		}
+	},
+	QuestionStats: {
+		difficulty(parent) {
+			return parent.difficulty;
+		},
+		type(parent) {
+			return parent.type;
+		}
 	}
 };

@@ -135,8 +135,11 @@ const GRAPHQL_SERVER = new ApolloServer({
 			ExternalResolvers
 		),
 		resolverValidationOptions: {
-			requireResolversForResolveType: false
-		}
+			requireResolversForResolveType: false,
+			requireResolversForArgs: true,
+			requireResolversForNonScalar: true
+		},
+		allowUndefinedInResolve: false
 	}),
 	context: ({ req, res }) => {
 		const { operationName, variables } = res.req.body;
