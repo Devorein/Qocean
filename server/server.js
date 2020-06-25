@@ -156,6 +156,9 @@ const GRAPHQL_SERVER = new ApolloServer({
 			res
 		};
 	},
+	engine: {
+		reportSchema: true
+	},
 	playground: {
 		endpoint: '/graphql'
 	}
