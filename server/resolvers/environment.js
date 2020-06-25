@@ -175,5 +175,28 @@ module.exports = {
 				throw err;
 			});
 		}
+	},
+	SelfEnvironment: {
+		theme: (parent) => parent.theme,
+		default_question_type: (parent) => parent.default_question_type,
+		default_question_difficulty: (parent) => parent.default_question_difficulty,
+		keybindings: (parent) => parent.keybindings,
+		explore_page: (parent) => parent.explore_page,
+		play_page: (parent) => parent.play_page,
+		self_page: (parent) => parent.self_page,
+		watchlist_page: (parent) => parent.watchlist_page
+	},
+	OthersEnvironment: {
+		theme: (parent) => parent.theme,
+		default_question_type: (parent) => parent.default_question_type,
+		default_question_difficulty: (parent) => parent.default_question_difficulty,
+		keybindings: (parent) => parent.keybindings,
+		explore_page: (parent) => parent.explore_page,
+		play_page: (parent) => parent.play_page,
+		self_page: (parent) => parent.self_page,
+		watchlist_page: (parent) => parent.watchlist_page
+	},
+	PageInfo: {
+		default_view: (parent) => parent.default_view
 	}
 };

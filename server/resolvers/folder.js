@@ -182,5 +182,21 @@ module.exports = {
 				throw err;
 			});
 		}
+	},
+	SelfFolder: {
+		async watchers(parent, args, { User }) {
+			return await User.findById(parent.user);
+		},
+		async quizzes(parent, args, { Quiz }) {
+			return await Quiz.find({ user: parent.user });
+		}
+	},
+	OthersFolder: {
+		async watchers(parent, args, { User }) {
+			return await User.findById(parent.user);
+		},
+		async quizzes(parent, args, { Quiz }) {
+			return await Quiz.find({ user: parent.user, public: true }).select('-public -favourite');
+		}
 	}
 };

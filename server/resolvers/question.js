@@ -194,5 +194,27 @@ module.exports = {
 				throw err;
 			});
 		}
+	},
+	SelfQuestion: {
+		difficulty(parent, args) {
+			return parent.difficulty;
+		},
+		type(parent) {
+			return parent.type;
+		},
+		async quiz(parent, args, { Quiz }) {
+			return await Quiz.find({ user: parent.user });
+		}
+	},
+	OthersQuestion: {
+		difficulty(parent, args) {
+			return parent.difficulty;
+		},
+		type(parent) {
+			return parent.type;
+		},
+		async quiz(parent, args, { Quiz }) {
+			return await Quiz.find({ user: parent.user, public: true }).select('-public -favourite');
+		}
 	}
 };
