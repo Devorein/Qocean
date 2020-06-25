@@ -30,6 +30,14 @@ exports.typeDefs = gql`
 		Advanced
 	}
 
+	enum ResourceTypeEnum {
+		User
+		Folder
+		Quiz
+		Question
+		Environment
+	}
+
 	type Query {
 		_empty: Boolean
 	}

@@ -23,6 +23,9 @@ const QuizSchema = require('./schemas/Quiz.js');
 const QuestionSchema = require('./schemas/Question.js');
 const FolderSchema = require('./schemas/Folder.js');
 const EnvironmentSchema = require('./schemas/Environment.js');
+const WatchlistSchema = require('./schemas/Watchlist.js');
+const FilterSortSchema = require('./schemas/FilterSort.js');
+const ReportSchema = require('./schemas/Report.js');
 const { resolvers } = require('./resolvers.js');
 const AuthResolvers = require('./resolvers/auth');
 const UserResolvers = require('./resolvers/user');
@@ -30,11 +33,17 @@ const QuizResolvers = require('./resolvers/quiz');
 const QuestionResolvers = require('./resolvers/question');
 const FolderResolvers = require('./resolvers/folder');
 const EnvironmentResolvers = require('./resolvers/environment');
+const WatchlistResolvers = require('./resolvers/watchlist');
+const FilterSortResolvers = require('./resolvers/filtersort');
+const ReportResolvers = require('./resolvers/report');
 const UserModel = require('./models/User');
 const QuizModel = require('./models/Quiz');
 const QuestionModel = require('./models/Question');
 const FolderModel = require('./models/Folder');
 const EnvironmentModel = require('./models/Environment');
+const WatchlistModel = require('./models/Watchlist');
+const FilterSortModel = require('./models/FilterSort');
+const ReportModel = require('./models/Report');
 
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
@@ -122,17 +131,23 @@ const GRAPHQL_SERVER = new ApolloServer({
 			QuizSchema,
 			QuestionSchema,
 			FolderSchema,
-			EnvironmentSchema
+			EnvironmentSchema,
+			WatchlistSchema,
+			FilterSortSchema,
+			ReportSchema
 		],
 		resolvers: merge(
 			resolvers,
+			ExternalResolvers,
 			AuthResolvers,
 			UserResolvers,
 			QuizResolvers,
 			QuestionResolvers,
 			FolderResolvers,
 			EnvironmentResolvers,
-			ExternalResolvers
+			WatchlistResolvers,
+			FilterSortResolvers,
+			ReportResolvers
 		),
 		resolverValidationOptions: {
 			requireResolversForResolveType: false,
@@ -152,9 +167,15 @@ const GRAPHQL_SERVER = new ApolloServer({
 			Question: QuestionModel,
 			Folder: FolderModel,
 			Environment: EnvironmentModel,
+			Watchlist: WatchlistModel,
+			FilterSort: FilterSortModel,
+			Report: ReportModel,
 			req,
 			res
 		};
+	},
+	engine: {
+		reportSchema: true
 	},
 	playground: {
 		endpoint: '/graphql'

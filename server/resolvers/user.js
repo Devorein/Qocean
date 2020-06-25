@@ -127,11 +127,20 @@ const UserResolvers = {
 		async questions(parent, args, { Question }) {
 			return await Question.find({ user: parent._id });
 		},
-		async environments(parent, args, { Environment }) {
+		async environments(parent, args, { user, Environment }) {
 			return await Environment.find({ user: parent._id });
 		},
 		async quizzes(parent, args, { Quiz }) {
 			return await Quiz.find({ user: parent._id });
+		},
+		async watchlist(parent, args, { user, Watchlist }) {
+			return await Watchlist.findById(user.watchlist);
+		},
+		async filtersort(parent, args, { user, FilterSort }) {
+			return await FilterSort.find({ user: user.id });
+		},
+		async reports(parent, args, { user, Report }) {
+			return await Report.find({ user: user.id });
 		}
 	},
 	OthersUser: {

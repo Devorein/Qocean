@@ -18,7 +18,6 @@ module.exports = gql`
     total_questions: NonNegativeInt!
     total_folders: NonNegativeInt!
     total_environments: NonNegativeInt!
-    folders: [Folder!]!
     version: VersionEnum!
     image: String!
 	}
@@ -59,6 +58,9 @@ module.exports = gql`
     quizzes: [SelfQuiz!]!
     questions: [SelfQuestion!]!
     environments: [SelfEnvironment!]!
+    watchlist: Watchlist!
+    filtersort: [FilterSort!]!
+    reports: [Report!]!
   }
 
   type TagOutput{
