@@ -132,6 +132,9 @@ const UserResolvers = {
 		},
 		async quizzes(parent, args, { Quiz }) {
 			return await Quiz.find({ user: parent._id });
+		},
+		async watchlist(parent, args, { user, Watchlist }) {
+			return await Watchlist.findById(user.watchlist);
 		}
 	},
 	OthersUser: {
