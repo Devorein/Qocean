@@ -6,7 +6,6 @@ const {
 	getUsersTagsHandler,
 	userPhotoUpload
 } = require('../controllers/user');
-const { version } = require('mongoose');
 
 module.exports = {
 	Query: {
@@ -156,16 +155,18 @@ module.exports = {
 			return parent.version;
 		},
 		async current_environment(parent, args, { Environment }, info) {
-			return await Environment.findById(parent.current_environment).select('-public -favourite');
+			return (await Environment.find({ _id: parent.current_environment, public: true }).select(
+				'-public -favourite'
+			))[0];
 		},
 		async questions(parent, args, { Question }) {
-			return await Question.find({ user: parent._id }).select('-public -favourite');
+			return await Question.find({ user: parent._id, public: true }).select('-public -favourite');
 		},
 		async environments(parent, args, { Environment }) {
-			return await Environment.find({ user: parent._id }).select('-public -favourite');
+			return await Environment.find({ user: parent._id, public: true }).select('-public -favourite');
 		},
 		async quizzes(parent, args, { Quiz }) {
-			return await Quiz.find({ user: parent._id }).select('-public -favourite');
+			return await Quiz.find({ user: parent._id, public: true }).select('-public -favourite');
 		}
 	}
 };
