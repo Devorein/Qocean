@@ -20,17 +20,19 @@ casual.define('environment', function() {
 
 	const envObj = {
 		name: casual.array_of_words(2).join(''),
-		icon: `${icons[getRandomInt(0, icons.length - 1)]}_env.svg`,
+		icon: `${icons[getRandomInt(0, icons.length - 1)]}`,
 		favourite: casual.boolean,
 		public: casual.boolean,
 		theme: [ 'Light', 'Dark', 'Navy' ][getRandomInt(0, 2)],
 		animation: casual.boolean,
 		hovertips: casual.boolean,
 		sound: casual.boolean,
-		default_question_timing: time,
-		default_question_type: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ][getRandomInt(0, 5)],
-		default_question_difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
-		default_question_weight: getRandomInt(1, 10),
+		question: {
+			default_timing: time,
+			default_type: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ][getRandomInt(0, 5)],
+			default_difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
+			default_weight: getRandomInt(1, 10)
+		},
 		reset_on_success: casual.boolean,
 		reset_on_error: casual.boolean,
 		default_create_landing: resources.splice(1)[getRandomInt(0, resources.length - 2)],
@@ -41,9 +43,12 @@ casual.define('environment', function() {
 	};
 
 	[ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
-		envObj[`default_${page}_ipp`] = ipp[getRandomInt(0, ipp.length - 1)];
-		envObj[`default_${page}_view`] = [ 'Table', 'List', 'Board', 'Gallery' ][getRandomInt(0, 3)];
-		envObj[`default_${page}_landing`] = ((page) => {
+		const target = {};
+		envObj[`${page}_page`] = target;
+		target[`default_ipp`] = ipp[getRandomInt(0, ipp.length - 1)];
+		target[`default_view`] = [ 'Table', 'List', 'Board', 'Gallery' ][getRandomInt(0, 3)];
+		target[`default_layout`] = [ 'Right', 'Left' ][getRandomInt(0, 1)];
+		target[`default_landing`] = ((page) => {
 			if (page === 'explore') return resources[getRandomInt(0, resources.length - 1)];
 			else if (page === 'self') return resources.slice(1)[getRandomInt(0, resources.length - 2)];
 			else if (page === 'watchlist') return [ 'Quiz', 'Folder' ][getRandomInt(0, 1)];

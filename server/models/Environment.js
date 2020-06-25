@@ -9,16 +9,8 @@ const envSchema = {
 	},
 	icon: {
 		type: String,
-		enum: [
-			'Red_env.svg',
-			'Orange_env.svg',
-			'Yellow_env.svg',
-			'Green_env.svg',
-			'Blue_env.svg',
-			'Indigo_env.svg',
-			'Purple_env.svg'
-		],
-		default: 'Red_env.svg'
+		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ],
+		default: 'Red'
 	},
 	theme: {
 		type: String,
@@ -37,29 +29,30 @@ const envSchema = {
 		type: Boolean,
 		default: true
 	},
-	default_question_type: {
-		type: String,
-		default: 'MCQ',
-		enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ]
+	question: {
+		default_type: {
+			type: String,
+			default: 'MCQ',
+			enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ]
+		},
+		default_difficulty: {
+			type: String,
+			default: 'Beginner',
+			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
+		},
+		default_timing: {
+			type: Number,
+			default: 30,
+			min: [ 15, 'Time allocated cant be less than 15 seconds' ],
+			max: [ 120, 'Time allocated cant be more than 120 seconds' ]
+		},
+		default_weight: {
+			type: Number,
+			default: 1,
+			min: [ 1, 'Weight cant be less than 1' ],
+			max: [ 10, 'Weight cant be less than 10' ]
+		}
 	},
-	default_question_difficulty: {
-		type: String,
-		default: 'Beginner',
-		enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
-	},
-	default_question_timing: {
-		type: Number,
-		default: 30,
-		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
-	},
-	default_question_weight: {
-		type: Number,
-		default: 1,
-		min: [ 1, 'Weight cant be less than 1' ],
-		max: [ 10, 'Weight cant be less than 10' ]
-	},
-
 	default_create_landing: {
 		type: String,
 		default: 'Quiz'
