@@ -11,9 +11,8 @@ const rateLimiter = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const mongoSanitize = require('express-mongo-sanitize');
-const { makeExecutableSchema } = require('graphql-tools');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { ApolloServer } = require('apollo-server-express');
-const { merge } = require('lodash');
 const { typeDefs: ExternalTypeDefs, resolvers: ExternalResolvers } = require('graphql-scalars');
 
 const { typeDefs } = require('./schema.js');
@@ -144,7 +143,7 @@ const GRAPHQL_SERVER = new ApolloServer({
 			InboxSchema,
 			MessageSchema
 		],
-		resolvers: merge(
+		resolvers: [
 			resolvers,
 			ExternalResolvers,
 			AuthResolvers,
@@ -158,7 +157,7 @@ const GRAPHQL_SERVER = new ApolloServer({
 			ReportResolvers,
 			InboxResolvers,
 			MessaggeResolvers
-		),
+		],
 		resolverValidationOptions: {
 			requireResolversForResolveType: false,
 			requireResolversForArgs: true,
