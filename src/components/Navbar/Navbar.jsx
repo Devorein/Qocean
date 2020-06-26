@@ -6,9 +6,10 @@ import NavbarUnauth from './Unauth/NavbarUnauth';
 import './Navbar.scss';
 
 const Navbar = ({ session, refetch }) => {
+	console.log(session);
 	return (
 		<nav className="navbar navbar-links">
-			{session && session.data ? <NavbarAuth user={session.data.data} refetch={refetch} /> : <NavbarUnauth />}
+			{session && session.user ? <NavbarAuth user={session.user} refetch={refetch} /> : <NavbarUnauth />}
 		</nav>
 	);
 };

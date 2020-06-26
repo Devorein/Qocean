@@ -11,9 +11,8 @@ const rateLimiter = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const fileupload = require('express-fileupload');
 const mongoSanitize = require('express-mongo-sanitize');
-const { makeExecutableSchema } = require('graphql-tools');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { ApolloServer } = require('apollo-server-express');
-const { merge } = require('lodash');
 const { typeDefs: ExternalTypeDefs, resolvers: ExternalResolvers } = require('graphql-scalars');
 
 const { typeDefs } = require('./schema.js');
@@ -26,6 +25,8 @@ const EnvironmentSchema = require('./schemas/Environment.js');
 const WatchlistSchema = require('./schemas/Watchlist.js');
 const FilterSortSchema = require('./schemas/FilterSort.js');
 const ReportSchema = require('./schemas/Report.js');
+const InboxSchema = require('./schemas/Inbox.js');
+const MessageSchema = require('./schemas/Message.js');
 const { resolvers } = require('./resolvers.js');
 const AuthResolvers = require('./resolvers/auth');
 const UserResolvers = require('./resolvers/user');
@@ -36,6 +37,8 @@ const EnvironmentResolvers = require('./resolvers/environment');
 const WatchlistResolvers = require('./resolvers/watchlist');
 const FilterSortResolvers = require('./resolvers/filtersort');
 const ReportResolvers = require('./resolvers/report');
+const InboxResolvers = require('./resolvers/inbox');
+const MessaggeResolvers = require('./resolvers/message');
 const UserModel = require('./models/User');
 const QuizModel = require('./models/Quiz');
 const QuestionModel = require('./models/Question');
@@ -44,6 +47,8 @@ const EnvironmentModel = require('./models/Environment');
 const WatchlistModel = require('./models/Watchlist');
 const FilterSortModel = require('./models/FilterSort');
 const ReportModel = require('./models/Report');
+const InboxModel = require('./models/Inbox');
+const MessageModel = require('./models/Message');
 
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
@@ -134,9 +139,11 @@ const GRAPHQL_SERVER = new ApolloServer({
 			EnvironmentSchema,
 			WatchlistSchema,
 			FilterSortSchema,
-			ReportSchema
+			ReportSchema,
+			InboxSchema,
+			MessageSchema
 		],
-		resolvers: merge(
+		resolvers: [
 			resolvers,
 			ExternalResolvers,
 			AuthResolvers,
@@ -147,8 +154,10 @@ const GRAPHQL_SERVER = new ApolloServer({
 			EnvironmentResolvers,
 			WatchlistResolvers,
 			FilterSortResolvers,
-			ReportResolvers
-		),
+			ReportResolvers,
+			InboxResolvers,
+			MessaggeResolvers
+		],
 		resolverValidationOptions: {
 			requireResolversForResolveType: false,
 			requireResolversForArgs: true,
@@ -170,6 +179,8 @@ const GRAPHQL_SERVER = new ApolloServer({
 			Watchlist: WatchlistModel,
 			FilterSort: FilterSortModel,
 			Report: ReportModel,
+			Inbox: InboxModel,
+			Message: MessageModel,
 			req,
 			res
 		};

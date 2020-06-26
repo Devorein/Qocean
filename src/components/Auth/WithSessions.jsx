@@ -1,13 +1,9 @@
 import React from 'react';
 import axios from 'axios';
+import { Query } from '@apollo/react-components';
+import { getSelfUser } from '../../operations/graphql/user';
 
 class WithSessions extends React.Component {
-	state = {
-		session: {}
-	};
-	componentDidMount() {
-		this.refetch();
-	}
 	refetch = () => {
 		return axios
 			.get(
@@ -30,18 +26,25 @@ class WithSessions extends React.Component {
 				});
 			});
 	};
+
 	render() {
-		return this.props.children({
-			session: this.state.session,
-			refetch: this.refetch,
-			updateUserLocally: (user) => {
-				const { session } = this.state;
-				session.data.user = user;
-				this.setState({
-					session
-				});
-			}
-		});
+		return (
+			<Query query={getSelfUser}>
+				{({ loading, error, data }) => {
+					return this.props.children({
+						session: { user: !error && !loading ? data.getSelfUser : null },
+						refetch: this.refetch,
+						updateUserLocally: (user) => {
+							const { session } = this.state;
+							session.data.user = user;
+							this.setState({
+								session
+							});
+						}
+					});
+				}}
+			</Query>
+		);
 	}
 }
 

@@ -141,6 +141,9 @@ const UserResolvers = {
 		},
 		async reports(parent, args, { user, Report }) {
 			return await Report.find({ user: user.id });
+		},
+		async inbox(parent, args, { user, Inbox }) {
+			return await Inbox.findById(user.inbox);
 		}
 	},
 	OthersUser: {

@@ -61,6 +61,20 @@ module.exports = gql`
     default_layout: String
   }
 
+  input QuestionInfoInput{
+    default_type: QuestionTypeEnum
+	  default_difficulty: QuestionDifficultyEnum
+    default_timing: PositiveInt
+    default_weight: PositiveInt
+  }
+
+  type QuestionInfo{
+    default_type: QuestionTypeEnum
+	  default_difficulty: QuestionDifficultyEnum
+    default_timing: PositiveInt
+    default_weight: PositiveInt
+  }
+
 	interface Environment {
 		id: ID!
 		name: String!
@@ -69,10 +83,7 @@ module.exports = gql`
     animation: Boolean!
     sound: Boolean!
     hovertips: Boolean!
-    default_question_type: QuestionTypeEnum!
-	  default_question_difficulty: QuestionDifficultyEnum!
-    default_question_timing: PositiveInt!
-    default_question_weight: PositiveInt!
+    question: QuestionInfo!
     default_create_landing: String!
     reset_on_success: Boolean!
     reset_on_error: Boolean!
@@ -99,10 +110,7 @@ module.exports = gql`
     animation: Boolean!
     sound: Boolean!
     hovertips: Boolean!
-    default_question_type: QuestionTypeEnum!
-	  default_question_difficulty: QuestionDifficultyEnum!
-    default_question_timing: PositiveInt!
-    default_question_weight: PositiveInt!
+    question: QuestionInfo!
     default_create_landing: String!
     reset_on_success: Boolean!
     reset_on_error: Boolean!
@@ -129,10 +137,7 @@ module.exports = gql`
     animation: Boolean!
     sound: Boolean!
     hovertips: Boolean!
-    default_question_type: QuestionTypeEnum!
-	  default_question_difficulty: QuestionDifficultyEnum!
-    default_question_timing: PositiveInt!
-    default_question_weight: PositiveInt!
+    question: QuestionInfo!
     default_create_landing: String!
     reset_on_success: Boolean!
     reset_on_error: Boolean!
@@ -160,10 +165,7 @@ module.exports = gql`
     animation: Boolean
     sound: Boolean
     hovertips: Boolean
-    default_question_type: QuestionTypeEnum
-	  default_question_difficulty: QuestionDifficultyEnum
-    default_question_timing: PositiveInt
-    default_question_weight: PositiveInt
+    question: QuestionInfoInput
     default_create_landing: String
     reset_on_success: Boolean
     reset_on_error: Boolean
@@ -190,10 +192,7 @@ module.exports = gql`
     animation: Boolean
     sound: Boolean
     hovertips: Boolean
-    default_question_type: QuestionTypeEnum
-	  default_question_difficulty: QuestionDifficultyEnum
-    default_question_timing: PositiveInt
-    default_question_weight: PositiveInt
+    question: QuestionInfoInput
     default_create_landing: String
     reset_on_success: Boolean
     reset_on_error: Boolean

@@ -51,7 +51,7 @@ casual.define('environment', function() {
 		target[`default_landing`] = ((page) => {
 			if (page === 'explore') return resources[getRandomInt(0, resources.length - 1)];
 			else if (page === 'self') return resources.slice(1)[getRandomInt(0, resources.length - 2)];
-			else if (page === 'watchlist') return [ 'Quiz', 'Folder' ][getRandomInt(0, 1)];
+			else if (page.match(/(watchlist|play)/)) return [ 'Quiz', 'Folder' ][getRandomInt(0, 1)];
 			else return [];
 		})(page);
 	});
@@ -62,7 +62,6 @@ const createEnvironment = async ({ envs, users, total_users }) => {
 	const environment = casual.environment;
 	try {
 		const user = users[getRandomInt(0, total_users - 1)];
-		environment.user = user._id;
 		const { data: { data: { _id } } } = await axios.post(
 			`http://localhost:5001/api/v1/environments`,
 			{ ...environment },

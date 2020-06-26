@@ -8,7 +8,7 @@ async function createFolderHandler(userId, data, next) {
 	const targetQuizzes = data.quizzes;
 	delete data.quizzes;
 	const folder = await Folder.create(data);
-	if (targetQuizzes) await folder.quiz(1, targetQuizzes);
+	if (targetQuizzes) await folder.manipulateQuiz(1, targetQuizzes);
 	return await folder.save();
 }
 
