@@ -61,6 +61,7 @@ module.exports = gql`
     watchlist: Watchlist!
     filtersort: [FilterSort!]!
     reports: [Report!]!
+    inbox: Inbox!
   }
 
   type TagOutput{
