@@ -62,8 +62,6 @@ const createEnvironment = async ({ envs, users, total_users }) => {
 	const environment = casual.environment;
 	try {
 		const user = users[getRandomInt(0, total_users - 1)];
-		console.log(user);
-		environment.user = user._id;
 		const { data: { data: { _id } } } = await axios.post(
 			`http://localhost:5001/api/v1/environments`,
 			{ ...environment },

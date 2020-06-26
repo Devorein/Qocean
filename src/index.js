@@ -1,10 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
+import { ApolloProvider } from '@apollo/client';
 
 import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
+
+import client from './client';
 import theme from './theme';
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
@@ -185,16 +188,18 @@ const Snackbar = ({ session, refetch, updateUserLocally }) => {
 };
 
 ReactDOM.render(
-	<WithSessions>
-		{({ session, refetch, updateUserLocally }) => {
-			return (
-				<Router>
-					<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
-						<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
-					</ThemeProvider>
-				</Router>
-			);
-		}}
-	</WithSessions>,
+	<ApolloProvider client={client}>
+		<WithSessions>
+			{({ session, refetch, updateUserLocally }) => {
+				return (
+					<Router>
+						<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
+							<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
+						</ThemeProvider>
+					</Router>
+				);
+			}}
+		</WithSessions>
+	</ApolloProvider>,
 	document.getElementById('root')
 );

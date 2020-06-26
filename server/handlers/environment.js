@@ -20,7 +20,8 @@ exports.createEnvironmentHandler = async function createEnvironmentHandler(userI
 		user = await User.findById(userId);
 		user.current_environment = environment._id;
 		await user.save();
-	}
+  }
+  return environment;
 };
 
 exports.deleteEnvironmentHandler = async function deleteEnvironmentHandler(
