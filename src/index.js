@@ -43,7 +43,7 @@ class App extends Component {
 				<div className="App">
 					<AppContext.Provider
 						value={{
-							user: session.data ? session.data.data : null,
+							user: session.user,
 							refetchUser: this.props.refetch,
 							updateUserLocally
 						}}
@@ -55,15 +55,15 @@ class App extends Component {
 								path="/explore/:type"
 								exact
 								render={(e) => {
-									return <Explore user={session.data ? session.data.data : null} />;
+									return <Explore user={session.user} />;
 								}}
 							/>
 							<Route
 								path="/create/:type"
 								exact
 								render={({ history, match }) => {
-									return session.data ? (
-										<Create user={session.data.data} match={match} history={history} />
+									return session.user ? (
+										<Create user={session.user} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
@@ -73,8 +73,8 @@ class App extends Component {
 								path="/import/:type"
 								exact
 								render={({ history, match }) => {
-									return session.data ? (
-										<Import user={session.data.data} match={match} history={history} />
+									return session.user ? (
+										<Import user={session.user} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
@@ -84,8 +84,8 @@ class App extends Component {
 								path="/watchlist/:type"
 								exact
 								render={({ history, match }) => {
-									return session.data ? (
-										<Watchlist user={session.data.data} match={match} history={history} />
+									return session.user ? (
+										<Watchlist user={session.user} match={match} history={history} />
 									) : (
 										<Redirect to="/401" />
 									);
@@ -94,49 +94,49 @@ class App extends Component {
 							<Route
 								path="/play"
 								render={() => {
-									return session.data ? <Play user={session.data.data} /> : <Redirect to="/401" />;
+									return session.user ? <Play user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/profile"
 								exact
 								render={() => {
-									return session.data ? <Profile user={session.data.data} refetch={refetch} /> : <Redirect to="/401" />;
+									return session.user ? <Profile user={session.user} refetch={refetch} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/stats"
 								exact
 								render={() => {
-									return session.data ? <Stats user={session.data.data} /> : <Redirect to="/401" />;
+									return session.user ? <Stats user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/report"
 								exact
 								render={() => {
-									return session.data ? <Report user={session.data.data} /> : <Redirect to="/401" />;
+									return session.user ? <Report user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/inbox"
 								exact
 								render={() => {
-									return session.data ? <Inbox user={session.data.data} /> : <Redirect to="/401" />;
+									return session.user ? <Inbox user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/upgrade"
 								exact
 								render={() => {
-									return session.data ? <Upgrade user={session.data.data} /> : <Redirect to="/401" />;
+									return session.user ? <Upgrade user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/self/:type"
 								exact
 								render={() => {
-									return session.data ? <Self user={session.data.data} /> : <Redirect to="/401" />;
+									return session.user ? <Self user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
@@ -173,8 +173,8 @@ const Snackbar = ({ session, refetch, updateUserLocally }) => {
 
 	return (
 		<SnackbarProvider
-			maxSnack={session.data ? session.data.data.current_environment.max_notifications : 3}
-			autoHideDuration={session.data ? session.data.data.current_environment.notification_timing : 2500}
+			maxSnack={session.user ? session.user.current_environment.max_notifications : 3}
+			autoHideDuration={session.user ? session.user.current_environment.notification_timing : 2500}
 			classes={{
 				variantError,
 				variantSuccess,
@@ -193,7 +193,7 @@ ReactDOM.render(
 			{({ session, refetch, updateUserLocally }) => {
 				return (
 					<Router>
-						<ThemeProvider theme={theme(session.data ? session.data.data.current_environment : {})}>
+						<ThemeProvider theme={theme(session.user ? session.user.current_environment : {})}>
 							<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
 						</ThemeProvider>
 					</Router>
