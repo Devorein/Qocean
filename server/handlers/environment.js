@@ -2,32 +2,33 @@ const Environment = require('../models/Environment');
 const User = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 
-async function setCurrentEnvironmentHandler(userId, id) {
+exports.setCurrentEnvironmentHandler = async function setCurrentEnvironmentHandler(userId, id) {
 	const environment = await Environment.findOne({ _id: id, user: userId });
 	const user = await User.findById(userId);
 	user.current_environment = environment._id;
 	await user.save();
 	return environment;
-}
+};
 
-exports.setCurrentEnvironmentHandler = setCurrentEnvironmentHandler;
-
-async function createEnvironmentHandler(userId, data, next) {
+exports.createEnvironmentHandler = async function createEnvironmentHandler(userId, data, next) {
 	data.user = userId;
 	let user;
 	const prevEnv = await Environment.countDocuments({ name: data.name, user: userId });
 	if (prevEnv >= 1) return next(new ErrorResponse(`You already have an environment named ${data.name}`, 400));
 	const environment = await Environment.create(data);
 	if (data.set_as_current) {
-		user = await User.findById(data.user._id);
+		user = await User.findById(userId);
 		user.current_environment = environment._id;
 		await user.save();
 	}
-}
+};
 
-exports.createEnvironmentHandler = createEnvironmentHandler;
-
-async function deleteEnvironmentHandler(environmentIds, userId, current_environment, next) {
+exports.deleteEnvironmentHandler = async function deleteEnvironmentHandler(
+	environmentIds,
+	userId,
+	current_environment,
+	next
+) {
 	const deleted_environments = [];
 	const totalDocs = await Environment.countDocuments({ user: userId });
 
@@ -45,6 +46,4 @@ async function deleteEnvironmentHandler(environmentIds, userId, current_environm
 		deleted_environments.push(environment);
 	}
 	return deleted_environments;
-}
-
-exports.deleteEnvironmentHandler = deleteEnvironmentHandler;
+};

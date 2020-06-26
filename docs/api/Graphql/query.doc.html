@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
+    <title>Query</title>
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
+</head>
+<body class="slds-scrollable--y">
+    <nav class="slds-grid slds-grid--vertical slds-col--rule-right">
+        <header class="slds-p-around--medium slds-col slds-shrik slds-grow-none">
+            <button class="slds-button slds-button--icon slds-float--right js-toggle-navigation less-than-medium">
+                <i class="material-icons">close</i>
+            </button>
+                <h3 class="slds-text-heading--medium"><a href="./">GraphQL Schema</a></h3>
+            <div class="slds-p-top--small">
+                <input id="type-search" type="text" placeholder="Search a type" autofocus="" class="slds-input" />
+            </div>
+        </header>
+        <div id="navication-scroll" class="slds-scrollable--y slds-col slds-grow">
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Schema</h4>
+    <ul>
+        <li class="slds-is-active" title="Query">
+            <a href="query.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Query
+            </a>
+        </li>
+        <li  title="Mutation">
+            <a href="mutation.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Mutation
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Scalars</h4>
+    <ul>
+        <li  title="BigInt">
+            <a href="bigint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                BigInt
+            </a>
+        </li>
+        <li  title="Boolean">
+            <a href="boolean.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Boolean
+            </a>
+        </li>
+        <li  title="Byte">
+            <a href="byte.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Byte
+            </a>
+        </li>
+        <li  title="Currency">
+            <a href="currency.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Currency
+            </a>
+        </li>
+        <li  title="Date">
+            <a href="date.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Date
+            </a>
+        </li>
+        <li  title="DateTime">
+            <a href="datetime.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                DateTime
+            </a>
+        </li>
+        <li  title="EmailAddress">
+            <a href="emailaddress.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                EmailAddress
+            </a>
+        </li>
+        <li  title="Float">
+            <a href="float.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Float
+            </a>
+        </li>
+        <li  title="GUID">
+            <a href="guid.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                GUID
+            </a>
+        </li>
+        <li  title="Hexadecimal">
+            <a href="hexadecimal.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Hexadecimal
+            </a>
+        </li>
+        <li  title="HexColorCode">
+            <a href="hexcolorcode.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                HexColorCode
+            </a>
+        </li>
+        <li  title="HSL">
+            <a href="hsl.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                HSL
+            </a>
+        </li>
+        <li  title="HSLA">
+            <a href="hsla.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                HSLA
+            </a>
+        </li>
+        <li  title="IBAN">
+            <a href="iban.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IBAN
+            </a>
+        </li>
+        <li  title="ID">
+            <a href="id.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ID
+            </a>
+        </li>
+        <li  title="Int">
+            <a href="int.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Int
+            </a>
+        </li>
+        <li  title="IPv4">
+            <a href="ipv4.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IPv4
+            </a>
+        </li>
+        <li  title="IPv6">
+            <a href="ipv6.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IPv6
+            </a>
+        </li>
+        <li  title="ISBN">
+            <a href="isbn.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ISBN
+            </a>
+        </li>
+        <li  title="JSON">
+            <a href="json.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                JSON
+            </a>
+        </li>
+        <li  title="JSONObject">
+            <a href="jsonobject.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                JSONObject
+            </a>
+        </li>
+        <li  title="Long">
+            <a href="long.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Long
+            </a>
+        </li>
+        <li  title="MAC">
+            <a href="mac.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                MAC
+            </a>
+        </li>
+        <li  title="NegativeFloat">
+            <a href="negativefloat.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NegativeFloat
+            </a>
+        </li>
+        <li  title="NegativeInt">
+            <a href="negativeint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NegativeInt
+            </a>
+        </li>
+        <li  title="NonNegativeFloat">
+            <a href="nonnegativefloat.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NonNegativeFloat
+            </a>
+        </li>
+        <li  title="NonNegativeInt">
+            <a href="nonnegativeint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NonNegativeInt
+            </a>
+        </li>
+        <li  title="NonPositiveFloat">
+            <a href="nonpositivefloat.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NonPositiveFloat
+            </a>
+        </li>
+        <li  title="NonPositiveInt">
+            <a href="nonpositiveint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NonPositiveInt
+            </a>
+        </li>
+        <li  title="ObjectID">
+            <a href="objectid.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ObjectID
+            </a>
+        </li>
+        <li  title="Password">
+            <a href="password.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Password
+            </a>
+        </li>
+        <li  title="PhoneNumber">
+            <a href="phonenumber.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PhoneNumber
+            </a>
+        </li>
+        <li  title="Port">
+            <a href="port.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Port
+            </a>
+        </li>
+        <li  title="PositiveFloat">
+            <a href="positivefloat.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PositiveFloat
+            </a>
+        </li>
+        <li  title="PositiveInt">
+            <a href="positiveint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PositiveInt
+            </a>
+        </li>
+        <li  title="PostalCode">
+            <a href="postalcode.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PostalCode
+            </a>
+        </li>
+        <li  title="RGB">
+            <a href="rgb.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RGB
+            </a>
+        </li>
+        <li  title="RGBA">
+            <a href="rgba.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RGBA
+            </a>
+        </li>
+        <li  title="String">
+            <a href="string.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                String
+            </a>
+        </li>
+        <li  title="Time">
+            <a href="time.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Time
+            </a>
+        </li>
+        <li  title="Timestamp">
+            <a href="timestamp.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Timestamp
+            </a>
+        </li>
+        <li  title="UnsignedFloat">
+            <a href="unsignedfloat.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UnsignedFloat
+            </a>
+        </li>
+        <li  title="UnsignedInt">
+            <a href="unsignedint.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UnsignedInt
+            </a>
+        </li>
+        <li  title="URL">
+            <a href="url.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                URL
+            </a>
+        </li>
+        <li  title="USCurrency">
+            <a href="uscurrency.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                USCurrency
+            </a>
+        </li>
+        <li  title="Username">
+            <a href="username.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Username
+            </a>
+        </li>
+        <li  title="UtcOffset">
+            <a href="utcoffset.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UtcOffset
+            </a>
+        </li>
+        <li  title="Void">
+            <a href="void.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Void
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
+    <ul>
+        <li  title="FilterItemCondEnum">
+            <a href="filteritemcondenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                FilterItemCondEnum
+            </a>
+        </li>
+        <li  title="IconColorEnum">
+            <a href="iconcolorenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IconColorEnum
+            </a>
+        </li>
+        <li  title="QuestionDifficultyEnum">
+            <a href="questiondifficultyenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                QuestionDifficultyEnum
+            </a>
+        </li>
+        <li  title="QuestionTypeEnum">
+            <a href="questiontypeenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                QuestionTypeEnum
+            </a>
+        </li>
+        <li  title="ResourceTypeEnum">
+            <a href="resourcetypeenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ResourceTypeEnum
+            </a>
+        </li>
+        <li  title="SortItemOrderEnum">
+            <a href="sortitemorderenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SortItemOrderEnum
+            </a>
+        </li>
+        <li  title="ThemeEnum">
+            <a href="themeenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ThemeEnum
+            </a>
+        </li>
+        <li  title="VersionEnum">
+            <a href="versionenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                VersionEnum
+            </a>
+        </li>
+        <li  title="ViewEnum">
+            <a href="viewenum.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ViewEnum
+            </a>
+        </li>
+        <li  title="__DirectiveLocation">
+            <a href="directivelocation.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __DirectiveLocation
+            </a>
+        </li>
+        <li  title="__TypeKind">
+            <a href="typekind.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __TypeKind
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Interfaces</h4>
+    <ul>
+        <li  title="Environment">
+            <a href="environment.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Environment
+            </a>
+        </li>
+        <li  title="Folder">
+            <a href="folder.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Folder
+            </a>
+        </li>
+        <li  title="Question">
+            <a href="question.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Question
+            </a>
+        </li>
+        <li  title="Quiz">
+            <a href="quiz.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Quiz
+            </a>
+        </li>
+        <li  title="User">
+            <a href="user.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                User
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Objects</h4>
+    <ul>
+        <li  title="AuthPayload">
+            <a href="authpayload.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                AuthPayload
+            </a>
+        </li>
+        <li  title="FilterItem">
+            <a href="filteritem.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                FilterItem
+            </a>
+        </li>
+        <li  title="FilterSort">
+            <a href="filtersort.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                FilterSort
+            </a>
+        </li>
+        <li  title="Inbox">
+            <a href="inbox.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Inbox
+            </a>
+        </li>
+        <li  title="KeyBindingType">
+            <a href="keybindingtype.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                KeyBindingType
+            </a>
+        </li>
+        <li  title="Message">
+            <a href="message.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Message
+            </a>
+        </li>
+        <li  title="NameAndId">
+            <a href="nameandid.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                NameAndId
+            </a>
+        </li>
+        <li  title="OthersEnvironment">
+            <a href="othersenvironment.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OthersEnvironment
+            </a>
+        </li>
+        <li  title="OthersFolder">
+            <a href="othersfolder.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OthersFolder
+            </a>
+        </li>
+        <li  title="OthersQuestion">
+            <a href="othersquestion.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OthersQuestion
+            </a>
+        </li>
+        <li  title="OthersQuiz">
+            <a href="othersquiz.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OthersQuiz
+            </a>
+        </li>
+        <li  title="OthersUser">
+            <a href="othersuser.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OthersUser
+            </a>
+        </li>
+        <li  title="PageInfo">
+            <a href="pageinfo.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PageInfo
+            </a>
+        </li>
+        <li  title="QuestionAnswersOutput">
+            <a href="questionanswersoutput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                QuestionAnswersOutput
+            </a>
+        </li>
+        <li  title="QuestionStats">
+            <a href="questionstats.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                QuestionStats
+            </a>
+        </li>
+        <li  title="QuestionValidationOutput">
+            <a href="questionvalidationoutput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                QuestionValidationOutput
+            </a>
+        </li>
+        <li  title="QuizQuestionStats">
+            <a href="quizquestionstats.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                QuizQuestionStats
+            </a>
+        </li>
+        <li  title="RatingsOutput">
+            <a href="ratingsoutput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RatingsOutput
+            </a>
+        </li>
+        <li  title="Report">
+            <a href="report.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Report
+            </a>
+        </li>
+        <li  title="ReportDisabled">
+            <a href="reportdisabled.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ReportDisabled
+            </a>
+        </li>
+        <li  title="ReportQuestion">
+            <a href="reportquestion.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ReportQuestion
+            </a>
+        </li>
+        <li  title="SelfEnvironment">
+            <a href="selfenvironment.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SelfEnvironment
+            </a>
+        </li>
+        <li  title="SelfFolder">
+            <a href="selffolder.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SelfFolder
+            </a>
+        </li>
+        <li  title="SelfQuestion">
+            <a href="selfquestion.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SelfQuestion
+            </a>
+        </li>
+        <li  title="SelfQuiz">
+            <a href="selfquiz.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SelfQuiz
+            </a>
+        </li>
+        <li  title="SelfUser">
+            <a href="selfuser.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SelfUser
+            </a>
+        </li>
+        <li  title="SortItem">
+            <a href="sortitem.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SortItem
+            </a>
+        </li>
+        <li  title="Status">
+            <a href="status.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Status
+            </a>
+        </li>
+        <li  title="TagOutput">
+            <a href="tagoutput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TagOutput
+            </a>
+        </li>
+        <li  title="UsernameAndId">
+            <a href="usernameandid.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UsernameAndId
+            </a>
+        </li>
+        <li  title="Watchlist">
+            <a href="watchlist.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Watchlist
+            </a>
+        </li>
+        <li  title="__Directive">
+            <a href="directive.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Directive
+            </a>
+        </li>
+        <li  title="__EnumValue">
+            <a href="enumvalue.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __EnumValue
+            </a>
+        </li>
+        <li  title="__Field">
+            <a href="field.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Field
+            </a>
+        </li>
+        <li  title="__InputValue">
+            <a href="inputvalue.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __InputValue
+            </a>
+        </li>
+        <li  title="__Schema">
+            <a href="schema.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Schema
+            </a>
+        </li>
+        <li  title="__Type">
+            <a href="type.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                __Type
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Input Objects</h4>
+    <ul>
+        <li  title="CreateEnvironmentInput">
+            <a href="createenvironmentinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CreateEnvironmentInput
+            </a>
+        </li>
+        <li  title="CreateFilterSortInput">
+            <a href="createfiltersortinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CreateFilterSortInput
+            </a>
+        </li>
+        <li  title="CreateFolderInput">
+            <a href="createfolderinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CreateFolderInput
+            </a>
+        </li>
+        <li  title="CreateQuestionInput">
+            <a href="createquestioninput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CreateQuestionInput
+            </a>
+        </li>
+        <li  title="CreateQuizInput">
+            <a href="createquizinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                CreateQuizInput
+            </a>
+        </li>
+        <li  title="FilterItemInput">
+            <a href="filteriteminput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                FilterItemInput
+            </a>
+        </li>
+        <li  title="IdAnswer">
+            <a href="idanswer.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                IdAnswer
+            </a>
+        </li>
+        <li  title="KeyBindingTypeInput">
+            <a href="keybindingtypeinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                KeyBindingTypeInput
+            </a>
+        </li>
+        <li  title="PageInfoInput">
+            <a href="pageinfoinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PageInfoInput
+            </a>
+        </li>
+        <li  title="PaginationInput">
+            <a href="paginationinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                PaginationInput
+            </a>
+        </li>
+        <li  title="RatingsInput">
+            <a href="ratingsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                RatingsInput
+            </a>
+        </li>
+        <li  title="ReportDisabledInput">
+            <a href="reportdisabledinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ReportDisabledInput
+            </a>
+        </li>
+        <li  title="ReportInput">
+            <a href="reportinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ReportInput
+            </a>
+        </li>
+        <li  title="ReportQuestionInput">
+            <a href="reportquestioninput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ReportQuestionInput
+            </a>
+        </li>
+        <li  title="SortItemInput">
+            <a href="sortiteminput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SortItemInput
+            </a>
+        </li>
+        <li  title="TagConfigInput">
+            <a href="tagconfiginput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                TagConfigInput
+            </a>
+        </li>
+        <li  title="UpdateEnvironmentInput">
+            <a href="updateenvironmentinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UpdateEnvironmentInput
+            </a>
+        </li>
+        <li  title="UpdateFilterSortInput">
+            <a href="updatefiltersortinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UpdateFilterSortInput
+            </a>
+        </li>
+        <li  title="UpdateFolderInput">
+            <a href="updatefolderinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UpdateFolderInput
+            </a>
+        </li>
+        <li  title="UpdateQuestionInput">
+            <a href="updatequestioninput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UpdateQuestionInput
+            </a>
+        </li>
+        <li  title="UpdateQuizInput">
+            <a href="updatequizinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UpdateQuizInput
+            </a>
+        </li>
+        <li  title="UpdateUserDetailsInput">
+            <a href="updateuserdetailsinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UpdateUserDetailsInput
+            </a>
+        </li>
+        <li  title="updateUserPasswordInput">
+            <a href="updateuserpasswordinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                updateUserPasswordInput
+            </a>
+        </li>
+        <li  title="UserRegisterInput">
+            <a href="userregisterinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UserRegisterInput
+            </a>
+        </li>
+        <li  title="UserSigninInput">
+            <a href="usersignininput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                UserSigninInput
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
+    <h4 class="slds-text-title--caps slds-p-around--medium">Directives</h4>
+    <ul>
+        <li  title="deprecated">
+            <a href="deprecated.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                deprecated
+            </a>
+        </li>
+        <li  title="include">
+            <a href="include.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                include
+            </a>
+        </li>
+        <li  title="skip">
+            <a href="skip.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                skip
+            </a>
+        </li>
+        <li  title="specifiedBy">
+            <a href="specifiedby.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                specifiedBy
+            </a>
+        </li>
+    </ul>
+</div>
+        </div>
+    </nav>
+    <main><section class="title slds-theme--inverse">
+    <div class="container slds-grid">
+        <div>
+        <button class="slds-button js-toggle-navigation less-than-medium">
+            <i class="material-icons slds-button__icon slds-button__icon--left">menu</i>
+            <span class="slds-text-title--caps">Types<span>
+        </button>
+        </div>
+        </div>
+    </div>
+    <div class="container">
+        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
+        <h1 class="slds-text-heading--large">Query</h1>
+        <div class="slds-text-body--regular"></div>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <h2 id="graphql-schema-definition" class="graphdoc-section__title slds-text-heading--medium slds-m-top--small">
+            <a href="#graphql-schema-definition">
+                <i class="material-icons">link</i>
+            </a>
+            GraphQL Schema definition
+        </h2>
+        <code class="highlight"><ul class="code" style="padding-left:56px"><li><span class="keyword operator ts">type</span> <span class="identifier">Query</span> {</li><li></li><li><span class="tab"><span class="meta">_empty</span>: <a class="support type" href="boolean.doc.html">Boolean</a> </span></li><li></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>password</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">checkPassword</span>(<span class="meta">password</span>: <a class="support type" href="password.doc.html">Password</a>!): <a class="support type" href="status.doc.html">Status</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed users (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedUsers</span>: [<a class="support type" href="othersuser.doc.html">OthersUser</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed users username and id (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedUsersUsername</span>: [<a class="support type" href="usernameandid.doc.html">UsernameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed users tags (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>config</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getAllMixedUsersTags</span>(<span class="meta">config</span>: <a class="support type" href="tagconfiginput.doc.html">TagConfigInput</a>): <a class="support type" href="tagoutput.doc.html">TagOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed users count (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedUsersCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other users</span></span></li><li><span class="tab"><span class="meta">getAllOthersUsers</span>: [<a class="support type" href="othersuser.doc.html">OthersUser</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other users username and id</span></span></li><li><span class="tab"><span class="meta">getAllOthersUsersUsername</span>: [<a class="support type" href="usernameandid.doc.html">UsernameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other users tags</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>config</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getAllOthersUsersTags</span>(<span class="meta">config</span>: <a class="support type" href="tagconfiginput.doc.html">TagConfigInput</a>): <a class="support type" href="tagoutput.doc.html">TagOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all others users count</span></span></li><li><span class="tab"><span class="meta">getAllOthersUsersCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self user tags</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>config</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getAllSelfUsersTags</span>(<span class="meta">config</span>: <a class="support type" href="tagconfiginput.doc.html">TagConfigInput</a>): <a class="support type" href="tagoutput.doc.html">TagOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed users (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedUsers</span>(<span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!): [<a class="support type" href="othersuser.doc.html">OthersUser</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed users username and id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedUsersUsername</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="usernameandid.doc.html">UsernameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered mixed users count (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredMixedUsersCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others users</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersUsers</span>(<span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!): [<a class="support type" href="othersuser.doc.html">OthersUser</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others users username and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersUsersUsername</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="usernameandid.doc.html">UsernameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered others users count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredOthersUsersCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed user by id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedUsersById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersuser.doc.html">OthersUser</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others users by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getOthersUsersById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersuser.doc.html">OthersUser</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others users by id tags</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="comment line">#   <strong>config</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getOthersUsersByIdTags</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!, <span class="meta">config</span>: <a class="support type" href="tagconfiginput.doc.html">TagConfigInput</a>): <a class="support type" href="tagoutput.doc.html">TagOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get self User</span></span></li><li><span class="tab"><span class="meta">getSelfUser</span>: <a class="support type" href="selfuser.doc.html">SelfUser</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed quizzes (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedQuizzes</span>: [<a class="support type" href="othersquiz.doc.html">OthersQuiz</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed quizzes name and id (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedQuizzesName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed quizzes count (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedQuizzesCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other quizzes</span></span></li><li><span class="tab"><span class="meta">getAllOthersQuizzes</span>: [<a class="support type" href="othersquiz.doc.html">OthersQuiz</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other quizzes name and id</span></span></li><li><span class="tab"><span class="meta">getAllOthersQuizzesName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all others quizzes count</span></span></li><li><span class="tab"><span class="meta">getAllOthersQuizzesCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self quizzes</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuizzes</span>: [<a class="support type" href="selfquiz.doc.html">SelfQuiz</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self quizzes name and id</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuizzesName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self quizzes count</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuizzesCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self quizzes questions stats</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuizzesQuestionsStats</span>: [<a class="support type" href="quizquestionstats.doc.html">QuizQuestionStats</a>!] </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed quizzes (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedQuizzes</span>(<span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!): [<a class="support type" href="othersquiz.doc.html">OthersQuiz</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed quizzes name and id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedQuizzesName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered mixed quizzes count (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredMixedQuizzesCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others quizzes</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersQuizzes</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="othersquiz.doc.html">OthersQuiz</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others quizzes name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersQuizzesName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered others quizzes count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredOthersQuizzesCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self quizzes</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfQuizzes</span>(<span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!): [<a class="support type" href="selfquiz.doc.html">SelfQuiz</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self quizzes name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfQuizzesName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered self quizzes count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredSelfQuizzesCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed quiz by id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedQuizzesById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersquiz.doc.html">OthersQuiz</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others quiz by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getOthersQuizzesById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersquiz.doc.html">OthersQuiz</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others quiz by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getSelfQuizzesById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="selfquiz.doc.html">SelfQuiz</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed questions (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedQuestions</span>: [<a class="support type" href="othersquestion.doc.html">OthersQuestion</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed questions name and id (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedQuestionsName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed questions count (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedQuestionsCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other questions</span></span></li><li><span class="tab"><span class="meta">getAllOthersQuestions</span>: [<a class="support type" href="othersquestion.doc.html">OthersQuestion</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other questions name and id</span></span></li><li><span class="tab"><span class="meta">getAllOthersQuestionsName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all others questions count</span></span></li><li><span class="tab"><span class="meta">getAllOthersQuestionsCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self questions</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuestions</span>: [<a class="support type" href="selfquestion.doc.html">SelfQuestion</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self questions name and id</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuestionsName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self questions count</span></span></li><li><span class="tab"><span class="meta">getAllSelfQuestionsCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed questions (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedQuestions</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="othersquestion.doc.html">OthersQuestion</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed questions name and id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedQuestionsName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered mixed questions count (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredMixedQuestionsCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others questions</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersQuestions</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="othersquestion.doc.html">OthersQuestion</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others questions name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersQuestionsName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered others questions count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredOthersQuestionsCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self questions</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfQuestions</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="selfquestion.doc.html">SelfQuestion</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self questions name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfQuestionsName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered self questions count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredSelfQuestionsCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed question by id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedQuestionsById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersquestion.doc.html">OthersQuestion</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed question by id answers (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedQuestionsByIdAnswers</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="questionanswersoutput.doc.html">QuestionAnswersOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed question by ids answers (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>ids</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedQuestionsByIdsAnswers</span>(<span class="meta">ids</span>: [<a class="support type" href="id.doc.html">ID</a>!]!): [<a class="support type" href="questionanswersoutput.doc.html">QuestionAnswersOutput</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed question by id validation (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>data</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedQuestionsByIdValidation</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">data</span>: <a class="support type" href="idanswer.doc.html">IdAnswer</a>!</span></span></li><li><span class="tab">): <a class="support type" href="questionvalidationoutput.doc.html">QuestionValidationOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed question by ids validation (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>data</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedQuestionsByIdsValidation</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">data</span>: [<a class="support type" href="idanswer.doc.html">IdAnswer</a>!]!</span></span></li><li><span class="tab">): <a class="support type" href="questionvalidationoutput.doc.html">QuestionValidationOutput</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others question by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getOthersQuestionsById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersquestion.doc.html">OthersQuestion</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others question by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getSelfQuestionsById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="selfquestion.doc.html">SelfQuestion</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed folders (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedFolders</span>: [<a class="support type" href="othersfolder.doc.html">OthersFolder</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed folders name and id (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedFoldersName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed folders count (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedFoldersCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other folders</span></span></li><li><span class="tab"><span class="meta">getAllOthersFolders</span>: [<a class="support type" href="othersfolder.doc.html">OthersFolder</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other folders name and id</span></span></li><li><span class="tab"><span class="meta">getAllOthersFoldersName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all others folders count</span></span></li><li><span class="tab"><span class="meta">getAllOthersFoldersCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self folders</span></span></li><li><span class="tab"><span class="meta">getAllSelfFolders</span>: [<a class="support type" href="selffolder.doc.html">SelfFolder</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self folders name and id</span></span></li><li><span class="tab"><span class="meta">getAllSelfFoldersName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self folders count</span></span></li><li><span class="tab"><span class="meta">getAllSelfFoldersCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed folders (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedFolders</span>(<span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!): [<a class="support type" href="othersfolder.doc.html">OthersFolder</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed folders name and id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedFoldersName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered mixed folders count (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredMixedFoldersCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others folders</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersFolders</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="othersfolder.doc.html">OthersFolder</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others folders name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersFoldersName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered others folders count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredOthersFoldersCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self folders</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfFolders</span>(<span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!): [<a class="support type" href="selffolder.doc.html">SelfFolder</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self folders name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfFoldersName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered self folders count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredSelfFoldersCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed folder by id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedFoldersById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersfolder.doc.html">OthersFolder</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others folder by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getOthersFoldersById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersfolder.doc.html">OthersFolder</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others folder by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getSelfFoldersById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="selffolder.doc.html">SelfFolder</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed environments (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedEnvironments</span>: [<a class="support type" href="othersenvironment.doc.html">OthersEnvironment</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed environments name and id (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedEnvironmentsName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all mixed environments count (U)</span></span></li><li><span class="tab"><span class="meta">getAllMixedEnvironmentsCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other environments</span></span></li><li><span class="tab"><span class="meta">getAllOthersEnvironments</span>: [<a class="support type" href="othersenvironment.doc.html">OthersEnvironment</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all other environments name and id</span></span></li><li><span class="tab"><span class="meta">getAllOthersEnvironmentsName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all others environments count</span></span></li><li><span class="tab"><span class="meta">getAllOthersEnvironmentsCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self environments</span></span></li><li><span class="tab"><span class="meta">getAllSelfEnvironments</span>: [<a class="support type" href="selfenvironment.doc.html">SelfEnvironment</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self environments name and id</span></span></li><li><span class="tab"><span class="meta">getAllSelfEnvironmentsName</span>: [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self environments count</span></span></li><li><span class="tab"><span class="meta">getAllSelfEnvironmentsCount</span>: <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed environments (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedEnvironments</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="othersenvironment.doc.html">OthersEnvironment</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated mixed environments name and id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedMixedEnvironmentsName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered mixed environments count (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredMixedEnvironmentsCount</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a></span></span></li><li><span class="tab">): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others environments</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersEnvironments</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="othersenvironment.doc.html">OthersEnvironment</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated others environments name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedOthersEnvironmentsName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered others environments count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredOthersEnvironmentsCount</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a></span></span></li><li><span class="tab">): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self environments</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfEnvironments</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="selfenvironment.doc.html">SelfEnvironment</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get paginated self environments name and id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>pagination</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getPaginatedSelfEnvironmentsName</span>(</span></li><li><span class="tab"><span class="tab"><span class="meta">pagination</span>: <a class="support type" href="paginationinput.doc.html">PaginationInput</a>!</span></span></li><li><span class="tab">): [<a class="support type" href="nameandid.doc.html">NameAndId</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get filtered self environments count</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>filter</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getFilteredSelfEnvironmentsCount</span>(<span class="meta">filter</span>: <a class="support type" href="json.doc.html">JSON</a>): <a class="support type" href="nonnegativeint.doc.html">NonNegativeInt</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get mixed environment by id (U)</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getMixedEnvironmentsById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersenvironment.doc.html">OthersEnvironment</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others environment by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getOthersEnvironmentsById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="othersenvironment.doc.html">OthersEnvironment</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get others environment by id</span></span></li><li><span class="tab"><span class="comment line"># </span></span></li><li><span class="tab"><span class="comment line"># Arguments</span></span></li><li><span class="tab"><span class="comment line">#   <strong>id</strong>: [<strong>Not documented</strong>]</span></span></li><li><span class="tab"><span class="meta">getSelfEnvironmentsById</span>(<span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>!): <a class="support type" href="selfenvironment.doc.html">SelfEnvironment</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   Get all self filtersorts</span></span></li><li><span class="tab"><span class="meta">getAllSelfFilterSorts</span>: [<a class="support type" href="filtersort.doc.html">FilterSort</a>!]! </span></li><li>}</li></ul></code>
+    </div>
+</section>
+<section>
+    <div class="container">
+        <h2 id="require-by" class="graphdoc-section__title slds-text-heading--medium slds-m-top--small">
+            <a href="#require-by">
+                <i class="material-icons">link</i>
+            </a>
+            Require by
+        </h2>
+        <div class="require-by anyone">This element is not required by anyone</div>
+    </div>
+</section>
+<footer>
+<div class="container slds-p-around--large">
+    <p class="slds-text-align--right slds-text-title--caps">
+        Generated with <a href="https://github.com/2fd/graphdoc#readme" target="_blank">graphdoc 2.4.0</a>
+    </p>
+</div>
+</footer>
+</main>
+    <script src="./scripts/focus-active.js"></script>
+    <script src="./scripts/filter-types.js"></script>
+    <script src="./scripts/toggle-navigation.js"></script>
+</body>

@@ -102,5 +102,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "graphdoc": {
+    "endpoint": "http://localhost:5002/graphql",
+    "output": "./docs/api/Graphql"
   }
 }
