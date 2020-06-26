@@ -78,12 +78,12 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 		{ name: 'create', link: `create/${user.current_environment.default_create_landing}`, icon: <NoteAddIcon /> },
 		{
 			name: 'explore',
-			link: `explore/${user.current_environment.default_explore_landing.toLowerCase()}`,
+			link: `explore/${user.current_environment.explore_page.default_landing.toLowerCase()}`,
 			icon: <ExploreIcon />
 		},
 		{ name: 'play', link: 'play', icon: <PlayCircleFilledIcon /> },
 		{ name: 'import', link: 'import/Quiz', icon: <PublishRoundedIcon /> },
-		{ name: 'self', link: `self/${user.current_environment.default_self_landing}`, icon: <FaceIcon /> }
+		{ name: 'self', link: `self/${user.current_environment.self_page.default_landing}`, icon: <FaceIcon /> }
 	];
 	const index = headers.findIndex(({ name }) => name === location.pathname.replace(/\//g, '\\').split('\\')[1]);
 	return (
@@ -141,7 +141,9 @@ function NavbarAuth({ user, refetch, history, match, location }) {
 				<MenuItem onClick={switchPage.bind(null, `report`)}>
 					<AssessmentIcon />Report
 				</MenuItem>
-				<MenuItem onClick={switchPage.bind(null, `watchlist/${user.current_environment.default_watchlist_landing}`)}>
+				<MenuItem
+					onClick={switchPage.bind(null, `watchlist/${user.current_environment.watchlist_page.default_landing}`)}
+				>
 					<ListAltIcon />Watchlist
 				</MenuItem>
 				<MenuItem onClick={switchPage.bind(null, `inbox`)}>

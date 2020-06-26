@@ -133,16 +133,15 @@ Array(5).fill(0).forEach((_, i) => {
 		default: 'List'
 	};
 
-	if (page !== 'play') {
-		target[`default_landing`] = {
-			type: String,
-			default: 'Quiz'
-		};
-		target[`default_layout`] = {
-			type: String,
-			default: 'Left'
-		};
-	}
+	target[`default_landing`] = {
+		type: String,
+		default: 'Quiz'
+	};
+
+	target[`default_layout`] = {
+		type: String,
+		default: 'Left'
+	};
 });
 
 const EnvironmentSchema = extendSchema(ResourceSchema, envSchema);

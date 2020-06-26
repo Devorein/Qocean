@@ -51,7 +51,7 @@ casual.define('environment', function() {
 		target[`default_landing`] = ((page) => {
 			if (page === 'explore') return resources[getRandomInt(0, resources.length - 1)];
 			else if (page === 'self') return resources.slice(1)[getRandomInt(0, resources.length - 2)];
-			else if (page === 'watchlist') return [ 'Quiz', 'Folder' ][getRandomInt(0, 1)];
+			else if (page.match(/(watchlist|play)/)) return [ 'Quiz', 'Folder' ][getRandomInt(0, 1)];
 			else return [];
 		})(page);
 	});

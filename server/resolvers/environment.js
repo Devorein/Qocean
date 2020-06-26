@@ -179,28 +179,35 @@ const EnvironmentResolvers = {
 	},
 	SelfEnvironment: {
 		theme: (parent) => parent.theme,
-		default_question_type: (parent) => parent.default_question_type,
-		default_question_difficulty: (parent) => parent.default_question_difficulty,
-		keybindings: (parent) => parent.keybindings,
-		explore_page: (parent) => parent.explore_page,
-		play_page: (parent) => parent.play_page,
-		self_page: (parent) => parent.self_page,
-		icon: (parent) => parent.icon,
-		watchlist_page: (parent) => parent.watchlist_page
-	},
-	OthersEnvironment: {
-		theme: (parent) => parent.theme,
-		default_question_type: (parent) => parent.default_question_type,
-		default_question_difficulty: (parent) => parent.default_question_difficulty,
 		keybindings: (parent) => parent.keybindings,
 		explore_page: (parent) => parent.explore_page,
 		play_page: (parent) => parent.play_page,
 		self_page: (parent) => parent.self_page,
 		watchlist_page: (parent) => parent.watchlist_page,
-		icon: (parent) => parent.icon
+		icon: (parent) => parent.icon,
+		question: (parent) => parent.question
+	},
+	OthersEnvironment: {
+		theme: (parent) => parent.theme,
+		keybindings: (parent) => parent.keybindings,
+		explore_page: (parent) => parent.explore_page,
+		play_page: (parent) => parent.play_page,
+		self_page: (parent) => parent.self_page,
+		watchlist_page: (parent) => parent.watchlist_page,
+		icon: (parent) => parent.icon,
+		question: (parent) => parent.question
 	},
 	PageInfo: {
-		default_view: (parent) => parent.default_view
+		default_view: (parent) => parent.default_view,
+		default_ipp: (parent) => parent.default_ipp,
+		default_landing: (parent) => parent.default_landing,
+		default_layout: (parent) => parent.default_layout
+	},
+	QuestionInfo: {
+		default_type: (parent) => parent.default_type,
+		default_difficulty: (parent) => parent.default_difficulty,
+		default_timing: (parent) => parent.default_timing,
+		default_weight: (parent) => parent.default_weight
 	}
 };
 
