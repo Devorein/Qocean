@@ -5,8 +5,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import uifx from 'uifx';
 import { AppContext } from '../../context/AppContext';
 
-import PopSound from '../../sounds/Pop.mp3';
-import MenuSelectionSound from '../../sounds/Menu Selection.mp3';
+import PopSound from '../../assets/sounds/Pop.mp3';
+import MenuSelectionSound from '../../assets/sounds/Menu Selection.mp3';
 
 const Pop = new uifx(PopSound, { volume: 0.5 });
 const MenuSelection = new uifx(MenuSelectionSound, { volume: 0.5 });
