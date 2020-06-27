@@ -35,7 +35,6 @@
     "lodash": "^4.17.15",
     "mongoose": "^5.9.20",
     "morgan": "^1.10.0",
-    "node-sass": "^4.14.1",
     "nodemailer": "^6.4.10",
     "qs": "^6.9.4",
     "randomcolor": "^0.5.4",
