@@ -30,10 +30,10 @@ class WithSessions extends React.Component {
 	render() {
 		return (
 			<Query query={getSelfUser}>
-				{({ loading, error, data }) => {
+				{({ loading, error, data, refetch }) => {
 					return this.props.children({
 						session: { user: !error && !loading ? data.getSelfUser : null },
-						refetch: this.refetch,
+						refetch,
 						updateUserLocally: (user) => {
 							const { session } = this.state;
 							session.data.user = user;
