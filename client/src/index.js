@@ -55,7 +55,8 @@ class App extends Component {
 					<AppContext.Provider
 						value={{
 							user: session.user,
-							refetchUser: this.props.refetch
+							refetchUser: this.props.refetch,
+							pageQueries: getPageQueries()
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />

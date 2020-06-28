@@ -48,3 +48,15 @@ export const getPaginatedOthersUsers = gql`
     ${USER_DATA_NONREL}
   }
 `;
+
+export const getFilteredOthersUsersCount = gql`
+	query getFilteredOthersUsersCount($filter: JSON) {
+		getFilteredOthersUsersCount(filter: $filter)
+	}
+`;
+
+export const getFilteredMixedUsersCount = gql`
+	query getFilteredMixedUsersCount($filter: JSON) {
+		getFilteredMixedUsersCount(filter: $filter)
+	}
+`;

@@ -9,7 +9,7 @@ import detectCurrentEnvPageProp from '../../Utils/detectCurrentEnvPageProp';
 class DataFetcher extends React.Component {
 	static contextType = AppContext;
 	state = {
-		type: detectCurrentEnvPageProp({ user: this.context.user, page: this.props.page, prop: 'type' })
+		type: detectCurrentEnvPageProp({ user: this.context.user, page: this.props.page, prop: 'landing' })
 	};
 
 	render() {
@@ -17,16 +17,27 @@ class DataFetcher extends React.Component {
 		let { page, authedUser, pageQueries } = this.props;
 		page = page.toLowerCase();
 		type = type.toLowerCase();
-		const countQuery = pageQueries[`${page}.${type}.${authedUser ? 'auth' : 'unauth'}Count`];
-		const dataQuery = pageQueries[`${page}.${type}.${authedUser ? 'auth' : 'unauth'}`];
+		const countQuery = pageQueries[`${page}.${type}.${authedUser ? 'auth' : 'unauth'}.count`];
+		const dataQuery = pageQueries[`${page}.${type}.${authedUser ? 'auth' : 'unauth'}.data`];
 		return countQuery && dataQuery ? (
 			<Composer
 				components={[
 					({ render }) => <Query query={countQuery} children={render} />,
-					({ render }) => <Query query={dataQuery} children={render} />
+					({ render }) => (
+						<Query
+							query={dataQuery}
+							variables={{
+								pagination: {
+									limit: 15,
+									page: 1
+								}
+							}}
+							children={render}
+						/>
+					)
 				]}
 			>
-				{({ countQuery, dataQuery }) => {
+				{([ countQuery, dataQuery ]) => {
 					return this.props.children({
 						data: dataQuery.data,
 						totalCount: countQuery.data,

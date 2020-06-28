@@ -65,3 +65,21 @@ export const getPaginatedSelfQuestions = gql`
   }
   ${SELF_QUESTION_DATA_CONCISE}
 `;
+
+export const getFilteredOthersQuestionsCount = gql`
+	query getFilteredOthersQuestionsCount($filter: JSON) {
+		getFilteredOthersQuestionsCount(filter: $filter)
+	}
+`;
+
+export const getFilteredMixedQuestionsCount = gql`
+	query getFilteredMixedQuestionsCount($filter: JSON) {
+		getFilteredMixedQuestionsCount(filter: $filter)
+	}
+`;
+
+export const getFilteredSelfQuestionsCount = gql`
+	query getFilteredSelfQuestionsCount($filter: JSON) {
+		getFilteredSelfQuestionsCount(filter: $filter)
+	}
+`;

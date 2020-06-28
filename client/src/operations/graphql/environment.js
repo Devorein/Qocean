@@ -125,3 +125,21 @@ export const getPaginatedSelfEnvironments = gql`
   }
   ${SELF_ENV_DATA_CONCISE}
 `;
+
+export const getFilteredOthersEnvironmentsCount = gql`
+	query getFilteredOthersEnvironmentsCount($filter: JSON) {
+		getFilteredOthersEnvironmentsCount(filter: $filter)
+	}
+`;
+
+export const getFilteredMixedEnvironmentsCount = gql`
+	query getFilteredMixedEnvironmentsCount($filter: JSON) {
+		getFilteredMixedEnvironmentsCount(filter: $filter)
+	}
+`;
+
+export const getFilteredSelfEnvironmentsCount = gql`
+	query getFilteredSelfEnvironmentsCount($filter: JSON) {
+		getFilteredSelfEnvironmentsCount(filter: $filter)
+	}
+`;

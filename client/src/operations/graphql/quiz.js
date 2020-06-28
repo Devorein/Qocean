@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 const SELF_QUIZ_DATA_CONCISE = gql`
-	fragment quizDataConcise on SelfQuestion {
+	fragment quizDataConcise on SelfQuiz {
 		id
 		name
 		subject
@@ -21,7 +21,7 @@ const SELF_QUIZ_DATA_CONCISE = gql`
 `;
 
 const OTHERS_QUIZ_DATA_CONCISE = gql`
-	fragment quizDataConcise on OthersQuestion {
+	fragment quizDataConcise on OthersQuiz {
 		id
 		name
 		subject
@@ -35,7 +35,6 @@ const OTHERS_QUIZ_DATA_CONCISE = gql`
 		total_questions
 		total_folders
 		total_played
-		watchers
 	}
 `;
 
@@ -64,4 +63,22 @@ export const getPaginatedSelfQuizzes = gql`
     }
   }
   ${SELF_QUIZ_DATA_CONCISE}
+`;
+
+export const getFilteredOthersQuizzesCount = gql`
+	query getFilteredOthersQuizzesCount($filter: JSON) {
+		getFilteredOthersQuizzesCount(filter: $filter)
+	}
+`;
+
+export const getFilteredMixedQuizzesCount = gql`
+	query getFilteredMixedQuizzesCount($filter: JSON) {
+		getFilteredMixedQuizzesCount(filter: $filter)
+	}
+`;
+
+export const getFilteredSelfQuizzesCount = gql`
+	query getFilteredSelfQuizzesCount($filter: JSON) {
+		getFilteredSelfQuizzesCount(filter: $filter)
+	}
 `;

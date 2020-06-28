@@ -27,17 +27,25 @@ export default function() {
 		resources.forEach((resource) => {
 			const pluralCapitalizedResource = pluralize(resource.charAt(0).toUpperCase() + resource.substr(1), 2);
 			if (auth === 0 || auth === 1) {
-				if (!page.match(/(self|play)/))
-					queries[`${page}.${resource}.auth`] =
+				if (!page.match(/(self|play)/)) {
+					queries[`${page}.${resource}.auth.data`] =
 						resourceQueries[resource][`getPaginatedOthers${pluralCapitalizedResource}`];
-				else
-					queries[`${page}.${resource}.auth`] =
+					queries[`${page}.${resource}.auth.count`] =
+						resourceQueries[resource][`getFilteredOthers${pluralCapitalizedResource}Count`];
+				} else {
+					queries[`${page}.${resource}.auth.data`] =
 						resourceQueries[resource][`getPaginatedSelf${pluralCapitalizedResource}`];
+					queries[`${page}.${resource}.auth.count`] =
+						resourceQueries[resource][`getFilteredSelf${pluralCapitalizedResource}Count`];
+				}
 			}
 
-			if (auth === 0)
-				queries[`${page}.${resource}.unauth`] =
-					resourceQueries[resource][`getPaginatedOthers${pluralCapitalizedResource}`];
+			if (auth === 0) {
+				queries[`${page}.${resource}.unauth.data`] =
+					resourceQueries[resource][`getPaginatedMixed${pluralCapitalizedResource}`];
+				queries[`${page}.${resource}.unauth.count`] =
+					resourceQueries[resource][`getFilteredMixed${pluralCapitalizedResource}Count`];
+			}
 		});
 	});
 	return queries;

@@ -50,3 +50,21 @@ export const getPaginatedSelfFolders = gql`
   }
   ${SELF_FOLDER_DATA_CONCISE}
 `;
+
+export const getFilteredOthersFoldersCount = gql`
+	query getFilteredOthersFoldersCount($filter: JSON) {
+		getFilteredOthersFoldersCount(filter: $filter)
+	}
+`;
+
+export const getFilteredMixedFoldersCount = gql`
+	query getFilteredMixedFoldersCount($filter: JSON) {
+		getFilteredMixedFoldersCount(filter: $filter)
+	}
+`;
+
+export const getFilteredSelfFoldersCount = gql`
+	query getFilteredSelfFoldersCount($filter: JSON) {
+		getFilteredSelfFoldersCount(filter: $filter)
+	}
+`;
