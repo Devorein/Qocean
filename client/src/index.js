@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/client';
-
+import { createStore } from 'redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core';
@@ -30,9 +31,14 @@ import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
+import reducers from './reducers';
+import middlewares from './middlewares';
+
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
+
+const store = createStore(reducers, middlewares);
 
 class App extends Component {
 	render() {
@@ -189,17 +195,19 @@ const Snackbar = ({ session, refetch, updateUserLocally }) => {
 
 ReactDOM.render(
 	<ApolloProvider client={client}>
-		<WithSessions>
-			{({ session, refetch, updateUserLocally }) => {
-				return (
-					<Router>
-						<ThemeProvider theme={theme(session.user ? session.user.current_environment : {})}>
-							<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
-						</ThemeProvider>
-					</Router>
-				);
-			}}
-		</WithSessions>
+		<ReduxProvider store={store}>
+			<WithSessions>
+				{({ session, refetch, updateUserLocally }) => {
+					return (
+						<Router>
+							<ThemeProvider theme={theme(session.user ? session.user.current_environment : {})}>
+								<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
+							</ThemeProvider>
+						</Router>
+					);
+				}}
+			</WithSessions>
+		</ReduxProvider>
 	</ApolloProvider>,
 	document.getElementById('root')
 );

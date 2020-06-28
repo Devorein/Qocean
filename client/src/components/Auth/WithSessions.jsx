@@ -1,7 +1,10 @@
 import React from 'react';
 import axios from 'axios';
 import { Query } from '@apollo/react-components';
+import { connect } from 'react-redux';
+
 import { getSelfUser } from '../../operations/graphql/user';
+import { setAuthedUser } from '../../actions/authedUser';
 
 class WithSessions extends React.Component {
 	refetch = () => {
@@ -31,6 +34,7 @@ class WithSessions extends React.Component {
 		return (
 			<Query query={getSelfUser}>
 				{({ loading, error, data, refetch }) => {
+					if (!loading) this.props.dispatch(setAuthedUser(data.getSelfUser));
 					return this.props.children({
 						session: { user: !error && !loading ? data.getSelfUser : null },
 						refetch,
@@ -48,4 +52,4 @@ class WithSessions extends React.Component {
 	}
 }
 
-export default WithSessions;
+export default connect(({ autheduser }) => ({ autheduser }))(WithSessions);
