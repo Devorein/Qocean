@@ -7,6 +7,8 @@ const SELF_ENV_DATA_CONCISE = gql`
 		icon
 		created_at
 		updated_at
+		public
+		favourite
 	}
 `;
 
@@ -107,8 +109,8 @@ export const getPaginatedMixedEnvironments = gql`
 `;
 
 export const getPaginatedOthersEnvironments = gql`
-  query getPaginatedOthersEnvironmentsName($pagination: PaginationInput!){
-    getPaginatedOthersEnvironmentsName(pagination: $pagination){
+  query getPaginatedOthersEnvironments($pagination: PaginationInput!){
+    getPaginatedOthersEnvironments(pagination: $pagination){
       ...envDataConcise
     }
   }
