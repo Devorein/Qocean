@@ -1,5 +1,15 @@
 import * as userQueries from '../operations/graphql/user';
+import * as environmentQueries from '../operations/graphql/environment';
+
 import pluralize from 'pluralize';
+
+const resourceQueries = {
+	user: userQueries,
+	quiz: {},
+	question: {},
+	folder: {},
+	environment: environmentQueries
+};
 
 export default function() {
 	const pages = [
@@ -14,15 +24,17 @@ export default function() {
 		resources.forEach((resource) => {
 			const pluralCapitalizedResource = pluralize(resource.charAt(0).toUpperCase() + resource.substr(1), 2);
 			if (auth === 0 || auth === 1) {
-				let query = null;
-				if (page === 'explore') query = userQueries[`getPaginatedOthers${pluralCapitalizedResource}`];
-				queries[`${page}.${resource}.auth`] = query;
+				if (!page.match(/(self|play)/))
+					queries[`${page}.${resource}.auth`] =
+						resourceQueries[resource][`getPaginatedOthers${pluralCapitalizedResource}`];
+				else
+					queries[`${page}.${resource}.auth`] =
+						resourceQueries[resource][`getPaginatedSelf${pluralCapitalizedResource}`];
 			}
-			if (auth === 0) {
-				let query = null;
-				if (page === 'explore') query = userQueries[`getPaginatedMixed${pluralCapitalizedResource}`];
-				queries[`${page}.${resource}.unauth`] = query;
-			}
+
+			if (auth === 0)
+				queries[`${page}.${resource}.unauth`] =
+					resourceQueries[resource][`getPaginatedOthers${pluralCapitalizedResource}`];
 		});
 	});
 	return queries;

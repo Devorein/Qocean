@@ -1,5 +1,25 @@
 import { gql } from '@apollo/client';
 
+const SELF_ENV_DATA_CONCISE = gql`
+	fragment envDataConcise on SelfEnvironment {
+		id
+		name
+		icon
+		created_at
+		updated_at
+	}
+`;
+
+const OTHERS_ENV_DATA_CONCISE = gql`
+	fragment envDataConcise on OthersEnvironment {
+		id
+		name
+		icon
+		created_at
+		updated_at
+	}
+`;
+
 const PAGE_INFO = gql`
 	fragment PageInfo on PageInfo {
 		default_ipp
@@ -36,18 +56,13 @@ const QUESTION_INFO = gql`
 	}
 `;
 
-const ENV_DATA_DETAILS = gql`
+export const ENV_DATA_DETAILS = gql`
 	fragment EnvDataDetails on SelfEnvironment {
-		id
-		name
-		icon
+    ...envDataConcise
 		theme
 		animation
 		sound
 		hovertips
-		question{
-      ...QuestionInfo
-    }
 		default_create_landing
 		reset_on_success
 		reset_on_error
@@ -57,6 +72,9 @@ const ENV_DATA_DETAILS = gql`
 		primary_color
 		secondary_color
 		display_font
+    question{
+      ...QuestionInfo
+    }
     keybindings{
       ...KeyBindindsInfo
     }
@@ -72,12 +90,36 @@ const ENV_DATA_DETAILS = gql`
 		watchlist_page{
       ...PageInfo
     }
-		created_at
-		updated_at
 	}
+  ${SELF_ENV_DATA_CONCISE}
   ${PAGE_INFO}
   ${QUESTION_INFO}
   ${KEYBINDINGS_INFO}
 `;
 
-export { ENV_DATA_DETAILS };
+export const getPaginatedMixedEnvironments = gql`
+  query getPaginatedMixedEnvironments($pagination: PaginationInput!){
+    getPaginatedMixedEnvironments(pagination: $pagination){
+      ...envDataConcise
+    }
+  }
+  ${OTHERS_ENV_DATA_CONCISE}
+`;
+
+export const getPaginatedOthersEnvironments = gql`
+  query getPaginatedOthersEnvironmentsName($pagination: PaginationInput!){
+    getPaginatedOthersEnvironmentsName(pagination: $pagination){
+      ...envDataConcise
+    }
+  }
+  ${OTHERS_ENV_DATA_CONCISE}
+`;
+
+export const getPaginatedSelfEnvironments = gql`
+  query getPaginatedSelfEnvironments($pagination: PaginationInput!){
+    getPaginatedSelfEnvironments(pagination: $pagination){
+      ...envDataConcise
+    }
+  }
+  ${SELF_ENV_DATA_CONCISE}
+`;
