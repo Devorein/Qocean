@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "server": "nodemon ./server.js"
+    "start": "nodemon ./server.js"
   },
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",

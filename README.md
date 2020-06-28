@@ -53,4 +53,4 @@ Take a look at this <a href="./docs/api/REST/index.html">file</a> to understand 
 
 ### Graphql
 
-Take a look at this <a href="./docs/api/Graphql/index.html">file</a> to understand the Graphql api structure.
+To generate a static graphql documentation, install `graphqhdoc` , navigate to the server dir and run `graphdoc` 
