@@ -2,20 +2,17 @@ import React from 'react';
 import axios from 'axios';
 import pluralize from 'pluralize';
 import qs from 'qs';
+
 import { AppContext } from '../../context/AppContext';
 import populateQueryParams from '../../Utils/populateQueryParams';
+import detectCurrentEnvPageProp from '../../Utils/detectCurrentEnvPageProp';
 
 class DataFetcher extends React.Component {
 	static contextType = AppContext;
 	state = {
 		data: [],
 		totalCount: 0,
-		type: (() => {
-			const prop = `default_${this.props.page.toLowerCase()}_landing`;
-			return this.context.user && this.context.user.current_environment[prop]
-				? this.context.user.current_environment[prop]
-				: 'Quiz';
-		})()
+		type: detectCurrentEnvPageProp({ user: this.context.user, page: this.props.page, prop: 'type' })
 	};
 
 	refetchData = (type, queryParams) => {
@@ -110,9 +107,6 @@ class DataFetcher extends React.Component {
 			data,
 			totalCount,
 			refetchData: this.refetchData,
-			updateDataLocally: (data) => {
-				this.setState({ data });
-			},
 			type
 		});
 	}

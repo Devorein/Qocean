@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 
 import { ENV_DATA_DETAILS } from './environment';
 
-const USER_DATA = gql`
-	fragment UserData on SelfUser {
+const USER_DATA_NONREL = gql`
+	fragment UserDataNonRel on SelfUser {
 		id
 		email
 		username
@@ -22,13 +22,29 @@ const USER_DATA = gql`
   ${ENV_DATA_DETAILS}
 `;
 
-const getSelfUser = gql`
+export const getSelfUser = gql`
   query getSelfUser{
     getSelfUser{
-      ...UserData
+      ...UserDataNonRel
     }
   }
-  ${USER_DATA}
+  ${USER_DATA_NONREL}
 `;
 
-export { getSelfUser };
+export const getPaginatedMixedUsers = gql`
+  query getPaginatedMixedUsers($pagination: PaginationInput!){
+    getPaginatedMixedUsers(pagination: $pagination){
+      ...UserDataNonRel
+    }
+    ${USER_DATA_NONREL}
+  }
+`;
+
+export const getPaginatedOthersUsers = gql`
+  query getPaginatedOthersUsers($pagination: PaginationInput!){
+    getPaginatedOthersUsers(pagination: $pagination){
+      ...UserDataNonRel
+    }
+    ${USER_DATA_NONREL}
+  }
+`;

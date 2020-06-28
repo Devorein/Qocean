@@ -16,14 +16,14 @@ class Explore extends Component {
 							{({ CustomTabs }) => (
 								<div className="Explore page">
 									{CustomTabs}
-									<Explorer
+									{/* 									<Explorer
 										page={'Explore'}
 										data={data}
 										totalCount={totalCount}
 										type={type}
 										refetchData={refetchData.bind(null, type)}
 										updateDataLocally={updateDataLocally}
-									/>
+									/> */}
 								</div>
 							)}
 						</PageSwitcher>

@@ -9,6 +9,24 @@ const PAGE_INFO = gql`
 	}
 `;
 
+const KEYBINDINGS_INFO = gql`
+	fragment KeyBindindsInfo on KeyBindingType {
+		CHECK
+		MOVE_UP
+		MOVE_DOWN
+		LOCAL_ACTION_1
+		LOCAL_ACTION_2
+		LOCAL_ACTION_3
+		LOCAL_ACTION_4
+		LOCAL_ACTION_5
+		GLOBAL_ACTION_1
+		GLOBAL_ACTION_2
+		GLOBAL_ACTION_3
+		GLOBAL_ACTION_4
+		GLOBAL_ACTION_5
+	}
+`;
+
 const QUESTION_INFO = gql`
 	fragment QuestionInfo on QuestionInfo {
 		default_type
@@ -39,6 +57,9 @@ const ENV_DATA_DETAILS = gql`
 		primary_color
 		secondary_color
 		display_font
+    keybindings{
+      ...KeyBindindsInfo
+    }
 		explore_page{
       ...PageInfo
     }
@@ -56,6 +77,7 @@ const ENV_DATA_DETAILS = gql`
 	}
   ${PAGE_INFO}
   ${QUESTION_INFO}
+  ${KEYBINDINGS_INFO}
 `;
 
 export { ENV_DATA_DETAILS };
