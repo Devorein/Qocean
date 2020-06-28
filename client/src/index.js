@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from '@apollo/client';
 import { createStore } from 'redux';
-import { Provider as ReduxProvider } from 'react-redux';
+import { Provider as ReduxProvider, connect } from 'react-redux';
 import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core';
@@ -30,7 +30,9 @@ import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import GlobalCss from './Utils/Globalcss';
+import getPageQueries from './Utils/getPageQueries';
 import { AppContext } from './context/AppContext';
+import { setPageQueries } from './actions/queries';
 import reducers from './reducers';
 import middlewares from './middlewares';
 
@@ -41,8 +43,11 @@ import './pages/Pages.scss';
 const store = createStore(reducers, middlewares);
 
 class App extends Component {
+	componentDidMount() {
+		this.props.dispatch(setPageQueries(getPageQueries()));
+	}
 	render() {
-		const { session, location, refetch, updateUserLocally } = this.props;
+		const { session, location, refetch } = this.props;
 		return (
 			<Fragment>
 				<GlobalCss />
@@ -51,7 +56,7 @@ class App extends Component {
 						value={{
 							user: session.user,
 							refetchUser: this.props.refetch,
-							updateUserLocally
+							pageQueries: getPageQueries()
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />
@@ -59,14 +64,12 @@ class App extends Component {
 							<Route path="/" exact component={Home} />
 							<Route
 								path="/explore/:type"
-								exact
 								render={(e) => {
 									return <Explore user={session.user} />;
 								}}
 							/>
 							<Route
 								path="/create/:type"
-								exact
 								render={({ history, match }) => {
 									return session.user ? (
 										<Create user={session.user} match={match} history={history} />
@@ -77,7 +80,6 @@ class App extends Component {
 							/>
 							<Route
 								path="/import/:type"
-								exact
 								render={({ history, match }) => {
 									return session.user ? (
 										<Import user={session.user} match={match} history={history} />
@@ -88,7 +90,6 @@ class App extends Component {
 							/>
 							<Route
 								path="/watchlist/:type"
-								exact
 								render={({ history, match }) => {
 									return session.user ? (
 										<Watchlist user={session.user} match={match} history={history} />
@@ -105,14 +106,12 @@ class App extends Component {
 							/>
 							<Route
 								path="/profile"
-								exact
 								render={() => {
 									return session.user ? <Profile user={session.user} refetch={refetch} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/stats"
-								exact
 								render={() => {
 									return session.user ? <Stats user={session.user} /> : <Redirect to="/401" />;
 								}}
@@ -126,29 +125,26 @@ class App extends Component {
 							/>
 							<Route
 								path="/inbox"
-								exact
 								render={() => {
 									return session.user ? <Inbox user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/upgrade"
-								exact
 								render={() => {
 									return session.user ? <Upgrade user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
 							<Route
 								path="/self/:type"
-								exact
 								render={() => {
 									return session.user ? <Self user={session.user} /> : <Redirect to="/401" />;
 								}}
 							/>
-							<Route path="/signin" exact render={() => <SignIn refetch={refetch} />} />
-							<Route path="/signup" exact render={() => <SignUp refetch={refetch} />} />
-							<Route path="/401" exact component={Unauthorized} />
-							<Route path="/404" exact component={NotFound} />
+							<Route path="/signin" render={() => <SignIn refetch={refetch} />} />
+							<Route path="/signup" render={() => <SignUp refetch={refetch} />} />
+							<Route path="/401" component={Unauthorized} />
+							<Route path="/404" component={NotFound} />
 							<Redirect to="/404" />
 						</Switch>
 					</AppContext.Provider>
@@ -158,9 +154,9 @@ class App extends Component {
 	}
 }
 
-const RoutedApp = withRouter(App);
+const RoutedApp = withRouter(connect()(App));
 
-const Snackbar = ({ session, refetch, updateUserLocally }) => {
+const Snackbar = ({ session, refetch }) => {
 	const userStyles = makeStyles((theme) => {
 		return {
 			variantError: {
@@ -188,7 +184,7 @@ const Snackbar = ({ session, refetch, updateUserLocally }) => {
 			}}
 		>
 			<CssBaseline />
-			<RoutedApp session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
+			<RoutedApp session={session} refetch={refetch} />
 		</SnackbarProvider>
 	);
 };
@@ -197,11 +193,11 @@ ReactDOM.render(
 	<ApolloProvider client={client}>
 		<ReduxProvider store={store}>
 			<WithSessions>
-				{({ session, refetch, updateUserLocally }) => {
+				{({ session, refetch }) => {
 					return (
 						<Router>
 							<ThemeProvider theme={theme(session.user ? session.user.current_environment : {})}>
-								<Snackbar session={session} refetch={refetch} updateUserLocally={updateUserLocally} />
+								<Snackbar session={session} refetch={refetch} />
 							</ThemeProvider>
 						</Router>
 					);
