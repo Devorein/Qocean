@@ -2,6 +2,7 @@ import * as userQueries from '../operations/graphql/user';
 import * as environmentQueries from '../operations/graphql/environment';
 import * as questionQueries from '../operations/graphql/question';
 import * as quizQueries from '../operations/graphql/quiz';
+import * as folderQueries from '../operations/graphql/folder';
 
 import pluralize from 'pluralize';
 
@@ -9,7 +10,7 @@ const resourceQueries = {
 	user: userQueries,
 	quiz: quizQueries,
 	question: questionQueries,
-	folder: {},
+	folder: folderQueries,
 	environment: environmentQueries
 };
 
