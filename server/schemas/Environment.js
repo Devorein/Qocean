@@ -1,5 +1,6 @@
 const { gql } = require('apollo-server-express');
 const generateQueries = require('../utils/generateQueries');
+const generateMutations = require('../utils/generateMutations');
 
 const EnvInterface = `
   id: ID!
@@ -118,40 +119,12 @@ module.exports = gql`
 	type SelfEnvironment implements Environment {
 		public: Boolean!
 		favourite: Boolean!
-    current_environment: SelfEnvironment!
 		${EnvInterface}
 	}
 
-	input CreateEnvironmentInput {
+	input EnvironmentInput {
 		name: String!
     icon: IconColorEnum
-    theme: ThemeEnum
-    animation: Boolean
-    sound: Boolean
-    hovertips: Boolean
-    question: QuestionInfoInput
-    default_create_landing: String
-    reset_on_success: Boolean
-    reset_on_error: Boolean
-    max_notifications: PositiveInt
-    notification_timing: PositiveInt
-    default_tag_color: HexColorCode
-    primary_color: HexColorCode
-    secondary_color: HexColorCode
-    display_font: String
-		public: Boolean
-		favourite: Boolean
-    keybindings: KeyBindingTypeInput
-    explore_page: PageInfoInput
-    play_page: PageInfoInput
-    self_page: PageInfoInput
-    watchlist_page: PageInfoInput
-	}
-
-	input UpdateEnvironmentInput {
-		id: ID!
-		name: String
-		icon: IconColorEnum
     theme: ThemeEnum
     animation: Boolean
     sound: Boolean
@@ -180,22 +153,9 @@ module.exports = gql`
 	}
 
 	extend type Mutation{
-	  "Create a new environment"
-	  createEnvironment(data: CreateEnvironmentInput!): SelfEnvironment!
+	  ${generateMutations('environment')}
 
-	  "Update single environment"
-	  updateEnvironment(data: UpdateEnvironmentInput!): SelfEnvironment!
-
-	  "Update multiple environments"
-	  updateEnvironments(data: [UpdateEnvironmentInput!]): [SelfEnvironment!]!
-
-	  "Set environment as current environment"
+    "Set environment as current environment"
 	  setCurrentEnvironment(id: ID!): SelfEnvironment!
-
-	  "Delete single environment"
-	  deleteEnvironment(id: ID!): SelfEnvironment!
-
-	  "Delete multiple environments"
-	  deleteEnvironments(ids: [ID!]): [SelfEnvironment!]!
 	}
 `;
