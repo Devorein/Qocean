@@ -65,7 +65,6 @@ module.exports = gql`
   }
 
 	extend type Query {
-    # All mixed
     ${generateQueries('folder')}
 	}
 
