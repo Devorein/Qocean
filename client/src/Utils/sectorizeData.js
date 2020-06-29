@@ -85,6 +85,7 @@ export default function(data, type, { authenticated, flatten = false, blacklist 
 		});
 		return temp;
 	}
-	if (Array.isArray(data)) return data.map((item) => mapToSector(item));
+	if (!Object.keys(data).length) return { primary, secondary, tertiary, ref, refs };
+	else if (Array.isArray(data)) return data.map((item) => mapToSector(item));
 	else return mapToSector(data);
 }

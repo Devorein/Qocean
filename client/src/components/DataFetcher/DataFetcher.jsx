@@ -42,7 +42,10 @@ class DataFetcher extends React.Component {
 						data: dataQuery.data,
 						totalCount: countQuery.data,
 						type,
-						refetchData: dataQuery.refetch
+						refetchData: (variables) => {
+							countQuery.refetch({ filter: variables.filter });
+							dataQuery.refetch({ ...variables });
+						}
 					});
 				}}
 			</Composer>
