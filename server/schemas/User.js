@@ -1,4 +1,20 @@
 const { gql } = require('apollo-server-express');
+const generateQueries = require('../utils/generateQueries');
+
+const UserInterface = `
+  id: ID!
+  name: String!
+  username: Username!
+  email: EmailAddress!
+  joined_at: Date!
+  total_quizzes: NonNegativeInt!
+  total_questions: NonNegativeInt!
+  total_folders: NonNegativeInt!
+  total_environments: NonNegativeInt!
+  version: VersionEnum!
+  image: String!
+  current_environment: SelfEnvironment!
+`;
 
 module.exports = gql`
   enum VersionEnum {
@@ -9,51 +25,26 @@ module.exports = gql`
   }
 
 	interface User {
-		id: ID!
-		name: String!
-		username: Username!
-		email: EmailAddress!
-		joined_at: Date!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_environments: NonNegativeInt!
-    version: VersionEnum!
-    image: String!
+		${UserInterface}
 	}
 
-	type OthersUser implements User {
-		id: ID!
-		email: EmailAddress!
-		username: Username!
-		joined_at: Date!
-		name: String!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_environments: NonNegativeInt!
-    current_environment: OthersEnvironment!
-    version: VersionEnum!
-    image: String!
+  type OthersUser implements User {
+    folders: [MixedFolder!]!
+    quizzes: [MixedQuiz!]!
+    questions: [MixedQuestion!]!
+    environments: [MixedEnvironment!]!
+		${UserInterface}
+	}
+
+	type MixedUser implements User {
     folders: [OthersFolder!]!
     quizzes: [OthersQuiz!]!
     questions: [OthersQuestion!]!
     environments: [OthersEnvironment!]!
+		${UserInterface}
 	}
 
   type SelfUser implements User{
-    id: ID!
-		email: EmailAddress!
-		username: Username!
-		joined_at: Date!
-		name: String!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_environments: NonNegativeInt!
-    current_environment: SelfEnvironment!
-    version: VersionEnum!
-    image: String!
     folders: [SelfFolder!]!
     quizzes: [SelfQuiz!]!
     questions: [SelfQuestion!]!
@@ -62,6 +53,7 @@ module.exports = gql`
     filtersort: [FilterSort!]!
     reports: [Report!]!
     inbox: Inbox!
+    ${UserInterface}
   }
 
   type TagOutput{
@@ -91,63 +83,16 @@ module.exports = gql`
   }
 
 	extend type Query {
-    # All mixed
-    "Get all mixed users (U)"
-		getAllMixedUsers: [OthersUser!]!
+    ${generateQueries('user')}
 
-    "Get all mixed users username and id (U)"
-		getAllMixedUsersUsername: [UsernameAndId!]!
+    "Get all mixed users tags (U)"
+    getAllSelfUsersTags(config:TagConfigInput): TagOutput!
 
     "Get all mixed users tags (U)"
     getAllMixedUsersTags(config:TagConfigInput): TagOutput!
 
-    "Get all mixed users count (U)"
-		getAllMixedUsersCount: NonNegativeInt!
-
-    # All others
-    "Get all other users"
-		getAllOthersUsers: [OthersUser!]!
-
-    "Get all other users username and id"
-		getAllOthersUsersUsername: [UsernameAndId!]!
-
     "Get all other users tags"
     getAllOthersUsersTags(config: TagConfigInput): TagOutput!
-
-    "Get all others users count"
-		getAllOthersUsersCount: NonNegativeInt!
-
-    # All self
-    "Get all self user tags"
-    getAllSelfUsersTags(config: TagConfigInput): TagOutput!
-
-    # Paginated mixed
-    "Get paginated mixed users (U)"
-		getPaginatedMixedUsers(pagination: PaginationInput!): [OthersUser!]!
-
-    "Get paginated mixed users username and id (U)"
-		getPaginatedMixedUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
-
-    "Get filtered mixed users count (U)"
-    getFilteredMixedUsersCount(filter: JSON): NonNegativeInt!
-
-    # Paginated others
-    "Get paginated others users"
-		getPaginatedOthersUsers(pagination: PaginationInput!): [OthersUser!]!
-
-    "Get paginated others users username and id"
-		getPaginatedOthersUsersUsername(pagination: PaginationInput!): [UsernameAndId!]!
-
-    "Get filtered others users count"
-    getFilteredOthersUsersCount(filter: JSON): NonNegativeInt!
-
-    # Id mixed
-    "Get mixed user by id (U)"
-    getMixedUsersById(id:ID!): OthersUser!
-
-    # Id others
-    "Get others users by id"
-    getOthersUsersById(id: ID!): OthersUser!
 
     "Get others users by id tags"
     getOthersUsersByIdTags(id:ID!,config:TagConfigInput): TagOutput! 

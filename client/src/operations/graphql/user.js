@@ -1,7 +1,6 @@
 import { gql } from '@apollo/client';
 
 import { ENV_DATA_DETAILS } from './environment';
-
 const USER_DATA_NONREL = gql`
 	fragment UserDataNonRel on SelfUser {
 		id

@@ -33,12 +33,15 @@ import GlobalCss from './Utils/Globalcss';
 import getPageQueries from './Utils/getPageQueries';
 import { AppContext } from './context/AppContext';
 import { setPageQueries } from './actions/queries';
+import FRAGMENTS from './Utils/generateFragments';
 import reducers from './reducers';
 import middlewares from './middlewares';
 
 import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
+
+console.log(FRAGMENTS);
 
 const store = createStore(reducers, middlewares);
 

@@ -46,7 +46,7 @@ export default function(data, type, { authenticated, flatten = false, blacklist 
 			refs.push('quizzes', 'watchers');
 		} else if (type.match(/(environment|environments)/)) {
 			tertiary.push(
-				...Object.keys(data).filter(
+				...Object.keys(data || {}).filter(
 					(key) =>
 						!primary.includes(key) &&
 						!secondary.includes(key) &&
@@ -85,6 +85,7 @@ export default function(data, type, { authenticated, flatten = false, blacklist 
 		});
 		return temp;
 	}
-	if (Array.isArray(data)) return data.map((item) => mapToSector(item));
+	if (!data) return { primary, secondary, tertiary, ref, refs };
+	else if (Array.isArray(data)) return data.map((item) => mapToSector(item));
 	else return mapToSector(data);
 }

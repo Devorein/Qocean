@@ -6,6 +6,11 @@
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "client": "cd ./client && npm start",
+    "server": "cd ./server && npm start",
+    "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
+  },
   "devDependencies": {
     "concurrently": "^5.2.0",
     "nodemon": "^2.0.4"
