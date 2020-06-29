@@ -3,7 +3,7 @@ const pluralize = require('pluralize');
 module.exports = function(resource) {
 	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
-	return `
+	let mutations = `
     "Create a new ${resource}"
     create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}!
 
@@ -19,4 +19,15 @@ module.exports = function(resource) {
     "Delete multiple ${pluralize(resource, 2)}"
     delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}!]!
   `;
+	if (resource.match(/(quiz|folder)/)) {
+		mutations += `
+    "Update ${resource} ratings"
+    update${capitalizedResource}Ratings(data:RatingsInput!): [RatingsOutput!]!
+
+    "Update ${resource} watch"
+    update${capitalizedResource}Watch(ids: [ID!]!): NonNegativeInt!
+    `;
+	}
+
+	return mutations;
 };

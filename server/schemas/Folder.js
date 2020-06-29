@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server-express');
 
 const generateQueries = require('../utils/generateQueries');
+const generateMutations = require('../utils/generateMutations');
 
 const FolderInterface = `
   id: ID!
@@ -36,17 +37,8 @@ module.exports = gql`
 		${FolderInterface}
 	}
 
-  input CreateFolderInput{
+  input FolderInput{
     name: String!
-    icon: IconColorEnum
-    quizzes:[ID]
-    public: Boolean
-    favourite: Boolean
-  }
-
-  input UpdateFolderInput{
-    id: ID!
-    name: String
     icon: IconColorEnum
     quizzes:[ID]
     public: Boolean
@@ -58,25 +50,6 @@ module.exports = gql`
 	}
 
   extend type Mutation{
-    "Create a new folder"
-    createFolder(data: CreateFolderInput!): SelfFolder!
-
-    "Update single folder"
-    updateFolder(data: UpdateFolderInput!): SelfFolder!
-
-    "Update multiple folders"
-    updateFolders(data: [UpdateFolderInput!]): [SelfFolder!]!
-
-    "Update folder ratings"
-    updateFolderRatings(data:RatingsInput!): [RatingsOutput!]!
-
-    "Update folder watch"
-    updateFolderWatch(ids: [ID!]!): NonNegativeInt!
-
-    "Delete single folder"
-    deleteFolder(id: ID!): SelfFolder!
-
-    "Delete multiple folders"
-    deleteFolders(ids: [ID!]): [SelfFolder!]!
+    ${generateMutations('folder')}
   }
 `;
