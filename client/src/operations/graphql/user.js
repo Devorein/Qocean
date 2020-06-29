@@ -1,28 +1,6 @@
 import { gql } from '@apollo/client';
-import sectorizeData from '../../Utils/sectorizeData';
 
 import { ENV_DATA_DETAILS } from './environment';
-
-const mixedUserData = sectorizeData({}, 'user', { authenticated: false, purpose: 'detail' });
-const othersUserData = sectorizeData({}, 'user', { authenticated: false, purpose: 'detail' });
-const selfUserData = sectorizeData({}, 'user', { authenticated: true, purpose: 'detail' });
-
-const UserFragments = {};
-
-[ [ 'MIXED', mixedUserData ], [ 'OTHERS', othersUserData ], [ 'SELF', selfUserData ] ].forEach(([ type, arr ]) => {
-	[ 'primary', 'secondary', 'tertiary', 'ref', 'refs' ].forEach((sector) => {
-		const fields = arr[sector];
-		const fragmentContainerName = `${type}_USER_${sector.toUpperCase()}`;
-		const capitalizedType = type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
-		const fragmentName = `${capitalizedType}User${sector.charAt(0).toUpperCase() + sector.substr(1)}`;
-		UserFragments[fragmentContainerName] = gql`
-		  fragment ${fragmentName} on ${capitalizedType}User{
-		    ${fields.join('\n')}
-		  }
-		`;
-	});
-});
-
 const USER_DATA_NONREL = gql`
 	fragment UserDataNonRel on SelfUser {
 		id
@@ -81,5 +59,3 @@ export const getFilteredMixedUsersCount = gql`
 		getFilteredMixedUsersCount(filter: $filter)
 	}
 `;
-
-export { UserFragments };
