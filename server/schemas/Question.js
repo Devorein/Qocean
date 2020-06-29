@@ -1,46 +1,39 @@
 const { gql } = require('apollo-server-express');
 
+const QuestionInterface = `
+  id: ID!
+  name: String!
+  type: QuestionTypeEnum!
+  format: String!
+  weight: PositiveInt!
+  add_to_score: Boolean!
+  time_allocated: PositiveInt!
+  difficulty: QuestionDifficultyEnum!
+  image: String!
+`;
+
 module.exports = gql`
 	interface Question {
-		id: ID!
-		name: String!
-    type: QuestionTypeEnum!
-    format: String!
-    weight: PositiveInt!
-    add_to_score: Boolean!
-    time_allocated: PositiveInt!
-    difficulty: QuestionDifficultyEnum!
-    image: String!
+		${QuestionInterface}
+	}
+
+  type MixedQuestion implements Question {
+    quiz: [MixedQuiz!]!
+    ${QuestionInterface}
 	}
 
 	type OthersQuestion implements Question {
-		id: ID!
-		name: String!
-    type: QuestionTypeEnum!
-    format: String!
-    weight: PositiveInt!
-    add_to_score: Boolean!
-    time_allocated: PositiveInt!
-    difficulty: QuestionDifficultyEnum!
-    image: String!
     quiz: [OthersQuiz!]!
+    ${QuestionInterface}
 	}
 
 	type SelfQuestion implements Question {
-		id: ID!
-		name: String!
-    type: QuestionTypeEnum!
-    format: String!
-    weight: PositiveInt!
-    add_to_score: Boolean!
-    time_allocated: PositiveInt!
-    difficulty: QuestionDifficultyEnum!
-    image: String!
 		public: Boolean!
 		favourite: Boolean!
     answers: [[String]]
     options: [String]
     quiz: [SelfQuiz!]!
+    ${QuestionInterface}
 	}
 
   type QuestionAnswersOutput{

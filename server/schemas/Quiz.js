@@ -1,61 +1,47 @@
 const { gql } = require('apollo-server-express');
 
+const QuizInterface = `
+  id: ID!
+  name: String!
+  subject: String!
+  tags: [String]!
+  image: String
+  source: URL
+  ratings: NonNegativeInt!
+  raters: NonNegativeInt!
+  average_quiz_time: NonNegativeInt!
+  average_difficulty: QuestionDifficultyEnum!
+  total_questions: NonNegativeInt!
+  total_folders: NonNegativeInt!
+  total_played: NonNegativeInt!
+`;
+
 module.exports = gql`
 	interface Quiz {
-		id: ID!
-		name: String!
-    subject: String!
-    tags: [String]!
-    image: String
-    source: URL
-    ratings: NonNegativeInt!
-    raters: NonNegativeInt!
-    average_quiz_time: NonNegativeInt!
-    average_difficulty: QuestionDifficultyEnum!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_played: NonNegativeInt!
-    watchers: [OthersUser]!
+		${QuizInterface}
+	}
+
+  type MixedQuiz implements Quiz {
+    watchers: [MixedUser]!
+    questions:[MixedQuestion]!
+    folders: [MixedFolder]!
+		${QuizInterface}
 	}
 
 	type OthersQuiz implements Quiz {
-		id: ID!
-		name: String!
-    subject: String!
-    tags: [String]!
-    image: String
-    source: URL
-    ratings: NonNegativeInt!
-    raters: NonNegativeInt!
-    average_quiz_time: NonNegativeInt!
-    average_difficulty: QuestionDifficultyEnum!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_played: NonNegativeInt!
     watchers: [OthersUser]!
     questions:[OthersQuestion]!
     folders: [OthersFolder]!
+		${QuizInterface}
 	}
 
 	type SelfQuiz implements Quiz {
-		id: ID!
-		name: String!
-    subject: String!
-    tags: [String]!
-    image: String
-    source: URL
-    ratings: NonNegativeInt!
-    raters: NonNegativeInt!
-    average_quiz_time: NonNegativeInt!
-    average_difficulty: QuestionDifficultyEnum!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_played: NonNegativeInt!
     watchers: [OthersUser]!
     questions:[SelfQuestion]!
     folders: [SelfFolder]!
     public: Boolean!
     favourite: Boolean!
+    ${QuizInterface}
 	}
 
   type QuestionStats{

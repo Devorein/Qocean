@@ -2,49 +2,38 @@ const { gql } = require('apollo-server-express');
 
 const generateQueries = require('../utils/generateQueries');
 
+const FolderInterface = `
+  id: ID!
+  name: String!
+  icon: IconColorEnum!
+  ratings: NonNegativeInt!
+  total_quizzes: NonNegativeInt!
+  total_questions: NonNegativeInt!
+`;
+
 module.exports = gql`
 	interface Folder {
-		id: ID!
-		name: String!
-    icon: IconColorEnum!
-    ratings: NonNegativeInt!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
+		${FolderInterface}
 	}
 
 	type MixedFolder implements Folder {
-		id: ID!
-		name: String!
-    icon: IconColorEnum!
-    ratings: NonNegativeInt!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    quizzes: [OthersQuiz!]!
-    watchers: [OthersUser!]!
+    quizzes: [MixedQuiz!]!
+    watchers: [MixedUser!]!
+		${FolderInterface}
 	}
 
   type OthersFolder implements Folder {
-		id: ID!
-		name: String!
-    icon: IconColorEnum!
-    ratings: NonNegativeInt!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
     quizzes: [OthersQuiz!]!
     watchers: [OthersUser!]!
+		${FolderInterface}
 	}
 
 	type SelfFolder implements Folder {
-		id: ID!
-		name: String!
-    icon: IconColorEnum!
-    ratings: NonNegativeInt!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
 		public: Boolean!
 		favourite: Boolean!
     quizzes: [SelfQuiz!]!
     watchers: [OthersUser!]!
+		${FolderInterface}
 	}
 
   input CreateFolderInput{

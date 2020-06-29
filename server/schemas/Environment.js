@@ -116,9 +116,10 @@ module.exports = gql`
 	}
 
 	type SelfEnvironment implements Environment {
-		${EnvInterface}
 		public: Boolean!
 		favourite: Boolean!
+    current_environment: SelfEnvironment!
+		${EnvInterface}
 	}
 
 	input CreateEnvironmentInput {

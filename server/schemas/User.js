@@ -1,5 +1,20 @@
 const { gql } = require('apollo-server-express');
 
+const UserInterface = `
+  id: ID!
+  name: String!
+  username: Username!
+  email: EmailAddress!
+  joined_at: Date!
+  total_quizzes: NonNegativeInt!
+  total_questions: NonNegativeInt!
+  total_folders: NonNegativeInt!
+  total_environments: NonNegativeInt!
+  version: VersionEnum!
+  image: String!
+  current_environment: SelfEnvironment!
+`;
+
 module.exports = gql`
   enum VersionEnum {
     Rower
@@ -9,51 +24,26 @@ module.exports = gql`
   }
 
 	interface User {
-		id: ID!
-		name: String!
-		username: Username!
-		email: EmailAddress!
-		joined_at: Date!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_environments: NonNegativeInt!
-    version: VersionEnum!
-    image: String!
+		${UserInterface}
 	}
 
-	type OthersUser implements User {
-		id: ID!
-		email: EmailAddress!
-		username: Username!
-		joined_at: Date!
-		name: String!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_environments: NonNegativeInt!
-    current_environment: OthersEnvironment!
-    version: VersionEnum!
-    image: String!
+  type OthersUser implements User {
+    folders: [MixedFolder!]!
+    quizzes: [MixedQuiz!]!
+    questions: [MixedQuestion!]!
+    environments: [MixedEnvironment!]!
+		${UserInterface}
+	}
+
+	type MixedUser implements User {
     folders: [OthersFolder!]!
     quizzes: [OthersQuiz!]!
     questions: [OthersQuestion!]!
     environments: [OthersEnvironment!]!
+		${UserInterface}
 	}
 
   type SelfUser implements User{
-    id: ID!
-		email: EmailAddress!
-		username: Username!
-		joined_at: Date!
-		name: String!
-    total_quizzes: NonNegativeInt!
-    total_questions: NonNegativeInt!
-    total_folders: NonNegativeInt!
-    total_environments: NonNegativeInt!
-    current_environment: SelfEnvironment!
-    version: VersionEnum!
-    image: String!
     folders: [SelfFolder!]!
     quizzes: [SelfQuiz!]!
     questions: [SelfQuestion!]!
@@ -62,6 +52,7 @@ module.exports = gql`
     filtersort: [FilterSort!]!
     reports: [Report!]!
     inbox: Inbox!
+    ${UserInterface}
   }
 
   type TagOutput{
