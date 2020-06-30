@@ -1,16 +1,23 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const path = require('path');
+const { deleteFolderHandler } = require('../../handlers/folder');
+const { deleteQuizHandler } = require('../../handlers/quiz');
+const { deleteQuestionHandler } = require('../../handlers/question');
+const { deleteEnvironmentHandler } = require('../../handlers/environment');
 
-const ErrorResponse = require('../errorResponse');
+module.exports = async function deleteResource(model, ids, userId) {
+	const next = (err) => {
+		throw new err();
+	};
 
-dotenv.config({ path: path.join(path.dirname(__dirname), 'config', 'config.env') });
-
-mongoose.connect(process.env.MONGO_URI, {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
-	useUnifiedTopology: true
-});
-
-module.exports = async function deleteResource() {};
+	switch (model.modelName) {
+		case 'Quiz':
+			return await deleteQuizHandler(ids, userId, next);
+		case 'Question':
+			return await deleteQuestionHandler(ids, userId, next);
+		case 'Folder':
+			return await deleteFolderHandler(ids, userId, next);
+		case 'Environment':
+			return await deleteEnvironmentHandler(ids, userId, next);
+		default:
+			return null;
+	}
+};

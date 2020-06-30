@@ -5,13 +5,7 @@ const Question = require('../models/Question');
 const ErrorResponse = require('../utils/errorResponse');
 const Quiz = require('../models/Quiz');
 
-async function createQuizHandler(
-	userId,
-	body,
-	next = (err) => {
-		throw err;
-	}
-) {
+async function createQuizHandler(userId, body, next) {
 	body.user = userId;
 	const prevQuiz = await Quiz.countDocuments({ name: body.name.trim(), user: userId });
 	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${body.name}`, 400));

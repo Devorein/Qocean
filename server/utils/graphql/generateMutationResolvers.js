@@ -13,9 +13,7 @@ module.exports = function(resource) {
 
 	const MutationResolvers = {
 		[`create${capitalizedResource}`]: async function(parent, { data }, ctx) {
-			return await createResource(ctx[capitalizedResource], ctx.user.id, data, (err) => {
-				throw err;
-			});
+			return await createResource(ctx[capitalizedResource], ctx.user.id, data);
 		},
 		[`update${capitalizedResource}`]: async function(parent, { data, id }, ctx) {
 			data.id = id;
@@ -31,14 +29,10 @@ module.exports = function(resource) {
 			});
 		},
 		[`delete${capitalizedResource}`]: async function(parent, { id }, ctx) {
-			return (await deleteFolderHandler([ id ], ctx.user.id, (err) => {
-				throw err;
-			}))[0];
+			return (await deleteResource(ctx[capitalizedResource], [ id ], ctx.user.id))[0];
 		},
 		[`delete${pluralizedcapitalizedResource}`]: async function(parent, { ids }, ctx) {
-			return await deleteResource(ids, ctx.user.id, (err) => {
-				throw err;
-			});
+			return await deleteResource(ctx[capitalizedResource], ids, ctx.user.id);
 		}
 	};
 

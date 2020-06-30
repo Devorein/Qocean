@@ -27,22 +27,17 @@ exports.createEnvironmentHandler = async function createEnvironmentHandler(userI
 	return environment;
 };
 
-exports.deleteEnvironmentHandler = async function deleteEnvironmentHandler(
-	environmentIds,
-	userId,
-	current_environment,
-	next
-) {
+exports.deleteEnvironmentHandler = async function deleteEnvironmentHandler(environmentIds, userId, next) {
 	const deleted_environments = [];
 	const totalDocs = await Environment.countDocuments({ user: userId });
-
+	const user = await User.findById(userId);
 	for (let i = 0; i < environmentIds.length; i++) {
 		const environmentId = environmentIds[i];
 		const environment = await Environment.findById(environmentId).select('name user');
 		if (!environment) return next(new ErrorResponse(`Environment not found with id of ${environmentId}`, 404));
 		if (environment.user.toString() !== userId.toString())
 			return next(new ErrorResponse(`User not authorized to delete environment`, 401));
-		if (current_environment.toString() === environment._id.toString())
+		if (user.current_environment.toString() === environment._id.toString())
 			return next(new ErrorResponse(`You cannot delete current set environment`, 400));
 		else if (i < totalDocs) await environment.remove();
 		else return next(new ErrorResponse(`You must have atleast one environment`, 400));

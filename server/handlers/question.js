@@ -35,13 +35,7 @@ async function validateQuestionHandler(ids, next) {
 
 exports.validateQuestionHandler = validateQuestionHandler;
 
-async function createQuestionHandler(
-	body,
-	userId,
-	next = (err) => {
-		throw err;
-	}
-) {
+async function createQuestionHandler(body, userId, next) {
 	if (!body.quiz) return next(new ErrorResponse(`Provide the quiz id`, 400));
 	const quiz = await Quiz.findById(body.quiz);
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${body.quiz} found`, 404));
