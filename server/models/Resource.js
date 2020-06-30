@@ -8,7 +8,8 @@ const ResourceSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		required: [ true, 'Please provide an user' ]
+		required: [ true, 'Please provide an user' ],
+		writable: false
 	},
 	public: {
 		type: Boolean,
@@ -16,11 +17,13 @@ const ResourceSchema = new mongoose.Schema({
 	},
 	created_at: {
 		type: Date,
-		default: Date.now
+		default: Date.now,
+		writable: false
 	},
 	updated_at: {
 		type: Date,
-		default: Date.now
+		default: Date.now,
+		writable: false
 	}
 });
 

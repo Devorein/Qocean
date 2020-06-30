@@ -7,14 +7,6 @@ const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 module.exports = gql`
 	${generateTypeSchema('folder')}
 
-  input FolderInput{
-    name: String!
-    icon: IconColorEnum
-    quizzes:[ID]
-    public: Boolean
-    favourite: Boolean
-  }
-
 	extend type Query {
     ${generateQueries('folder')}
 	}

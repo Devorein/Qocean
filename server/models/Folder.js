@@ -12,7 +12,8 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	ratings: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt'
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	icon: {
 		type: String,
@@ -22,12 +23,14 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	total_quizzes: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt'
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_questions: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt'
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	quizzes: [
 		{
