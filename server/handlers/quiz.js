@@ -1,18 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 
-const Question = require('../models/Question');
-const ErrorResponse = require('../utils/errorResponse');
-const Quiz = require('../models/Quiz');
+const { QuestionModel } = require('../models/Question');
+const { ErrorResponse } = require('../utils/errorResponse');
+const { QuizModel } = require('../models/Quiz');
 
 async function createQuizHandler(userId, body, next) {
 	body.user = userId;
-	const prevQuiz = await Quiz.countDocuments({ name: body.name.trim(), user: userId });
+	const prevQuiz = await QuizModel.countDocuments({ name: body.name.trim(), user: userId });
 	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${body.name}`, 400));
 
-	const [ success, message ] = await Quiz.validate(body);
+	const [ success, message ] = await QuizModel.validate(body);
 	if (!success) return next(new ErrorResponse(message, 400));
-	return await Quiz.create(body);
+	return await QuizModel.create(body);
 }
 
 exports.createQuizHandler = createQuizHandler;
@@ -21,7 +21,7 @@ async function deleteQuizHandler(quizIds, userId, next) {
 	const deleted_quizzes = [];
 	for (let i = 0; i < quizIds.length; i++) {
 		const quizId = quizIds[i];
-		const quiz = await Quiz.findById(quizId);
+		const quiz = await QuizModel.findById(quizId);
 		if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${quizId}`, 404));
 		if (quiz.user.toString() !== userId.toString())
 			return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
@@ -32,7 +32,7 @@ async function deleteQuizHandler(quizIds, userId, next) {
 		const { questions } = quiz;
 		for (let i = 0; i < questions.length; i++) {
 			const questionId = questions[i];
-			const question = await Question.findById(questionId);
+			const question = await QuestionModel.findById(questionId);
 			await question.remove();
 		}
 		await quiz.remove();
@@ -48,7 +48,7 @@ async function updatePlayedTimesHandler(quizzes, userId) {
 	if (quizzes) {
 		for (let i = 0; i < quizzes.length; i++) {
 			const quizId = quizzes[i];
-			const quiz = await Quiz.findById(quizId);
+			const quiz = await QuizModel.findById(quizId);
 			if (quiz.user.toString() !== userId.toString()) {
 				quiz.total_played++;
 				total_updated++;

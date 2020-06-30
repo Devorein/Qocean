@@ -237,4 +237,5 @@ QuestionSchema.pre('remove', async function() {
 	this.constructor.getAverageDifficulty(this.quiz);
 });
 
-module.exports = mongoose.model('Question', QuestionSchema);
+exports.QuestionSchema = QuestionSchema;
+exports.QuestionModel = mongoose.model('Question', QuestionSchema);

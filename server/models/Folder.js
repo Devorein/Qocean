@@ -11,7 +11,9 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	},
 	ratings: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	icon: {
 		type: String,
@@ -20,11 +22,15 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	},
 	total_quizzes: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_questions: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	quizzes: [
 		{
@@ -43,6 +49,8 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		}
 	]
 });
+
+exports.FolderSchema = FolderSchema;
 
 FolderSchema.methods.manipulateQuiz = async function(shouldAdd, quizId) {
 	const quiz = await this.model('Quiz').findById(quizId);
@@ -93,4 +101,4 @@ FolderSchema.pre('remove', async function(next) {
 	next();
 });
 
-module.exports = mongoose.model('Folder', FolderSchema);
+module.exports.FolderModel = mongoose.model('Folder', FolderSchema);

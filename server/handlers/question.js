@@ -1,15 +1,15 @@
 const path = require('path');
 const fs = require('fs');
 
-const Quiz = require('../models/Quiz');
-const Question = require('../models/Question');
+const QuizModel = require('../models/Quiz');
+const { Question } = require('../models/Question');
 const ErrorResponse = require('../utils/errorResponse');
 
 async function sendAnswerHandler(ids, next) {
 	const all_answers = [];
 	for (let i = 0; i < ids.length; i++) {
 		const id = ids[i];
-		const { answers } = await Question.findOne({ _id: id }).select('+answers');
+		const { answers } = await QuestionModel.findOne({ _id: id }).select('+answers');
 		if (!answers) return next(new ErrorResponse(`Question doesnt exist`, 400));
 		all_answers.push({ id, answers });
 	}
@@ -22,7 +22,7 @@ async function validateQuestionHandler(ids, next) {
 	const responses = { correct: [], incorrect: [] };
 	for (let i = 0; i < ids.length; i++) {
 		const { id, answers } = ids[i];
-		const question = await Question.findById(id).select('+answers');
+		const question = await QuestionModel.findById(id).select('+answers');
 		if (!answers) return next(new ErrorResponse(`Provide the answers`, 400));
 		if (question) {
 			let [ isCorrect ] = await question.validateAnswer(answers);
@@ -37,14 +37,14 @@ exports.validateQuestionHandler = validateQuestionHandler;
 
 async function createQuestionHandler(body, userId, next) {
 	if (!body.quiz) return next(new ErrorResponse(`Provide the quiz id`, 400));
-	const quiz = await Quiz.findById(body.quiz);
+	const quiz = await QuizModel.findById(body.quiz);
 	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${body.quiz} found`, 404));
 	if (quiz.user.toString() !== userId.toString())
 		return next(new ErrorResponse(`User not authorized to add a question to this quiz`, 401));
-	const [ isValidQuestion, message ] = await Question.validateQuestion(body);
+	const [ isValidQuestion, message ] = await QuestionModel.validateQuestion(body);
 	if (isValidQuestion) {
 		body.user = userId;
-		const question = await Question.create(body);
+		const question = await QuestionModel.create(body);
 		return question;
 	} else return next(new ErrorResponse(message, 401));
 }
@@ -101,7 +101,7 @@ async function getOthersQuestionsHandler({ filters = {}, sort, limit, page, only
 		...additional
 	];
 
-	const questions = await Question.aggregate(pipeline);
+	const questions = await QuestionModel.aggregate(pipeline);
 	const total = questions.length;
 	if (!onlyCount) return { total, data: questions };
 	else return total;
@@ -113,7 +113,7 @@ async function deleteQuestionHandler(questionIds, userId, next) {
 	const deleted_questions = [];
 	for (let i = 0; i < questionIds.length; i++) {
 		const questionId = questionIds[i];
-		const question = await Question.findById(questionId);
+		const question = await QuestionModel.findById(questionId);
 		if (!question) return next(new ErrorResponse(`Question not found with id of ${questionId}`, 404));
 		if (question.user.toString() !== userId.toString())
 			return next(new ErrorResponse(`User not authorized to delete question`, 401));

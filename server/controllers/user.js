@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const { UserModel } = require('../models/User');
 const asyncHandler = require('../middleware/async');
 const populateQuery = require('../utils/populateQuery');
 
@@ -27,7 +27,7 @@ exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllUsers = asyncHandler(async (req, res, next) => {
-	const users = await User.find({}).select('username');
+	const users = await UserModel.find({}).select('username');
 	res.status(200).json({ success: true, data: users });
 });
 
@@ -54,7 +54,7 @@ exports.deleteUser = asyncHandler(async function(req, res, next) {
 // @route    GET /api/v1/users/me
 // @access   Private
 exports.getMe = asyncHandler(async (req, res, next) => {
-	const query = User.findById(req.user._id);
+	const query = UserModel.findById(req.user._id);
 	populateQuery(query, req);
 	const user = await query;
 	res.status(200).json({

@@ -1,4 +1,4 @@
-const Environment = require('../models/Environment');
+const { EnvironmentModel } = require('../models/Environment');
 
 const asyncHandler = require('../middleware/async');
 const updateResource = require('../utils/resource/updateResource');
@@ -13,7 +13,7 @@ const {
 // @route: GET /api/v1/environments/current
 // @access: Private
 exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
-	const environment = await Environment.findById(req.user.current_environment);
+	const environment = await EnvironmentModel.findById(req.user.current_environment);
 	res.status(200).json({ success: true, data: environment });
 });
 
@@ -40,12 +40,12 @@ exports.createEnvironment = asyncHandler(async (req, res, next) => {
 // @access: Private
 exports.updateEnvironment = asyncHandler(async (req, res, next) => {
 	req.body.id = req.params.id;
-	const environment = await updateResource(Environment, req.body, req.user._id, next);
+	const environment = await updateResource(EnvironmentModel, req.body, req.user._id, next);
 	res.status(200).json({ success: true, data: environment });
 });
 
 exports.updateEnvironments = asyncHandler(async (req, res, next) => {
-	const environments = await updateResource(Environment, req.body.data, req.user._id, next);
+	const environments = await updateResource(EnvironmentModel, req.body.data, req.user._id, next);
 	res.status(200).json({ success: true, data: environments });
 });
 

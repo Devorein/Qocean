@@ -19,11 +19,11 @@ function getRandomInt(min, max) {
 
 dotenv.config({ path: path.join(__dirname, 'config', 'config.env') });
 
-const Quiz = require('./models/Quiz');
-const Question = require('./models/Question');
-const User = require('./models/User');
-const Environment = require('./models/Environment');
-const Folder = require('./models/Folder');
+const { QuizModel } = require('./models/Quiz');
+const { QuestionModel } = require('./models/Question');
+const { UserModel } = require('./models/User');
+const { EnvironmentModel } = require('./models/Environment');
+const { FolderModel } = require('./models/Folder');
 const Message = require('./models/Message');
 const Inbox = require('./models/Inbox');
 const Report = require('./models/Report');
@@ -45,11 +45,11 @@ mongoose.connect(process.env.MONGO_URI, {
 	/* const fileArg = args.indexOf('-f'); 
   const file = fileArg */
 	if (deletePrev) {
-		await Quiz.deleteMany();
+		await QuizModel.deleteMany();
 		await Question.deleteMany();
-		await User.deleteMany();
-		await Environment.deleteMany();
-		await Folder.deleteMany();
+		await UserModel.deleteMany();
+		await EnvironmentModel.deleteMany();
+		await FolderModel.deleteMany();
 		await Inbox.deleteMany();
 		await Message.deleteMany();
 		await Report.deleteMany();

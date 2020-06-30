@@ -1,5 +1,5 @@
 const express = require('express');
-const Environment = require('../models/Environment');
+const { EnvironmentModel } = require('../models/Environment');
 const router = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
@@ -14,19 +14,19 @@ const {
 	updateEnvironments
 } = require('../controllers/environment');
 
-router.route('/me').get(protect, advancedResults(Environment));
+router.route('/me').get(protect, advancedResults(EnvironmentModel));
 
-router.route('/countAll').get(advancedResults(Environment));
-router.route('/countMine').get(protect, advancedResults(Environment));
-router.route('/countOthers').get(protect, advancedResults(Environment));
-router.route('/others').get(protect, advancedResults(Environment));
+router.route('/countAll').get(advancedResults(EnvironmentModel));
+router.route('/countMine').get(protect, advancedResults(EnvironmentModel));
+router.route('/countOthers').get(protect, advancedResults(EnvironmentModel));
+router.route('/others').get(protect, advancedResults(EnvironmentModel));
 router.route('/setcurrent').post(protect, setCurrentEnvironment);
 
 router.route('/current').get(protect, getCurrentEnvironment);
 
 router
 	.route('/')
-	.get(advancedResults(Environment))
+	.get(advancedResults(EnvironmentModel))
 	.post(protect, createEnvironment)
 	.put(protect, updateEnvironments)
 	.delete(protect, deleteEnvironments);
