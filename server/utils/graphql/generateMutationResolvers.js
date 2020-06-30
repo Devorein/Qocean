@@ -13,7 +13,7 @@ module.exports = function(resource) {
 
 	const MutationResolvers = {
 		[`create${capitalizedResource}`]: async function(parent, { data }, ctx) {
-			return await createResource(user.id, data, (err) => {
+			return await createResource(ctx[capitalizedResource], ctx.user.id, data, (err) => {
 				throw err;
 			});
 		},

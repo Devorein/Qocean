@@ -14,14 +14,17 @@ exports.createEnvironmentHandler = async function createEnvironmentHandler(userI
 	data.user = userId;
 	let user;
 	const prevEnv = await Environment.countDocuments({ name: data.name, user: userId });
-	if (prevEnv >= 1) return next(new ErrorResponse(`You already have an environment named ${data.name}`, 400));
+	if (prevEnv >= 1) {
+		if (next) return next(new ErrorResponse(`You already have an environment named ${data.name}`, 400));
+		else throw new Error(`You already have an environment named ${data.name}`);
+	}
 	const environment = await Environment.create(data);
 	if (data.set_as_current) {
 		user = await User.findById(userId);
 		user.current_environment = environment._id;
 		await user.save();
-  }
-  return environment;
+	}
+	return environment;
 };
 
 exports.deleteEnvironmentHandler = async function deleteEnvironmentHandler(

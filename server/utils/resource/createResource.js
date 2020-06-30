@@ -1,16 +1,19 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const path = require('path');
+const { createFolderHandler } = require('../../handlers/folder');
+const { createQuizHandler } = require('../../handlers/quiz');
+const { createQuestionHandler } = require('../../handlers/question');
+const { createEnvironmentHandler } = require('../../handlers/environment');
 
-const ErrorResponse = require('../errorResponse');
-
-dotenv.config({ path: path.join(path.dirname(__dirname), 'config', 'config.env') });
-
-mongoose.connect(process.env.MONGO_URI, {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
-	useUnifiedTopology: true
-});
-
-module.exports = async function createResource() {};
+module.exports = async function createResource(model, userId, data) {
+	switch (model.modelName) {
+		case 'Quiz':
+			return await createQuizHandler(userId, data);
+		case 'Question':
+			return await createQuestionHandler(userId, data);
+		case 'Folder':
+			return await createFolderHandler(userId, data);
+		case 'Environment':
+			return await createEnvironmentHandler(userId, data);
+		default:
+			return null;
+	}
+};
