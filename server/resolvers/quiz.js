@@ -3,130 +3,16 @@ const { createQuizHandler, deleteQuizHandler, updatePlayedTimesHandler } = requi
 const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
 const addRatings = require('../utils/addRatings');
-const parsePagination = require('../utils/parsePagination');
 const resolverCompose = require('../utils/resolverCompose');
+const generateQueryResolvers = require('../utils/generateQueryResolvers');
 
 const QuizResolvers = {
 	Query: {
-		// ? All mixed
-		async getAllMixedQuizzes(parent, args, { Quiz }, info) {
-			return await Quiz.find({ public: true }).select('-public -favourite');
-		},
-		async getAllMixedQuizzesName(parent, args, { Quiz }) {
-			return await Quiz.find({ public: true }).select('name');
-		},
-
-		async getAllMixedQuizzesCount(parent, args, { Quiz }) {
-			return await Quiz.countDocuments({ public: true });
-		},
-
-		// ? All Others
-		async getAllOthersQuizzes(parent, args, { user, Quiz }, info) {
-			return await Quiz.find({ public: true, user: { $ne: user.id } }).select('-public -favourite');
-		},
-		async getAllOthersQuizzesName(parent, args, { user, Quiz }) {
-			return await Quiz.find({ public: true, user: { $ne: user.id } }).select('name');
-		},
-		async getAllOthersQuizzesCount(parent, args, { user, Quiz }) {
-			return await Quiz.countDocuments({ public: true, user: { $ne: user.id } });
-		},
-
-		// ? All Self
-		async getAllSelfQuizzes(parent, args, { user, Quiz }, info) {
-			return await Quiz.find({ user: user.id });
-		},
-		async getAllSelfQuizzesName(parent, args, { user, Quiz }) {
-			return await Quiz.find({ user: user.id }).select('name');
-		},
-		async getAllSelfQuizzesCount(parent, args, { user, Quiz }) {
-			return await Quiz.countDocuments({ user: user.id });
-		},
+		...generateQueryResolvers('quiz'),
 		async getAllSelfQuizzesQuestionsStats(parent, args, { user, Quiz }) {
 			return await Quiz.find({ user: user.id })
 				.populate({ path: 'questions', select: 'difficulty time_allocated name type' })
 				.select('name questions');
-		},
-
-		// ? Paginated Mixed
-		async getPaginatedMixedQuizzes(parent, { pagination }, { Quiz }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Quiz.find({ ...filter, public: true })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('-public -favourite');
-		},
-
-		async getPaginatedMixedQuizzesName(parent, { pagination }, { user, Quiz }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Quiz.find({ ...filter, public: true }).sort(sort).skip(page).limit(limit).select('name');
-		},
-
-		async getFilteredMixedQuizzesCount(parent, { filter = '{}' }, { Quiz }) {
-			return await Quiz.countDocuments({ ...JSON.parse(filter), public: true });
-		},
-
-		// ? Paginated Others
-		async getPaginatedOthersQuizzes(parent, { pagination }, { user, Quiz }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Quiz.find({ ...filter, public: true, user: { $ne: user.id } })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('-public -favourite');
-		},
-
-		async getPaginatedOthersQuizzesName(parent, { pagination }, { user, Quiz }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Quiz.find({ ...filter, public: true, user: { $ne: user.id } })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('name');
-		},
-
-		async getFilteredOthersQuizzesCount(parent, { filter = '{}' }, { user, Quiz }) {
-			const count = await Quiz.countDocuments({ ...JSON.parse(filter), public: true, user: { $ne: user.id } });
-			return count;
-		},
-
-		// ? Paginated Self
-		async getPaginatedSelfQuizzes(parent, { pagination }, { user, Quiz }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Quiz.find({ ...filter, user: user.id }).sort(sort).skip(page).limit(limit);
-		},
-
-		async getPaginatedSelfQuizzesName(parent, { pagination }, { user, Quiz }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Quiz.find({ ...filter, user: user.id }).sort(sort).skip(page).limit(limit).select('name');
-		},
-
-		async getFilteredSelfQuizzesCount(parent, { filter = '{}' }, { user, Quiz }) {
-			const count = await Quiz.countDocuments({ ...JSON.parse(filter), user: user.id });
-			return count;
-		},
-
-		// ? Id mixed
-		async getMixedQuizzesById(parent, { id }, { Quiz }) {
-			const [ quiz ] = await Quiz.find({ _id: id, public: true }).select('-public -favourite');
-			if (!quiz) throw new Error('Resource with that Id doesnt exist');
-			return quiz;
-		},
-
-		// ? Id Others
-		async getOthersQuizzesById(parent, { id }, { user, Quiz }) {
-			const [ quiz ] = await Quiz.find({ _id: id, user: { $ne: user.id }, public: true }).select(
-				'-public -favourite'
-			)[0];
-			if (!quiz) throw new Error('Resource with that Id doesnt exist');
-			return quiz;
-		},
-
-		// ? Id Self
-		async getSelfQuizzesById(parent, { id }, { user, Quiz }) {
-			const [ quiz ] = await Quiz.find({ _id: id, user: user.id });
-			if (!quiz) throw new Error('Resource with that Id doesnt exist');
-			return quiz;
 		}
 	},
 	Mutation: {

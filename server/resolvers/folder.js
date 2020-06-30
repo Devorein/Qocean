@@ -1,4 +1,3 @@
-const parsePagination = require('../utils/parsePagination');
 const updateResource = require('../utils/updateResource');
 const watchAction = require('../utils/watchAction');
 const addRatings = require('../utils/addRatings');
