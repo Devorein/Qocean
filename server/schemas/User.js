@@ -1,5 +1,6 @@
 const { gql } = require('apollo-server-express');
-const generateQueries = require('../utils/generateQueries');
+
+const generateQueries = require('../utils/graphql/generateQueriesSchemas');
 
 const UserInterface = `
   id: ID!

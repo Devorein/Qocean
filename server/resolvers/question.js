@@ -1,5 +1,4 @@
-const parsePagination = require('../utils/parsePagination');
-const updateResource = require('../utils/updateResource');
+const updateResource = require('../utils/resource/updateResource');
 
 const {
 	createQuestionHandler,
@@ -10,101 +9,11 @@ const {
 } = require('../handlers/question');
 
 const resolverCompose = require('../utils/resolverCompose');
+const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
 
 const QuestionResolvers = {
 	Query: {
-		// ? All mixed
-		async getAllMixedQuestions(parent, args, { Question }, info) {
-			return (await getOthersQuestionsHandler({})).data;
-		},
-		async getAllMixedQuestionsName(parent, args, { Question }) {
-			return (await getOthersQuestionsHandler({ project: { name: 1 } })).data;
-		},
-		async getAllMixedQuestionsCount(parent, args, { Question }) {
-			return (await getOthersQuestionsHandler()).total;
-		},
-
-		// ? All Others
-		async getAllOthersQuestions(parent, args, { user, Question }, info) {
-			return (await getOthersQuestionsHandler({ filters: { user: { $ne: user.id } } })).data;
-		},
-		async getAllOthersQuestionsName(parent, args, { user, Question }) {
-			return (await getOthersQuestionsHandler({ filters: { user: { $ne: user.id } }, project: { name: 1 } })).data;
-		},
-		async getAllOthersQuestionsCount(parent, args, { user, Question }) {
-			return (await getOthersQuestionsHandler({ filters: { user: { $ne: user.id } } })).total;
-		},
-
-		// ? All Self
-		async getAllSelfQuestions(parent, args, { user, Question }, info) {
-			return await Question.find({ user: user.id });
-		},
-		async getAllSelfQuestionsName(parent, args, { user, Question }) {
-			return await Question.find({ user: user.id }).select('name');
-		},
-		async getAllSelfQuestionsCount(parent, args, { user, Question }) {
-			return await Question.countDocuments({ user: user.id });
-		},
-
-		// ? Paginated Mixed
-		async getPaginatedMixedQuestions(parent, { pagination }, { Question }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return (await getOthersQuestionsHandler({ filters: filter, sort, page, limit })).data;
-		},
-
-		async getPaginatedMixedQuestionsName(parent, { pagination }, { user, Question }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return (await getOthersQuestionsHandler({ filters: filter, sort, page, limit, project: { name: 1 } })).data;
-		},
-
-		async getFilteredMixedQuestionsCount(parent, { filter = '{}' }, { Question }) {
-			return (await getOthersQuestionsHandler({ filters: JSON.parse(filter) })).total;
-		},
-
-		// ? Paginated Others
-		async getPaginatedOthersQuestions(parent, { pagination }, { user, Question }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return (await getOthersQuestionsHandler({ filters: { ...filter, user: { $ne: user.id } }, sort, page, limit }))
-				.data;
-		},
-
-		async getPaginatedOthersQuestionsName(parent, { pagination }, { user, Question }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return (await getOthersQuestionsHandler({
-				filters: { ...filter, user: { $ne: user.id } },
-				sort,
-				page,
-				limit,
-				project: { name: 1 }
-			})).data;
-		},
-
-		async getFilteredOthersQuestionsCount(parent, { filter = '{}' }, { user, Question }) {
-			return (await getOthersQuestionsHandler({ filters: { ...JSON.parse(filter), user: { $ne: user.id } } })).total;
-		},
-
-		// ? Paginated Self
-		async getPaginatedSelfQuestions(parent, { pagination }, { user, Question }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Question.find({ ...filter, user: user.id }).sort(sort).skip(page).limit(limit);
-		},
-
-		async getPaginatedSelfQuestionsName(parent, { pagination }, { user, Question }) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await Question.find({ ...filter, user: user.id }).sort(sort).skip(page).limit(limit).select('name');
-		},
-
-		async getFilteredSelfQuestionsCount(parent, { filter = '{}' }, { user, Question }) {
-			const count = await Question.countDocuments({ ...JSON.parse(filter), user: user.id });
-			return count;
-		},
-
-		// ? Id mixed
-		async getMixedQuestionsById(parent, { id }, { Question }) {
-			const question = await Question.find({ _id: id, public: true }).select('-public -favourite');
-			if (!question) throw new Error('Resource with that Id doesnt exist');
-			return question;
-		},
+		...generateQueryResolvers('question'),
 
 		async getMixedQuestionsByIdAnswers(parent, { id }) {
 			const [ questions ] = await sendAnswerHandler([ id ], (err) => {

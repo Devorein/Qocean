@@ -4,7 +4,10 @@ const ErrorResponse = require('../utils/errorResponse');
 async function createFolderHandler(userId, data, next) {
 	data.user = userId;
 	const prevFolder = await Folder.countDocuments({ name: data.name, user: userId });
-	if (prevFolder >= 1) return next(new ErrorResponse(`You alread have a folder named ${data.name}`, 400));
+	if (prevFolder >= 1) {
+		if (next) return next(new ErrorResponse(`You alread have a folder named ${data.name}`, 400));
+		else throw new Error(`You alread have a folder named ${data.name}`);
+	}
 	const targetQuizzes = data.quizzes;
 	delete data.quizzes;
 	const folder = await Folder.create(data);

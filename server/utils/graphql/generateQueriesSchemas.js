@@ -7,7 +7,7 @@ module.exports = function(resource) {
 			let datainput = '',
 				countinput = '';
 			if (sector === 'Paginated') {
-				input = '(pagination: PaginationInput!)';
+				datainput = '(pagination: PaginationInput!)';
 				countinput = '(filter: JSON)';
 			} else if (sector === 'Id') datainput = '(id: ID!)';
 			const commonComment = `"Get ${sector.toLowerCase()} ${type.toLowerCase()} ${resource.toLowerCase()}`;
@@ -39,6 +39,5 @@ module.exports = function(resource) {
 			}
 		});
 	});
-	if (resource === 'user') console.log(res.join('\n\n'));
 	return res.join('\n');
 };
