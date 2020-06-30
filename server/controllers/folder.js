@@ -1,4 +1,4 @@
-const Folder = require('../models/Folder');
+const { FolderModel } = require('../models/Folder');
 const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
@@ -21,12 +21,12 @@ exports.createFolder = asyncHandler(async (req, res, next) => {
 // @access: Private
 exports.updateFolder = asyncHandler(async (req, res, next) => {
 	req.body.id = req.params.id;
-	const folder = await updateResource(Folder, req.body, req.user._id, next);
+	const folder = await updateResource(FolderModel, req.body, req.user._id, next);
 	res.status(200).json({ success: true, data: folder });
 });
 
 exports.updateFolders = asyncHandler(async (req, res, next) => {
-	const folders = await updateResource('folder', req.body.data, req.user, next);
+	const folders = await updateResource(FolderModel, req.body.data, req.user, next);
 	res.status(200).json({ success: true, data: folders });
 });
 

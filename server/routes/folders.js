@@ -1,5 +1,5 @@
 const express = require('express');
-const Folder = require('../models/Folder');
+const { FolderModel } = require('../models/Folder');
 const router = express.Router();
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
@@ -14,15 +14,15 @@ const {
 	updateFolders
 } = require('../controllers/folder');
 
-router.route('/countAll').get(advancedResults(Folder));
-router.route('/countMine').get(protect, advancedResults(Folder));
-router.route('/countOthers').get(protect, advancedResults(Folder));
-router.route('/me').get(protect, advancedResults(Folder));
-router.route('/others').get(protect, advancedResults(Folder));
+router.route('/countAll').get(advancedResults(FolderModel));
+router.route('/countMine').get(protect, advancedResults(FolderModel));
+router.route('/countOthers').get(protect, advancedResults(FolderModel));
+router.route('/me').get(protect, advancedResults(FolderModel));
+router.route('/others').get(protect, advancedResults(FolderModel));
 
 router
 	.route('/')
-	.get(advancedResults(Folder))
+	.get(advancedResults(FolderModel))
 	.post(protect, createFolder)
 	.put(protect, updateFolders)
 	.delete(protect, deleteFolders);

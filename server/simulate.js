@@ -23,7 +23,7 @@ const Quiz = require('./models/Quiz');
 const Question = require('./models/Question');
 const User = require('./models/User');
 const Environment = require('./models/Environment');
-const Folder = require('./models/Folder');
+const { FolderModel } = require('./models/Folder');
 const Message = require('./models/Message');
 const Inbox = require('./models/Inbox');
 const Report = require('./models/Report');
@@ -49,7 +49,7 @@ mongoose.connect(process.env.MONGO_URI, {
 		await Question.deleteMany();
 		await User.deleteMany();
 		await Environment.deleteMany();
-		await Folder.deleteMany();
+		await FolderModel.deleteMany();
 		await Inbox.deleteMany();
 		await Message.deleteMany();
 		await Report.deleteMany();

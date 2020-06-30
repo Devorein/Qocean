@@ -42,7 +42,7 @@ const MessaggeResolvers = require('./resolvers/message');
 const UserModel = require('./models/User');
 const QuizModel = require('./models/Quiz');
 const QuestionModel = require('./models/Question');
-const FolderModel = require('./models/Folder');
+const { FolderModel } = require('./models/Folder');
 const EnvironmentModel = require('./models/Environment');
 const WatchlistModel = require('./models/Watchlist');
 const FilterSortModel = require('./models/FilterSort');
@@ -159,10 +159,13 @@ const GRAPHQL_SERVER = new ApolloServer({
 			MessaggeResolvers
 		],
 		resolverValidationOptions: {
-			requireResolversForResolveType: false,
-			requireResolversForArgs: true,
-			requireResolversForNonScalar: true
+			requireResolversForNonScalar: false
 		},
+		// resolverValidationOptions: {
+		// 	requireResolversForResolveType: false,
+		// 	requireResolversForArgs: true,
+		// 	requireResolversForNonScalar: true
+		// },
 		allowUndefinedInResolve: false
 	}),
 	context: ({ req, res }) => {

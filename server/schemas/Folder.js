@@ -1,41 +1,11 @@
 const { gql } = require('apollo-server-express');
 
-const generateQueries = require('../utils/graphql/generateQueriesSchemas');
-const generateMutations = require('../utils/graphql/generateMutationsSchemas');
-
-const FolderInterface = `
-  id: ID!
-  name: String!
-  icon: IconColorEnum!
-  ratings: NonNegativeInt!
-  total_quizzes: NonNegativeInt!
-  total_questions: NonNegativeInt!
-`;
+const generateQueries = require('../utils/graphql/generateQuerySchemas');
+const generateMutations = require('../utils/graphql/generateMutationSchemas');
+const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
-	interface Folder {
-		${FolderInterface}
-	}
-
-	type MixedFolder implements Folder {
-    quizzes: [MixedQuiz!]!
-    watchers: [MixedUser!]!
-		${FolderInterface}
-	}
-
-  type OthersFolder implements Folder {
-    quizzes: [OthersQuiz!]!
-    watchers: [OthersUser!]!
-		${FolderInterface}
-	}
-
-	type SelfFolder implements Folder {
-		public: Boolean!
-		favourite: Boolean!
-    quizzes: [SelfQuiz!]!
-    watchers: [OthersUser!]!
-		${FolderInterface}
-	}
+	${generateTypeSchema('folder')}
 
   input FolderInput{
     name: String!
