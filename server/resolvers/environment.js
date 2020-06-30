@@ -3,10 +3,9 @@ const {
 	deleteEnvironmentHandler,
 	setCurrentEnvironmentHandler
 } = require('../handlers/environment');
-const parsePagination = require('../utils/parsePagination');
-const updateResource = require('../utils/updateResource');
+const updateResource = require('../utils/resource/updateResource');
 const resolverCompose = require('../utils/resolverCompose');
-const generateQueryResolvers = require('../utils/generateQueryResolvers');
+const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
 
 const EnvironmentResolvers = {
 	Query: {

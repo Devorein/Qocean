@@ -1,9 +1,9 @@
 const Quiz = require('../models/Quiz');
 
 const asyncHandler = require('../middleware/async');
-const updateResource = require('../utils/updateResource');
-const watchAction = require('../utils/watchAction');
-const addRatings = require('../utils/addRatings');
+const updateResource = require('../utils/resource/updateResource');
+const watchAction = require('../utils/resource/watchAction');
+const addRatings = require('../utils/resource/addRatings');
 
 const { createQuizHandler, deleteQuizHandler, updatePlayedTimesHandler } = require('../handlers/quiz');
 

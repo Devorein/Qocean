@@ -2,9 +2,9 @@ const Folder = require('../models/Folder');
 const Quiz = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
-const updateResource = require('../utils/updateResource');
-const watchAction = require('../utils/watchAction');
-const addRatings = require('../utils/addRatings');
+const updateResource = require('../utils/resource/updateResource');
+const watchAction = require('../utils/resource/watchAction');
+const addRatings = require('../utils/resource/addRatings');
 
 const { createFolderHandler, deleteFolderHandler } = require('../handlers/folder');
 

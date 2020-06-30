@@ -1,5 +1,4 @@
-const parsePagination = require('../utils/parsePagination');
-const updateResource = require('../utils/updateResource');
+const updateResource = require('../utils/resource/updateResource');
 
 const {
 	createQuestionHandler,
@@ -10,7 +9,7 @@ const {
 } = require('../handlers/question');
 
 const resolverCompose = require('../utils/resolverCompose');
-const generateQueryResolvers = require('../utils/generateQueryResolvers');
+const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
 
 const QuestionResolvers = {
 	Query: {

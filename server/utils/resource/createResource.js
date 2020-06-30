@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 
-const ErrorResponse = require('./errorResponse');
+const ErrorResponse = require('../errorResponse');
 
 dotenv.config({ path: path.join(path.dirname(__dirname), 'config', 'config.env') });
 
@@ -13,4 +13,4 @@ mongoose.connect(process.env.MONGO_URI, {
 	useUnifiedTopology: true
 });
 
-module.exports = async function deleteResource() {};
+module.exports = async function createResource() {};

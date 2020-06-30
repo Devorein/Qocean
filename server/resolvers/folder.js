@@ -1,13 +1,14 @@
 const resolverCompose = require('../utils/resolverCompose');
-const generateQueryResolvers = require('../utils/generateQueryResolvers');
-const generateMutationResolves = require('../utils/generateMutationResolves');
+
+const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
+const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
 
 const FolderResolvers = {
 	Query: {
 		...generateQueryResolvers('folder')
 	},
 	Mutation: {
-		...generateMutationResolves('folder')
+		...generateMutationResolvers('folder')
 	},
 	SelfFolder: {
 		async watchers(parent, args, { User }) {

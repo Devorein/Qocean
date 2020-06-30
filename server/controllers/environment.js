@@ -1,7 +1,7 @@
 const Environment = require('../models/Environment');
 
 const asyncHandler = require('../middleware/async');
-const updateResource = require('../utils/updateResource');
+const updateResource = require('../utils/resource/updateResource');
 
 const {
 	createEnvironmentHandler,

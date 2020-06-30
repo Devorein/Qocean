@@ -1,6 +1,6 @@
 const pluralize = require('pluralize');
 
-const parsePagination = require('./parsePagination');
+const parsePagination = require('../parsePagination');
 
 module.exports = function(resource) {
 	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);

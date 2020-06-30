@@ -1,10 +1,10 @@
-const { createQuizHandler, deleteQuizHandler, updatePlayedTimesHandler } = require('../handlers/quiz');
+const { updatePlayedTimesHandler } = require('../handlers/quiz');
 
-const updateResource = require('../utils/updateResource');
-const watchAction = require('../utils/watchAction');
-const addRatings = require('../utils/addRatings');
+const updateResource = require('../utils/resource/updateResource');
+const watchAction = require('../utils/resource/watchAction');
+const addRatings = require('../utils/resource/addRatings');
 const resolverCompose = require('../utils/resolverCompose');
-const generateQueryResolvers = require('../utils/generateQueryResolvers');
+const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
 
 const QuizResolvers = {
 	Query: {

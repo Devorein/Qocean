@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server-express');
-const generateMutations = require('../utils/generateMutations');
-const generateQueries = require('../utils/generateQueries');
+
+const generateQueries = require('../utils/graphql/generateQueriesSchemas');
+const generateMutations = require('../utils/graphql/generateMutationsSchemas');
 
 const QuestionInterface = `
   id: ID!

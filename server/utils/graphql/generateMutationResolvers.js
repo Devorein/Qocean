@@ -1,10 +1,10 @@
 const pluralize = require('pluralize');
 
-const createResource = require('./createResource');
-const updateResource = require('./updateResource');
-const deleteResource = require('./deleteResource');
-const watchAction = require('./watchAction');
-const addRatings = require('./addRatings');
+const createResource = require('../resource/createResource');
+const updateResource = require('../resource/updateResource');
+const deleteResource = require('../resource/deleteResource');
+const watchAction = require('../resource/watchAction');
+const addRatings = require('../resource/addRatings');
 
 module.exports = function(resource) {
 	const pluralizedResource = pluralize(resource, 2);
@@ -13,7 +13,7 @@ module.exports = function(resource) {
 
 	const MutationResolvers = {
 		[`create${capitalizedResource}`]: async function(parent, { data }, ctx) {
-			return await createFolderHandler(user.id, data, (err) => {
+			return await createResource(user.id, data, (err) => {
 				throw err;
 			});
 		},
@@ -36,7 +36,7 @@ module.exports = function(resource) {
 			}))[0];
 		},
 		[`delete${pluralizedcapitalizedResource}`]: async function(parent, { ids }, ctx) {
-			return await deleteFolderHandler(ids, ctx.user.id, (err) => {
+			return await deleteResource(ids, ctx.user.id, (err) => {
 				throw err;
 			});
 		}
