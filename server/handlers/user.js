@@ -2,14 +2,14 @@ const fs = require('fs');
 const path = require('path');
 const ErrorResponse = require('../utils/errorResponse');
 const sendTokenResponse = require('../utils/sendTokenResponse');
-const User = require('../models/User');
+const { UserModel } = require('../models/User');
 
 async function updateUserDetailsHandler(body, userId) {
 	const updateFields = {};
 	Object.keys(body).forEach((key) => {
 		updateFields[key] = body[key];
 	});
-	return await User.findByIdAndUpdate(userId, updateFields, {
+	return await UserModel.findByIdAndUpdate(userId, updateFields, {
 		new: true,
 		runValidators: true
 	});
@@ -18,7 +18,7 @@ async function updateUserDetailsHandler(body, userId) {
 exports.updateUserDetailsHandler = updateUserDetailsHandler;
 
 async function updateUserPasswordHandler(userId, { currentPassword, newPassword }, next) {
-	const user = await User.findById(userId).select('+password');
+	const user = await UserModel.findById(userId).select('+password');
 
 	// Check current password
 	const doesPassMatch = await user.matchPassword(currentPassword);
@@ -31,7 +31,7 @@ async function updateUserPasswordHandler(userId, { currentPassword, newPassword 
 exports.updateUserPasswordHandler = updateUserPasswordHandler;
 
 async function deleteUserHandler(userId) {
-	const user = await User.findById(userId);
+	const user = await UserModel.findById(userId);
 	if (!user.image.startsWith('http') && user.image !== 'none.png' && user.image !== '')
 		fs.unlinkSync(path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${user.image}`));
 	return await user.remove();
@@ -47,7 +47,7 @@ async function getUsersTagsHandler(filter, config = {}) {
 	} = config;
 
 	const tags = [];
-	const users = await User.find(filter).select('quizzes').populate({ path: 'quizzes', select: 'tags' });
+	const users = await UserModel.find(filter).select('quizzes').populate({ path: 'quizzes', select: 'tags' });
 	users.forEach((user) => user.quizzes.forEach((quiz) => quiz.tags.forEach((tag) => tags.push(tag))));
 	const noncolouredTags = tags.map((tag) => tag.split(':')[0]);
 	return {

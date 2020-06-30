@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const User = require('../models/User');
+const { UserModel } = require('../models/User');
 
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
@@ -48,7 +48,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
 // @route    GET /api/v1/auth/forgotpassword
 // @access   Public
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
-	const user = await User.findOne({ email: req.body.email });
+	const user = await UserModel.findOne({ email: req.body.email });
 
 	if (!user) return next(new ErrorResponse(`There is no user with that email`, 404));
 
@@ -78,7 +78,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 exports.resetPassword = asyncHandler(async (req, res, next) => {
 	const resetPasswordToken = crypto.createHash('sha256').update(req.params.resetToken).digest('hex');
 
-	const user = await User.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
+	const user = await UserModel.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
 
 	if (!user) return next(new ErrorResponse(`Invalid token`, 400));
 

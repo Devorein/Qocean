@@ -156,4 +156,5 @@ EnvironmentSchema.pre('remove', async function(next) {
 	next();
 });
 
-module.exports = mongoose.model('Environment', EnvironmentSchema);
+exports.EnvironmentSchema = EnvironmentSchema;
+exports.EnvironmentModel = mongoose.model('Environment', EnvironmentSchema);

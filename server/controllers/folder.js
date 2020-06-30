@@ -1,5 +1,5 @@
 const { FolderModel } = require('../models/Folder');
-const Quiz = require('../models/Quiz');
+const { QuizModel } = require('../models/Quiz');
 const ErrorResponse = require('../utils/errorResponse');
 const asyncHandler = require('../middleware/async');
 const updateResource = require('../utils/resource/updateResource');
@@ -48,7 +48,7 @@ exports.deleteFolders = asyncHandler(async (req, res, next) => {
 // @access: Private
 exports.quizToFolder = asyncHandler(async (req, res, next) => {
 	const { op } = req.body;
-	const quiz = await Quiz.findById(req.body.quiz);
+	const quiz = await QuizModel.findById(req.body.quiz);
 	if (!quiz) return next(new ErrorResponse(`No quiz found with id ${req.body.quiz}`, 404));
 	const folder = await Folder.findById(req.body.folder);
 	if (!quiz) return next(new ErrorResponse(`No folder found with id ${req.body.folder}`, 404));

@@ -1,10 +1,10 @@
-const Environment = require('../models/Environment');
-const User = require('../models/User');
+const { EnvironmentModel } = require('../models/Environment');
+const { UserModel } = require('../models/User');
 const ErrorResponse = require('../utils/errorResponse');
 
 exports.setCurrentEnvironmentHandler = async function setCurrentEnvironmentHandler(userId, id) {
-	const environment = await Environment.findOne({ _id: id, user: userId });
-	const user = await User.findById(userId);
+	const environment = await EnvironmentModel.findOne({ _id: id, user: userId });
+	const user = await UserModel.findById(userId);
 	user.current_environment = environment._id;
 	await user.save();
 	return environment;
@@ -13,14 +13,14 @@ exports.setCurrentEnvironmentHandler = async function setCurrentEnvironmentHandl
 exports.createEnvironmentHandler = async function createEnvironmentHandler(userId, data, next) {
 	data.user = userId;
 	let user;
-	const prevEnv = await Environment.countDocuments({ name: data.name, user: userId });
+	const prevEnv = await EnvironmentModel.countDocuments({ name: data.name, user: userId });
 	if (prevEnv >= 1) {
 		if (next) return next(new ErrorResponse(`You already have an environment named ${data.name}`, 400));
 		else throw new Error(`You already have an environment named ${data.name}`);
 	}
-	const environment = await Environment.create(data);
+	const environment = await EnvironmentModel.create(data);
 	if (data.set_as_current) {
-		user = await User.findById(userId);
+		user = await UserModel.findById(userId);
 		user.current_environment = environment._id;
 		await user.save();
 	}
@@ -29,11 +29,11 @@ exports.createEnvironmentHandler = async function createEnvironmentHandler(userI
 
 exports.deleteEnvironmentHandler = async function deleteEnvironmentHandler(environmentIds, userId, next) {
 	const deleted_environments = [];
-	const totalDocs = await Environment.countDocuments({ user: userId });
-	const user = await User.findById(userId);
+	const totalDocs = await EnvironmentModel.countDocuments({ user: userId });
+	const user = await UserModel.findById(userId);
 	for (let i = 0; i < environmentIds.length; i++) {
 		const environmentId = environmentIds[i];
-		const environment = await Environment.findById(environmentId).select('name user');
+		const environment = await EnvironmentModel.findById(environmentId).select('name user');
 		if (!environment) return next(new ErrorResponse(`Environment not found with id of ${environmentId}`, 404));
 		if (environment.user.toString() !== userId.toString())
 			return next(new ErrorResponse(`User not authorized to delete environment`, 401));

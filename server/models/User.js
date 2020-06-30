@@ -150,4 +150,5 @@ UserSchema.pre('remove', async function(next) {
 	next();
 });
 
-module.exports = mongoose.model('User', UserSchema);
+exports.UserSchema = UserSchema;
+exports.UserModel = mongoose.model('User', UserSchema);

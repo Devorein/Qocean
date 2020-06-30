@@ -1,4 +1,4 @@
-const Quiz = require('../models/Quiz');
+const { QuizModel } = require('../models/Quiz');
 
 const asyncHandler = require('../middleware/async');
 const updateResource = require('../utils/resource/updateResource');
@@ -21,12 +21,12 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
 	req.body.id = req.params.id;
-	const [ quiz ] = await updateResource(Quiz, [ req.body ], req.user._id, next);
+	const [ quiz ] = await updateResource(QuizModel, [ req.body ], req.user._id, next);
 	res.status(200).json({ success: true, data: quiz });
 });
 
 exports.updateQuizzes = asyncHandler(async (req, res, next) => {
-	const quizzes = await updateResource(Quiz, req.body.data, req.user._id, next);
+	const quizzes = await updateResource(QuizModel, req.body.data, req.user._id, next);
 	res.status(200).json({ success: true, data: quizzes });
 });
 
@@ -57,12 +57,12 @@ exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
-	const ratingsData = await addRatings(Quiz, req.body.data, req.user._id, next);
+	const ratingsData = await addRatings(QuizModel, req.body.data, req.user._id, next);
 	res.status(200).json({ success: true, ratingsData });
 });
 
 exports.playPageQuiz = asyncHandler(async (req, res, next) => {
-	const quizzes = await Quiz.find({ user: req.user._id })
+	const quizzes = await QuizModel.find({ user: req.user._id })
 		.populate({
 			path: 'questions',
 			select: 'difficulty time_allocated name type'

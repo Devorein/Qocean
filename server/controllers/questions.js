@@ -1,4 +1,4 @@
-const Question = require('../models/Question');
+const { QuestionModel } = require('../models/Question');
 const asyncHandler = require('../middleware/async');
 const updateResource = require('../utils/resource/updateResource');
 
