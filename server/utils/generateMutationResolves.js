@@ -1,0 +1,58 @@
+const pluralize = require('pluralize');
+
+const createResource = require('./createResource');
+const updateResource = require('./updateResource');
+const deleteResource = require('./deleteResource');
+const watchAction = require('./watchAction');
+const addRatings = require('./addRatings');
+
+module.exports = function(resource) {
+	const pluralizedResource = pluralize(resource, 2);
+	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
+	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
+
+	const MutationResolvers = {
+		[`create${capitalizedResource}`]: async function(parent, { data }, ctx) {
+			return await createFolderHandler(user.id, data, (err) => {
+				throw err;
+			});
+		},
+		[`update${capitalizedResource}`]: async function(parent, { data, id }, ctx) {
+			data.id = id;
+			return (await updateResource(ctx[capitalizedResource], [ data ], ctx.user.id, (err) => {
+				throw err;
+			}))[0];
+		},
+
+		[`update${pluralizedcapitalizedResource}`]: async function(parent, { data, ids }, ctx) {
+			ids.forEach((id, i) => (data[i].id = id));
+			return await updateResource(ctx[capitalizedResource], data, ctx.user.id, (err) => {
+				throw err;
+			});
+		},
+		[`delete${capitalizedResource}`]: async function(parent, { id }, ctx) {
+			return (await deleteFolderHandler([ id ], ctx.user.id, (err) => {
+				throw err;
+			}))[0];
+		},
+		[`delete${pluralizedcapitalizedResource}`]: async function(parent, { ids }, ctx) {
+			return await deleteFolderHandler(ids, ctx.user.id, (err) => {
+				throw err;
+			});
+		}
+	};
+
+	if (resource.match(/(quiz|folder)/)) {
+		(MutationResolvers[`update${capitalizedResource}Ratings`] = async function(parent, { data }, ctx) {
+			return await addRatings(ctx[capitalizedResource], data, ctx.user.id, (err) => {
+				throw err;
+			});
+		}),
+			(MutationResolvers[`update${capitalizedResource}Watch`] = async function(parent, { ids }, ctx) {
+				user = await User.findById(ctx.user.id);
+				return await watchAction(pluralizedResource, { [pluralizedResource]: ids }, user);
+			});
+	}
+
+	return MutationResolvers;
+};

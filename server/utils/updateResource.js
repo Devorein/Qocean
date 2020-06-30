@@ -3,7 +3,6 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 const ErrorResponse = require('./errorResponse');
-const { model } = require('../models/Quiz');
 
 dotenv.config({ path: path.join(path.dirname(__dirname), 'config', 'config.env') });
 
