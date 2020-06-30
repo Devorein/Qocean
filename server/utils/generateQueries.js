@@ -39,6 +39,5 @@ module.exports = function(resource) {
 			}
 		});
 	});
-	if (resource === 'user') console.log(res.join('\n\n'));
 	return res.join('\n');
 };
