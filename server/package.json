@@ -13,7 +13,9 @@
   "dependencies": {
     "@graphql-tools/resolvers-composition": "^6.0.11",
     "@graphql-tools/schema": "^6.0.11",
+    "@mongoosejs/double": "^0.2.0",
     "apollo-server-express": "^2.15.1",
+    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "bson": "^4.0.4",
     "casual": "^1.6.2",
@@ -34,11 +36,13 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "mongoose": "^5.9.20",
+    "mongoose-int32": "^0.4.0",
     "morgan": "^1.10.0",
     "nodemailer": "^6.4.10",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
     "randomcolor": "^0.5.4",
+    "string": "^3.3.3",
     "validate-color": "^2.1.0",
     "xss-clean": "^0.1.1"
   },

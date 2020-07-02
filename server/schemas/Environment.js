@@ -2,6 +2,9 @@ const { gql } = require('apollo-server-express');
 
 const generateQueries = require('../utils/graphql/generateQuerySchemas');
 const generateMutations = require('../utils/graphql/generateMutationSchemas');
+const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
+
+generateTypeSchema('environment');
 
 const EnvInterface = `
   id: ID!
@@ -31,7 +34,6 @@ const EnvInterface = `
 `;
 
 module.exports = gql`
-
   enum ThemeEnum{
     Light
     Dark

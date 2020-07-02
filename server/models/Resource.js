@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const ResourceSchema = new mongoose.Schema({
 	favourite: {
 		type: Boolean,
-		default: false
+		default: false,
+		onlySelf: true
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
@@ -13,12 +14,14 @@ const ResourceSchema = new mongoose.Schema({
 	},
 	public: {
 		type: Boolean,
-		default: true
+		default: true,
+		onlySelf: true
 	},
 	created_at: {
 		type: Date,
 		default: Date.now,
-		writable: false
+		writable: false,
+		onlySelf: true
 	},
 	updated_at: {
 		type: Date,
