@@ -35,7 +35,7 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
-    "mongoose": "^5.9.20",
+    "mongoose": "^5.9.21",
     "mongoose-int32": "^0.4.0",
     "morgan": "^1.10.0",
     "nodemailer": "^6.4.10",
