@@ -85,16 +85,16 @@ module.exports = function(resource, schema, dirname) {
 	function parseSchema(schema, prevKey) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const instanceOfSchema = value instanceof mongoose.Schema;
-			const { auth, onlySelf } = value;
+			const { auth, onlySelf, partition = true } = Array.isArray(value) ? value[0] : value;
 			const populateTypeOption = {
 				auth,
 				onlySelf,
-				partition: false
+				partition
 			};
 			let type = '';
 			if (instanceOfSchema) {
 				type = value.type || S(`_${key}`).camelize().s;
-				populateType(key, type + 'Type', populateTypeOption);
+				populateType(key, type + 'Type', { ...populateTypeOption, partition: false });
 				if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
 				inputs[capitalizedResource][key] = `${type}Input!`;
 				parseSchema(value, type);
@@ -104,21 +104,21 @@ module.exports = function(resource, schema, dirname) {
 					'_' +
 					(prevKey ? `${prevKey.toUpperCase()}_${key.toUpperCase()}` : `${key.toUpperCase()}`);
 				enums[type] = value.enum;
-				if (!prevKey) populateType(key, type, populateTypeOption);
+				if (!prevKey) populateType(key, type, { ...populateTypeOption, partition: false });
 			} else if (Array.isArray(value)) {
 				if (value[0].ref) {
-					if (!prevKey) populateType(key, [ value[0].ref ], { partition: true, auth, onlySelf });
+					if (!prevKey) populateType(key, [ value[0].ref ], populateTypeOption);
 					type = '[ID!]';
 				} else {
 					type = parseScalarType(value);
-					if (!prevKey) populateType(key, type, populateTypeOption);
+					if (!prevKey) populateType(key, type, { ...populateTypeOption, partition: false });
 				}
 			} else if (!Array.isArray(value) && value.ref) {
-				if (!prevKey) populateType(key, value.ref, { partition: true, auth, onlySelf });
+				if (!prevKey) populateType(key, value.ref, populateTypeOption);
 				type = 'ID';
 			} else {
 				type = parseScalarType(value);
-				if (!prevKey) populateType(key, type, populateTypeOption);
+				if (!prevKey) populateType(key, type, { ...populateTypeOption, partition: false });
 			}
 
 			if (!instanceOfSchema && prevKey) {

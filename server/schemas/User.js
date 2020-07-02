@@ -1,62 +1,12 @@
 const { gql } = require('apollo-server-express');
 
 const generateQueries = require('../utils/graphql/generateQuerySchemas');
-
-const UserInterface = `
-  id: ID!
-  name: String!
-  username: Username!
-  email: EmailAddress!
-  joined_at: Date!
-  total_quizzes: NonNegativeInt!
-  total_questions: NonNegativeInt!
-  total_folders: NonNegativeInt!
-  total_environments: NonNegativeInt!
-  version: VersionEnum!
-  image: String!
-  current_environment: SelfEnvironment!
-`;
+const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
-  enum VersionEnum {
-    Rower
-    Sailor
-    Captain
-    Admin
-  }
 
-	interface User {
-		${UserInterface}
-	}
-
-  type OthersUser implements User {
-    folders: [MixedFolder!]!
-    quizzes: [MixedQuiz!]!
-    questions: [MixedQuestion!]!
-    environments: [MixedEnvironment!]!
-		${UserInterface}
-	}
-
-	type MixedUser implements User {
-    folders: [OthersFolder!]!
-    quizzes: [OthersQuiz!]!
-    questions: [OthersQuestion!]!
-    environments: [OthersEnvironment!]!
-		${UserInterface}
-	}
-
-  type SelfUser implements User{
-    folders: [SelfFolder!]!
-    quizzes: [SelfQuiz!]!
-    questions: [SelfQuestion!]!
-    environments: [SelfEnvironment!]!
-    watchlist: Watchlist!
-    filtersort: [FilterSort!]!
-    reports: [Report!]!
-    inbox: Inbox!
-    ${UserInterface}
-  }
-
+  ${generateTypeSchema('user')}
+  
   type TagOutput{
     uniqueWithoutColor: [String]!
     uniqueWithColor: [String]!
