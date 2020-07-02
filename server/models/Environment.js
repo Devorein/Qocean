@@ -73,7 +73,7 @@ const envSchema = {
 		type: Boolean,
 		default: true
 	},
-	question: QuestionInfo,
+	question_info: QuestionInfo,
 	default_create_landing: {
 		type: String,
 		default: 'Quiz'

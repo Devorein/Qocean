@@ -57,7 +57,7 @@ const EnvironmentResolvers = {
 		self_page: (parent) => parent.self_page,
 		watchlist_page: (parent) => parent.watchlist_page,
 		icon: (parent) => parent.icon,
-		question: (parent) => parent.question
+		question_info: (parent) => parent.question_info
 	},
 	OthersEnvironment: {
 		theme: (parent) => parent.theme,
@@ -67,15 +67,15 @@ const EnvironmentResolvers = {
 		self_page: (parent) => parent.self_page,
 		watchlist_page: (parent) => parent.watchlist_page,
 		icon: (parent) => parent.icon,
-		question: (parent) => parent.question
+		question_info: (parent) => parent.question_info
 	},
-	PageInfo: {
+	PageInfoType: {
 		default_view: (parent) => parent.default_view,
 		default_ipp: (parent) => parent.default_ipp,
 		default_landing: (parent) => parent.default_landing,
 		default_layout: (parent) => parent.default_layout
 	},
-	QuestionInfo: {
+	QuestionInfoType: {
 		default_type: (parent) => parent.default_type,
 		default_difficulty: (parent) => parent.default_difficulty,
 		default_timing: (parent) => parent.default_timing,
