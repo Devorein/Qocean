@@ -2,42 +2,10 @@ const { gql } = require('apollo-server-express');
 
 const generateQueries = require('../utils/graphql/generateQuerySchemas');
 const generateMutations = require('../utils/graphql/generateMutationSchemas');
-
-const QuestionInterface = `
-  id: ID!
-  name: String!
-  type: QuestionTypeEnum!
-  format: String!
-  weight: PositiveInt!
-  add_to_score: Boolean!
-  time_allocated: PositiveInt!
-  difficulty: QuestionDifficultyEnum!
-  image: String!
-`;
+const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
-	interface Question {
-		${QuestionInterface}
-	}
-
-  type MixedQuestion implements Question {
-    quiz: [MixedQuiz!]!
-    ${QuestionInterface}
-	}
-
-	type OthersQuestion implements Question {
-    quiz: [OthersQuiz!]!
-    ${QuestionInterface}
-	}
-
-	type SelfQuestion implements Question {
-		public: Boolean!
-		favourite: Boolean!
-    answers: [[String]]
-    options: [String]
-    quiz: [SelfQuiz!]!
-    ${QuestionInterface}
-	}
+  ${generateTypeSchema('question')}
 
   type QuestionAnswersOutput{
     id:ID!
@@ -47,22 +15,6 @@ module.exports = gql`
   type QuestionValidationOutput{
     correct: [ID]!
     incorrect: [ID]!
-  }
-
-  input QuestionInput{
-    name: String!
-    type: QuestionTypeEnum!
-    format: String
-    weight: PositiveInt
-    quiz: ID!
-    add_to_score: Boolean
-    time_allocated: PositiveInt
-    difficulty: QuestionDifficultyEnum
-    image: String
-    answers: [[String]]!
-    options: [String!]!
-    public: Boolean
-    favourite: Boolean
   }
 
   input IdAnswer{

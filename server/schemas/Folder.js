@@ -6,6 +6,7 @@ const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
   ${generateTypeSchema('folder')}
+  
 	extend type Query {
     ${generateQueries('folder')}
 	}

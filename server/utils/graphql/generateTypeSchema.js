@@ -12,8 +12,13 @@ const { EnvironmentSchema } = require('../../models/Environment');
 function parseScalarType(value) {
 	const isArray = Array.isArray(value);
 	const target = isArray ? value[0] : value;
-	let type = target.scalar || (target.type && target.type.name) || target.name;
+	let type = target.scalar;
 
+	if (Array.isArray(target.type)) {
+		if (Array.isArray(target.type[0])) type = `[${target.type[0][0].name}]`;
+		else type = target.type[0].name;
+	} else if (target.type) type = target.type.name;
+	else type = target.name;
 	switch (type) {
 		case 'Int32':
 		case 'Number':
@@ -25,7 +30,7 @@ function parseScalarType(value) {
 	}
 
 	if (type === 'ObjectId') type = 'ID';
-	type = isArray ? `[${type}!]` : type;
+	type = isArray || Array.isArray(value.type) ? `[${type}!]` : type;
 	return type;
 }
 
@@ -70,12 +75,9 @@ module.exports = function(resource, schema, dirname) {
 				? '[' + (partition ? part + value : value) + '!]!'
 				: (partition ? part + value : value) + '!';
 		}
-
-		[ 'Mixed', 'Others', 'Self' ].forEach((part) => {
-			if (part === 'Mixed' && !auth && !onlySelf) populate(part);
-			else if (part === 'Others' && !onlySelf) populate(part);
-			else populate(part);
-		});
+		if (!auth && !onlySelf) populate('Mixed');
+		if (!onlySelf) populate('Others');
+		populate('Self');
 
 		if (!auth && !onlySelf && !partition) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
 	}
