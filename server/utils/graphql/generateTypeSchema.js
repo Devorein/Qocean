@@ -9,7 +9,7 @@ const { QuestionSchema } = require('../../models/Question');
 const { FolderSchema } = require('../../models/Folder');
 const { EnvironmentSchema } = require('../../models/Environment');
 
-function parseScalar(key, value, prevKey) {
+function parseScalarType(value) {
 	const isArray = Array.isArray(value);
 	const target = isArray ? value[0] : value;
 	let type = target.scalar || (target.type && target.type.name) || target.name;
@@ -26,22 +26,20 @@ function parseScalar(key, value, prevKey) {
 
 	if (type === 'ObjectId') type = 'ID';
 	type = isArray ? `[${type}!]` : type;
-	let input_type = type;
-	return [ type, input_type ];
+	return type;
 }
 
-const inputs = {};
-const enums = {};
-const interface = {};
-
-module.exports = function(resource, schema) {
+module.exports = function(resource, schema, dirname) {
+	const inputs = {};
+	const enums = {};
+	const interface = {};
 	const capitalizedResource = S(resource).capitalize().s;
 	const types = {
 		[`Mixed${capitalizedResource}`]: {},
 		[`Others${capitalizedResource}`]: {},
 		[`Self${capitalizedResource}`]: {}
 	};
-	let typeschema = ``;
+	let schemaStr = ``;
 	if (!schema) {
 		if (resource === 'user') schema = UserSchema;
 		else if (resource === 'quiz') schema = QuizSchema;
@@ -86,37 +84,43 @@ module.exports = function(resource, schema) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const instanceOfSchema = value instanceof mongoose.Schema;
 			const { auth, onlySelf } = value;
-			let type = '',
-				input_type = '';
+			const populateTypeOption = {
+				auth,
+				onlySelf,
+				partition: false
+			};
+			let type = '';
 			if (instanceOfSchema) {
-				type = value.type || S(key).capitalize().s;
-				input_type = type;
-				populateType(key, type + 'Type', { partition: false, auth, onlySelf });
+				type = value.type || S(`_${key}`).camelize().s;
+				populateType(key, type + 'Type', populateTypeOption);
 				if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
 				inputs[capitalizedResource][key] = `${type}Input!`;
 				parseSchema(value, type);
 			} else if (value.enum) {
-				type = prevKey ? `${prevKey.toUpperCase()}_${key.toUpperCase()}` : `${key.toUpperCase()}`;
-				input_type = `${type}`;
+				type =
+					resource.toUpperCase() +
+					'_' +
+					(prevKey ? `${prevKey.toUpperCase()}_${key.toUpperCase()}` : `${key.toUpperCase()}`);
 				enums[type] = value.enum;
+				if (!prevKey) populateType(key, type, populateTypeOption);
 			} else if (Array.isArray(value)) {
 				if (value[0].ref) {
-					populateType(key, [ value[0].ref ], { partition: true, auth, onlySelf });
+					if (!prevKey) populateType(key, [ value[0].ref ], { partition: true, auth, onlySelf });
 					type = '[ID!]';
 				} else {
-					[ type, input_type ] = parseScalar(key, value, prevKey);
-					if (!prevKey) populateType(key, type, { partition: false, auth, onlySelf });
+					type = parseScalarType(value);
+					if (!prevKey) populateType(key, type, populateTypeOption);
 				}
 			} else if (!Array.isArray(value) && value.ref) {
-				populateType(key, value.ref, { partition: true, auth, onlySelf });
+				if (!prevKey) populateType(key, value.ref, { partition: true, auth, onlySelf });
 				type = 'ID';
 			} else {
-				[ type, input_type ] = parseScalar(key, value, prevKey);
-				if (!prevKey) populateType(key, type, { partition: false, auth, onlySelf });
+				type = parseScalarType(value);
+				if (!prevKey) populateType(key, type, populateTypeOption);
 			}
 
 			if (!instanceOfSchema && prevKey) {
-				const type_key = schema.type || S(prevKey).capitalize().s;
+				const type_key = schema.type || S(`_${prevKey}`).camelize().s;
 				if (!types[type_key]) types[type_key] = {};
 				types[type_key][key] = `${type}!`;
 
@@ -133,8 +137,9 @@ module.exports = function(resource, schema) {
 		});
 	}
 	parseSchema(schema);
+
 	Object.entries(enums).forEach(([ key, value ]) => {
-		typeschema += `enum ${key}{\n\t${value.join('\n\t')}\n}\n\n`;
+		schemaStr += `enum ${key}{\n\t${value.join('\n\t')}\n}\n\n`;
 	});
 
 	let interfaceStr = `interface ${capitalizedResource}{\n`;
@@ -143,28 +148,13 @@ module.exports = function(resource, schema) {
 	});
 
 	interfaceStr += '}\n';
-	typeschema += interfaceStr;
+	schemaStr += interfaceStr;
 
 	const inputStr = partsGenerator(inputs, 'input');
 	const typeStr = partsGenerator(types, 'type');
 
-	typeschema += typeStr;
-	typeschema += inputStr;
-
-	// fs.writeFileSync(path.join(__dirname, `${resource}.graphql`), typeschema, 'UTF-8');
-	// fs.writeFileSync(
-	// 	path.join(__dirname, `${resource}.json`),
-	// 	JSON.stringify(
-	// 		{
-	// 			interface,
-	// 			types,
-	// 			inputs,
-	// 			enums
-	// 		},
-	// 		null,
-	// 		2
-	// 	),
-	// 	'UTF-8'
-	// );
-	return typeschema;
+	schemaStr += typeStr;
+	schemaStr += inputStr;
+	if (dirname) fs.writeFileSync(path.join(dirname, `${resource}.graphql`), `# ${Date.now()}\n${schemaStr}`, 'UTF-8');
+	return schemaStr;
 };

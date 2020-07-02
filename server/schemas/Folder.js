@@ -5,8 +5,7 @@ const generateMutations = require('../utils/graphql/generateMutationSchemas');
 const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
-	${generateTypeSchema('folder')}
-
+  ${generateTypeSchema('folder')}
 	extend type Query {
     ${generateQueries('folder')}
 	}
@@ -14,4 +13,5 @@ module.exports = gql`
   extend type Mutation{
     ${generateMutations('folder')}
   }
+
 `;
