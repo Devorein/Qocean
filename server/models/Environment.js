@@ -2,6 +2,50 @@ const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
 
+const PageInfo = {
+	default_ipp: {
+		type: Number,
+		default: 15
+	},
+	default_view: {
+		type: String,
+		default: 'List'
+	},
+	default_landing: {
+		type: String,
+		default: 'Quiz'
+	},
+	default_layout: {
+		type: String,
+		default: 'Left'
+	}
+};
+
+const QuestionInfo = new mongoose.Schema({
+	default_type: {
+		type: String,
+		default: 'MCQ',
+		enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ]
+	},
+	default_difficulty: {
+		type: String,
+		default: 'Beginner',
+		enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
+	},
+	default_timing: {
+		type: Number,
+		default: 30,
+		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
+	},
+	default_weight: {
+		type: Number,
+		default: 1,
+		min: [ 1, 'Weight cant be less than 1' ],
+		max: [ 10, 'Weight cant be less than 10' ]
+	}
+});
+
 const envSchema = {
 	name: {
 		type: String,
@@ -29,30 +73,7 @@ const envSchema = {
 		type: Boolean,
 		default: true
 	},
-	question: {
-		default_type: {
-			type: String,
-			default: 'MCQ',
-			enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ]
-		},
-		default_difficulty: {
-			type: String,
-			default: 'Beginner',
-			enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
-		},
-		default_timing: {
-			type: Number,
-			default: 30,
-			min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-			max: [ 120, 'Time allocated cant be more than 120 seconds' ]
-		},
-		default_weight: {
-			type: Number,
-			default: 1,
-			min: [ 1, 'Weight cant be less than 1' ],
-			max: [ 10, 'Weight cant be less than 10' ]
-		}
-	},
+	question: QuestionInfo,
 	default_create_landing: {
 		type: String,
 		default: 'Quiz'
@@ -93,7 +114,7 @@ const envSchema = {
 	}
 };
 
-envSchema.keybindings = {
+const keybindings = {
 	CHECK: {
 		type: String,
 		default: 's'
@@ -109,39 +130,21 @@ envSchema.keybindings = {
 };
 
 Array(5).fill(0).forEach((_, i) => {
-	envSchema.keybindings[`LOCAL_ACTION_${i + 1}`] = {
+	keybindings[`LOCAL_ACTION_${i + 1}`] = {
 		type: String,
 		default: `${i + 1}`
 	};
-	envSchema.keybindings[`GLOBAL_ACTION_${i + 1}`] = {
+	keybindings[`GLOBAL_ACTION_${i + 1}`] = {
 		type: String,
 		default: `shift+${i + 1}`
 	};
 });
 
+envSchema.keybindings = new mongoose.Schema(keybindings);
+
 [ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
-	const target = {};
-	envSchema[`${page}_page`] = target;
-
-	target[`default_ipp`] = {
-		type: Number,
-		default: 15
-	};
-
-	target[`default_view`] = {
-		type: String,
-		default: 'List'
-	};
-
-	target[`default_landing`] = {
-		type: String,
-		default: 'Quiz'
-	};
-
-	target[`default_layout`] = {
-		type: String,
-		default: 'Left'
-	};
+	envSchema[`${page}_page`] = new mongoose.Schema(PageInfo);
+	envSchema[`${page}_page`].type = 'PageInfo';
 });
 
 const EnvironmentSchema = extendSchema(ResourceSchema, envSchema);
