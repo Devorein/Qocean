@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@graphql-tools/resolvers-composition": "^6.0.11",
-    "@graphql-tools/schema": "^6.0.11",
+    "@graphql-tools/schema": "^6.0.12",
     "@mongoosejs/double": "^0.2.0",
     "apollo-server-express": "^2.15.1",
     "axios": "^0.19.2",
