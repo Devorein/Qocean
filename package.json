@@ -2,6 +2,10 @@
   "name": "qocean",
   "version": "1.0.0",
   "description": "MERN App for creating killer quizzes",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:Devorein/Qocean.git"
+  },
   "main": "index.js",
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",
@@ -13,6 +17,7 @@
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
+    "husky": "^4.2.5",
     "nodemon": "^2.0.4"
   }
 }
