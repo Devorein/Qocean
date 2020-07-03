@@ -101,4 +101,4 @@ FolderSchema.pre('remove', async function(next) {
 	next();
 });
 
-module.exports.FolderModel = mongoose.model('Folder', FolderSchema);
+exports.FolderModel = mongoose.model('Folder', FolderSchema);

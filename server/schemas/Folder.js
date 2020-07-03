@@ -14,5 +14,4 @@ module.exports = gql`
   extend type Mutation{
     ${generateMutations('folder')}
   }
-
 `;

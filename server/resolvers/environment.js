@@ -3,51 +3,21 @@ const {
 	deleteEnvironmentHandler,
 	setCurrentEnvironmentHandler
 } = require('../handlers/environment');
+
 const updateResource = require('../utils/resource/updateResource');
 const resolverCompose = require('../utils/resolverCompose');
 const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
+const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
 
 const EnvironmentResolvers = {
 	Query: {
 		...generateQueryResolvers('environment')
 	},
 	Mutation: {
-		async createEnvironment(parent, { data }, { user, Environment }) {
-			if (!user) throw new Error('Not authorized to access this route');
-			return await createEnvironmentHandler(user.id, data, (err) => {
-				throw err;
-			});
-		},
 		async setCurrentEnvironment(parent, { id }, { user, Environment }) {
 			return await setCurrentEnvironmentHandler(user.id, id);
 		},
-		async updateEnvironment(parent, { data }, { user, Environment }) {
-			if (!user) throw new Error('Not authorized to access this route');
-			const [ updated_environment ] = await updateResource(Environment, [ data ], user.id, (err) => {
-				throw err;
-			});
-			return updated_environment;
-		},
-
-		async updateEnvironments(parent, { data }, { user, Environment }) {
-			if (!user) throw new Error('Not authorized to access this route');
-			return await updateResource(Environment, data, user.id, (err) => {
-				throw err;
-			});
-		},
-		async deleteEnvironment(parent, { id }, { user, Environment }) {
-			if (!user) throw new Error('Not authorized to access this route');
-			const [ environment ] = await deleteEnvironmentHandler([ id ], user.id, user.current_environment, (err) => {
-				throw err;
-			});
-			return environment;
-		},
-		async deleteEnvironments(parent, { ids }, { user, Environment }) {
-			if (!user) throw new Error('Not authorized to access this route');
-			return await deleteEnvironmentHandler(ids, user.id, user.current_environment, (err) => {
-				throw err;
-			});
-		}
+		...generateMutationResolvers('environment')
 	},
 	SelfEnvironment: {
 		theme: (parent) => parent.theme,
