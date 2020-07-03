@@ -50,4 +50,6 @@ const FilterSortSchema = new mongoose.Schema({
 		}
 	]
 });
-module.exports = mongoose.model('FilterSort', FilterSortSchema);
+
+exports.FilterSortSchema = FilterSortSchema;
+module.exports.FilterSortModel = mongoose.model('FilterSort', FilterSortSchema);

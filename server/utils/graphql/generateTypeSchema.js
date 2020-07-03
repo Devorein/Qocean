@@ -8,6 +8,10 @@ const { QuizSchema } = require('../../models/Quiz');
 const { QuestionSchema } = require('../../models/Question');
 const { FolderSchema } = require('../../models/Folder');
 const { EnvironmentSchema } = require('../../models/Environment');
+const { ReportSchema } = require('../../models/Report');
+const { FilterSortSchema } = require('../../models/FilterSort');
+const { WatchlistSchema } = require('../../models/Watchlist');
+const { InboxSchema } = require('../../models/Inbox');
 
 global.Schema = {};
 
@@ -53,6 +57,10 @@ module.exports = function(resource, schema, dirname) {
 		else if (resource === 'question') schema = QuestionSchema;
 		else if (resource === 'folder') schema = FolderSchema;
 		else if (resource === 'environment') schema = EnvironmentSchema;
+		else if (resource === 'report') schema = ReportSchema;
+		else if (resource === 'filtersort') schema = FilterSortSchema;
+		else if (resource === 'watchlist') schema = WatchlistSchema;
+		else if (resource === 'inbox') schema = InboxSchema;
 	}
 
 	function partsGenerator(parts, purpose) {
@@ -115,15 +123,8 @@ module.exports = function(resource, schema, dirname) {
 	function parseSchema(schema, prevKey) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const instanceOfSchema = value instanceof mongoose.Schema;
-			const { auth, onlySelf, partition, excludePartition, partitionMapper } = parseValue(value);
+			const populateTypeOption = parseValue(value);
 
-			const populateTypeOption = {
-				auth,
-				onlySelf,
-				partition,
-				excludePartition,
-				partitionMapper
-			};
 			let type = '',
 				variant = '';
 			if (instanceOfSchema) {

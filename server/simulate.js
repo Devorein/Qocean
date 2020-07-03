@@ -24,9 +24,11 @@ const { QuestionModel } = require('./models/Question');
 const { UserModel } = require('./models/User');
 const { EnvironmentModel } = require('./models/Environment');
 const { FolderModel } = require('./models/Folder');
-const Message = require('./models/Message');
-const Inbox = require('./models/Inbox');
-const Report = require('./models/Report');
+const { MessageModel } = require('./models/Message');
+const { InboxModel } = require('./models/Inbox');
+const { ReportModel } = require('./models/Report');
+const { WatchlistModel } = require('./models/Watchlist');
+const { FilterSortModel } = require('./models/FilterSort');
 
 // Connect to db
 mongoose.connect(process.env.MONGO_URI, {
@@ -50,9 +52,11 @@ mongoose.connect(process.env.MONGO_URI, {
 		await UserModel.deleteMany();
 		await EnvironmentModel.deleteMany();
 		await FolderModel.deleteMany();
-		await Inbox.deleteMany();
-		await Message.deleteMany();
-		await Report.deleteMany();
+		await MessageModel.deleteMany();
+		await InboxModel.deleteMany();
+		await ReportModel.deleteMany();
+		await WatchlistModel.deleteMany();
+		await FilterSortModel.deleteMany();
 		console.log(`User destroyed ...`.red.inverse);
 		console.log(`Quizzes destroyed ...`.red.inverse);
 		console.log(`Questions destroyed ...`.red.inverse);

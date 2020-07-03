@@ -23,4 +23,5 @@ const WatchlistSchema = new mongoose.Schema({
 	]
 });
 
-module.exports = mongoose.model('Watchlist', WatchlistSchema);
+exports.WatchlistSchema = WatchlistSchema;
+module.exports.WatchlistModel = mongoose.model('Watchlist', WatchlistSchema);

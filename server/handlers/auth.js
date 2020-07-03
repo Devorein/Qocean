@@ -1,6 +1,6 @@
 const { EnvironmentModel } = require('../models/Environment');
-const Inbox = require('../models/Inbox');
-const Watchlist = require('../models/Watchlist');
+const { InboxModel } = require('../models/Inbox');
+const { WatchlistModel } = require('../models/Watchlist');
 const { ObjectID } = require('bson');
 const ErrorResponse = require('../utils/errorResponse');
 const { UserModel } = require('../models/User');
@@ -24,8 +24,8 @@ async function registerHandler(body) {
 	if (image) data.image = image;
 	const user = await UserModel.create(data);
 	await EnvironmentModel.create({ user: user._id, _id: env_id, name: 'Default Environment' });
-	await Inbox.create({ user: user._id, _id: inbox_id });
-	await Watchlist.create({ user: user._id, _id: watchlist_id });
+	await InboxModel.create({ user: user._id, _id: inbox_id });
+	await WatchlistModel.create({ user: user._id, _id: watchlist_id });
 	return sendTokenResponse(user);
 }
 
