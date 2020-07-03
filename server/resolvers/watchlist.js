@@ -1,5 +1,5 @@
 module.exports = {
-	Watchlist: {
+	WatchlistType: {
 		async watched_folders(parent, args, { user, Folder }) {
 			return await Folder.find({ public: true, user: user.id, _id: { $in: [ parent.watched_folders ] } });
 		},

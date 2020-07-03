@@ -1,29 +1,29 @@
 const { gql } = require('apollo-server-express');
 
 module.exports = gql`
-	type ReportQuestion {
-		question: SelfQuestion!
+	type ReportQuestionType {
+		question: SelfQuestionType!
 		user_answers: [String]
 		result: Boolean!
 		time_taken: NonNegativeInt!
 	}
 
-	type ReportDisabled {
+	type ReportDisabledType {
 		type: [String]
 		difficulty: [String]
 	}
 
-	type Report {
+	type ReportType {
 		name: String!
-		user: SelfUser!
+		user: SelfUserType!
 		average_points: Float!
 		average_time: NonNegativeFloat!
 		correct: NonNegativeInt!
 		incorrect: NonNegativeInt!
 		created_at: Date!
-		quizzes: [SelfQuiz!]!
-		questions: [ReportQuestion!]!
-		disabled: ReportDisabled!
+		quizzes: [SelfQuizType!]!
+		questions: [ReportQuestionType!]!
+		disabled: ReportDisabledType!
 	}
 
 	input ReportQuestionInput {
@@ -52,6 +52,6 @@ module.exports = gql`
 	}
 
 	extend type Mutation {
-		createReport(data: ReportInput!): Report!
+		createReport(data: ReportInput!): ReportType!
 	}
 `;

@@ -1,7 +1,7 @@
 const user = require('./user');
 
 module.exports = {
-	Inbox: {
+	InboxType: {
 		async messages(parent, args, { Message }) {
 			return await Message.find({ inbox: parent._id });
 		},

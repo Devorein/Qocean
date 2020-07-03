@@ -1,9 +1,9 @@
 const { gql } = require('apollo-server-express');
 
 module.exports = gql`
-	type Inbox {
+	type InboxType {
 		id: ID!
-		user: SelfUser!
+		user: SelfUserType!
 		created_at: Date!
 		messages: [Message!]!
 	}

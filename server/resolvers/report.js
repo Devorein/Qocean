@@ -5,7 +5,7 @@ module.exports = {
 			return await new Report(data);
 		}
 	},
-	Report: {
+	ReportType: {
 		async user(parent, args, { user, User }) {
 			return await User.findById(user.id);
 		},
@@ -25,7 +25,7 @@ module.exports = {
 			return parent.questions;
 		}
 	},
-	ReportQuestion: {
+	ReportQuestionType: {
 		async question(parent, args, { Question }) {
 			return await Question.findById(parent.question);
 		}

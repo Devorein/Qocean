@@ -1,10 +1,9 @@
 const { updatePlayedTimesHandler } = require('../handlers/quiz');
 
-const updateResource = require('../utils/resource/updateResource');
-const watchAction = require('../utils/resource/watchAction');
-const addRatings = require('../utils/resource/addRatings');
 const resolverCompose = require('../utils/resolverCompose');
 const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
+const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
+const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
 
 const QuizResolvers = {
 	Query: {
@@ -16,75 +15,12 @@ const QuizResolvers = {
 		}
 	},
 	Mutation: {
-		async createQuiz(parent, { data }, { user, Quiz }) {
-			return await createQuizHandler(user.id, data, (err) => {
-				throw err;
-			});
-		},
-		async updateQuiz(parent, { data }, { user, Quiz }) {
-			const [ updated_quiz ] = await updateResource(Quiz, [ data ], user.id, (err) => {
-				throw err;
-			});
-			return updated_quiz;
-		},
-
-		async updateQuizzes(parent, { data }, { user, Quiz }) {
-			return await updateResource(Quiz, data, user.id, (err) => {
-				throw err;
-			});
-		},
+		...generateMutationResolvers('quiz'),
 		async updateQuizPlayedTimes(parent, { ids }, { user, Quiz }) {
 			return await updatePlayedTimesHandler(ids, user.id);
-		},
-		async updateQuizRatings(parent, { data }, { user, Quiz }) {
-			return await addRatings(Quiz, data, user.id, (err) => {
-				throw err;
-			});
-		},
-		async updateQuizWatch(parent, { ids }, { user, User }) {
-			user = await User.findById(user.id);
-			return watchAction('quizzes', { quizzes: ids }, user);
-		},
-		async deleteQuiz(parent, { id }, { user, Quiz }) {
-			const [ quiz ] = await deleteQuizHandler([ id ], user.id, (err) => {
-				throw err;
-			});
-			return quiz;
-		},
-		async deleteQuizzes(parent, { ids }, { user, Quiz }) {
-			return await deleteQuizHandler(ids, user.id, (err) => {
-				throw err;
-			});
 		}
 	},
-	SelfQuiz: {
-		average_difficulty(parent, args) {
-			return parent.average_difficulty;
-		},
-		async watchers(parent, args, { User }) {
-			return await User.find({ user: parent._id });
-		},
-		async questions(parent, args, { Question }) {
-			return await Question.find({ user: parent._id });
-		},
-		async folders(parent, args, { Folder }) {
-			return await Folder.find({ user: parent._id });
-		}
-	},
-	OthersQuiz: {
-		average_difficulty(parent, args) {
-			return parent.average_difficulty;
-		},
-		async watchers(parent, args, { User }) {
-			return await User.find({ user: parent._id });
-		},
-		async questions(parent, args, { Question }) {
-			return await Question.find({ user: parent._id, public: true }).select('-public -favourite');
-		},
-		async folders(parent, args, { Folder }) {
-			return await Folder.find({ user: parent._id, public: true }).select('-public -favourite');
-		}
-	},
+	...generateTypeResolvers('quiz'),
 	QuizQuestionStats: {
 		async questions(parent, args, { Question }) {
 			return await Question.find({ quiz: parent._id });

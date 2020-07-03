@@ -24,7 +24,7 @@ const FilterSortResolvers = {
 			});
 		}
 	},
-	FilterSort: {
+	FilterSortType: {
 		type(parent) {
 			return parent.type;
 		},

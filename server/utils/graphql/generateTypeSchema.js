@@ -61,7 +61,7 @@ module.exports = function(resource, schema, dirname) {
 			const baseType = purpose === 'type' && key.match(regex);
 			return (partStr += `${!baseType
 				? purpose + ' ' + key
-				: 'type ' + key + ' implements ' + capitalizedResource}${!baseType
+				: 'type ' + `${key}Type` + ' implements ' + capitalizedResource}${!baseType
 				? S(purpose).capitalize().s
 				: ''}{\n${Object.entries(value).reduce(
 				(keyStr, [ key, { value } ]) => `${(keyStr += '\t' + key + ': ' + value)}\n`,
@@ -118,7 +118,8 @@ module.exports = function(resource, schema, dirname) {
 			} else if (Array.isArray(value)) {
 				if (value[0].ref) {
 					variant = 'refs';
-					if (!prevKey) populateType(key, [ value[0].ref ], { ...populateTypeOption, variant, baseType: value[0].ref });
+					if (!prevKey)
+						populateType(key, [ `${value[0].ref}Type` ], { ...populateTypeOption, variant, baseType: value[0].ref });
 					type = '[ID!]';
 				} else {
 					variant = 'scalars';
@@ -127,7 +128,7 @@ module.exports = function(resource, schema, dirname) {
 				}
 			} else if (!Array.isArray(value) && value.ref) {
 				variant = 'ref';
-				if (!prevKey) populateType(key, value.ref, { ...populateTypeOption, variant, baseType: value.ref });
+				if (!prevKey) populateType(key, `${value.ref}Type`, { ...populateTypeOption, variant, baseType: value.ref });
 				type = 'ID';
 			} else {
 				type = parseScalarType(value);
@@ -138,16 +139,16 @@ module.exports = function(resource, schema, dirname) {
 			if (!instanceOfSchema && prevKey) {
 				const type_key = schema.type || S(`_${prevKey}`).camelize().s;
 				if (!types[type_key]) types[type_key] = {};
-				types[type_key][key] = { value: `${type}!`, type: variant };
+				types[type_key][key] = { value: `${type}!`, variant };
 
 				if (value.writable || value.writable === undefined) {
 					if (!inputs[type_key]) inputs[type_key] = {};
-					inputs[type_key][key] = { value: `${type}!`, type: variant };
+					inputs[type_key][key] = { value: `${type}!`, variant };
 				}
 			} else if (!instanceOfSchema && !prevKey) {
 				if (value.writable || value.writable === undefined) {
 					if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
-					inputs[capitalizedResource][key] = { value: `${type}!`, type: variant };
+					inputs[capitalizedResource][key] = { value: `${type}!`, variant };
 				}
 			}
 		});
@@ -180,6 +181,6 @@ module.exports = function(resource, schema, dirname) {
 	schemaStr += typeStr;
 	schemaStr += inputStr;
 	if (dirname) fs.writeFileSync(path.join(dirname, `${resource}.graphql`), `# ${Date.now()}\n${schemaStr}`, 'UTF-8');
-	if (dirname) fs.writeFileSync(path.join(dirname, `${resource}.json`), JSON.stringify(schemaObj), 'UTF-8');
+	if (dirname) fs.writeFileSync(path.join(dirname, `${resource}.json`), JSON.stringify(schemaObj, null, 2), 'UTF-8');
 	return schemaStr;
 };

@@ -4,6 +4,7 @@ module.exports = function(resource) {
 	const target = global.Schema[resource];
 	const result = {};
 	Object.entries(target.types).forEach(([ basekey, value ]) => {
+		basekey = basekey + 'Type';
 		result[basekey] = {};
 		Object.entries(value).forEach(([ key, { value, variant, baseType } ]) => {
 			if (variant.match(/(ref|refs)/)) {

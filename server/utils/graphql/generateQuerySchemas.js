@@ -16,7 +16,7 @@ module.exports = function(resource) {
 					res.push(
 						`${commonComment}"\n get${sector}${type}${capitalizedResource}${datainput}: [${type}${resource
 							.charAt(0)
-							.toUpperCase() + resource.substr(1)}!]!`
+							.toUpperCase() + resource.substr(1)}Type!]!`
 					);
 					res.push(
 						`${commonComment} name and id"\n get${sector}${type}${capitalizedResource}${resource !== 'user'
@@ -33,7 +33,7 @@ module.exports = function(resource) {
 				res.push(
 					`${commonComment}"\n get${type}${capitalizedResource}ById${datainput}: [${type}${resource
 						.charAt(0)
-						.toUpperCase() + resource.substr(1)}!]!`
+						.toUpperCase() + resource.substr(1)}Type!]!`
 				);
 				res.push(`${commonComment} name and id"\n get${type}${capitalizedResource}NameById${datainput}: [NameAndId!]!`);
 			}

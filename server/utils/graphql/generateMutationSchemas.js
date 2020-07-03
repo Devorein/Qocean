@@ -5,19 +5,19 @@ module.exports = function(resource) {
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
 	let mutations = `
     "Create a new ${resource}"
-    create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}!
+    create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}Type!
 
     "Update single ${resource}"
-    update${capitalizedResource}(data: ${capitalizedResource}Input!,id: ID!): Self${capitalizedResource}!
+    update${capitalizedResource}(data: ${capitalizedResource}Input!,id: ID!): Self${capitalizedResource}Type!
 
     "Update multiple ${pluralize(resource, 2)}"
-    update${pluralizedcapitalizedResource}(data: [${capitalizedResource}Input!],ids: [ID!]!): [Self${capitalizedResource}!]!
+    update${pluralizedcapitalizedResource}(data: [${capitalizedResource}Input!],ids: [ID!]!): [Self${capitalizedResource}Type!]!
 
     "Delete single ${resource}"
-    delete${capitalizedResource}(id: ID!): Self${capitalizedResource}!
+    delete${capitalizedResource}(id: ID!): Self${capitalizedResource}Type!
 
     "Delete multiple ${pluralize(resource, 2)}"
-    delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}!]!
+    delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}Type!]!
   `;
 	if (resource.match(/(quiz|folder)/)) {
 		mutations += `
