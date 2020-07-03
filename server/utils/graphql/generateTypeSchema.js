@@ -70,30 +70,59 @@ module.exports = function(resource, schema, dirname) {
 		}, '');
 	}
 
-	function populateType(key, value, { partition, auth, onlySelf, variant, baseType = null }) {
+	function populateType(
+		key,
+		value,
+		{ partition, auth, onlySelf, variant, baseType = null, excludePartition = [], partitionMapper }
+	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
 			types[`${part}${capitalizedResource}`][key] = {
-				value: isArray ? '[' + (partition ? part + value : value) + '!]!' : (partition ? part + value : value) + '!',
+				value: isArray
+					? '[' + (partition ? partitionMapper[part] + value : value) + '!]!'
+					: (partition ? part + value : value) + '!',
 				variant,
 				baseType
 			};
 		}
-		if (!auth && !onlySelf) populate('Mixed');
-		if (!onlySelf) populate('Others');
-		populate('Self');
+		if (!auth && !onlySelf && !excludePartition.includes('Mixed')) populate('Mixed');
+		if (!onlySelf && !excludePartition.includes('Others')) populate('Others');
+		if (!excludePartition.includes('Self')) populate('Self');
 
 		if (!auth && !onlySelf && !partition) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
+	}
+
+	function parseValue(value) {
+		const target = Array.isArray(value) ? value[0] : value;
+		const { auth, onlySelf, partition = true, excludePartition = [], partitionMapper = {} } = target;
+
+		const newPartitionMapper = {
+			Mixed: 'Mixed',
+			Others: 'Others',
+			Self: 'Self',
+			...partitionMapper
+		};
+
+		return {
+			auth,
+			onlySelf,
+			partition,
+			excludePartition,
+			partitionMapper: newPartitionMapper
+		};
 	}
 
 	function parseSchema(schema, prevKey) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const instanceOfSchema = value instanceof mongoose.Schema;
-			const { auth, onlySelf, partition = true } = Array.isArray(value) ? value[0] : value;
+			const { auth, onlySelf, partition, excludePartition, partitionMapper } = parseValue(value);
+
 			const populateTypeOption = {
 				auth,
 				onlySelf,
-				partition
+				partition,
+				excludePartition,
+				partitionMapper
 			};
 			let type = '',
 				variant = '';
