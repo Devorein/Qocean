@@ -25,8 +25,8 @@ module.exports = gql`
 		order: SortItemOrderEnum!
 	}
 
-	type FilterSort {
-		user: SelfUser!
+	type FilterSortType {
+		user: SelfUserType!
 		type: ResourceTypeEnum!
 		name: String!
 		filters: [FilterItem!]!
@@ -65,12 +65,12 @@ module.exports = gql`
 
   extend type Query{
     "Get all self filtersorts"
-    getAllSelfFilterSorts: [FilterSort!]!
+    getAllSelfFilterSorts: [FilterSortType!]!
   }
 
   extend type Mutation{
-    createFilterSort(data: CreateFilterSortInput!): FilterSort!
-    updateFilterSort(data: UpdateFilterSortInput!): FilterSort!
-    deleteFilterSort(id: ID!): FilterSort!
+    createFilterSort(data: CreateFilterSortInput!): FilterSortType!
+    updateFilterSort(data: UpdateFilterSortInput!): FilterSortType!
+    deleteFilterSort(id: ID!): FilterSortType!
   }
 `;

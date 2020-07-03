@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 
-const QuizModel = require('../models/Quiz');
-const { Question } = require('../models/Question');
+const { QuizModel } = require('../models/Quiz');
+const { QuestionModel } = require('../models/Question');
 const ErrorResponse = require('../utils/errorResponse');
 
 async function sendAnswerHandler(ids, next) {

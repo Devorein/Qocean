@@ -46,7 +46,7 @@ mongoose.connect(process.env.MONGO_URI, {
   const file = fileArg */
 	if (deletePrev) {
 		await QuizModel.deleteMany();
-		await Question.deleteMany();
+		await QuestionModel.deleteMany();
 		await UserModel.deleteMany();
 		await EnvironmentModel.deleteMany();
 		await FolderModel.deleteMany();

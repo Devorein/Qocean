@@ -15,6 +15,6 @@ module.exports = gql`
 	  ${generateMutations('environment')}
 
     "Set environment as current environment"
-	  setCurrentEnvironment(id: ID!): SelfEnvironment!
+	  setCurrentEnvironment(id: ID!): SelfEnvironmentType!
 	}
 `;
