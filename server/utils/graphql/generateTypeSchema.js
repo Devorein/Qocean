@@ -241,7 +241,7 @@ module.exports = function(resource, baseSchema, dirname) {
 					inputs[type_key][key] = { value: `${type}!`, variant };
 				}
 			} else if (!instanceOfSchema && !parentKey) {
-				if (value.writable === undefined ? value.writable : global_inputs.base) {
+				if (value.writable !== undefined ? value.writable : global_inputs.base) {
 					if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
 					inputs[capitalizedResource][key] = { value: `${type}!`, variant };
 				}
