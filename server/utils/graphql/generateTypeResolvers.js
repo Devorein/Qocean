@@ -1,9 +1,13 @@
 const S = require('String');
 module.exports = function(resource) {
 	resource = S(resource).capitalize().s;
-	const target = global.Schema[resource];
+	let target = global.Schema[resource];
+	target = {
+		...target.base,
+		...target.extra
+	};
 	const result = {};
-	Object.entries(target.types).forEach(([ basekey, value ]) => {
+	Object.entries(target).forEach(([ basekey, value ]) => {
 		basekey = basekey + 'Type';
 		result[basekey] = {};
 		Object.entries(value).forEach(([ key, { value, variant, baseType } ]) => {

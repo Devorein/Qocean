@@ -16,6 +16,12 @@ const filterItem = {
 	}
 };
 
+const FiltersSchema = new mongoose.Schema({
+	...filterItem
+});
+
+FiltersSchema.add({ children: [ FiltersSchema ] });
+
 const FilterSortSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
@@ -31,12 +37,7 @@ const FilterSortSchema = new mongoose.Schema({
 		type: String,
 		required: [ true, 'Name is required' ]
 	},
-	filters: [
-		{
-			...filterItem,
-			children: [ { ...filterItem } ]
-		}
-	],
+	filters: [ FiltersSchema ],
 	sorts: [
 		{
 			target: {
@@ -50,6 +51,10 @@ const FilterSortSchema = new mongoose.Schema({
 		}
 	]
 });
+
+FilterSortSchema.global_partition = {
+	base: false
+};
 
 exports.FilterSortSchema = FilterSortSchema;
 module.exports.FilterSortModel = mongoose.model('FilterSort', FilterSortSchema);
