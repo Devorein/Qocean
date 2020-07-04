@@ -12,6 +12,7 @@ const { ReportSchema } = require('../../models/Report');
 const { FilterSortSchema } = require('../../models/FilterSort');
 const { WatchlistSchema } = require('../../models/Watchlist');
 const { InboxSchema } = require('../../models/Inbox');
+const { MessageSchema } = require('../../models/Message');
 
 global.Schema = {};
 
@@ -79,6 +80,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		else if (resource === 'filtersort') baseSchema = FilterSortSchema;
 		else if (resource === 'watchlist') baseSchema = WatchlistSchema;
 		else if (resource === 'inbox') baseSchema = InboxSchema;
+		else if (resource === 'message') baseSchema = MessageSchema;
 	}
 
 	createDefaultPartition(baseSchema);

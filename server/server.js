@@ -155,8 +155,8 @@ const GRAPHQL_SERVER = new ApolloServer({
 			WatchlistResolvers,
 			FilterSortResolvers,
 			ReportResolvers,
-			InboxResolvers,
-			MessaggeResolvers
+			InboxResolvers
+			// MessaggeResolvers
 		],
 		resolverValidationOptions: {
 			requireResolversForNonScalar: false
