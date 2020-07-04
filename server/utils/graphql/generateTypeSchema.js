@@ -113,10 +113,37 @@ module.exports = function(resource, schema, dirname) {
 		if (!auth && !onlySelf && !partition) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
 	}
 
-	function parseValue(value) {
-		const target = Array.isArray(value) ? value[0] : value;
-		const { auth, onlySelf, partition = true, excludePartition = [], partitionMapper = {} } = target;
+	function populateExtraTypes(
+		key,
+		value,
+		type,
+		{ partition, auth, onlySelf, variant, baseType = null, excludePartition = [] }
+	) {
+		const isArray = Array.isArray(value);
+		function populate(part) {
+			const shouldPartition = schema.global_partition.extra || partition;
+			const partitionKey = `${shouldPartition ? part : ''}${type}`;
+			if (!types.extra[partitionKey]) types.extra[partitionKey] = {};
+			types.extra[partitionKey][key] = {
+				value: isArray ? `[${value}!]!` : `${value}!`,
+				variant,
+				baseType
+			};
+		}
+		if (!auth && !onlySelf && !excludePartition.includes('Mixed')) populate('Mixed');
+		if (!onlySelf && !excludePartition.includes('Others')) populate('Others');
+		if (!excludePartition.includes('Self')) populate('Self');
+	}
 
+	function parseValue(value, parentKey) {
+		const target = Array.isArray(value) ? value[0] : value;
+		const {
+			auth,
+			onlySelf,
+			partition = parentKey ? false : true,
+			excludePartition = [],
+			partitionMapper = {}
+		} = target;
 		const newPartitionMapper = {
 			Mixed: 'Mixed',
 			Others: 'Others',
@@ -133,11 +160,11 @@ module.exports = function(resource, schema, dirname) {
 		};
 	}
 
-	function parseSchema(schema, prevKey) {
+	function parseSchema(schema, parentKey) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const isArray = Array.isArray(value);
 			const instanceOfSchema = (isArray ? value[0] : value) instanceof mongoose.Schema;
-			const populateTypeOption = parseValue(value);
+			const populateTypeOption = parseValue(value, parentKey);
 			let type = '',
 				variant = '';
 			if (instanceOfSchema) {
@@ -158,14 +185,14 @@ module.exports = function(resource, schema, dirname) {
 				type =
 					resource.toUpperCase() +
 					'_' +
-					(prevKey ? `${prevKey.toUpperCase()}_${key.toUpperCase()}` : `${key.toUpperCase()}`);
+					(parentKey ? `${parentKey.toUpperCase()}_${key.toUpperCase()}` : `${key.toUpperCase()}`);
 				enums[type] = value.enum;
 				variant = 'enum';
-				if (!prevKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
+				if (!parentKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
 			} else if (Array.isArray(value)) {
 				if (value[0].ref) {
 					variant = 'refs';
-					if (!prevKey)
+					if (!parentKey)
 						populateBaseTypes(key, [ `${value[0].ref}Type` ], {
 							...populateTypeOption,
 							variant,
@@ -175,29 +202,31 @@ module.exports = function(resource, schema, dirname) {
 				} else {
 					variant = 'scalars';
 					type = parseScalarType(value);
-					if (!prevKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
+					if (!parentKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
 				}
 			} else if (!Array.isArray(value) && value.ref) {
 				variant = 'ref';
-				if (!prevKey)
+				if (!parentKey)
 					populateBaseTypes(key, `${value.ref}Type`, { ...populateTypeOption, variant, baseType: value.ref });
 				type = 'ID';
 			} else {
 				type = parseScalarType(value);
 				variant = 'scalar';
-				if (!prevKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
+				if (!parentKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
 			}
 
-			if (!instanceOfSchema && prevKey) {
-				const type_key = schema.type || S(`_${prevKey}`).camelize().s;
-				if (!types.extra[type_key]) types.extra[type_key] = {};
-				types.extra[type_key][key] = { value: `${type}!`, variant };
-
+			if (!instanceOfSchema && parentKey) {
+				const type_key = schema.type || S(`_${parentKey}`).camelize().s;
+				populateExtraTypes(key, type, type_key, {
+					...populateTypeOption,
+					partition: schema.partition || false,
+					variant
+				});
 				if (value.writable || value.writable === undefined) {
 					if (!inputs[type_key]) inputs[type_key] = {};
 					inputs[type_key][key] = { value: `${type}!`, variant };
 				}
-			} else if (!instanceOfSchema && !prevKey) {
+			} else if (!instanceOfSchema && !parentKey) {
 				if (value.writable || value.writable === undefined) {
 					if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
 					inputs[capitalizedResource][key] = { value: `${type}!`, variant };
@@ -236,9 +265,6 @@ module.exports = function(resource, schema, dirname) {
 	Object.entries(types.extra).forEach(([ key, value ]) => {
 		extraTypeStr += valueGenerator(`type ${key}Type`, value) + '\n';
 	});
-
-	// inputStrGenerator(inputs, 'input');
-	// const typeStr = inputStrGenerator(types, 'type');
 
 	if (!global.Schema[capitalizedResource]) global.Schema[capitalizedResource] = {};
 	const schemaObj = {

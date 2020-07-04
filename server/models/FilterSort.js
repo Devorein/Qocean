@@ -22,6 +22,17 @@ const FiltersSchema = new mongoose.Schema({
 
 FiltersSchema.add({ children: [ FiltersSchema ] });
 
+const SortsSchema = new mongoose.Schema({
+	target: {
+		type: String,
+		required: 'Target is required'
+	},
+	order: {
+		type: String,
+		enum: [ 'asc', 'desc', 'none' ]
+	}
+});
+
 const FilterSortSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
@@ -38,18 +49,7 @@ const FilterSortSchema = new mongoose.Schema({
 		required: [ true, 'Name is required' ]
 	},
 	filters: [ FiltersSchema ],
-	sorts: [
-		{
-			target: {
-				type: String,
-				required: 'Target is required'
-			},
-			order: {
-				type: String,
-				enum: [ 'asc', 'desc', 'none' ]
-			}
-		}
-	]
+	sorts: [ SortsSchema ]
 });
 
 FilterSortSchema.global_partition = {
