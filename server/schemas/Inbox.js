@@ -1,10 +1,6 @@
 const { gql } = require('apollo-server-express');
+const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
-	type InboxType {
-		id: ID!
-		user: SelfUserType!
-		created_at: Date!
-		messages: [Message!]!
-	}
+	${generateTypeSchema('inbox')}
 `;

@@ -1,5 +1,24 @@
 const mongoose = require('mongoose');
 
+const ReportDisabledSchema = new mongoose.Schema({
+	type: {
+		type: [ String ]
+	},
+	difficulty: {
+		type: [ String ]
+	}
+});
+
+const ReportQuestionsSchema = new mongoose.Schema({
+	question: {
+		type: mongoose.Schema.ObjectId,
+		ref: 'Question'
+	},
+	user_answers: [ String ],
+	result: { type: Boolean, required: true },
+	time_taken: Number
+});
+
 const ReportSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -25,25 +44,13 @@ const ReportSchema = new mongoose.Schema({
 			ref: 'Quiz'
 		}
 	],
-	questions: [
-		{
-			question: {
-				type: mongoose.Schema.ObjectId,
-				ref: 'Question'
-			},
-			user_answers: [ String ],
-			result: { type: Boolean, required: true },
-			time_taken: Number
-		}
-	],
-	disabled: {
-		type: {
-			type: [ String ]
-		},
-		difficulty: {
-			type: [ String ]
-		}
-	}
+	questions: [ ReportQuestionsSchema ],
+	disabled: ReportDisabledSchema
 });
 
-module.exports = mongoose.model('Report', ReportSchema);
+ReportSchema.global_configs = {
+	global_excludePartitions: [ 'Others', 'Mixed' ]
+};
+
+module.exports.ReportSchema = ReportSchema;
+module.exports.ReportModel = mongoose.model('Report', ReportSchema);

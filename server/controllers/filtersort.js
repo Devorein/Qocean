@@ -1,6 +1,7 @@
 const { FilterSortModel } = require('../models/FilterSort');
 const asyncHandler = require('../middleware/async');
-const { updateFilterSortHandler, deleteFilterSortHandler } = require('../handlers/filtersort');
+const updateResource = require('../utils/resource/updateResource');
+const { deleteFilterSortHandler } = require('../handlers/filtersort');
 
 exports.getMyFilterSorts = asyncHandler(async (req, res, next) => {
 	const filtersorts = await FilterSortModel.find({ user: req.user._id, ...req.query });
@@ -15,7 +16,7 @@ exports.createFilterSort = asyncHandler(async (req, res, next) => {
 
 exports.updateFilterSort = asyncHandler(async (req, res, next) => {
 	req.body.id = req.params.id;
-	const filtersort = await updateFilterSortHandler(req.body, req.user._id, next);
+	const filtersort = await updateResource(req.body, req.user._id, next);
 	res.status(200).json({ success: true, data: filtersort });
 });
 

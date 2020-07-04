@@ -24,4 +24,10 @@ const WatchlistSchema = new mongoose.Schema({
 });
 
 exports.WatchlistSchema = WatchlistSchema;
+WatchlistSchema.global_configs = {
+	global_excludePartitions: [ 'Others', 'Mixed' ],
+	global_inputs: {
+		base: false
+	}
+};
 module.exports.WatchlistModel = mongoose.model('Watchlist', WatchlistSchema);

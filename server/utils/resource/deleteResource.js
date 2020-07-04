@@ -2,6 +2,7 @@ const { deleteFolderHandler } = require('../../handlers/folder');
 const { deleteQuizHandler } = require('../../handlers/quiz');
 const { deleteQuestionHandler } = require('../../handlers/question');
 const { deleteEnvironmentHandler } = require('../../handlers/environment');
+const { deleteFilterSortHandler } = require('../../handlers/filtersort');
 
 module.exports = async function deleteResource(model, ids, userId) {
 	const next = (err) => {
@@ -17,6 +18,8 @@ module.exports = async function deleteResource(model, ids, userId) {
 			return await deleteFolderHandler(ids, userId, next);
 		case 'Environment':
 			return await deleteEnvironmentHandler(ids, userId, next);
+		case 'Filtersort':
+			return await deleteFilterSortHandler(ids, userId, next);
 		default:
 			return null;
 	}
