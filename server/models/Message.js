@@ -12,12 +12,16 @@ const MessageSchema = new mongoose.Schema({
 	},
 	time: { type: Date, default: Date.now },
 	read: { type: Boolean, default: false },
-	status: String,
-	sentUser: {
-		type: mongoose.Schema.ObjectId,
-		ref: 'User'
-	}
+	status: String
+	// sentUser: {
+	// 	type: mongoose.Schema.ObjectId,
+	// 	ref: 'User'
+	// }
 });
+
+MessageSchema.global_configs = {
+	global_excludePartitions: [ 'Others', 'Mixed' ]
+};
 
 module.exports.MessageSchema = MessageSchema;
 module.exports.MessageModel = mongoose.model('Message', MessageSchema);

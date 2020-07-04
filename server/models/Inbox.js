@@ -24,9 +24,7 @@ const InboxSchema = new mongoose.Schema({
 });
 
 InboxSchema.global_configs = {
-	global_partition: {
-		base: false
-	}
+	global_excludePartitions: [ 'Mixed', 'Others' ]
 };
 
 module.exports.InboxSchema = InboxSchema;

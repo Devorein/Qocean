@@ -85,28 +85,28 @@ const UserSchema = new mongoose.Schema({
 	image: { type: String, default: 'none.png' },
 	inbox: {
 		onlySelf: true,
-		partition: false,
+		excludePartition: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox'
 	},
 	reports: [
 		{
 			onlySelf: true,
-			partition: false,
+			excludePartition: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Report'
 		}
 	],
 	watchlist: {
 		onlySelf: true,
-		partition: false,
+		excludePartition: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist'
 	},
 	filtersort: [
 		{
 			onlySelf: true,
-			partition: false,
+			excludePartition: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Filtersort'
 		}

@@ -5,6 +5,6 @@ module.exports = gql`
 	${generateTypeSchema('report')}
 
 	extend type Mutation {
-		createReport(data: ReportInput!): ReportType!
+		createReport(data: ReportInput!): SelfReportType!
 	}
 `;

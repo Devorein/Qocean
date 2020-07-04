@@ -8,7 +8,7 @@ module.exports = gql`
 
   extend type Query{
     "Get all self filtersorts"
-    getAllSelfFilterSorts: [FiltersortType!]!
+    getAllSelfFilterSorts: [SelfFiltersortType!]!
   }
 
   extend type Mutation{

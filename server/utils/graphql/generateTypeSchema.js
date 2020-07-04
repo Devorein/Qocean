@@ -41,13 +41,13 @@ function parseScalarType(value) {
 	return type;
 }
 
-function createDefaultPartition(baseSchema) {
+function createDefaultConfigs(baseSchema) {
 	if (!baseSchema.global_configs) baseSchema.global_configs = {};
 	const { global_configs } = baseSchema;
 
 	if (!global_configs.global_partition) global_configs.global_partition = {};
 	if (!global_configs.global_inputs) global_configs.global_inputs = {};
-
+	if (!global_configs.global_excludePartitions) global_configs.global_excludePartitions = [];
 	global_configs.global_partition = {
 		base: true,
 		extra: false,
@@ -82,15 +82,13 @@ module.exports = function(resource, baseSchema, dirname) {
 		else if (resource === 'inbox') baseSchema = InboxSchema;
 		else if (resource === 'message') baseSchema = MessageSchema;
 	}
-
-	createDefaultPartition(baseSchema);
-	const { global_partition, global_inputs } = baseSchema.global_configs;
+	createDefaultConfigs(baseSchema);
+	const { global_partition, global_inputs, global_excludePartitions } = baseSchema.global_configs;
 	if (global_partition.base) {
-		types.base = {
-			[`Mixed${capitalizedResource}`]: {},
-			[`Others${capitalizedResource}`]: {},
-			[`Self${capitalizedResource}`]: {}
-		};
+		types.base = {};
+		[ 'Mixed', 'Others', 'Self' ].forEach((part) => {
+			if (!global_excludePartitions.includes(part)) types.base[`${part}${capitalizedResource}`] = {};
+		});
 	} else
 		types.base = {
 			[capitalizedResource]: {}
@@ -107,7 +105,7 @@ module.exports = function(resource, baseSchema, dirname) {
 	function populateBaseTypes(
 		key,
 		value,
-		{ partition, auth, onlySelf, variant, baseType = null, excludePartition = [], partitionMapper }
+		{ partition, auth, onlySelf, variant, baseType = null, partitionMapper, excludePartitions = [] }
 	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
@@ -118,9 +116,11 @@ module.exports = function(resource, baseSchema, dirname) {
 				baseType
 			};
 		}
-		if (!auth && !onlySelf && !excludePartition.includes('Mixed')) populate('Mixed');
-		if (!onlySelf && !excludePartition.includes('Others')) populate('Others');
-		if (!excludePartition.includes('Self')) populate('Self');
+		if (!auth && !onlySelf && !global_excludePartitions.includes('Mixed') && !excludePartitions.includes('Mixed'))
+			populate('Mixed');
+		if (!onlySelf && !global_excludePartitions.includes('Others') && !excludePartitions.includes('Others'))
+			populate('Others');
+		if (!global_excludePartitions.includes('Self') && !excludePartitions.includes('Self')) populate('Self');
 
 		if (!auth && !onlySelf && !partition) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
 	}
@@ -205,7 +205,7 @@ module.exports = function(resource, baseSchema, dirname) {
 				if (value[0].ref) {
 					variant = 'refs';
 					if (!parentKey)
-						populateBaseTypes(key, [ `${global_partition.base ? '' : 'Self'}${value[0].ref}Type` ], {
+						populateBaseTypes(key, [ `${value[0].ref}Type` ], {
 							...populateTypeOption,
 							variant,
 							baseType: value[0].ref

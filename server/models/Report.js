@@ -49,9 +49,7 @@ const ReportSchema = new mongoose.Schema({
 });
 
 ReportSchema.global_configs = {
-	global_partition: {
-		base: false
-	}
+	global_excludePartitions: [ 'Others', 'Mixed' ]
 };
 
 module.exports.ReportSchema = ReportSchema;
