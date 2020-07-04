@@ -41,12 +41,22 @@ function parseScalarType(value) {
 }
 
 function createDefaultPartition(baseSchema) {
-	if (!baseSchema.global_partition) baseSchema.global_partition = {};
+	if (!baseSchema.global_configs) baseSchema.global_configs = {};
+	const { global_configs } = baseSchema;
 
-	baseSchema.global_partition = {
+	if (!global_configs.global_partition) global_configs.global_partition = {};
+	if (!global_configs.global_inputs) global_configs.global_inputs = {};
+
+	global_configs.global_partition = {
 		base: true,
 		extra: false,
-		...baseSchema.global_partition
+		...global_configs.global_partition
+	};
+
+	global_configs.global_inputs = {
+		base: true,
+		extra: true,
+		...global_configs.global_inputs
 	};
 }
 
@@ -72,8 +82,8 @@ module.exports = function(resource, baseSchema, dirname) {
 	}
 
 	createDefaultPartition(baseSchema);
-
-	if (baseSchema.global_partition.base) {
+	const { global_partition, global_inputs } = baseSchema.global_configs;
+	if (global_partition.base) {
 		types.base = {
 			[`Mixed${capitalizedResource}`]: {},
 			[`Others${capitalizedResource}`]: {},
@@ -99,8 +109,8 @@ module.exports = function(resource, baseSchema, dirname) {
 	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
-			const new_value = baseSchema.global_partition.base && partition ? partitionMapper[part] + value : value;
-			types.base[`${baseSchema.global_partition.base ? part : ''}${capitalizedResource}`][key] = {
+			const new_value = global_partition.base && partition ? partitionMapper[part] + value : value;
+			types.base[`${global_partition.base ? part : ''}${capitalizedResource}`][key] = {
 				value: isArray ? `[${new_value}!]!` : `${new_value}!`,
 				variant,
 				baseType
@@ -121,7 +131,7 @@ module.exports = function(resource, baseSchema, dirname) {
 	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
-			const shouldPartition = baseSchema.global_partition.extra || partition;
+			const shouldPartition = global_partition.extra || partition;
 			const partitionKey = `${shouldPartition ? part : ''}${type}`;
 			if (!types.extra[partitionKey]) types.extra[partitionKey] = {};
 			types.extra[partitionKey][key] = {
@@ -193,7 +203,7 @@ module.exports = function(resource, baseSchema, dirname) {
 				if (value[0].ref) {
 					variant = 'refs';
 					if (!parentKey)
-						populateBaseTypes(key, [ `${baseSchema.global_partition.base ? '' : 'Self'}${value[0].ref}Type` ], {
+						populateBaseTypes(key, [ `${global_partition.base ? '' : 'Self'}${value[0].ref}Type` ], {
 							...populateTypeOption,
 							variant,
 							baseType: value[0].ref
@@ -207,7 +217,7 @@ module.exports = function(resource, baseSchema, dirname) {
 			} else if (!Array.isArray(value) && value.ref) {
 				variant = 'ref';
 				if (!parentKey)
-					populateBaseTypes(key, `${baseSchema.global_partition.base ? '' : 'Self'}${value.ref}Type`, {
+					populateBaseTypes(key, `${global_partition.base ? '' : 'Self'}${value.ref}Type`, {
 						...populateTypeOption,
 						variant,
 						baseType: value.ref
@@ -231,7 +241,7 @@ module.exports = function(resource, baseSchema, dirname) {
 					inputs[type_key][key] = { value: `${type}!`, variant };
 				}
 			} else if (!instanceOfSchema && !parentKey) {
-				if (value.writable || value.writable === undefined) {
+				if (value.writable === undefined ? value.writable : global_inputs.base) {
 					if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
 					inputs[capitalizedResource][key] = { value: `${type}!`, variant };
 				}
@@ -276,9 +286,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		inputs,
 		types,
 		enums,
-		options: {
-			global_partition: baseSchema.global_partition
-		}
+		options: baseSchema.global_configs
 	};
 	global.Schema[capitalizedResource] = Object.freeze(schemaObj);
 
