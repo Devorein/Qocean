@@ -24,4 +24,7 @@ const WatchlistSchema = new mongoose.Schema({
 });
 
 exports.WatchlistSchema = WatchlistSchema;
+WatchlistSchema.global_partition = {
+	base: false
+};
 module.exports.WatchlistModel = mongoose.model('Watchlist', WatchlistSchema);

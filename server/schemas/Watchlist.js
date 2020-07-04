@@ -1,10 +1,6 @@
 const { gql } = require('apollo-server-express');
+const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
 module.exports = gql`
-	type WatchlistType {
-		user: ID!
-		created_at: Date!
-		watched_folders: [SelfFolderType!]!
-		watched_quizzes: [SelfQuizType!]!
-	}
+  ${generateTypeSchema('watchlist')}
 `;
