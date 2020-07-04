@@ -3,9 +3,10 @@ module.exports = function(resource) {
 	resource = S(resource).capitalize().s;
 	let target = global.Schema[resource];
 	target = {
-		...target.base,
-		...target.extra
+		...target.types.base,
+		...target.types.extra
 	};
+
 	const result = {};
 	Object.entries(target).forEach(([ basekey, value ]) => {
 		basekey = basekey + 'Type';

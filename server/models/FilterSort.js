@@ -52,9 +52,8 @@ const FilterSortSchema = new mongoose.Schema({
 	sorts: [ SortsSchema ]
 });
 
+exports.FilterSortSchema = FilterSortSchema;
 FilterSortSchema.global_partition = {
 	base: false
 };
-
-exports.FilterSortSchema = FilterSortSchema;
-module.exports.FilterSortModel = mongoose.model('FilterSort', FilterSortSchema);
+module.exports.FilterSortModel = mongoose.model('Filtersort', FilterSortSchema);

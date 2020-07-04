@@ -40,17 +40,17 @@ function parseScalarType(value) {
 	return type;
 }
 
-function createDefaultPartition(schema) {
-	if (!schema.global_partition) schema.global_partition = {};
+function createDefaultPartition(baseSchema) {
+	if (!baseSchema.global_partition) baseSchema.global_partition = {};
 
-	schema.global_partition = {
+	baseSchema.global_partition = {
 		base: true,
 		extra: false,
-		...schema.global_partition
+		...baseSchema.global_partition
 	};
 }
 
-module.exports = function(resource, schema, dirname) {
+module.exports = function(resource, baseSchema, dirname) {
 	const inputs = {};
 	const enums = {};
 	const interface = {};
@@ -59,21 +59,21 @@ module.exports = function(resource, schema, dirname) {
 	const types = {};
 
 	let schemaStr = ``;
-	if (!schema) {
-		if (resource === 'user') schema = UserSchema;
-		else if (resource === 'quiz') schema = QuizSchema;
-		else if (resource === 'question') schema = QuestionSchema;
-		else if (resource === 'folder') schema = FolderSchema;
-		else if (resource === 'environment') schema = EnvironmentSchema;
-		else if (resource === 'report') schema = ReportSchema;
-		else if (resource === 'filtersort') schema = FilterSortSchema;
-		else if (resource === 'watchlist') schema = WatchlistSchema;
-		else if (resource === 'inbox') schema = InboxSchema;
+	if (!baseSchema) {
+		if (resource === 'user') baseSchema = UserSchema;
+		else if (resource === 'quiz') baseSchema = QuizSchema;
+		else if (resource === 'question') baseSchema = QuestionSchema;
+		else if (resource === 'folder') baseSchema = FolderSchema;
+		else if (resource === 'environment') baseSchema = EnvironmentSchema;
+		else if (resource === 'report') baseSchema = ReportSchema;
+		else if (resource === 'filtersort') baseSchema = FilterSortSchema;
+		else if (resource === 'watchlist') baseSchema = WatchlistSchema;
+		else if (resource === 'inbox') baseSchema = InboxSchema;
 	}
 
-	createDefaultPartition(schema);
+	createDefaultPartition(baseSchema);
 
-	if (schema.global_partition.base) {
+	if (baseSchema.global_partition.base) {
 		types.base = {
 			[`Mixed${capitalizedResource}`]: {},
 			[`Others${capitalizedResource}`]: {},
@@ -99,8 +99,8 @@ module.exports = function(resource, schema, dirname) {
 	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
-			const new_value = schema.global_partition.base && partition ? partitionMapper[part] + value : value;
-			types.base[`${schema.global_partition.base ? part : ''}${capitalizedResource}`][key] = {
+			const new_value = baseSchema.global_partition.base && partition ? partitionMapper[part] + value : value;
+			types.base[`${baseSchema.global_partition.base ? part : ''}${capitalizedResource}`][key] = {
 				value: isArray ? `[${new_value}!]!` : `${new_value}!`,
 				variant,
 				baseType
@@ -121,7 +121,7 @@ module.exports = function(resource, schema, dirname) {
 	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
-			const shouldPartition = schema.global_partition.extra || partition;
+			const shouldPartition = baseSchema.global_partition.extra || partition;
 			const partitionKey = `${shouldPartition ? part : ''}${type}`;
 			if (!types.extra[partitionKey]) types.extra[partitionKey] = {};
 			types.extra[partitionKey][key] = {
@@ -170,9 +170,9 @@ module.exports = function(resource, schema, dirname) {
 			if (instanceOfSchema) {
 				type = value.type || S(`_${key}`).camelize().s;
 				variant = isArray ? 'types' : 'type';
-				populateBaseTypes(key, isArray ? `[${type}Type!]` : `${type}Type`, {
+				populateBaseTypes(key, isArray ? [ `${type}Type` ] : `${type}Type`, {
 					...populateTypeOption,
-					partition: false,
+					partition: (isArray ? value[0] : value).partition || false,
 					variant
 				});
 				if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
@@ -193,7 +193,7 @@ module.exports = function(resource, schema, dirname) {
 				if (value[0].ref) {
 					variant = 'refs';
 					if (!parentKey)
-						populateBaseTypes(key, [ `${value[0].ref}Type` ], {
+						populateBaseTypes(key, [ `${baseSchema.global_partition.base ? '' : 'Self'}${value[0].ref}Type` ], {
 							...populateTypeOption,
 							variant,
 							baseType: value[0].ref
@@ -207,7 +207,11 @@ module.exports = function(resource, schema, dirname) {
 			} else if (!Array.isArray(value) && value.ref) {
 				variant = 'ref';
 				if (!parentKey)
-					populateBaseTypes(key, `${value.ref}Type`, { ...populateTypeOption, variant, baseType: value.ref });
+					populateBaseTypes(key, `${baseSchema.global_partition.base ? '' : 'Self'}${value.ref}Type`, {
+						...populateTypeOption,
+						variant,
+						baseType: value.ref
+					});
 				type = 'ID';
 			} else {
 				type = parseScalarType(value);
@@ -234,14 +238,14 @@ module.exports = function(resource, schema, dirname) {
 			}
 		});
 	}
-	parseSchema(schema);
+	parseSchema(baseSchema);
 
 	let enumStr = '# Enums\n';
 	Object.entries(enums).forEach(([ key, value ]) => {
 		enumStr += `enum ${key}{\n\t${value.join('\n\t')}\n}\n\n`;
 	});
 
-	let interfaceStr = `# Interface \n interface ${capitalizedResource}{\n`;
+	let interfaceStr = `# Interface \ninterface ${capitalizedResource}{\n`;
 	Object.entries(interface).forEach(([ key, value ]) => {
 		interfaceStr += `\t${key}: ${value}\n`;
 	});

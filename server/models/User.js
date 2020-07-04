@@ -108,7 +108,7 @@ const UserSchema = new mongoose.Schema({
 			onlySelf: true,
 			partition: false,
 			type: mongoose.Schema.ObjectId,
-			ref: 'FilterSort'
+			ref: 'Filtersort'
 		}
 	]
 });
