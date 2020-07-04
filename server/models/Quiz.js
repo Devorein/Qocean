@@ -73,8 +73,12 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	},
 	watchers: [
 		{
+			auth: true,
 			type: mongoose.Schema.ObjectId,
-			ref: 'User'
+			ref: 'User',
+			partitionMapper: {
+				Self: 'Others'
+			}
 		}
 	]
 });

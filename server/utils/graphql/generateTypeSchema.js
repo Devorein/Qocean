@@ -8,6 +8,10 @@ const { QuizSchema } = require('../../models/Quiz');
 const { QuestionSchema } = require('../../models/Question');
 const { FolderSchema } = require('../../models/Folder');
 const { EnvironmentSchema } = require('../../models/Environment');
+const { ReportSchema } = require('../../models/Report');
+const { FilterSortSchema } = require('../../models/FilterSort');
+const { WatchlistSchema } = require('../../models/Watchlist');
+const { InboxSchema } = require('../../models/Inbox');
 
 global.Schema = {};
 
@@ -53,6 +57,10 @@ module.exports = function(resource, schema, dirname) {
 		else if (resource === 'question') schema = QuestionSchema;
 		else if (resource === 'folder') schema = FolderSchema;
 		else if (resource === 'environment') schema = EnvironmentSchema;
+		else if (resource === 'report') schema = ReportSchema;
+		else if (resource === 'filtersort') schema = FilterSortSchema;
+		else if (resource === 'watchlist') schema = WatchlistSchema;
+		else if (resource === 'inbox') schema = InboxSchema;
 	}
 
 	function partsGenerator(parts, purpose) {
@@ -70,31 +78,53 @@ module.exports = function(resource, schema, dirname) {
 		}, '');
 	}
 
-	function populateType(key, value, { partition, auth, onlySelf, variant, baseType = null }) {
+	function populateType(
+		key,
+		value,
+		{ partition, auth, onlySelf, variant, baseType = null, excludePartition = [], partitionMapper }
+	) {
 		const isArray = Array.isArray(value);
 		function populate(part) {
 			types[`${part}${capitalizedResource}`][key] = {
-				value: isArray ? '[' + (partition ? part + value : value) + '!]!' : (partition ? part + value : value) + '!',
+				value: isArray
+					? '[' + (partition ? partitionMapper[part] + value : value) + '!]!'
+					: (partition ? part + value : value) + '!',
 				variant,
 				baseType
 			};
 		}
-		if (!auth && !onlySelf) populate('Mixed');
-		if (!onlySelf) populate('Others');
-		populate('Self');
+		if (!auth && !onlySelf && !excludePartition.includes('Mixed')) populate('Mixed');
+		if (!onlySelf && !excludePartition.includes('Others')) populate('Others');
+		if (!excludePartition.includes('Self')) populate('Self');
 
 		if (!auth && !onlySelf && !partition) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
+	}
+
+	function parseValue(value) {
+		const target = Array.isArray(value) ? value[0] : value;
+		const { auth, onlySelf, partition = true, excludePartition = [], partitionMapper = {} } = target;
+
+		const newPartitionMapper = {
+			Mixed: 'Mixed',
+			Others: 'Others',
+			Self: 'Self',
+			...partitionMapper
+		};
+
+		return {
+			auth,
+			onlySelf,
+			partition,
+			excludePartition,
+			partitionMapper: newPartitionMapper
+		};
 	}
 
 	function parseSchema(schema, prevKey) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const instanceOfSchema = value instanceof mongoose.Schema;
-			const { auth, onlySelf, partition = true } = Array.isArray(value) ? value[0] : value;
-			const populateTypeOption = {
-				auth,
-				onlySelf,
-				partition
-			};
+			const populateTypeOption = parseValue(value);
+
 			let type = '',
 				variant = '';
 			if (instanceOfSchema) {
