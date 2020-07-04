@@ -16,6 +16,9 @@ module.exports = async function createResource(model, userId, data) {
 			return await createFolderHandler(userId, data, next);
 		case 'Environment':
 			return await createEnvironmentHandler(userId, data, next);
+		case 'Filtersort':
+			data.user = userId;
+			return await model.create(data);
 		default:
 			return null;
 	}

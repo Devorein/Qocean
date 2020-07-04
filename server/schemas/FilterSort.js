@@ -1,6 +1,8 @@
 const { gql } = require('apollo-server-express');
 
 const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
+const generateMutations = require('../utils/graphql/generateMutationSchemas');
+
 module.exports = gql`
 	${generateTypeSchema('filtersort')}
 
@@ -10,8 +12,6 @@ module.exports = gql`
   }
 
   extend type Mutation{
-    createFilterSort(data: FiltersortInput!): FiltersortType!
-    updateFilterSort(data: FiltersortInput!): FiltersortType!
-    deleteFilterSort(id: ID!): FiltersortType!
+    ${generateMutations('filtersort')}
   }
 `;

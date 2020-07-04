@@ -275,7 +275,10 @@ module.exports = function(resource, baseSchema, dirname) {
 		interface,
 		inputs,
 		types,
-		enums
+		enums,
+		options: {
+			global_partition: baseSchema.global_partition
+		}
 	};
 	global.Schema[capitalizedResource] = Object.freeze(schemaObj);
 
