@@ -11,7 +11,7 @@ module.exports = function(resource) {
 	Object.entries(target).forEach(([ basekey, value ]) => {
 		basekey = basekey + 'Type';
 		result[basekey] = {};
-		Object.entries(value).forEach(([ key, { value, variant, baseType } ]) => {
+		Object.entries(value).forEach(([ key, { value, variant, baseType, excludePartitions } ]) => {
 			if (variant.match(/(ref|refs)/)) {
 				result[basekey][key] = async function(parent, args, ctx) {
 					const model = ctx[baseType];

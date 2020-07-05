@@ -15,16 +15,19 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		max: 10,
 		min: 0,
-		default: 1
+		default: 0,
+		scalar: 'NonNegativeInt'
 	},
 	raters: {
 		type: Number,
 		default: 0,
-		min: 0
+		min: 0,
+		scalar: 'NonNegativeInt'
 	},
 	average_quiz_time: {
 		type: Number,
-		default: 30
+		default: 30,
+		scalar: 'PositiveInt'
 	},
 	average_difficulty: {
 		type: String,
@@ -49,11 +52,13 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	},
 	total_questions: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt'
 	},
 	total_folders: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt'
 	},
 	questions: [
 		{
@@ -69,11 +74,12 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	],
 	total_played: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt'
 	},
 	watchers: [
 		{
-			auth: true,
+			excludePartitions: [ 'Mixed' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
 			partitionMapper: {

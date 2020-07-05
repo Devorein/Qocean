@@ -2,13 +2,19 @@ const mongoose = require('mongoose');
 
 const MessageSchema = new mongoose.Schema({
 	message: String,
+	created_at: {
+		type: Date,
+		default: Date.now(),
+		writable: false
+	},
 	inbox: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox'
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		writable: false
 	},
 	time: { type: Date, default: Date.now },
 	read: { type: Boolean, default: false },

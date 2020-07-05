@@ -1,9 +1,27 @@
 const pluralize = require('pluralize');
+const S = require('String');
+const { difference } = require('lodash');
 
 const parsePagination = require('../parsePagination');
 
 module.exports = function(resource) {
-	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
+	const capitalizedResource = S(resource).capitalize().s;
+	const selfFields = [],
+		mixedFields = [],
+		othersFields = [];
+
+	Object.entries(global.Schema[capitalizedResource].fields).forEach(([ key, { excludePartitions } ]) => {
+		if (excludePartitions === undefined) excludePartitions = [];
+		if (!excludePartitions.includes('Mixed')) mixedFields.push(key);
+		if (!excludePartitions.includes('Others')) othersFields.push(key);
+		if (!excludePartitions.includes('Self')) selfFields.push(key);
+	});
+
+	const exlcudedMixedFields = difference(selfFields, mixedFields);
+	const exlcudedOthersFields = difference(selfFields, othersFields);
+	const exlcudedMixedFieldsStr = exlcudedMixedFields.map((item) => `-${item}`).join(' ');
+	const exlcudedOthersFieldsStr = exlcudedOthersFields.map((item) => `-${item}`).join(' ');
+
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
 	const nonUserFilter = {};
 	if (resource !== 'user') nonUserFilter.public = true;
@@ -55,7 +73,9 @@ module.exports = function(resource) {
 
 	let QueryResolvers = {
 		[`getAllMixed${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
-			return await ctx[capitalizedResource].find({ ...nonUserFilter }).select('-public -favourite');
+			const resources = await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
+			console.log(resources);
+			return resources;
 		},
 		[`getAllMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
 			parent,
@@ -68,7 +88,9 @@ module.exports = function(resource) {
 			return await ctx[capitalizedResource].countDocuments({ ...nonUserFilter });
 		},
 		[`getAllOthers${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
-			return await ctx[capitalizedResource].find({ ...nonUserFilter, user: { $ne: ctx.user.id } });
+			return await ctx[capitalizedResource]
+				.find({ ...nonUserFilter, user: { $ne: ctx.user.id } })
+				.select(exlcudedOthersFieldsStr);
 		},
 		[`getAllOthers${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
 			parent,
@@ -88,7 +110,7 @@ module.exports = function(resource) {
 				.sort(sort)
 				.skip(page)
 				.limit(limit)
-				.select('-public -favourite');
+				.select(exlcudedMixedFieldsStr);
 		},
 
 		[`getPaginatedMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
@@ -144,7 +166,7 @@ module.exports = function(resource) {
 				.sort(sort)
 				.skip(page)
 				.limit(limit)
-				.select('-public -favourite');
+				.select(exlcudedOthersFieldsStr);
 		},
 
 		[`getPaginatedOthers${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
@@ -174,7 +196,7 @@ module.exports = function(resource) {
 		[`getMixed${pluralizedcapitalizedResource}ById`]: async function(parent, { id }, ctx) {
 			const [ folder ] = await ctx[capitalizedResource]
 				.find({ _id: id, ...nonUserFilter })
-				.select('-public -favourite');
+				.select(exlcudedMixedFieldsStr);
 			if (!folder) throw new Error('Resource with that Id doesnt exist');
 			return folder;
 		},
@@ -183,7 +205,7 @@ module.exports = function(resource) {
 		[`getOthers${pluralizedcapitalizedResource}ById`]: async function(parent, { id }, ctx) {
 			const [ folder ] = await ctx[capitalizedResource]
 				.find({ _id: id, user: { $ne: ctx.user.id }, ...nonUserFilter })
-				.select('-public -favourite')[0];
+				.select(exlcudedOthersFieldsStr);
 			if (!folder) throw new Error('Resource with that Id doesnt exist');
 			return folder;
 		}

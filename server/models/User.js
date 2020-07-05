@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { isAlphaNumericOnly, isStrongPassword } = require('../utils/validation');
-
 const UserSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -16,15 +14,11 @@ const UserSchema = new mongoose.Schema({
 		minlength: [ 3, 'User name cant be less than 3 characters long' ],
 		maxlength: [ 18, 'User name cant be more than 18 characters long' ],
 		unique: true,
-		validate: {
-			validator(v) {
-				return isAlphaNumericOnly(v);
-			},
-			message: () => `Invalid username`
-		}
+		scalar: 'Username'
 	},
 	email: {
 		type: String,
+		scalar: 'EmailAddress',
 		required: [ true, 'Please add an email' ],
 		unique: true,
 		match: [ /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email' ]
@@ -34,34 +28,44 @@ const UserSchema = new mongoose.Schema({
 		required: [ true, 'Please add a password' ],
 		minlength: [ 6, 'Password must be greater than six characters' ],
 		select: false,
-		validate: {
-			validator(v) {
-				return isStrongPassword(v);
-			},
-			message: () => `Password is not strong enough`
-		}
+		scalar: 'Password'
+		// validate: {
+		// 	validator(v) {
+		// 		console.log('Schema', v);
+		// 		return true;
+		// 	}
+		// }
 	},
 	resetPasswordToken: String,
 	resetPasswordExpire: Date,
 	joined_at: {
 		type: Date,
-		default: Date.now
+		default: Date.now,
+		writable: false
 	},
 	total_folders: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_questions: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_quizzes: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_environments: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	current_environment: {
 		type: mongoose.Schema.ObjectId,
@@ -84,29 +88,25 @@ const UserSchema = new mongoose.Schema({
 	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
 	image: { type: String, default: 'none.png' },
 	inbox: {
-		onlySelf: true,
-		excludePartition: [ 'Mixed', 'Others' ],
+		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox'
 	},
 	reports: [
 		{
-			onlySelf: true,
-			excludePartition: [ 'Mixed', 'Others' ],
+			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Report'
 		}
 	],
 	watchlist: {
-		onlySelf: true,
-		excludePartition: [ 'Mixed', 'Others' ],
+		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist'
 	},
 	filtersort: [
 		{
-			onlySelf: true,
-			excludePartition: [ 'Mixed', 'Others' ],
+			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Filtersort'
 		}

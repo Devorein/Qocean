@@ -26,7 +26,8 @@ exports.validate = asyncHandler(async (req, res, next) => {
 		try {
 			const decoded = await jwt.verify(token, process.env.JWT_SECRET);
 			req.user = await UserModel.findById(decoded.id);
-			req.user.id = req.user._id;
+			if (req.user) req.user.id = req.user._id;
+			else console.log('Unauth mode');
 		} catch (err) {
 			console.log(colors.red(err.message));
 		}

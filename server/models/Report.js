@@ -14,7 +14,9 @@ const ReportQuestionsSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Question'
 	},
-	user_answers: [ String ],
+	user_answers: {
+		type: [ String ]
+	},
 	result: { type: Boolean, required: true },
 	time_taken: Number
 });
@@ -22,21 +24,27 @@ const ReportQuestionsSchema = new mongoose.Schema({
 const ReportSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
+		graphql: {
+			type: [ false ],
+			input: [ false ]
+		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		required: true
+		required: true,
+		writable: false
 	},
-	average_points: { type: Number, required: true },
-	average_time: { type: Number, required: true },
-	correct: { type: Number, required: true },
-	incorrect: { type: Number, required: true },
-	total: { type: Number, required: true },
+	average_points: { type: Number, scalar: 'NonNegativeInt', required: true },
+	average_time: { type: Number, scalar: 'NonNegativeInt', required: true },
+	correct: { type: Number, scalar: 'NonNegativeInt', required: true },
+	incorrect: { type: Number, scalar: 'NonNegativeInt', required: true },
+	total: { type: Number, required: true, scalar: 'PositiveInt' },
 	created_at: {
 		type: Date,
-		default: Date.now()
+		default: Date.now(),
+		writable: false
 	},
 	quizzes: [
 		{
