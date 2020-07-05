@@ -5,7 +5,7 @@ const { createEnvironmentHandler } = require('../../handlers/environment');
 
 module.exports = async function createResource(model, userId, data) {
 	const next = (err) => {
-		throw new err();
+		throw err;
 	};
 	switch (model.modelName) {
 		case 'Quiz':

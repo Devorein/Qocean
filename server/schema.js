@@ -1,4 +1,18 @@
 const { gql } = require('apollo-server-express');
+const { resolvers } = require('graphql-scalars');
+const Password = require('./types/password');
+const Username = require('./types/username');
+
+const validators = {};
+
+Object.entries(resolvers).forEach(([ key, value ]) => {
+	validators[key] = value.serialize;
+});
+validators.Password = Password.serialize;
+validators.Username = Username.serialize;
+
+global.Validators = validators;
+Object.freeze(global.Validators);
 
 exports.typeDefs = gql`
 	scalar Password

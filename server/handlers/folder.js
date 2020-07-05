@@ -8,10 +8,8 @@ async function createFolderHandler(userId, data, next) {
 		if (next) return next(new ErrorResponse(`You alread have a folder named ${data.name}`, 400));
 		else throw new Error(`You alread have a folder named ${data.name}`);
 	}
-	const targetQuizzes = data.quizzes;
 	delete data.quizzes;
 	const folder = await FolderModel.create(data);
-	if (targetQuizzes) await folder.manipulateQuiz(1, targetQuizzes);
 	return await folder.save();
 }
 

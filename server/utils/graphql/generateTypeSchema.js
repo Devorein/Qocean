@@ -16,31 +16,6 @@ const { MessageSchema } = require('../../models/Message');
 
 global.Schema = {};
 
-function parseScalarType(value, { graphql }) {
-	const isArray = Array.isArray(value);
-	const target = isArray ? value[0] : value;
-	let type = null;
-	if (target.scalar) type = target.scalar;
-	else if (Array.isArray(target.type)) {
-		if (Array.isArray(target.type[0])) type = `[${target.type[0][0].name}]`;
-		else type = target.type[0].name;
-	} else if (target.type) type = target.type.name;
-	else type = target.name;
-	switch (type) {
-		case 'Int32':
-		case 'Number':
-			type = 'Int';
-			break;
-		case 'Double':
-			type = 'Float';
-			break;
-	}
-
-	if (type === 'ObjectId') type = 'ID';
-	type = isArray || Array.isArray(value.type) ? `[${type}${graphql.type[1] ? '!' : ''}]` : type;
-	return type;
-}
-
 function createDefaultConfigs(baseSchema) {
 	// ? Refactor to use a utility function
 	if (!baseSchema.global_configs) baseSchema.global_configs = {};
@@ -73,6 +48,36 @@ module.exports = function(resource, baseSchema, dirname) {
 	const capitalizedResource = S(resource).capitalize().s;
 
 	const types = {};
+
+	function parseScalarType(value, { graphql }, path) {
+		const isArray = Array.isArray(value);
+		const target = isArray ? value[0] : value;
+		let type = null;
+		if (target.scalar) {
+			type = target.scalar;
+			baseSchema.path(path).validate((v) => {
+				const value = global.Validators[type](v);
+				return value !== null && value !== undefined;
+			}, (props) => props.reason.message);
+		} else if (Array.isArray(target.type)) {
+			if (Array.isArray(target.type[0])) type = `[${target.type[0][0].name}]`;
+			else type = target.type[0].name;
+		} else if (target.type) type = target.type.name;
+		else type = target.name;
+		switch (type) {
+			case 'Int32':
+			case 'Number':
+				type = 'Int';
+				break;
+			case 'Double':
+				type = 'Float';
+				break;
+		}
+
+		if (type === 'ObjectId') type = 'ID';
+		type = isArray || Array.isArray(value.type) ? `[${type}${graphql.type[1] ? '!' : ''}]` : type;
+		return type;
+	}
 
 	let schemaStr = ``;
 	if (!baseSchema) {
@@ -213,7 +218,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		};
 	}
 
-	function parseSchema(schema, parentKey) {
+	function parseSchema(schema, parentKey, path = undefined) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const isArray = Array.isArray(value);
 			const instanceOfSchema = (isArray ? value[0] : value) instanceof mongoose.Schema;
@@ -234,7 +239,7 @@ module.exports = function(resource, baseSchema, dirname) {
 					variant,
 					value: `${type}Input!`
 				};
-				parseSchema(isArray ? value[0] : value, type);
+				parseSchema(isArray ? value[0] : value, type, `${path ? path + '.' : ''}${key}`);
 			} else if (value.enum) {
 				type = parentKey
 					? `${parentKey.toUpperCase()}_${key.toUpperCase()}`
@@ -254,7 +259,7 @@ module.exports = function(resource, baseSchema, dirname) {
 					type = `[ID${extractedFieldOptions.graphql.input[1] ? '!' : ''}]`;
 				} else {
 					variant = 'scalars';
-					type = parseScalarType(value, extractedFieldOptions);
+					type = parseScalarType(value, extractedFieldOptions, `${path ? path + '.' : ''}${key}`);
 					if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, partition: false, variant });
 				}
 			} else if (!Array.isArray(value) && value.ref) {
@@ -267,7 +272,7 @@ module.exports = function(resource, baseSchema, dirname) {
 					});
 				type = 'ID';
 			} else {
-				type = parseScalarType(value, extractedFieldOptions);
+				type = parseScalarType(value, extractedFieldOptions, `${path ? path + '.' : ''}${key}`);
 				variant = 'scalar';
 				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, partition: false, variant });
 			}
