@@ -2,10 +2,16 @@ const mongoose = require('mongoose');
 
 const ReportDisabledSchema = new mongoose.Schema({
 	type: {
-		type: [ String ]
+		type: [ String ],
+		graphql: {
+			type: [ true, true ]
+		}
 	},
 	difficulty: {
-		type: [ String ]
+		type: [ String ],
+		graphql: {
+			type: [ true ]
+		}
 	}
 });
 
@@ -14,7 +20,12 @@ const ReportQuestionsSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Question'
 	},
-	user_answers: [ String ],
+	user_answers: {
+		type: [ String ],
+		graphql: {
+			type: [ false, true ]
+		}
+	},
 	result: { type: Boolean, required: true },
 	time_taken: Number
 });
@@ -22,7 +33,11 @@ const ReportQuestionsSchema = new mongoose.Schema({
 const ReportSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: true
+		required: true,
+		graphql: {
+			type: [ false ],
+			input: [ false ]
+		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
