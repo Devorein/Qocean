@@ -48,6 +48,7 @@ function createDefaultConfigs(baseSchema) {
 	if (!global_configs.global_partition) global_configs.global_partition = {};
 	if (!global_configs.global_inputs) global_configs.global_inputs = {};
 	if (!global_configs.global_excludePartitions) global_configs.global_excludePartitions = [];
+	if (global_configs.generateInterface === undefined) global_configs.generateInterface = true;
 	global_configs.global_partition = {
 		base: true,
 		extra: false,
@@ -62,9 +63,6 @@ function createDefaultConfigs(baseSchema) {
 }
 
 module.exports = function(resource, baseSchema, dirname) {
-	const inputs = {};
-	const enums = {};
-	const interface = {};
 	const capitalizedResource = S(resource).capitalize().s;
 
 	const types = {};
@@ -83,11 +81,27 @@ module.exports = function(resource, baseSchema, dirname) {
 		else if (resource === 'message') baseSchema = MessageSchema;
 	}
 	createDefaultConfigs(baseSchema);
-	const { global_partition, global_inputs, global_excludePartitions } = baseSchema.global_configs;
+
+	const { global_partition, global_inputs, global_excludePartitions, generateInterface } = baseSchema.global_configs;
+
+	const inputs = {};
+	const enums = {};
+	const interface = generateInterface
+		? {
+				id: 'ID!'
+			}
+		: {};
+
 	if (global_partition.base) {
 		types.base = {};
 		[ 'Mixed', 'Others', 'Self' ].forEach((part) => {
-			if (!global_excludePartitions.includes(part)) types.base[`${part}${capitalizedResource}`] = {};
+			if (!global_excludePartitions.includes(part))
+				types.base[`${part}${capitalizedResource}`] = {
+					id: {
+						value: 'ID!',
+						variant: 'ID!'
+					}
+				};
 		});
 	} else
 		types.base = {
@@ -122,7 +136,7 @@ module.exports = function(resource, baseSchema, dirname) {
 			populate('Others');
 		if (!global_excludePartitions.includes('Self') && !excludePartitions.includes('Self')) populate('Self');
 
-		if (!auth && !onlySelf && !partition) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
+		if (!auth && !onlySelf && !partition && generateInterface) interface[key] = isArray ? `[${value}!]!` : `${value}!`;
 	}
 
 	function populateExtraTypes(
@@ -257,12 +271,13 @@ module.exports = function(resource, baseSchema, dirname) {
 		enumStr += `enum ${key}{\n\t${value.join('\n\t')}\n}\n\n`;
 	});
 
-	let interfaceStr = `# Interface \ninterface ${capitalizedResource}{\n`;
-	Object.entries(interface).forEach(([ key, value ]) => {
-		interfaceStr += `\t${key}: ${value}\n`;
-	});
-
-	interfaceStr += '}\n';
+	let interfaceStr = generateInterface ? `# Interface \ninterface ${capitalizedResource}{\n` : '';
+	if (generateInterface) {
+		Object.entries(interface).forEach(([ key, value ]) => {
+			interfaceStr += `\t${key}: ${value}\n`;
+		});
+		interfaceStr += '}\n';
+	}
 
 	// Input string generation
 	let inputStr = '# Inputs\n';
@@ -273,7 +288,8 @@ module.exports = function(resource, baseSchema, dirname) {
 	// Base type string generation
 	let baseTypeStr = '# Base Types\n';
 	Object.entries(types.base).forEach(([ key, value ]) => {
-		baseTypeStr += valueGenerator(`type ${key}Type implements ${capitalizedResource}`, value) + '\n';
+		baseTypeStr +=
+			valueGenerator(`type ${key}Type ${generateInterface ? 'implements ' + capitalizedResource : ''}`, value) + '\n';
 	});
 
 	// Extra type string generation
