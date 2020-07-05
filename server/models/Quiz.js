@@ -79,7 +79,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	},
 	watchers: [
 		{
-			auth: true,
+			excludePartitions: [ 'Mixed' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
 			partitionMapper: {

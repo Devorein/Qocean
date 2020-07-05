@@ -138,7 +138,7 @@ module.exports = function(resource, baseSchema, dirname) {
 	function populateBaseTypes(
 		key,
 		value,
-		{ partition, auth, onlySelf, variant, baseType = null, partitionMapper, excludePartitions = [], graphql }
+		{ partition, variant, baseType = null, partitionMapper, excludePartitions = [], graphql }
 	) {
 		const isArray = Array.isArray(value);
 		const { type: [ outerNN, innerNN ] } = graphql;
@@ -152,13 +152,11 @@ module.exports = function(resource, baseSchema, dirname) {
 				baseType
 			};
 		}
-		if (!auth && !onlySelf && !global_excludePartitions.includes('Mixed') && !excludePartitions.includes('Mixed'))
-			populate('Mixed');
-		if (!onlySelf && !global_excludePartitions.includes('Others') && !excludePartitions.includes('Others'))
-			populate('Others');
+		if (!global_excludePartitions.includes('Mixed') && !excludePartitions.includes('Mixed')) populate('Mixed');
+		if (!global_excludePartitions.includes('Others') && !excludePartitions.includes('Others')) populate('Others');
 		if (!global_excludePartitions.includes('Self') && !excludePartitions.includes('Self')) populate('Self');
 
-		if (!auth && !onlySelf && !partition && generateInterface)
+		if (!partition && generateInterface && excludePartitions.includes('Self'))
 			interface[key] = isArray
 				? `[${value}${innerNN ? '!' : ''}]${outerNN ? '!' : ''}`
 				: `${value}${outerNN ? '!' : ''}`;
@@ -168,7 +166,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		key,
 		value,
 		type,
-		{ partition, auth, onlySelf, variant, baseType = null, excludePartition = [], graphql }
+		{ partition, variant, baseType = null, excludePartitions = [], graphql }
 	) {
 		const isArray = Array.isArray(value);
 		const { type: [ outerNN, innerNN ] } = graphql;
@@ -184,21 +182,14 @@ module.exports = function(resource, baseSchema, dirname) {
 				baseType
 			};
 		}
-		if (!auth && !onlySelf && !excludePartition.includes('Mixed')) populate('Mixed');
-		if (!onlySelf && !excludePartition.includes('Others')) populate('Others');
-		if (!excludePartition.includes('Self')) populate('Self');
+		if (!excludePartitions.includes('Mixed')) populate('Mixed');
+		if (!excludePartitions.includes('Others')) populate('Others');
+		if (!excludePartitions.includes('Self')) populate('Self');
 	}
 
 	function extractFieldOptions(value, parentKey) {
 		const target = Array.isArray(value) ? value[0] : value;
-		const {
-			auth,
-			onlySelf,
-			partition = parentKey ? false : true,
-			excludePartition = [],
-			partitionMapper = {},
-			graphql = {}
-		} = target;
+		const { partition = parentKey ? false : true, excludePartitions = [], partitionMapper = {}, graphql = {} } = target;
 		if (!graphql.type) graphql.type = Array.isArray(value) ? [ true, true ] : [ true ];
 		if (!graphql.input) graphql.input = Array.isArray(value) ? [ true, true ] : [ true ];
 		const newPartitionMapper = {
@@ -209,10 +200,8 @@ module.exports = function(resource, baseSchema, dirname) {
 		};
 
 		return {
-			auth,
-			onlySelf,
 			partition,
-			excludePartition,
+			excludePartitions,
 			partitionMapper: newPartitionMapper,
 			graphql
 		};

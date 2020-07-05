@@ -4,7 +4,7 @@ const ResourceSchema = new mongoose.Schema({
 	favourite: {
 		type: Boolean,
 		default: false,
-		onlySelf: true
+		excludePartitions: [ 'Others', 'Mixed' ]
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
@@ -15,13 +15,13 @@ const ResourceSchema = new mongoose.Schema({
 	public: {
 		type: Boolean,
 		default: true,
-		onlySelf: true
+		excludePartitions: [ 'Others', 'Mixed' ]
 	},
 	created_at: {
 		type: Date,
 		default: Date.now,
 		writable: false,
-		onlySelf: true
+		excludePartitions: [ 'Others', 'Mixed' ]
 	},
 	updated_at: {
 		type: Date,
