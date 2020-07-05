@@ -48,6 +48,7 @@ module.exports = function(resource, baseSchema, dirname) {
 	const capitalizedResource = S(resource).capitalize().s;
 
 	const types = {};
+	const fields = {};
 
 	function parseScalarType(value, { graphql }, path) {
 		const isArray = Array.isArray(value);
@@ -149,7 +150,8 @@ module.exports = function(resource, baseSchema, dirname) {
 					? `[${new_value}${innerNN ? '!' : ''}]${outerNN ? '!' : ''}`
 					: `${new_value}${outerNN ? '!' : ''}`,
 				variant,
-				baseType
+				baseType,
+				excludePartitions
 			};
 		}
 		if (!global_excludePartitions.includes('Mixed') && !excludePartitions.includes('Mixed')) populate('Mixed');
@@ -284,6 +286,7 @@ module.exports = function(resource, baseSchema, dirname) {
 					if (!inputs[capitalizedResource]) inputs[capitalizedResource] = {};
 					inputs[capitalizedResource][key] = { value: `${type}${outerNN ? '!' : ''}`, variant };
 				}
+				fields[key] = value;
 			}
 		});
 	}
@@ -327,6 +330,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		inputs,
 		types,
 		enums,
+		fields,
 		options: baseSchema.global_configs
 	};
 	global.Schema[capitalizedResource] = Object.freeze(schemaObj);
