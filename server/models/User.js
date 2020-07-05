@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
 		minlength: [ 3, 'User name cant be less than 3 characters long' ],
 		maxlength: [ 18, 'User name cant be more than 18 characters long' ],
 		unique: true,
+		scalar: 'Username',
 		validate: {
 			validator(v) {
 				return isAlphaNumericOnly(v);
@@ -25,6 +26,7 @@ const UserSchema = new mongoose.Schema({
 	},
 	email: {
 		type: String,
+		scalar: 'EmailAddress',
 		required: [ true, 'Please add an email' ],
 		unique: true,
 		match: [ /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email' ]
@@ -39,29 +41,39 @@ const UserSchema = new mongoose.Schema({
 				return isStrongPassword(v);
 			},
 			message: () => `Password is not strong enough`
-		}
+		},
+		scalar: 'Password'
 	},
 	resetPasswordToken: String,
 	resetPasswordExpire: Date,
 	joined_at: {
 		type: Date,
-		default: Date.now
+		default: Date.now,
+		writable: false
 	},
 	total_folders: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_questions: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_quizzes: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	total_environments: {
 		type: Number,
-		default: 0
+		default: 0,
+		scalar: 'NonNegativeInt',
+		writable: false
 	},
 	current_environment: {
 		type: mongoose.Schema.ObjectId,

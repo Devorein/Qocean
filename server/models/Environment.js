@@ -5,7 +5,8 @@ const ResourceSchema = require('./Resource');
 const PageInfo = {
 	default_ipp: {
 		type: Number,
-		default: 15
+		default: 15,
+		scalar: 'PositiveInt'
 	},
 	default_view: {
 		type: String,
@@ -36,11 +37,13 @@ const QuestionInfo = new mongoose.Schema({
 		type: Number,
 		default: 30,
 		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
+		scalar: 'PositiveInt'
 	},
 	default_weight: {
 		type: Number,
 		default: 1,
+		scalar: 'PositiveInt',
 		min: [ 1, 'Weight cant be less than 1' ],
 		max: [ 10, 'Weight cant be less than 10' ]
 	}
@@ -94,19 +97,23 @@ const envSchema = {
 		type: Number,
 		default: 2500,
 		min: 1000,
-		max: 5000
+		max: 5000,
+		scalar: 'PositiveInt'
 	},
 	default_tag_color: {
 		type: String,
-		default: '#000'
+		default: '#000',
+		scalar: 'HexColorCode'
 	},
 	primary_color: {
 		type: String,
-		default: '#3f51b5'
+		default: '#3f51b5',
+		scalar: 'HexColorCode'
 	},
 	secondary_color: {
 		type: String,
-		default: '#f50057'
+		default: '#f50057',
+		scalar: 'HexColorCode'
 	},
 	display_font: {
 		type: String,

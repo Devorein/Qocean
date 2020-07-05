@@ -19,9 +19,9 @@ global.Schema = {};
 function parseScalarType(value, { graphql }) {
 	const isArray = Array.isArray(value);
 	const target = isArray ? value[0] : value;
-	let type = target.scalar;
-
-	if (Array.isArray(target.type)) {
+	let type = null;
+	if (target.scalar) type = target.scalar;
+	else if (Array.isArray(target.type)) {
 		if (Array.isArray(target.type[0])) type = `[${target.type[0][0].name}]`;
 		else type = target.type[0].name;
 	} else if (target.type) type = target.type.name;
@@ -271,7 +271,7 @@ module.exports = function(resource, baseSchema, dirname) {
 				variant = 'scalar';
 				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, partition: false, variant });
 			}
-			const { graphql: { input: [ outerNN, innerNN ] } } = extractedFieldOptions;
+			const { graphql: { input: [ outerNN ] } } = extractedFieldOptions;
 			if (!instanceOfSchema && parentKey) {
 				const type_key = schema.type
 					? (appendParentKeyToEmbedTypes ? capitalizedResource + '_' : '') + schema.type

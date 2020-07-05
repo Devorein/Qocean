@@ -3,11 +3,13 @@ const mongoose = require('mongoose');
 const WatchlistSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		writable: false
 	},
 	created_at: {
 		type: Date,
-		default: Date.now()
+		default: Date.now(),
+		writable: false
 	},
 	watched_folders: [
 		{
