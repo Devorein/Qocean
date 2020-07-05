@@ -42,22 +42,29 @@ function parseScalarType(value) {
 }
 
 function createDefaultConfigs(baseSchema) {
+	// ? Refactor to use a utility function
 	if (!baseSchema.global_configs) baseSchema.global_configs = {};
 	const { global_configs } = baseSchema;
 
-	if (!global_configs.global_partition) global_configs.global_partition = {};
-	if (!global_configs.global_inputs) global_configs.global_inputs = {};
-	if (!global_configs.global_excludePartitions) global_configs.global_excludePartitions = [];
+	if (global_configs.global_partition === undefined)
+		global_configs.global_partition = {
+			base: true,
+			extra: false
+		};
+	if (global_configs.global_inputs === undefined)
+		global_configs.global_inputs = {
+			base: true,
+			extra: true
+		};
+	if (global_configs.global_excludePartitions === undefined) global_configs.global_excludePartitions = [];
 	if (global_configs.generateInterface === undefined) global_configs.generateInterface = true;
+	if (global_configs.appendParentKeyToEmbedTypes === undefined) global_configs.appendParentKeyToEmbedTypes = true;
+
 	global_configs.global_partition = {
-		base: true,
-		extra: false,
 		...global_configs.global_partition
 	};
 
 	global_configs.global_inputs = {
-		base: true,
-		extra: true,
 		...global_configs.global_inputs
 	};
 }
@@ -82,7 +89,13 @@ module.exports = function(resource, baseSchema, dirname) {
 	}
 	createDefaultConfigs(baseSchema);
 
-	const { global_partition, global_inputs, global_excludePartitions, generateInterface } = baseSchema.global_configs;
+	const {
+		global_partition,
+		global_inputs,
+		global_excludePartitions,
+		generateInterface,
+		appendParentKeyToEmbedTypes
+	} = baseSchema.global_configs;
 
 	const inputs = {};
 	const enums = {};
@@ -194,7 +207,8 @@ module.exports = function(resource, baseSchema, dirname) {
 			let type = '',
 				variant = '';
 			if (instanceOfSchema) {
-				type = value.type || S(`_${key}`).camelize().s;
+				type =
+					(appendParentKeyToEmbedTypes ? capitalizedResource + '_' : '') + (value.type || S(`_${key}`).camelize().s);
 				variant = isArray ? 'types' : 'type';
 				populateBaseTypes(key, isArray ? [ `${type}Type` ] : `${type}Type`, {
 					...populateTypeOption,
@@ -208,10 +222,9 @@ module.exports = function(resource, baseSchema, dirname) {
 				};
 				parseSchema(isArray ? value[0] : value, type);
 			} else if (value.enum) {
-				type =
-					resource.toUpperCase() +
-					'_' +
-					(parentKey ? `${parentKey.toUpperCase()}_${key.toUpperCase()}` : `${key.toUpperCase()}`);
+				type = parentKey
+					? `${parentKey.toUpperCase()}_${key.toUpperCase()}`
+					: (appendParentKeyToEmbedTypes ? capitalizedResource.toUpperCase() + '_' : '') + key.toUpperCase();
 				enums[type] = value.enum;
 				variant = 'enum';
 				if (!parentKey) populateBaseTypes(key, type, { ...populateTypeOption, partition: false, variant });
@@ -246,7 +259,9 @@ module.exports = function(resource, baseSchema, dirname) {
 			}
 
 			if (!instanceOfSchema && parentKey) {
-				const type_key = schema.type || S(`_${parentKey}`).camelize().s;
+				const type_key = schema.type
+					? (appendParentKeyToEmbedTypes ? capitalizedResource + '_' : '') + schema.type
+					: parentKey;
 				populateExtraTypes(key, type, type_key, {
 					...populateTypeOption,
 					partition: schema.partition || false,
