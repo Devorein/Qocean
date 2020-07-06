@@ -13,7 +13,9 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	icon: {
 		type: String,
@@ -24,13 +26,17 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	total_questions: {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	quizzes: [
 		{
@@ -45,7 +51,10 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	watchers: [
 		{
 			type: mongoose.Schema.ObjectId,
-			ref: 'User'
+			ref: 'User',
+			graphql: {
+				writable: false
+			}
 		}
 	]
 });

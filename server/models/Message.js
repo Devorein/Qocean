@@ -5,16 +5,23 @@ const MessageSchema = new mongoose.Schema({
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	inbox: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'Inbox'
+		ref: 'Inbox',
+		graphql: {
+			writable: false
+		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	time: { type: Date, default: Date.now },
 	read: { type: Boolean, default: false },
