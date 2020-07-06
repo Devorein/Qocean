@@ -37,7 +37,7 @@
     "clsx": "^1.1.1",
     "color-convert": "^2.0.1",
     "formik": "^2.1.4",
-    "graphql": "^15.2.0",
+    "graphql": "^15.3.0",
     "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "node-fetch": "^2.6.0",
