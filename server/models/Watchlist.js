@@ -4,12 +4,16 @@ const WatchlistSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	watched_folders: [
 		{

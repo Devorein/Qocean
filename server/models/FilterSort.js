@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const filterItem = {
 	target: {
 		type: String,
-		required: 'Target is required'
+		required: true
 	},
 	mod: String,
 	value: String,
@@ -25,7 +25,7 @@ FiltersSchema.add({ children: [ FiltersSchema ] });
 const SortsSchema = new mongoose.Schema({
 	target: {
 		type: String,
-		required: 'Target is required'
+		required: true
 	},
 	order: {
 		type: String,
@@ -38,7 +38,9 @@ const FilterSortSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		required: true,
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	type: {
 		type: String,

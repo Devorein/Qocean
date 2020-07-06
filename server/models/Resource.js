@@ -10,7 +10,9 @@ const ResourceSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		required: [ true, 'Please provide an user' ],
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	public: {
 		type: Boolean,
@@ -20,13 +22,17 @@ const ResourceSchema = new mongoose.Schema({
 	created_at: {
 		type: Date,
 		default: Date.now,
-		writable: false,
+		graphql: {
+			writable: false
+		},
 		excludePartitions: [ 'Others', 'Mixed' ]
 	},
 	updated_at: {
 		type: Date,
 		default: Date.now,
-		writable: false
+		graphql: {
+			writable: false
+		}
 	}
 });
 

@@ -29,48 +29,65 @@ const UserSchema = new mongoose.Schema({
 		minlength: [ 6, 'Password must be greater than six characters' ],
 		select: false,
 		scalar: 'Password'
-		// validate: {
-		// 	validator(v) {
-		// 		console.log('Schema', v);
-		// 		return true;
-		// 	}
-		// }
 	},
-	resetPasswordToken: String,
-	resetPasswordExpire: Date,
+	resetPasswordToken: {
+		type: String,
+		graphql: {
+			writable: false
+		}
+	},
+	resetPasswordExpire: {
+		type: Date,
+		graphql: {
+			writable: false
+		}
+	},
 	joined_at: {
 		type: Date,
 		default: Date.now,
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	total_folders: {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	total_questions: {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	total_quizzes: {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	total_environments: {
 		type: Number,
 		default: 0,
 		scalar: 'NonNegativeInt',
-		writable: false
+		graphql: {
+			writable: false
+		}
 	},
 	current_environment: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Environment',
-		required: true
+		required: true,
+		graphql: {
+			writable: false
+		}
 	},
 	version: {
 		type: String,
@@ -80,35 +97,74 @@ const UserSchema = new mongoose.Schema({
 	environments: [
 		{
 			type: mongoose.Schema.ObjectId,
-			ref: 'Environment'
+			ref: 'Environment',
+			graphql: {
+				writable: false
+			}
 		}
 	],
-	quizzes: [ { type: mongoose.Schema.ObjectId, ref: 'Quiz' } ],
-	questions: [ { type: mongoose.Schema.ObjectId, ref: 'Question' } ],
-	folders: [ { type: mongoose.Schema.ObjectId, ref: 'Folder' } ],
+	quizzes: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Quiz',
+			graphql: {
+				writable: false
+			}
+		}
+	],
+	questions: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Question',
+			graphql: {
+				writable: false
+			}
+		}
+	],
+	folders: [
+		{
+			type: mongoose.Schema.ObjectId,
+			ref: 'Folder',
+			graphql: {
+				writable: false
+			}
+		}
+	],
 	image: { type: String, default: 'none.png' },
 	inbox: {
 		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
-		ref: 'Inbox'
+		ref: 'Inbox',
+		graphql: {
+			writable: false
+		}
 	},
 	reports: [
 		{
 			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
-			ref: 'Report'
+			ref: 'Report',
+			graphql: {
+				writable: false
+			}
 		}
 	],
 	watchlist: {
 		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
-		ref: 'Watchlist'
+		ref: 'Watchlist',
+		graphql: {
+			writable: false
+		}
 	},
 	filtersort: [
 		{
 			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
-			ref: 'Filtersort'
+			ref: 'Filtersort',
+			graphql: {
+				writable: false
+			}
 		}
 	]
 });
