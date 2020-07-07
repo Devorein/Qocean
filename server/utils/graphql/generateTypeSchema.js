@@ -223,17 +223,28 @@ module.exports = function(resource, baseSchema, dirname) {
 		};
 	}
 
+	function getVariant(value) {
+		let variant = 'scalar';
+		const isArray = Array.isArray(value);
+		value = isArray ? value[0] : value;
+		const instanceOfSchema = value instanceof mongoose.Schema;
+		if (instanceOfSchema) variant = 'type';
+		else if (value.enum) variant = 'enum';
+		else if (value.ref) variant = 'ref';
+		return variant + (isArray ? 's' : '');
+	}
+
 	function parseSchema(schema, parentKey, path = undefined) {
 		Object.entries(schema.obj).forEach(([ key, value ]) => {
 			const isArray = Array.isArray(value);
 			const instanceOfSchema = (isArray ? value[0] : value) instanceof mongoose.Schema;
 			const extractedFieldOptions = extractFieldOptions(value, parentKey);
 			let type = '',
-				variant = '';
-			if (instanceOfSchema) {
+				variant = getVariant(value);
+
+			if (variant.match(/(type)/)) {
 				type =
 					(appendParentKeyToEmbedTypes ? capitalizedResource + '_' : '') + (value.type || S(`_${key}`).camelize().s);
-				variant = isArray ? 'types' : 'type';
 				populateBaseTypes(key, isArray ? [ `${type}Type` ] : `${type}Type`, {
 					...extractedFieldOptions,
 					variant
@@ -245,31 +256,23 @@ module.exports = function(resource, baseSchema, dirname) {
 					value: `${type}Input!`
 				};
 				parseSchema(isArray ? value[0] : value, type, `${path ? path + '.' : ''}${key}`);
-			} else if (value.enum) {
+			} else if (variant === 'enum') {
 				type = parentKey
 					? `${parentKey.toUpperCase()}_${key.toUpperCase()}`
 					: (appendParentKeyToEmbedTypes ? capitalizedResource.toUpperCase() + '_' : '') + key.toUpperCase();
 				enums[type] = value.enum;
 				variant = 'enum';
 				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, variant });
-			} else if (Array.isArray(value)) {
-				if (value[0].ref) {
-					variant = 'refs';
-					if (!parentKey)
-						populateBaseTypes(key, [ `${value[0].ref}Type` ], {
-							...extractedFieldOptions,
-							variant,
-							baseType: value[0].ref,
-							isRef: true
-						});
-					type = `[ID${extractedFieldOptions.graphql.input[1] ? '!' : ''}]`;
-				} else {
-					variant = 'scalars';
-					type = parseScalarType(value, extractedFieldOptions, `${path ? path + '.' : ''}${key}`);
-					if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, variant });
-				}
-			} else if (!Array.isArray(value) && value.ref) {
-				variant = 'ref';
+			} else if (variant === 'refs') {
+				if (!parentKey)
+					populateBaseTypes(key, [ `${value[0].ref}Type` ], {
+						...extractedFieldOptions,
+						variant,
+						baseType: value[0].ref,
+						isRef: true
+					});
+				type = `[ID${extractedFieldOptions.graphql.input[1] ? '!' : ''}]`;
+			} else if (variant === 'ref') {
 				if (!parentKey)
 					populateBaseTypes(key, `${value.ref}Type`, {
 						...extractedFieldOptions,
@@ -278,11 +281,11 @@ module.exports = function(resource, baseSchema, dirname) {
 						isRef: true
 					});
 				type = 'ID';
-			} else {
+			} else if (variant.match(/(scalar)/)) {
 				type = parseScalarType(value, extractedFieldOptions, `${path ? path + '.' : ''}${key}`);
-				variant = 'scalar';
 				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, variant });
 			}
+
 			const { graphql: { input: [ outerNN ], writable }, required } = extractedFieldOptions;
 			if (!instanceOfSchema && parentKey) {
 				const type_key = schema.type
