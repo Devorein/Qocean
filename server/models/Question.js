@@ -23,9 +23,11 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	weight: {
 		type: Number,
 		default: 1,
-		scalar: 'PositiveInt',
 		min: [ 1, 'Weight cannot be less than 1' ],
-		max: [ 10, 'Weight cannot be more than 10' ]
+		max: [ 10, 'Weight cannot be more than 10' ],
+		graphql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	quiz: {
 		type: mongoose.Schema.ObjectId,
@@ -39,9 +41,11 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	time_allocated: {
 		type: Number,
 		default: 30,
-		scalar: 'PositiveInt',
 		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
+		graphql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	difficulty: {
 		type: String,

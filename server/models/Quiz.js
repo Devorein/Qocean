@@ -16,8 +16,8 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		max: 10,
 		min: 0,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
@@ -25,16 +25,16 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 0,
 		min: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
 	average_quiz_time: {
 		type: Number,
 		default: 30,
-		scalar: 'PositiveInt',
 		graphql: {
+			scalar: 'PositiveInt',
 			writable: false
 		}
 	},
@@ -65,16 +65,16 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	total_questions: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
 	total_folders: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
@@ -96,20 +96,20 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	total_played: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
 	watchers: [
 		{
-			excludePartitions: [ 'Mixed' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
-			partitionMapper: {
-				Self: 'Others'
-			},
 			graphql: {
+				partitionMapper: {
+					Self: 'Others'
+				},
+				excludePartitions: [ 'Mixed' ],
 				writable: false
 			}
 		}

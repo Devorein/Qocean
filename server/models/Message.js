@@ -33,7 +33,9 @@ const MessageSchema = new mongoose.Schema({
 });
 
 MessageSchema.global_configs = {
-	global_excludePartitions: [ 'Others', 'Mixed' ]
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	}
 };
 
 module.exports.MessageSchema = MessageSchema;

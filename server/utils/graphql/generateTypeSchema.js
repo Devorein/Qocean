@@ -21,23 +21,25 @@ function createDefaultConfigs(baseSchema) {
 	if (!baseSchema.global_configs) baseSchema.global_configs = {};
 	const { global_configs } = baseSchema;
 
-	if (global_configs.global_partition === undefined)
-		global_configs.global_partition = {
-			base: true,
-			extra: false
-		};
 	if (global_configs.global_inputs === undefined)
 		global_configs.global_inputs = {
 			base: true,
 			extra: true
 		};
-	if (global_configs.global_excludePartitions === undefined) global_configs.global_excludePartitions = [];
+	if (global_configs.global_excludePartitions === undefined) {
+		global_configs.global_excludePartitions = {
+			base: [],
+			extra: true
+		};
+	} else {
+		const { base, extra } = global_configs.global_excludePartitions;
+		global_configs.global_excludePartitions = {
+			base: base === undefined ? [] : base,
+			extra: extra === undefined ? true : extra
+		};
+	}
 	if (global_configs.generateInterface === undefined) global_configs.generateInterface = true;
 	if (global_configs.appendParentKeyToEmbedTypes === undefined) global_configs.appendParentKeyToEmbedTypes = true;
-
-	global_configs.global_partition = {
-		...global_configs.global_partition
-	};
 
 	global_configs.global_inputs = {
 		...global_configs.global_inputs
@@ -54,8 +56,8 @@ module.exports = function(resource, baseSchema, dirname) {
 		const isArray = Array.isArray(value);
 		const target = isArray ? value[0] : value;
 		let type = null;
-		if (target.scalar) {
-			type = target.scalar;
+		if (graphql.scalar) {
+			type = graphql.scalar;
 			baseSchema.path(path).validate((v) => {
 				const value = global.Validators[type](v);
 				return value !== null && value !== undefined;
@@ -93,10 +95,10 @@ module.exports = function(resource, baseSchema, dirname) {
 		else if (resource === 'inbox') baseSchema = InboxSchema;
 		else if (resource === 'message') baseSchema = MessageSchema;
 	}
+
 	createDefaultConfigs(baseSchema);
 
 	const {
-		global_partition,
 		global_inputs,
 		global_excludePartitions,
 		generateInterface,
@@ -113,10 +115,10 @@ module.exports = function(resource, baseSchema, dirname) {
 	if (global_inputs.base) {
 		inputs[capitalizedResource] = {};
 	}
-	if (global_partition.base) {
+	if (global_excludePartitions.base !== true) {
 		types.base = {};
 		[ 'Mixed', 'Others', 'Self' ].forEach((part) => {
-			if (!global_excludePartitions.includes(part))
+			if (!global_excludePartitions.base.includes(part))
 				types.base[`${part}${capitalizedResource}`] = {
 					id: {
 						value: 'ID!',
@@ -138,16 +140,15 @@ module.exports = function(resource, baseSchema, dirname) {
 	}
 
 	// ? Combine base and extra type functions
-	function populateBaseTypes(
-		key,
-		value,
-		{ partition, variant, baseType = null, partitionMapper, excludePartitions = [], graphql, isRef = false }
-	) {
+	function populateBaseTypes(key, value, { variant, baseType = null, graphql }) {
 		const isArray = Array.isArray(value);
-		const { type: [ outerNN, innerNN ] } = graphql;
+		const { type: [ outerNN, innerNN ], excludePartitions, partitionMapper } = graphql;
 		function populate(part) {
-			const new_value = global_partition.base && partition ? partitionMapper[part] + value : value;
-			types.base[`${global_partition.base ? part : ''}${capitalizedResource}`][key] = {
+			const new_value =
+				global_excludePartitions.base !== true && excludePartitions !== true && variant.match(/(ref)/)
+					? partitionMapper[part] + value
+					: value;
+			types.base[`${global_excludePartitions.base ? part : ''}${capitalizedResource}`][key] = {
 				value: isArray
 					? `[${new_value}${innerNN ? '!' : ''}]${outerNN ? '!' : ''}`
 					: `${new_value}${outerNN ? '!' : ''}`,
@@ -156,27 +157,30 @@ module.exports = function(resource, baseSchema, dirname) {
 				excludePartitions
 			};
 		}
-		if (!global_excludePartitions.includes('Mixed') && !excludePartitions.includes('Mixed')) populate('Mixed');
-		if (!global_excludePartitions.includes('Others') && !excludePartitions.includes('Others')) populate('Others');
-		if (!global_excludePartitions.includes('Self') && !excludePartitions.includes('Self')) populate('Self');
 
-		if (generateInterface && !isRef && excludePartitions.length === 0) {
+		if (Array.isArray(excludePartitions)) {
+			if (!global_excludePartitions.base.includes('Mixed') && !excludePartitions.includes('Mixed')) populate('Mixed');
+			if (!global_excludePartitions.base.includes('Others') && !excludePartitions.includes('Others'))
+				populate('Others');
+			if (!global_excludePartitions.base.includes('Self') && !excludePartitions.includes('Self')) populate('Self');
+		}
+
+		if (
+			generateInterface &&
+			!variant.match(/(ref|type)/) &&
+			(excludePartitions === true || excludePartitions.length === 0)
+		) {
 			interface[key] = isArray
 				? `[${value}${innerNN ? '!' : ''}]${outerNN ? '!' : ''}`
 				: `${value}${outerNN ? '!' : ''}`;
 		}
 	}
 
-	function populateExtraTypes(
-		key,
-		value,
-		type,
-		{ partition, variant, baseType = null, excludePartitions = [], graphql }
-	) {
+	function populateExtraTypes(key, value, type, { variant, baseType = null, graphql }) {
 		const isArray = Array.isArray(value);
-		const { type: [ outerNN, innerNN ] } = graphql;
-		function populate(part) {
-			const shouldPartition = global_partition.extra || partition;
+		const { type: [ outerNN, innerNN ], excludePartitions } = graphql;
+		function populate(part = '') {
+			const shouldPartition = global_excludePartitions.extra;
 			const partitionKey = `${shouldPartition ? part : ''}${type}`;
 			if (!types.extra[partitionKey]) types.extra[partitionKey] = {};
 			types.extra[partitionKey][key] = {
@@ -187,37 +191,47 @@ module.exports = function(resource, baseSchema, dirname) {
 				baseType
 			};
 		}
-		if (!excludePartitions.includes('Mixed')) populate('Mixed');
-		if (!excludePartitions.includes('Others')) populate('Others');
-		if (!excludePartitions.includes('Self')) populate('Self');
+		if (Array.isArray(excludePartitions)) {
+			if (!global_excludePartitions.base.includes('Mixed') && !excludePartitions.includes('Mixed')) populate('Mixed');
+			if (!global_excludePartitions.base.includes('Others') && !excludePartitions.includes('Others'))
+				populate('Others');
+			if (!global_excludePartitions.base.includes('Self') && !excludePartitions.includes('Self')) populate('Self');
+		} else populate();
 	}
 
 	function extractFieldOptions(value, parentKey) {
 		const target = Array.isArray(value) ? value[0] : value;
-		const {
-			partition = parentKey ? false : true,
-			excludePartitions = [],
-			partitionMapper = {},
-			graphql = {},
-			required = false
-		} = target;
+		const { graphql = {}, required = false } = target;
 		if (!graphql.type) graphql.type = Array.isArray(value) ? [ true, true ] : [ true ];
 		if (!graphql.input) graphql.input = Array.isArray(value) ? [ true, true ] : [ true ];
 		if (graphql.writable === undefined) graphql.writable = global_inputs.base;
+		if (graphql.excludePartitions === undefined) graphql.excludePartitions = parentKey ? true : [];
+		if (graphql.partitionMapper === undefined) graphql.partitionMapper = {};
+
 		const newPartitionMapper = {
 			Mixed: 'Mixed',
 			Others: 'Others',
 			Self: 'Self',
-			...partitionMapper
+			...graphql.partitionMapper
 		};
 
+		graphql.partitionMapper = newPartitionMapper;
+
 		return {
-			partition,
-			excludePartitions,
-			partitionMapper: newPartitionMapper,
 			graphql,
 			required
 		};
+	}
+
+	function getVariant(value) {
+		let variant = 'scalar';
+		const isArray = Array.isArray(value);
+		value = isArray ? value[0] : value;
+		const instanceOfSchema = value instanceof mongoose.Schema;
+		if (instanceOfSchema) variant = 'type';
+		else if (value.enum) variant = 'enum';
+		else if (value.ref) variant = 'ref';
+		return variant + (isArray ? 's' : '');
 	}
 
 	function parseSchema(schema, parentKey, path = undefined) {
@@ -226,14 +240,13 @@ module.exports = function(resource, baseSchema, dirname) {
 			const instanceOfSchema = (isArray ? value[0] : value) instanceof mongoose.Schema;
 			const extractedFieldOptions = extractFieldOptions(value, parentKey);
 			let type = '',
-				variant = '';
-			if (instanceOfSchema) {
+				variant = getVariant(value);
+
+			if (variant.match(/(type)/)) {
 				type =
 					(appendParentKeyToEmbedTypes ? capitalizedResource + '_' : '') + (value.type || S(`_${key}`).camelize().s);
-				variant = isArray ? 'types' : 'type';
 				populateBaseTypes(key, isArray ? [ `${type}Type` ] : `${type}Type`, {
 					...extractedFieldOptions,
-					partition: (isArray ? value[0] : value).partition || false,
 					variant
 				});
 
@@ -243,44 +256,36 @@ module.exports = function(resource, baseSchema, dirname) {
 					value: `${type}Input!`
 				};
 				parseSchema(isArray ? value[0] : value, type, `${path ? path + '.' : ''}${key}`);
-			} else if (value.enum) {
+			} else if (variant === 'enum') {
 				type = parentKey
 					? `${parentKey.toUpperCase()}_${key.toUpperCase()}`
 					: (appendParentKeyToEmbedTypes ? capitalizedResource.toUpperCase() + '_' : '') + key.toUpperCase();
 				enums[type] = value.enum;
 				variant = 'enum';
-				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, partition: false, variant });
-			} else if (Array.isArray(value)) {
-				if (value[0].ref) {
-					variant = 'refs';
-					if (!parentKey)
-						populateBaseTypes(key, [ `${value[0].ref}Type` ], {
-							...extractedFieldOptions,
-							variant,
-							baseType: value[0].ref,
-							isRef: true
-						});
-					type = `[ID${extractedFieldOptions.graphql.input[1] ? '!' : ''}]`;
-				} else {
-					variant = 'scalars';
-					type = parseScalarType(value, extractedFieldOptions, `${path ? path + '.' : ''}${key}`);
-					if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, partition: false, variant });
-				}
-			} else if (!Array.isArray(value) && value.ref) {
-				variant = 'ref';
+				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, variant });
+			} else if (variant === 'refs') {
 				if (!parentKey)
-					populateBaseTypes(key, `${global_partition.base ? '' : 'Self'}${value.ref}Type`, {
+					populateBaseTypes(key, [ `${value[0].ref}Type` ], {
+						...extractedFieldOptions,
+						variant,
+						baseType: value[0].ref,
+						isRef: true
+					});
+				type = `[ID${extractedFieldOptions.graphql.input[1] ? '!' : ''}]`;
+			} else if (variant === 'ref') {
+				if (!parentKey)
+					populateBaseTypes(key, `${value.ref}Type`, {
 						...extractedFieldOptions,
 						variant,
 						baseType: value.ref,
 						isRef: true
 					});
 				type = 'ID';
-			} else {
+			} else if (variant.match(/(scalar)/)) {
 				type = parseScalarType(value, extractedFieldOptions, `${path ? path + '.' : ''}${key}`);
-				variant = 'scalar';
-				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, partition: false, variant });
+				if (!parentKey) populateBaseTypes(key, type, { ...extractedFieldOptions, variant });
 			}
+
 			const { graphql: { input: [ outerNN ], writable }, required } = extractedFieldOptions;
 			if (!instanceOfSchema && parentKey) {
 				const type_key = schema.type
@@ -288,7 +293,6 @@ module.exports = function(resource, baseSchema, dirname) {
 					: parentKey;
 				populateExtraTypes(key, type, type_key, {
 					...extractedFieldOptions,
-					partition: schema.partition || false,
 					variant
 				});
 				if (writable) {

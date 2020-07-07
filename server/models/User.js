@@ -14,21 +14,27 @@ const UserSchema = new mongoose.Schema({
 		minlength: [ 3, 'User name cant be less than 3 characters long' ],
 		maxlength: [ 18, 'User name cant be more than 18 characters long' ],
 		unique: true,
-		scalar: 'Username'
+		graphql: {
+			scalar: 'Username'
+		}
 	},
 	email: {
 		type: String,
-		scalar: 'EmailAddress',
 		required: [ true, 'Please add an email' ],
 		unique: true,
-		match: [ /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email' ]
+		match: [ /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email' ],
+		graphql: {
+			scalar: 'EmailAddress'
+		}
 	},
 	password: {
 		type: String,
 		required: [ true, 'Please add a password' ],
 		minlength: [ 6, 'Password must be greater than six characters' ],
 		select: false,
-		scalar: 'Password'
+		graphql: {
+			scalar: 'Password'
+		}
 	},
 	resetPasswordToken: {
 		type: String,
@@ -52,32 +58,32 @@ const UserSchema = new mongoose.Schema({
 	total_folders: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
 	total_questions: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
 	total_quizzes: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
 	total_environments: {
 		type: Number,
 		default: 0,
-		scalar: 'NonNegativeInt',
 		graphql: {
+			scalar: 'NonNegativeInt',
 			writable: false
 		}
 	},
@@ -132,37 +138,37 @@ const UserSchema = new mongoose.Schema({
 	],
 	image: { type: String, default: 'none.png' },
 	inbox: {
-		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox',
 		graphql: {
+			excludePartitions: [ 'Mixed', 'Others' ],
 			writable: false
 		}
 	},
 	reports: [
 		{
-			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Report',
 			graphql: {
+				excludePartitions: [ 'Mixed', 'Others' ],
 				writable: false
 			}
 		}
 	],
 	watchlist: {
-		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist',
 		graphql: {
+			excludePartitions: [ 'Mixed', 'Others' ],
 			writable: false
 		}
 	},
 	filtersort: [
 		{
-			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Filtersort',
 			graphql: {
+				excludePartitions: [ 'Mixed', 'Others' ],
 				writable: false
 			}
 		}
