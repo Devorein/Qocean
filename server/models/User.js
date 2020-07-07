@@ -138,37 +138,37 @@ const UserSchema = new mongoose.Schema({
 	],
 	image: { type: String, default: 'none.png' },
 	inbox: {
-		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox',
 		graphql: {
+			excludePartitions: [ 'Mixed', 'Others' ],
 			writable: false
 		}
 	},
 	reports: [
 		{
-			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Report',
 			graphql: {
+				excludePartitions: [ 'Mixed', 'Others' ],
 				writable: false
 			}
 		}
 	],
 	watchlist: {
-		excludePartitions: [ 'Mixed', 'Others' ],
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist',
 		graphql: {
+			excludePartitions: [ 'Mixed', 'Others' ],
 			writable: false
 		}
 	},
 	filtersort: [
 		{
-			excludePartitions: [ 'Mixed', 'Others' ],
 			type: mongoose.Schema.ObjectId,
 			ref: 'Filtersort',
 			graphql: {
+				excludePartitions: [ 'Mixed', 'Others' ],
 				writable: false
 			}
 		}

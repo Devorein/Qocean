@@ -140,13 +140,9 @@ module.exports = function(resource, baseSchema, dirname) {
 	}
 
 	// ? Combine base and extra type functions
-	function populateBaseTypes(
-		key,
-		value,
-		{ variant, baseType = null, partitionMapper, excludePartitions = [], graphql }
-	) {
+	function populateBaseTypes(key, value, { variant, baseType = null, partitionMapper, graphql }) {
 		const isArray = Array.isArray(value);
-		const { type: [ outerNN, innerNN ] } = graphql;
+		const { type: [ outerNN, innerNN ], excludePartitions } = graphql;
 		function populate(part) {
 			const new_value =
 				global_excludePartitions.base !== true && excludePartitions !== true && variant.match(/(ref)/)
@@ -180,9 +176,9 @@ module.exports = function(resource, baseSchema, dirname) {
 		}
 	}
 
-	function populateExtraTypes(key, value, type, { variant, baseType = null, excludePartitions = [], graphql }) {
+	function populateExtraTypes(key, value, type, { variant, baseType = null, graphql }) {
 		const isArray = Array.isArray(value);
-		const { type: [ outerNN, innerNN ] } = graphql;
+		const { type: [ outerNN, innerNN ], excludePartitions } = graphql;
 		function populate(part = '') {
 			const shouldPartition = global_excludePartitions.extra;
 			const partitionKey = `${shouldPartition ? part : ''}${type}`;
@@ -205,10 +201,11 @@ module.exports = function(resource, baseSchema, dirname) {
 
 	function extractFieldOptions(value, parentKey) {
 		const target = Array.isArray(value) ? value[0] : value;
-		const { excludePartitions = parentKey ? true : [], partitionMapper = {}, graphql = {}, required = false } = target;
+		const { partitionMapper = {}, graphql = {}, required = false } = target;
 		if (!graphql.type) graphql.type = Array.isArray(value) ? [ true, true ] : [ true ];
 		if (!graphql.input) graphql.input = Array.isArray(value) ? [ true, true ] : [ true ];
 		if (graphql.writable === undefined) graphql.writable = global_inputs.base;
+		if (graphql.excludePartitions === undefined) graphql.excludePartitions = parentKey ? true : [];
 		const newPartitionMapper = {
 			Mixed: 'Mixed',
 			Others: 'Others',
@@ -217,7 +214,6 @@ module.exports = function(resource, baseSchema, dirname) {
 		};
 
 		return {
-			excludePartitions,
 			partitionMapper: newPartitionMapper,
 			graphql,
 			required
