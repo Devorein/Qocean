@@ -7,28 +7,19 @@ module.exports = function(resource) {
 	const target = global.Schema[capitalizedResource].options;
 	let mutations = `
     "Create a new ${resource}"
-    create${capitalizedResource}(data: ${capitalizedResource}Input!): ${target.global_partition.base
-		? 'Self'
-		: ''}${capitalizedResource}Type!
+    create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}Type!
 
     "Update single ${resource}"
-    update${capitalizedResource}(data: ${capitalizedResource}Input!,id: ID!): ${target.global_partition.base
-		? 'Self'
-		: ''}${capitalizedResource}Type!
+    update${capitalizedResource}(data: ${capitalizedResource}Input!,id: ID!): Self${capitalizedResource}Type!
 
     "Update multiple ${pluralize(resource, 2)}"
-    update${pluralizedcapitalizedResource}(data: [${capitalizedResource}Input!],ids: [ID!]!): [${target.global_partition
-		.base
-		? 'Self'
-		: ''}${capitalizedResource}Type!]!
+    update${pluralizedcapitalizedResource}(data: [${capitalizedResource}Input!],ids: [ID!]!): [Self${capitalizedResource}Type!]!
 
     "Delete single ${resource}"
-    delete${capitalizedResource}(id: ID!): ${target.global_partition.base ? 'Self' : ''}${capitalizedResource}Type!
+    delete${capitalizedResource}(id: ID!): Self${capitalizedResource}Type!
 
     "Delete multiple ${pluralize(resource, 2)}"
-    delete${pluralizedcapitalizedResource}(ids: [ID!]): [${target.global_partition.base
-		? 'Self'
-		: ''}${capitalizedResource}Type!]!
+    delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}Type!]!
   `;
 	if (resource.match(/(quiz|folder)/)) {
 		mutations += `

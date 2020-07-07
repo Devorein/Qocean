@@ -31,7 +31,9 @@ const WatchlistSchema = new mongoose.Schema({
 
 exports.WatchlistSchema = WatchlistSchema;
 WatchlistSchema.global_configs = {
-	global_excludePartitions: [ 'Others', 'Mixed' ],
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	},
 	global_inputs: {
 		base: false
 	}

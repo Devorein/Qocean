@@ -57,6 +57,8 @@ const FilterSortSchema = new mongoose.Schema({
 
 exports.FilterSortSchema = FilterSortSchema;
 FilterSortSchema.global_configs = {
-	global_excludePartitions: [ 'Others', 'Mixed' ]
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	}
 };
 module.exports.FilterSortModel = mongoose.model('Filtersort', FilterSortSchema);
