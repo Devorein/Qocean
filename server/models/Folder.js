@@ -53,6 +53,10 @@ const FolderSchema = extendSchema(ResourceSchema, {
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
 			graphql: {
+				partitionMapper: {
+					Self: 'Others'
+				},
+				excludePartitions: [ 'Mixed' ],
 				writable: false
 			}
 		}

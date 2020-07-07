@@ -105,10 +105,10 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
-			partitionMapper: {
-				Self: 'Others'
-			},
 			graphql: {
+				partitionMapper: {
+					Self: 'Others'
+				},
 				excludePartitions: [ 'Mixed' ],
 				writable: false
 			}
