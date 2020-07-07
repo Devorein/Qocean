@@ -38,11 +38,41 @@ const ReportSchema = new mongoose.Schema({
 			writable: false
 		}
 	},
-	average_points: { type: Number, scalar: 'NonNegativeInt', required: true },
-	average_time: { type: Number, scalar: 'NonNegativeInt', required: true },
-	correct: { type: Number, scalar: 'NonNegativeInt', required: true },
-	incorrect: { type: Number, scalar: 'NonNegativeInt', required: true },
-	total: { type: Number, required: true, scalar: 'PositiveInt' },
+	average_points: {
+		type: Number,
+		required: true,
+		graphql: {
+			scalar: 'NonNegativeInt'
+		}
+	},
+	average_time: {
+		type: Number,
+		required: true,
+		graphql: {
+			scalar: 'NonNegativeInt'
+		}
+	},
+	correct: {
+		type: Number,
+		required: true,
+		graphql: {
+			scalar: 'NonNegativeInt'
+		}
+	},
+	incorrect: {
+		type: Number,
+		required: true,
+		graphql: {
+			scalar: 'NonNegativeInt'
+		}
+	},
+	total: {
+		type: Number,
+		required: true,
+		graphql: {
+			scalar: 'PositiveInt'
+		}
+	},
 	created_at: {
 		type: Date,
 		default: Date.now(),

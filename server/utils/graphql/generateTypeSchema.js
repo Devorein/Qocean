@@ -54,8 +54,8 @@ module.exports = function(resource, baseSchema, dirname) {
 		const isArray = Array.isArray(value);
 		const target = isArray ? value[0] : value;
 		let type = null;
-		if (target.scalar) {
-			type = target.scalar;
+		if (graphql.scalar) {
+			type = graphql.scalar;
 			baseSchema.path(path).validate((v) => {
 				const value = global.Validators[type](v);
 				return value !== null && value !== undefined;
