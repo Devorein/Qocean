@@ -14,6 +14,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs: ExternalTypeDefs, resolvers: ExternalResolvers } = require('graphql-scalars');
+const S = require('string');
 
 const { typeDefs } = require('./schema.js');
 const AuthSchema = require('./schemas/Auth.js');
@@ -39,16 +40,13 @@ const FilterSortResolvers = require('./resolvers/filtersort');
 const ReportResolvers = require('./resolvers/report');
 const InboxResolvers = require('./resolvers/inbox');
 const MessaggeResolvers = require('./resolvers/message');
-const { UserModel } = require('./models/User');
-const { QuizModel } = require('./models/Quiz');
-const { QuestionModel } = require('./models/Question');
-const { FolderModel } = require('./models/Folder');
-const { EnvironmentModel } = require('./models/Environment');
-const WatchlistModel = require('./models/Watchlist');
-const FilterSortModel = require('./models/FilterSort');
-const ReportModel = require('./models/Report');
-const InboxModel = require('./models/Inbox');
-const MessageModel = require('./models/Message');
+
+const models = require('./models');
+
+const Models = {};
+Object.entries(models).forEach(([ key, [ model ] ]) => {
+	Models[S(key).capitalize().s] = model;
+});
 
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
@@ -174,16 +172,7 @@ const GRAPHQL_SERVER = new ApolloServer({
 		console.log(GRAPHQL_OPS[operationName], operationName, variables);
 		return {
 			user: req.user,
-			User: UserModel,
-			Quiz: QuizModel,
-			Question: QuestionModel,
-			Folder: FolderModel,
-			Environment: EnvironmentModel,
-			Watchlist: WatchlistModel,
-			FilterSort: FilterSortModel,
-			Report: ReportModel,
-			Inbox: InboxModel,
-			Message: MessageModel,
+			...Models,
 			req,
 			res
 		};
