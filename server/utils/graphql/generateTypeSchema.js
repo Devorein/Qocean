@@ -14,7 +14,15 @@ const { WatchlistSchema } = require('../../models/Watchlist');
 const { InboxSchema } = require('../../models/Inbox');
 const { MessageSchema } = require('../../models/Message');
 
+const generateTypeStr = require('./generateTypeStr');
+
 global.Schema = {};
+
+function populateObjDefaultValue(obj, fields) {
+	Object.entries(fields).forEach(([ key, value ]) => {
+		if (obj[key] === undefined) obj[key] = value;
+	});
+}
 
 function createDefaultConfigs(baseSchema) {
 	// ? Refactor to use a utility function
@@ -49,9 +57,6 @@ function createDefaultConfigs(baseSchema) {
 module.exports = function(resource, baseSchema, dirname) {
 	const capitalizedResource = S(resource).capitalize().s;
 
-	const types = {};
-	const fields = {};
-
 	function parseScalarType(value, { graphql }, path) {
 		const isArray = Array.isArray(value);
 		const target = isArray ? value[0] : value;
@@ -82,7 +87,6 @@ module.exports = function(resource, baseSchema, dirname) {
 		return type;
 	}
 
-	let schemaStr = ``;
 	if (!baseSchema) {
 		if (resource === 'user') baseSchema = UserSchema;
 		else if (resource === 'quiz') baseSchema = QuizSchema;
@@ -107,6 +111,8 @@ module.exports = function(resource, baseSchema, dirname) {
 
 	const inputs = {};
 	const enums = {};
+	const types = {};
+	const fields = {};
 	const interfaces = generateInterface
 		? {
 				[capitalizedResource]: {
@@ -116,9 +122,7 @@ module.exports = function(resource, baseSchema, dirname) {
 				}
 			}
 		: {};
-	if (global_inputs.base) {
-		inputs[capitalizedResource + 'Input'] = {};
-	}
+	if (global_inputs.base) inputs[capitalizedResource + 'Input'] = {};
 	if (global_excludePartitions.base !== true) {
 		types.base = {};
 		[ 'Mixed', 'Others', 'Self' ].forEach((part) => {
@@ -136,27 +140,8 @@ module.exports = function(resource, baseSchema, dirname) {
 		};
 	types.extra = {};
 
-	function valueGenerator({ comment, startStr, obj }) {
-		let objStr = `# ${comment} \n`;
-		Object.entries(obj).forEach(([ key, value ]) => {
-			const valueEntries = Object.entries(value);
-			if (valueEntries.length !== 0) {
-				if (typeof startStr === 'function') objStr += startStr({ key, value });
-				else objStr += `${startStr} ${key}{\n`;
-				if (Array.isArray(value)) {
-					objStr += `\t${value.join('\n\t')}\n}\n\n`;
-				} else {
-					valueEntries.forEach(([ innerKey, innerValue ], index, arr) => {
-						objStr += `${'\t' + innerKey + ': ' + innerValue.value}\n${index === arr.length - 1 ? '}\n' : ''}`;
-					});
-				}
-			}
-		});
-		return objStr + '\n';
-	}
-
 	// ? Combine base and extra type functions
-	function populateBaseTypes(key, value, { variant, baseType = null, graphql }, isArray) {
+	function populateBaseTypes(key, value, { variant, baseType = null, graphql, isArray }) {
 		const { excludePartitions, partitionMapper } = graphql;
 		function populate(part) {
 			let new_value =
@@ -191,7 +176,7 @@ module.exports = function(resource, baseSchema, dirname) {
 			};
 	}
 
-	function populateExtraTypes(parentKey, field_key, field_type, { variant, baseType = null, graphql }) {
+	function populateExtraTypes(parentKey, field_key, field_type, { variant, baseType = null }) {
 		if (!types.extra[parentKey]) types.extra[parentKey] = {};
 		types.extra[parentKey][field_key] = {
 			value: field_type,
@@ -202,11 +187,13 @@ module.exports = function(resource, baseSchema, dirname) {
 
 	function extractFieldOptions(value, parentKey, isArray) {
 		const { graphql = {}, required = false } = value;
-		if (!graphql.type) graphql.type = isArray ? [ true, true ] : [ true ];
-		if (!graphql.input) graphql.input = isArray ? [ true, true ] : [ true ];
-		if (graphql.writable === undefined) graphql.writable = global_inputs.base;
-		if (graphql.excludePartitions === undefined) graphql.excludePartitions = parentKey ? true : [];
-		if (graphql.partitionMapper === undefined) graphql.partitionMapper = {};
+		populateObjDefaultValue(graphql, {
+			type: isArray ? [ true, true ] : [ true ],
+			input: isArray ? [ true, true ] : [ true ],
+			writable: global_inputs.base,
+			excludePartitions: parentKey ? true : [],
+			partitionMapper: {}
+		});
 
 		const newPartitionMapper = {
 			Mixed: 'Mixed',
@@ -276,6 +263,8 @@ module.exports = function(resource, baseSchema, dirname) {
 			const variant = generateVariant(value, isArray);
 			const { graphql: { writable } } = extractedFieldOptions;
 			let { field_type, input_type, baseType } = generateType(variant, value, extractedFieldOptions, key, path);
+			let input_key = parentKey ? parentKey.replace('Type', 'Input') : capitalizedResource + 'Input';
+
 			extractedFieldOptions.variant = variant;
 			extractedFieldOptions.baseType = baseType;
 			extractedFieldOptions.isArray = isArray;
@@ -285,9 +274,7 @@ module.exports = function(resource, baseSchema, dirname) {
 				extractedFieldOptions
 			);
 
-			let input_key = parentKey ? parentKey.replace('Type', 'Input') : capitalizedResource + 'Input';
-
-			if (!parentKey) populateBaseTypes(key, transformed_field_type, extractedFieldOptions, isArray);
+			if (!parentKey) populateBaseTypes(key, transformed_field_type, extractedFieldOptions);
 			else
 				populateExtraTypes(
 					parentKey,
@@ -320,9 +307,11 @@ module.exports = function(resource, baseSchema, dirname) {
 
 	if (generateInterface) typeArrs.splice(1, 0, { comment: 'Interfaces', startStr: 'interface', obj: interfaces });
 
-	typeArrs.forEach((typeArr) => (schemaStr += valueGenerator(typeArr)));
+	let schemaStr = ``;
+	typeArrs.forEach((typeArr) => (schemaStr += generateTypeStr(typeArr)));
 
 	if (!global.Schema[capitalizedResource]) global.Schema[capitalizedResource] = {};
+
 	const schemaObj = {
 		interfaces,
 		inputs,
