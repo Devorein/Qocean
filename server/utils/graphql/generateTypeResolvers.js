@@ -9,7 +9,6 @@ module.exports = function(resource) {
 
 	const result = {};
 	Object.entries(target).forEach(([ basekey, value ]) => {
-		basekey = basekey + 'Type';
 		result[basekey] = {};
 		Object.entries(value).forEach(([ key, { value, variant, baseType, excludePartitions } ]) => {
 			if (variant.match(/(ref|refs)/)) {
