@@ -20,11 +20,6 @@ function createDefaultConfigs(baseSchema) {
 	if (!baseSchema.global_configs) baseSchema.global_configs = {};
 	const { global_configs } = baseSchema;
 
-	if (global_configs.global_inputs === undefined)
-		global_configs.global_inputs = {
-			base: true,
-			extra: true
-		};
 	if (global_configs.global_excludePartitions === undefined) {
 		global_configs.global_excludePartitions = {
 			base: [],
@@ -37,8 +32,15 @@ function createDefaultConfigs(baseSchema) {
 			extra: extra === undefined ? true : extra
 		};
 	}
-	if (global_configs.generateInterface === undefined) global_configs.generateInterface = true;
-	if (global_configs.appendRTypeToEmbedTypesKey === undefined) global_configs.appendRTypeToEmbedTypesKey = true;
+
+	populateObjDefaultValue(global_configs, {
+		generateInterface: true,
+		appendRTypeToEmbedTypesKey: true,
+		global_inputs: {
+			base: true,
+			extra: true
+		}
+	});
 
 	global_configs.global_inputs = {
 		...global_configs.global_inputs

@@ -136,7 +136,6 @@ QuizSchema.statics.add = async function(quizId, field, id) {
 
 QuizSchema.statics.remove = async function(quizId, field, id) {
 	const quiz = await this.findById(quizId);
-	console.log(quizId, field);
 	quiz[field] = quiz[field].filter((_id) => _id.toString() !== id.toString());
 	quiz[`total_${field}`] = quiz[field].length;
 	await quiz.save();
