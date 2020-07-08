@@ -3,16 +3,7 @@ const path = require('path');
 const S = require('string');
 const mongoose = require('mongoose');
 
-const { UserSchema } = require('../../models/User');
-const { QuizSchema } = require('../../models/Quiz');
-const { QuestionSchema } = require('../../models/Question');
-const { FolderSchema } = require('../../models/Folder');
-const { EnvironmentSchema } = require('../../models/Environment');
-const { ReportSchema } = require('../../models/Report');
-const { FilterSortSchema } = require('../../models/FilterSort');
-const { WatchlistSchema } = require('../../models/Watchlist');
-const { InboxSchema } = require('../../models/Inbox');
-const { MessageSchema } = require('../../models/Message');
+const ModelSchemas = require('../../models');
 
 const generateTypeStr = require('./generateTypeStr');
 
@@ -87,18 +78,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		return type;
 	}
 
-	if (!baseSchema) {
-		if (resource === 'user') baseSchema = UserSchema;
-		else if (resource === 'quiz') baseSchema = QuizSchema;
-		else if (resource === 'question') baseSchema = QuestionSchema;
-		else if (resource === 'folder') baseSchema = FolderSchema;
-		else if (resource === 'environment') baseSchema = EnvironmentSchema;
-		else if (resource === 'report') baseSchema = ReportSchema;
-		else if (resource === 'filtersort') baseSchema = FilterSortSchema;
-		else if (resource === 'watchlist') baseSchema = WatchlistSchema;
-		else if (resource === 'inbox') baseSchema = InboxSchema;
-		else if (resource === 'message') baseSchema = MessageSchema;
-	}
+	if (!baseSchema) baseSchema = ModelSchemas[resource][1];
 
 	createDefaultConfigs(baseSchema);
 
