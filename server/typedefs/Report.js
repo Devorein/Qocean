@@ -1,10 +1,12 @@
 const { gql } = require('apollo-server-express');
-const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
 
-module.exports = gql`
-	${generateTypeSchema('report')}
-
-	extend type Mutation {
-		createReport(data: ReportInput!): SelfReportType!
+module.exports = {
+	typedef: gql`
+		extend type Mutation {
+			createReport(data: ReportInput!): SelfReportType!
+		}
+	`,
+	generate: {
+		type: true
 	}
-`;
+};

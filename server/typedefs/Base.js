@@ -14,82 +14,85 @@ validators.Username = Username.serialize;
 global.Validators = validators;
 Object.freeze(global.Validators);
 
-module.exports = gql`
-	scalar Password
+module.exports = {
+	typedef: gql`
+		scalar Password
 
-	scalar Username
+		scalar Username
 
-	enum QuestionTypeEnum {
-		FIB
-		Snippet
-		MCQ
-		MS
-		FC
-		TF
-	}
+		enum QuestionTypeEnum {
+			FIB
+			Snippet
+			MCQ
+			MS
+			FC
+			TF
+		}
 
-	enum IconColorEnum {
-		Red
-		Orange
-		Yellow
-		Green
-		Blue
-		Indigo
-		Violet
-	}
+		enum IconColorEnum {
+			Red
+			Orange
+			Yellow
+			Green
+			Blue
+			Indigo
+			Violet
+		}
 
-	enum QuestionDifficultyEnum {
-		Beginner
-		Intermediate
-		Advanced
-	}
+		enum QuestionDifficultyEnum {
+			Beginner
+			Intermediate
+			Advanced
+		}
 
-	enum ResourceTypeEnum {
-		User
-		Folder
-		Quiz
-		Question
-		Environment
-	}
+		enum ResourceTypeEnum {
+			User
+			Folder
+			Quiz
+			Question
+			Environment
+		}
 
-	type Query {
-		_empty: Boolean
-	}
+		type Query {
+			_empty: Boolean
+		}
 
-	type Mutation {
-		_empty: Boolean
-	}
+		type Mutation {
+			_empty: Boolean
+		}
 
-	type UsernameAndId {
-		username: String!
-		id: ID!
-	}
+		type UsernameAndId {
+			username: String!
+			id: ID!
+		}
 
-	type NameAndId {
-		name: String!
-		id: ID!
-	}
+		type NameAndId {
+			name: String!
+			id: ID!
+		}
 
-	type RatingsOutput {
-		id: ID!
-		prevRatings: Float!
-		newRatings: Float!
-		raters: Int!
-	}
+		type RatingsOutput {
+			id: ID!
+			prevRatings: Float!
+			newRatings: Float!
+			raters: Int!
+		}
 
-	input PaginationInput {
-		page: Int!
-		limit: Int!
-		sort: String
-		filter: JSON
-	}
+		input PaginationInput {
+			page: Int!
+			limit: Int!
+			sort: String
+			filter: JSON
+		}
 
-	input RatingsInput {
-		id: ID!
-		ratings: Float!
-	}
+		input RatingsInput {
+			id: ID!
+			ratings: Float!
+		}
 
-	type Status {
-		success: Boolean!
-	}
-`;
+		type Status {
+			success: Boolean!
+		}
+	`,
+	generate: false
+};

@@ -1,65 +1,65 @@
 const { gql } = require('apollo-server-express');
 
-const generateQueries = require('../utils/graphql/generateQuerySchemas');
-const generateTypeSchema = require('../utils/graphql/generateTypeSchema');
+module.exports = {
+	typedef: gql`
+    type TagOutput{
+      uniqueWithoutColor: [String]!
+      uniqueWithColor: [String]!
+      originalWithoutColor: [String]!
+      originalWithColor: [String]!
+    }
 
-module.exports = gql`
+    input UpdateUserDetailsInput{
+      name: String
+      email: EmailAddress
+      username: Username
+      image: String
+    }
 
-  ${generateTypeSchema('user')}
-  
-  type TagOutput{
-    uniqueWithoutColor: [String]!
-    uniqueWithColor: [String]!
-    originalWithoutColor: [String]!
-    originalWithColor: [String]!
-  }
+    input updateUserPasswordInput{
+      currentPassword: Password!
+      newPassword: Password!
+    }
 
-  input UpdateUserDetailsInput{
-    name: String
-    email: EmailAddress
-    username: Username
-    image: String
-  }
+    input TagConfigInput{
+      uniqueWithoutColor: Boolean
+      originalWithoutColor: Boolean
+      uniqueWithColor: Boolean
+      originalWithColor: Boolean
+    }
 
-  input updateUserPasswordInput{
-    currentPassword: Password!
-    newPassword: Password!
-  }
+    extend type Query {
 
-  input TagConfigInput{
-    uniqueWithoutColor: Boolean
-		originalWithoutColor: Boolean
-		uniqueWithColor: Boolean
-		originalWithColor: Boolean
-  }
+      "Get all mixed users tags (U)"
+      getAllSelfUsersTags(config:TagConfigInput): TagOutput!
 
-	extend type Query {
-    ${generateQueries('user')}
+      "Get all mixed users tags (U)"
+      getAllMixedUsersTags(config:TagConfigInput): TagOutput!
 
-    "Get all mixed users tags (U)"
-    getAllSelfUsersTags(config:TagConfigInput): TagOutput!
+      "Get all other users tags"
+      getAllOthersUsersTags(config: TagConfigInput): TagOutput!
 
-    "Get all mixed users tags (U)"
-    getAllMixedUsersTags(config:TagConfigInput): TagOutput!
+      "Get others users by id tags"
+      getOthersUsersByIdTags(id:ID!,config:TagConfigInput): TagOutput! 
 
-    "Get all other users tags"
-    getAllOthersUsersTags(config: TagConfigInput): TagOutput!
+      "Get self User"
+      getSelfUser: SelfUserType!
+    }
 
-    "Get others users by id tags"
-    getOthersUsersByIdTags(id:ID!,config:TagConfigInput): TagOutput! 
+    extend type Mutation{
+      "Update user Details"
+      updateUserDetails(data: UpdateUserDetailsInput!): SelfUserType!
 
-    "Get self User"
-    getSelfUser: SelfUserType!
+      "Update user password"
+      updateUserPassword(data:updateUserPasswordInput!): AuthPayload!
+
+      "Delete user"
+      deleteUser: SelfUserType!
+    }
+  `,
+	generate: {
+		type: true,
+		query: true,
+		mutation: false
 	}
-
-  extend type Mutation{
-    "Update user Details"
-    updateUserDetails(data: UpdateUserDetailsInput!): SelfUserType!
-
-    "Update user password"
-    updateUserPassword(data:updateUserPasswordInput!): AuthPayload!
-
-    "Delete user"
-    deleteUser: SelfUserType!
-  }
-`;
+};

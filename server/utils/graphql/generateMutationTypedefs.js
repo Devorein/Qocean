@@ -31,5 +31,5 @@ module.exports = function(resource) {
     `;
 	}
 
-	return mutations;
+	return `extend type Mutation {\n${mutations}\n}`;
 };

@@ -1,32 +1,73 @@
 const { typeDefs: ExternalTypedefs } = require('graphql-scalars');
+const { gql } = require('apollo-server-express');
 
-const AuthTypedefs = require('./Auth.js');
-const UserTypedefs = require('./User.js');
-const QuizTypedefs = require('./Quiz.js');
-const QuestionTypedefs = require('./Question.js');
-const FolderTypedefs = require('./Folder.js');
-const EnvironmentTypedefs = require('./Environment.js');
-const WatchlistTypedefs = require('./Watchlist.js');
-const FiltersortTypedefs = require('./FilterSort.js');
-const ReportTypedefs = require('./Report.js');
-const InboxTypedefs = require('./Inbox.js');
-const MessageTypedefs = require('./Message.js');
-const BaseTypedefs = require('./Base.js');
+const generateQueries = require('../utils/graphql/generateQueryTypedefs');
+const generateMutations = require('../utils/graphql/generateMutationTypedefs');
+const generateTypeTypedef = require('../utils/graphql/generateTypeTypedefs');
 
-global.Typedefs = {};
+const typedefs = {};
 
-module.exports = {
-	Base: BaseTypedefs,
-	Auth: AuthTypedefs,
-	User: UserTypedefs,
-	Quiz: QuizTypedefs,
-	Question: QuestionTypedefs,
-	Folder: FolderTypedefs,
-	Environment: EnvironmentTypedefs,
-	Watchlist: WatchlistTypedefs,
-	Filtersort: FiltersortTypedefs,
-	Report: ReportTypedefs,
-	Inbox: InboxTypedefs,
-	Message: MessageTypedefs,
-	External: ExternalTypedefs
-};
+function addTypeDefs(typedef, typeTypeDefs) {
+	typedef.definitions.unshift(...gql`${typeTypeDefs}`.definitions);
+}
+
+function addQueryDefs(typedefs, queryTypeDefs) {
+	const queryObjTypeExtension = typedefs.definitions.find((typedef) => {
+		return typedef.kind === 'ObjectTypeExtension' && typedef.name.value === 'Query';
+	});
+	if (queryObjTypeExtension) queryObjTypeExtension.fields.push(...gql`${queryTypeDefs}`.definitions[0].fields);
+	else typedefs.definitions.push(gql`${queryTypeDefs}`);
+}
+
+function addMutationDefs(typedefs, queryTypeDefs) {
+	const mutationObjTypeExtension = typedefs.definitions.find((typedef) => {
+		return typedef.kind === 'ObjectTypeExtension' && typedef.name.value === 'Mutation';
+	});
+	if (mutationObjTypeExtension) mutationObjTypeExtension.fields.push(...gql`${queryTypeDefs}`.definitions[0].fields);
+	else typedefs.definitions.push(gql`${queryTypeDefs}`);
+}
+
+function transformTypeDefs(typedef, generate, resource) {
+	if (generate !== false) {
+		if (generate === true)
+			generate = {
+				type: true,
+				query: true,
+				mutation: true
+			};
+		const { type = false, query = false, mutation = false } = generate;
+		if (type) addTypeDefs(typedef, generateTypeTypedef(resource));
+		if (query) addQueryDefs(typedef, generateQueries(resource));
+		if (mutation) addMutationDefs(typedef, generateMutations(resource));
+		return typedef;
+	} else return typedef;
+}
+
+(() => {
+	[
+		'Base',
+		'Auth',
+		'User',
+		'Quiz',
+		'Question',
+		'Folder',
+		'Environment',
+		'Watchlist',
+		'Filtersort',
+		'Report',
+		'Inbox',
+		'Message'
+	].forEach((resource) => {
+		let { typedef, generate } = require(`./${resource}.js`);
+		if (typedef === null)
+			typedef = {
+				kind: 'Document',
+				definitions: []
+			};
+		typedefs[resource] = transformTypeDefs(typedef, generate, resource.toLowerCase());
+	});
+})();
+
+typedefs.External = ExternalTypedefs;
+
+module.exports = typedefs;
