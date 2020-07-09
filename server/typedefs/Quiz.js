@@ -1,7 +1,6 @@
 const { gql } = require('apollo-server-express');
 
-module.exports = {
-	typedef: gql`
+module.exports = gql`
 
   type QuizQuestionStats{
     questions: [QuestionStats!]!
@@ -22,6 +21,4 @@ module.exports = {
     "Update quiz played times"
     updateQuizPlayedTimes(ids:[ID!]!): NonNegativeInt!
   }
-`,
-	generate: true
-};
+`;

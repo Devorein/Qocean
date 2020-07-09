@@ -44,14 +44,8 @@ function createDefaultConfigs(baseSchema) {
 	};
 }
 
-module.exports = function(resource, baseSchema, dirname) {
+module.exports = function(resource, baseSchema, Validators) {
 	const capitalizedResource = S(resource).capitalize().s;
-	populateObjDefaultValue(global, {
-		Schema: {}
-	});
-	populateObjDefaultValue(global.Schema, {
-		[capitalizedResource]: {}
-	});
 
 	function parseScalarType(value, { graphql }, path) {
 		const isArray = Array.isArray(value);
@@ -60,7 +54,7 @@ module.exports = function(resource, baseSchema, dirname) {
 		if (graphql.scalar) {
 			type = graphql.scalar;
 			baseSchema.path(path).validate((v) => {
-				const value = global.Validators[type](v);
+				const value = Validators[type](v);
 				return value !== null && value !== undefined;
 			}, (props) => props.reason.message);
 		} else if (Array.isArray(target.type)) {
@@ -292,23 +286,19 @@ module.exports = function(resource, baseSchema, dirname) {
 
 	if (generateInterface) typeArrs.splice(1, 0, { comment: 'Interfaces', startStr: 'interface', obj: interfaces });
 
-	let schemaStr = ``;
-	typeArrs.forEach((typeArr) => (schemaStr += generateTypeStr(typeArr)));
-
-	const schemaObj = {
-		interfaces,
-		inputs,
-		types,
-		enums,
-		fields,
-		options: baseSchema.global_configs
+	let typedefTypeStr = ``;
+	typeArrs.forEach((typeArr) => (typedefTypeStr += generateTypeStr(typeArr)));
+	// fs.writeFile(path.join(dirname, `${resource}.graphql`), `# ${Date.now()}\n${typedefTypeStr}`, 'UTF-8', () => {});
+	// fs.writeFile(path.join(dirname, `${resource}.json`), JSON.stringify(schemaObj, null, 2), 'UTF-8', () => {});
+	return {
+		typedefTypeStr,
+		transformedSchema: {
+			interfaces,
+			inputs,
+			types,
+			enums,
+			fields,
+			options: baseSchema.global_configs
+		}
 	};
-
-	global.Schema[capitalizedResource] = Object.freeze(schemaObj);
-
-	if (dirname)
-		fs.writeFile(path.join(dirname, `${resource}.graphql`), `# ${Date.now()}\n${schemaStr}`, 'UTF-8', () => {});
-	if (dirname)
-		fs.writeFile(path.join(dirname, `${resource}.json`), JSON.stringify(schemaObj, null, 2), 'UTF-8', () => {});
-	return schemaStr;
 };

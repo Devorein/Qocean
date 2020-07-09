@@ -1,98 +1,81 @@
 const { gql } = require('apollo-server-express');
-const { resolvers } = require('graphql-scalars');
-const Password = require('../types/password');
-const Username = require('../types/username');
 
-const validators = {};
+module.exports = gql`
+	scalar Password
 
-Object.entries(resolvers).forEach(([ key, value ]) => {
-	validators[key] = value.serialize;
-});
-validators.Password = Password.serialize;
-validators.Username = Username.serialize;
+	scalar Username
 
-global.Validators = validators;
-Object.freeze(global.Validators);
+	enum QuestionTypeEnum {
+		FIB
+		Snippet
+		MCQ
+		MS
+		FC
+		TF
+	}
 
-module.exports = {
-	typedef: gql`
-		scalar Password
+	enum IconColorEnum {
+		Red
+		Orange
+		Yellow
+		Green
+		Blue
+		Indigo
+		Violet
+	}
 
-		scalar Username
+	enum QuestionDifficultyEnum {
+		Beginner
+		Intermediate
+		Advanced
+	}
 
-		enum QuestionTypeEnum {
-			FIB
-			Snippet
-			MCQ
-			MS
-			FC
-			TF
-		}
+	enum ResourceTypeEnum {
+		User
+		Folder
+		Quiz
+		Question
+		Environment
+	}
 
-		enum IconColorEnum {
-			Red
-			Orange
-			Yellow
-			Green
-			Blue
-			Indigo
-			Violet
-		}
+	type Query {
+		_empty: Boolean
+	}
 
-		enum QuestionDifficultyEnum {
-			Beginner
-			Intermediate
-			Advanced
-		}
+	type Mutation {
+		_empty: Boolean
+	}
 
-		enum ResourceTypeEnum {
-			User
-			Folder
-			Quiz
-			Question
-			Environment
-		}
+	type UsernameAndId {
+		username: String!
+		id: ID!
+	}
 
-		type Query {
-			_empty: Boolean
-		}
+	type NameAndId {
+		name: String!
+		id: ID!
+	}
 
-		type Mutation {
-			_empty: Boolean
-		}
+	type RatingsOutput {
+		id: ID!
+		prevRatings: Float!
+		newRatings: Float!
+		raters: Int!
+	}
 
-		type UsernameAndId {
-			username: String!
-			id: ID!
-		}
+	input PaginationInput {
+		page: Int!
+		limit: Int!
+		sort: String
+		filter: JSON
+	}
 
-		type NameAndId {
-			name: String!
-			id: ID!
-		}
+	input RatingsInput {
+		id: ID!
+		ratings: Float!
+	}
 
-		type RatingsOutput {
-			id: ID!
-			prevRatings: Float!
-			newRatings: Float!
-			raters: Int!
-		}
-
-		input PaginationInput {
-			page: Int!
-			limit: Int!
-			sort: String
-			filter: JSON
-		}
-
-		input RatingsInput {
-			id: ID!
-			ratings: Float!
-		}
-
-		type Status {
-			success: Boolean!
-		}
-	`,
-	generate: false
-};
+	type Status {
+		success: Boolean!
+	}
+`;

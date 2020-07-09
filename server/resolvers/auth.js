@@ -20,10 +20,10 @@ module.exports = {
 			});
 		},
 		async logout(parent, data, { res }) {
-			// res.cookie('token', 'none', {
-			// 	expires: new Date(Date.now() + 10 * 1000),
-			// 	httpOnly: true
-			// });
+			res.cookie('token', 'none', {
+				expires: new Date(Date.now() + 10 * 1000),
+				httpOnly: true
+			});
 			return { succes: true };
 		}
 	}

@@ -5,16 +5,8 @@ const {
 	getUsersTagsHandler
 } = require('../handlers/user');
 
-const resolverCompose = require('../utils/resolverCompose');
-
-const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
-
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-
 const UserResolvers = {
 	Query: {
-		// ? All Mixed
-		...generateQueryResolvers('user'),
 		async getAllMixedUsersTags(parent, { config }, { user, User }) {
 			return await getUsersTagsHandler({}, config);
 		},
@@ -23,7 +15,6 @@ const UserResolvers = {
 			return await getUsersTagsHandler({ _id: { $ne: user.id } }, config);
 		},
 
-		// ? All Self
 		async getAllSelfUsersTags(parent, { config }, { user, User }) {
 			return await getUsersTagsHandler({ _id: user.id }, config);
 		},
@@ -48,8 +39,7 @@ const UserResolvers = {
 		async deleteUser(parent, data, { user, User }) {
 			return await deleteUserHandler(user.id);
 		}
-	},
-	...generateTypeResolvers('user')
+	}
 };
 
-module.exports = resolverCompose(UserResolvers);
+module.exports = UserResolvers;

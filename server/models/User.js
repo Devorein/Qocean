@@ -175,6 +175,13 @@ const UserSchema = new mongoose.Schema({
 	]
 });
 
+UserSchema.mongql = {
+	generate: {
+		type: true,
+		query: true
+	}
+};
+
 UserSchema.methods.getSignedJwtToken = function() {
 	return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRE

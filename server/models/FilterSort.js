@@ -56,6 +56,12 @@ const FilterSortSchema = new mongoose.Schema({
 });
 
 exports.FilterSortSchema = FilterSortSchema;
+FilterSortSchema.mongql = {
+	generate: {
+		mutation: true,
+		type: true
+	}
+};
 FilterSortSchema.global_configs = {
 	global_excludePartitions: {
 		base: [ 'Others', 'Mixed' ]

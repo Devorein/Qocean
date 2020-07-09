@@ -67,6 +67,10 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	}
 });
 
+QuestionSchema.mongql = {
+	generate: true
+};
+
 QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
 	const obj = await this.aggregate([
 		{

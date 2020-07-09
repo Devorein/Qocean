@@ -6,7 +6,7 @@ const deleteResource = require('../resource/deleteResource');
 const watchAction = require('../resource/watchAction');
 const addRatings = require('../resource/addRatings');
 
-module.exports = function(resource) {
+module.exports = function(resource, transformedSchema) {
 	const pluralizedResource = pluralize(resource, 2);
 	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);

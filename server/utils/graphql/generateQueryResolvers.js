@@ -4,12 +4,12 @@ const { difference } = require('lodash');
 
 const parsePagination = require('../parsePagination');
 
-module.exports = function(resource) {
+module.exports = function(resource, transformedSchema) {
 	const capitalizedResource = S(resource).capitalize().s;
 	const selfFields = [],
 		mixedFields = [],
 		othersFields = [];
-	Object.entries(global.Schema[capitalizedResource].fields).forEach(([ key, { excludePartitions } ]) => {
+	Object.entries(transformedSchema.fields).forEach(([ key, { excludePartitions } ]) => {
 		if (excludePartitions === undefined) excludePartitions = [];
 		if (!excludePartitions.includes('Mixed')) mixedFields.push(key);
 		if (!excludePartitions.includes('Others')) othersFields.push(key);
@@ -72,9 +72,7 @@ module.exports = function(resource) {
 
 	let QueryResolvers = {
 		[`getAllMixed${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
-			const resources = await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
-			console.log(resources);
-			return resources;
+			return await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
 		},
 		[`getAllMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
 			parent,

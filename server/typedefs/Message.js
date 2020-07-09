@@ -1,6 +1,1 @@
-module.exports = {
-	typedef: null,
-	generate: {
-		type: true
-	}
-};
+module.exports = null;

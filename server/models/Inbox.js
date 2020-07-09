@@ -34,6 +34,10 @@ InboxSchema.global_configs = {
 		base: [ 'Others', 'Mixed' ]
 	}
 };
-
+InboxSchema.mongql = {
+	generate: {
+		type: true
+	}
+};
 module.exports.InboxSchema = InboxSchema;
 module.exports.InboxModel = mongoose.model('Inbox', InboxSchema);

@@ -180,5 +180,9 @@ EnvironmentSchema.pre('remove', async function(next) {
 	next();
 });
 
+EnvironmentSchema.mongql = {
+	generate: true
+};
+
 exports.EnvironmentSchema = EnvironmentSchema;
 exports.EnvironmentModel = mongoose.model('Environment', EnvironmentSchema);

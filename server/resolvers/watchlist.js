@@ -1,5 +1,1 @@
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-
-module.exports = {
-	...generateTypeResolvers('watchlist')
-};
+module.exports = null;

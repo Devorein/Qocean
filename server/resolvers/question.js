@@ -1,14 +1,7 @@
 const { validateQuestionHandler, sendAnswerHandler } = require('../handlers/question');
 
-const resolverCompose = require('../utils/resolverCompose');
-const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
-const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-
 const QuestionResolvers = {
 	Query: {
-		...generateQueryResolvers('question'),
-
 		async getMixedQuestionsByIdAnswers(parent, { id }) {
 			const [ questions ] = await sendAnswerHandler([ id ], (err) => {
 				throw err;
@@ -34,10 +27,7 @@ const QuestionResolvers = {
 			});
 		}
 	},
-	Mutation: {
-		...generateMutationResolvers('question')
-	},
-	...generateTypeResolvers('question')
+	Mutation: {}
 };
 
-module.exports = resolverCompose(QuestionResolvers);
+module.exports = QuestionResolvers;
