@@ -39,5 +39,5 @@ module.exports = function(resource) {
 			}
 		});
 	});
-	return res.join('\n');
+	return `extend type Query {\n${res.join('\n')}\n}`;
 };

@@ -7,8 +7,6 @@ const ModelSchemas = require('../../models');
 
 const generateTypeStr = require('./generateTypeStr');
 
-global.Schema = {};
-
 function populateObjDefaultValue(obj, fields) {
 	Object.entries(fields).forEach(([ key, value ]) => {
 		if (obj[key] === undefined) obj[key] = value;
@@ -16,7 +14,6 @@ function populateObjDefaultValue(obj, fields) {
 }
 
 function createDefaultConfigs(baseSchema) {
-	// ? Refactor to use a utility function
 	if (!baseSchema.global_configs) baseSchema.global_configs = {};
 	const { global_configs } = baseSchema;
 
@@ -49,6 +46,12 @@ function createDefaultConfigs(baseSchema) {
 
 module.exports = function(resource, baseSchema, dirname) {
 	const capitalizedResource = S(resource).capitalize().s;
+	populateObjDefaultValue(global, {
+		Schema: {}
+	});
+	populateObjDefaultValue(global.Schema, {
+		[capitalizedResource]: {}
+	});
 
 	function parseScalarType(value, { graphql }, path) {
 		const isArray = Array.isArray(value);
@@ -291,8 +294,6 @@ module.exports = function(resource, baseSchema, dirname) {
 
 	let schemaStr = ``;
 	typeArrs.forEach((typeArr) => (schemaStr += generateTypeStr(typeArr)));
-
-	if (!global.Schema[capitalizedResource]) global.Schema[capitalizedResource] = {};
 
 	const schemaObj = {
 		interfaces,

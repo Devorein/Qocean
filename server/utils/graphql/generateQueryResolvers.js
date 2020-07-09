@@ -9,7 +9,6 @@ module.exports = function(resource) {
 	const selfFields = [],
 		mixedFields = [],
 		othersFields = [];
-
 	Object.entries(global.Schema[capitalizedResource].fields).forEach(([ key, { excludePartitions } ]) => {
 		if (excludePartitions === undefined) excludePartitions = [];
 		if (!excludePartitions.includes('Mixed')) mixedFields.push(key);
