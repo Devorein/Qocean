@@ -91,6 +91,12 @@ const ReportSchema = new mongoose.Schema({
 	disabled: ReportDisabledSchema
 });
 
+ReportSchema.mongql = {
+	generate: {
+		type: true
+	}
+};
+
 ReportSchema.global_configs = {
 	global_excludePartitions: {
 		base: [ 'Others', 'Mixed' ]

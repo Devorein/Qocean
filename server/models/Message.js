@@ -38,5 +38,11 @@ MessageSchema.global_configs = {
 	}
 };
 
+MessageSchema.mongql = {
+	generate: {
+		type: true
+	}
+};
+
 module.exports.MessageSchema = MessageSchema;
 module.exports.MessageModel = mongoose.model('Message', MessageSchema);

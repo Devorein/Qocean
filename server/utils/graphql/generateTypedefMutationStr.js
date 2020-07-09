@@ -1,10 +1,10 @@
 const pluralize = require('pluralize');
 const S = require('String');
 
-module.exports = function(resource) {
+module.exports = function(resource, transformedSchema) {
 	const capitalizedResource = S(resource).capitalize().s;
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
-	const target = global.Schema[capitalizedResource].options;
+	const target = transformedSchema.options;
 	let mutations = `
     "Create a new ${resource}"
     create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}Type!

@@ -1,37 +1,34 @@
 const { gql } = require('apollo-server-express');
 
-module.exports = {
-	typedef: gql`
+module.exports = gql`
 
-    type QuestionAnswersOutput{
-      id:ID!
-      answers: [[String]!]!
-    }
+  type QuestionAnswersOutput{
+    id:ID!
+    answers: [[String]!]!
+  }
 
-    type QuestionValidationOutput{
-      correct: [ID]!
-      incorrect: [ID]!
-    }
+  type QuestionValidationOutput{
+    correct: [ID]!
+    incorrect: [ID]!
+  }
 
-    input IdAnswer{
-      id: ID!
-      answers: [String]!
-    }
+  input IdAnswer{
+    id: ID!
+    answers: [String]!
+  }
 
-    extend type Query {
+  extend type Query {
 
-      "Get mixed question by id answers (U)"
-      getMixedQuestionsByIdAnswers(id:ID!): QuestionAnswersOutput!
+    "Get mixed question by id answers (U)"
+    getMixedQuestionsByIdAnswers(id:ID!): QuestionAnswersOutput!
 
-      "Get mixed question by ids answers (U)"
-      getMixedQuestionsByIdsAnswers(ids:[ID!]!): [QuestionAnswersOutput!]!
-      
-      "Get mixed question by id validation (U)"
-      getMixedQuestionsByIdValidation(data: IdAnswer!): QuestionValidationOutput!
+    "Get mixed question by ids answers (U)"
+    getMixedQuestionsByIdsAnswers(ids:[ID!]!): [QuestionAnswersOutput!]!
+    
+    "Get mixed question by id validation (U)"
+    getMixedQuestionsByIdValidation(data: IdAnswer!): QuestionValidationOutput!
 
-      "Get mixed question by ids validation (U)"
-      getMixedQuestionsByIdsValidation(data: [IdAnswer!]!): QuestionValidationOutput!
-    }
-  `,
-	generate: true
-};
+    "Get mixed question by ids validation (U)"
+    getMixedQuestionsByIdsValidation(data: [IdAnswer!]!): QuestionValidationOutput!
+  }
+`;

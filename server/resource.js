@@ -1,30 +1,54 @@
 const S = require('string');
+const { typeDefs: ExternalTypeDef, resolvers: ExternalResolvers } = require('graphql-scalars');
 
 const modelschema = require('./models');
-const typedefs = require('./typedefs');
-const resolvers = require('./resolvers');
+const generateTypedefs = require('./typedefs');
+const generateResolvers = require('./resolvers');
 const routes = require('./routes');
+
+const AuthTypedef = require('./typedefs/Auth');
+const AuthResolvers = require('./resolvers/auth');
+
+const BaseTypedef = require('./typedefs/Base');
+const BaseResolvers = require('./resolvers/base');
 
 const ModelsArr = [];
 const ModelsObj = {};
 const SchemasArr = [];
 const SchemasObj = {};
-
-Object.entries(modelschema).forEach(([ key, [ model, schema ] ]) => {
-	ModelsObj[S(key).capitalize().s] = model;
-	ModelsArr.push(model);
-	SchemasObj[S(key).capitalize().s] = schema;
-	SchemasArr.push(schema);
-});
-
 const TypedefsArr = [];
-Object.values(typedefs).forEach((typedef) => {
-	if (Array.isArray(typedef)) TypedefsArr.push(...typedef);
-	else TypedefsArr.push(typedef);
-});
-
+const TypedefsObj = {};
 const ResolversArr = [];
-Object.values(resolvers).forEach((resolver) => {
+const ResolversObj = {};
+
+TypedefsObj.Auth = AuthTypedef;
+TypedefsArr.push(AuthTypedef);
+ResolversObj.Auth = AuthResolvers;
+ResolversArr.push(AuthResolvers);
+
+TypedefsObj.Base = BaseTypedef;
+TypedefsArr.push(BaseTypedef);
+ResolversObj.Base = BaseResolvers;
+ResolversArr.push(BaseResolvers);
+
+TypedefsObj.External = ExternalTypeDef;
+TypedefsArr.push(...ExternalTypeDef);
+ResolversObj.External = ExternalResolvers;
+ResolversArr.push(ExternalResolvers);
+
+Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
+	ModelsObj[S(resource).capitalize().s] = model;
+	ModelsArr.push(model);
+	SchemasObj[S(resource).capitalize().s] = schema;
+	SchemasArr.push(schema);
+
+	const { mongql: { generate } } = schema;
+
+	const { typedefsAST, transformedSchema } = generateTypedefs(resource, generate);
+	TypedefsObj[resource] = typedefsAST;
+	TypedefsArr.push(typedefsAST);
+	const resolver = generateResolvers(resource, generate, transformedSchema);
+	ResolversObj[resource] = resolver;
 	ResolversArr.push(resolver);
 });
 
@@ -43,11 +67,11 @@ module.exports = {
 		arr: SchemasArr
 	},
 	Typedefs: {
-		obj: typedefs,
+		obj: TypedefsObj,
 		arr: TypedefsArr
 	},
 	Resolvers: {
-		obj: resolvers,
+		obj: ResolversObj,
 		arr: ResolversArr
 	},
 	Routes: {

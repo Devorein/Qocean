@@ -1,16 +1,10 @@
 const FilterSortResolvers = {
-	resolver: {
-		Query: {
-			async getAllSelfFilterSorts(parent, args, { user, FilterSort }) {
-				return await FilterSort.find({ user: user.id });
-			}
-		},
-		Mutation: {}
+	Query: {
+		async getAllSelfFilterSorts(parent, args, { user, FilterSort }) {
+			return await FilterSort.find({ user: user.id });
+		}
 	},
-	generate: {
-		mutation: true,
-		type: true
-	}
+	Mutation: {}
 };
 
 module.exports = FilterSortResolvers;

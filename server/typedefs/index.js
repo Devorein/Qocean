@@ -1,33 +1,44 @@
-const { typeDefs: ExternalTypedefs } = require('graphql-scalars');
+const { resolvers } = require('graphql-scalars');
 const { gql } = require('apollo-server-express');
 
-const generateQueries = require('../utils/graphql/generateQueryTypedefs');
-const generateMutations = require('../utils/graphql/generateMutationTypedefs');
-const generateTypeTypedef = require('../utils/graphql/generateTypeTypedefs');
+const Password = require('../types/password');
+const Username = require('../types/username');
 
-const typedefs = {};
+const Validators = {};
 
-function addTypeDefs(typedef, typeTypeDefs) {
-	typedef.definitions.unshift(...gql`${typeTypeDefs}`.definitions);
+Object.entries(resolvers).forEach(([ key, value ]) => {
+	Validators[key] = value.serialize;
+});
+Validators.Password = Password.serialize;
+Validators.Username = Username.serialize;
+Object.freeze(Validators);
+
+const generateTypedefQueryStr = require('../utils/graphql/generateTypedefQueryStr');
+const generateTypedefMutationStr = require('../utils/graphql/generateTypedefMutationStr');
+const generateTypedefTypeStr = require('../utils/graphql/generateTypedefTypeStr');
+
+function transformTypedefTypesAST(typedefsAST, typedefTypeStr) {
+	typedefsAST.definitions.unshift(...gql`${typedefTypeStr}`.definitions);
 }
 
-function addQueryDefs(typedefs, queryTypeDefs) {
-	const queryObjTypeExtension = typedefs.definitions.find((typedef) => {
-		return typedef.kind === 'ObjectTypeExtension' && typedef.name.value === 'Query';
+function transformTypedefQueryAST(typedefsAST, typedefsQueryStr) {
+	const queryObjTypeExtension = typedefsAST.definitions.find((definition) => {
+		return definition.kind === 'ObjectTypeExtension' && definition.name.value === 'Query';
 	});
-	if (queryObjTypeExtension) queryObjTypeExtension.fields.push(...gql`${queryTypeDefs}`.definitions[0].fields);
-	else typedefs.definitions.push(gql`${queryTypeDefs}`);
+	if (queryObjTypeExtension) queryObjTypeExtension.fields.push(...gql`${typedefsQueryStr}`.definitions[0].fields);
+	else typedefsAST.definitions.push(gql`${typedefsQueryStr}`);
 }
 
-function addMutationDefs(typedefs, queryTypeDefs) {
-	const mutationObjTypeExtension = typedefs.definitions.find((typedef) => {
-		return typedef.kind === 'ObjectTypeExtension' && typedef.name.value === 'Mutation';
+function transformTypedefMutationAST(typedefsAST, typedefsMutationStr) {
+	const mutationObjTypeExtension = typedefsAST.definitions.find((definition) => {
+		return definition.kind === 'ObjectTypeExtension' && definition.name.value === 'Mutation';
 	});
-	if (mutationObjTypeExtension) mutationObjTypeExtension.fields.push(...gql`${queryTypeDefs}`.definitions[0].fields);
-	else typedefs.definitions.push(gql`${queryTypeDefs}`);
+	if (mutationObjTypeExtension)
+		mutationObjTypeExtension.fields.push(...gql`${typedefsMutationStr}`.definitions[0].fields);
+	else typedefsAST.definitions.push(gql`${typedefsMutationStr}`);
 }
 
-function transformTypeDefs(typedef, generate, resource) {
+function transformTypeDefs(typedefsAST, generate, resource) {
 	if (generate !== false) {
 		if (generate === true)
 			generate = {
@@ -36,38 +47,25 @@ function transformTypeDefs(typedef, generate, resource) {
 				mutation: true
 			};
 		const { type = false, query = false, mutation = false } = generate;
-		if (type) addTypeDefs(typedef, generateTypeTypedef(resource));
-		if (query) addQueryDefs(typedef, generateQueries(resource));
-		if (mutation) addMutationDefs(typedef, generateMutations(resource));
-		return typedef;
-	} else return typedef;
+		let transformedSchema = {};
+		if (type) {
+			const generatedTypeTypedef = generateTypedefTypeStr(resource, null, Validators);
+			const { typedefTypeStr } = generatedTypeTypedef;
+			transformedSchema = generatedTypeTypedef.transformedSchema;
+			transformTypedefTypesAST(typedefsAST, typedefTypeStr);
+		}
+		if (query) transformTypedefQueryAST(typedefsAST, generateTypedefQueryStr(resource, transformedSchema));
+		if (mutation) transformTypedefMutationAST(typedefsAST, generateTypedefMutationStr(resource, transformedSchema));
+		return { typedefsAST, transformedSchema };
+	} else return { typedefsAST, transformedSchema: {} };
 }
 
-(() => {
-	[
-		'Base',
-		'Auth',
-		'User',
-		'Quiz',
-		'Question',
-		'Folder',
-		'Environment',
-		'Watchlist',
-		'Filtersort',
-		'Report',
-		'Inbox',
-		'Message'
-	].forEach((resource) => {
-		let { typedef, generate } = require(`./${resource}.js`);
-		if (typedef === null)
-			typedef = {
-				kind: 'Document',
-				definitions: []
-			};
-		typedefs[resource] = transformTypeDefs(typedef, generate, resource.toLowerCase());
-	});
-})();
-
-typedefs.External = ExternalTypedefs;
-
-module.exports = typedefs;
+module.exports = function(resource, generate) {
+	let typedefsAST = require(`./${resource}.js`);
+	if (typedefsAST === null)
+		typedefsAST = {
+			kind: 'Document',
+			definitions: []
+		};
+	return transformTypeDefs(typedefsAST, generate, resource.toLowerCase());
+};

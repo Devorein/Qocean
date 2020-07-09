@@ -1,6 +1,1 @@
-module.exports = {
-	resolver: null,
-	generate: {
-		type: true
-	}
-};
+module.exports = null;
