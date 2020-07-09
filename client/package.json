@@ -14,7 +14,7 @@
   "author": "Devon Reid <devorein00@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@apollo/client": "^3.0.0-rc.10",
+    "@apollo/client": "^3.0.0-rc.11",
     "@apollo/link-context": "^2.0.0-beta.3",
     "@apollo/react-components": "^4.0.0-beta.1",
     "@date-io/moment": "^2.7.0",
