@@ -1,5 +1,6 @@
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-
 module.exports = {
-	...generateTypeResolvers('watchlist')
+	resolver: null,
+	generate: {
+		type: true
+	}
 };

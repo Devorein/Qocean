@@ -1,30 +1,48 @@
 const { resolvers: ExternalResolvers } = require('graphql-scalars');
 
-const AuthResolvers = require('./auth');
-const UserResolvers = require('./user');
-const QuizResolvers = require('./quiz');
-const QuestionResolvers = require('./question');
-const FolderResolvers = require('./folder');
-const EnvironmentResolvers = require('./environment');
-const WatchlistResolvers = require('./watchlist');
-const FilterSortResolvers = require('./filtersort');
-const ReportResolvers = require('./report');
-const InboxResolvers = require('./inbox');
-const MessaggeResolvers = require('./message');
-const BaseResolvers = require('./base');
+const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
+const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
+const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
+const resolverCompose = require('../utils/resolverCompose');
 
-module.exports = {
-	Auth: AuthResolvers,
-	Base: BaseResolvers,
-	User: UserResolvers,
-	Quiz: QuizResolvers,
-	Question: QuestionResolvers,
-	Folder: FolderResolvers,
-	Environment: EnvironmentResolvers,
-	Watchlist: WatchlistResolvers,
-	Filtersort: FilterSortResolvers,
-	Report: ReportResolvers,
-	Inbox: InboxResolvers,
-	Messagge: MessaggeResolvers,
-	External: ExternalResolvers
-};
+const resolvers = {};
+
+function transformResolvers(resolver, generate, resource) {
+	if (generate !== false) {
+		if (generate === true)
+			generate = {
+				type: true,
+				query: true,
+				mutation: true
+			};
+		const { type = false, query = false, mutation = false } = generate;
+		if (type) resolver = { ...resolver, ...generateTypeResolvers(resource) };
+		if (query) resolver.Query = { ...resolver.Query, ...generateQueryResolvers(resource) };
+		if (mutation) resolver.Mutation = { ...resolver.Mutation, ...generateMutationResolvers(resource) };
+		return resolver;
+	} else return resolver;
+}
+
+(() => {
+	[
+		'auth',
+		'user',
+		'quiz',
+		'question',
+		'folder',
+		'environment',
+		'watchlist',
+		'filtersort',
+		'report',
+		'inbox',
+		'message',
+		'base'
+	].forEach((resource) => {
+		let { resolver, generate = false } = require(`./${resource}.js`);
+		if (resolver === null) resolver = { Query: {}, Mutation: {} };
+		resolvers[resource] = resolverCompose(transformResolvers(resolver, generate, resource.toLowerCase()));
+	});
+})();
+
+resolvers.External = ExternalResolvers;
+module.exports = resolvers;

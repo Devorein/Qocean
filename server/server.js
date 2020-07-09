@@ -98,5 +98,4 @@ GRAPHQL.listen(GRAPHQL_PORT, () => {
 process.on('unhandledRejection', (err, promise) => {
 	console.log(`Error: ${err.message}`.red);
 	REST_SERVER.close(() => process.exit(1));
-	GRAPHQL_SERVER.close(() => process.exit(1));
 });

@@ -1,17 +1,9 @@
-const resolverCompose = require('../utils/resolverCompose');
-
-const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
-const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-
 const FolderResolvers = {
-	Query: {
-		...generateQueryResolvers('folder')
+	resolver: {
+		Query: {},
+		Mutation: {}
 	},
-	Mutation: {
-		...generateMutationResolvers('folder')
-	},
-	...generateTypeResolvers('folder')
+	generate: true
 };
 
-module.exports = resolverCompose(FolderResolvers);
+module.exports = FolderResolvers;

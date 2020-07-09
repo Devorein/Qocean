@@ -72,9 +72,7 @@ module.exports = function(resource) {
 
 	let QueryResolvers = {
 		[`getAllMixed${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
-			const resources = await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
-			console.log(resources);
-			return resources;
+			return await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
 		},
 		[`getAllMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
 			parent,

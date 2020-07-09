@@ -1,18 +1,16 @@
-const resolverCompose = require('../utils/resolverCompose');
-
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
-
 const FilterSortResolvers = {
-	Query: {
-		async getAllSelfFilterSorts(parent, args, { user, FilterSort }) {
-			return await FilterSort.find({ user: user.id });
-		}
+	resolver: {
+		Query: {
+			async getAllSelfFilterSorts(parent, args, { user, FilterSort }) {
+				return await FilterSort.find({ user: user.id });
+			}
+		},
+		Mutation: {}
 	},
-	Mutation: {
-		...generateMutationResolvers('filtersort')
-	},
-	...generateTypeResolvers('filtersort')
+	generate: {
+		mutation: true,
+		type: true
+	}
 };
 
-module.exports = resolverCompose(FilterSortResolvers);
+module.exports = FilterSortResolvers;
