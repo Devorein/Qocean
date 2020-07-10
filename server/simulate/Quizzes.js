@@ -46,7 +46,7 @@ const createQuiz = async ({ quizzes, total_users, users }) => {
 
 async function createQuizzes({ count, quizzes, total_users, users }) {
 	let created = 1;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const quizInterval = setInterval(async () => {
 			if (created <= count) {
 				await createQuiz({ quizzes, total_users, users });

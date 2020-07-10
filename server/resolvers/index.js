@@ -1,5 +1,3 @@
-const { resolvers: ExternalResolvers } = require('graphql-scalars');
-
 const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
 const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
 const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');

@@ -19,7 +19,9 @@
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
+    "eslint": "^7.4.0",
     "husky": "^4.2.5",
+    "jest": "^26.1.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {

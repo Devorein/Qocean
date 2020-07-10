@@ -9,7 +9,7 @@ const QuizResolvers = {
 		}
 	},
 	Mutation: {
-		async updateQuizPlayedTimes(parent, { ids }, { user, Quiz }) {
+		async updateQuizPlayedTimes(parent, { ids }, { user }) {
 			return await updatePlayedTimesHandler(ids, user.id);
 		}
 	},

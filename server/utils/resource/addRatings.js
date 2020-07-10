@@ -1,4 +1,4 @@
-module.exports = async function(Model, data, userId, next) {
+module.exports = async function(Model, data, userId) {
 	const ratingsData = [];
 	for (let i = 0; i < data.length; i++) {
 		const { id, ratings } = data[i];

@@ -1,5 +1,4 @@
 const casual = require('casual');
-const faker = require('faker');
 const axios = require('axios');
 
 function getRandomInt(min, max) {
@@ -19,11 +18,11 @@ casual.define('question', function() {
 
 	if (type === 'MCQ') {
 		const total_options = getRandomInt(3, 6);
-		options = Array(total_options).fill(0).map((_) => casual.sentence);
+		options = Array(total_options).fill(0).map(() => casual.sentence);
 		answers.push(getRandomInt(1, total_options - 1));
 	} else if (type === 'MS') {
 		const total_options = getRandomInt(3, 6);
-		options = Array(total_options).fill(0).map((_) => casual.sentence);
+		options = Array(total_options).fill(0).map(() => casual.sentence);
 		const total_answers = getRandomInt(1, total_options - 1);
 
 		while (answers.length < total_answers) {
@@ -35,7 +34,7 @@ casual.define('question', function() {
 		answers.push([ 0, 1 ][getRandomInt(0, 1)]);
 	} else if (type === 'FC') {
 		options = [];
-		answers = [ Array(getRandomInt(1, 3)).fill(0).map((_) => casual.sentence) ];
+		answers = [ Array(getRandomInt(1, 3)).fill(0).map(() => casual.sentence) ];
 	} else if (type === 'FIB') {
 		options = [];
 		const blanks = getRandomInt(1, 6);
@@ -98,7 +97,7 @@ const createQuestion = async ({ quizzes, questions, total_users, users }) => {
 
 async function createQuestions({ count, questions, quizzes, total_users, users }) {
 	let created = 1;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const questionInterval = setInterval(async () => {
 			if (created <= count) {
 				await createQuestion({ quizzes, questions, total_users, users });

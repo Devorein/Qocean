@@ -1,6 +1,4 @@
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const path = require('path');
 
 module.exports = async function watchAction(rtype, body, user) {
 	const resources = body[rtype];

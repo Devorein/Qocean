@@ -11,10 +11,10 @@ module.exports = {
 		}
 	},
 	Mutation: {
-		async register(parent, { data }, ctx, info) {
+		async register(parent, { data }) {
 			return registerHandler(data);
 		},
-		async login(parent, { data }, ctx, info) {
+		async login(parent, { data }) {
 			return loginHandler(data, (err) => {
 				throw err;
 			});

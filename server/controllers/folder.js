@@ -50,7 +50,7 @@ exports.quizToFolder = asyncHandler(async (req, res, next) => {
 	const { op } = req.body;
 	const quiz = await QuizModel.findById(req.body.quiz);
 	if (!quiz) return next(new ErrorResponse(`No quiz found with id ${req.body.quiz}`, 404));
-	const folder = await Folder.findById(req.body.folder);
+	const folder = await FolderModel.findById(req.body.folder);
 	if (!quiz) return next(new ErrorResponse(`No folder found with id ${req.body.folder}`, 404));
 	if (op !== 1 && op !== 0) return next(new ErrorResponse(`Wrong operation on folder`, 404));
 	await folder.quiz(op, req.body.quiz);
@@ -59,11 +59,11 @@ exports.quizToFolder = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateFolderRatings = asyncHandler(async (req, res, next) => {
-	const ratingsData = await addRatings(Folder, req.body.data, req.user._id, next);
+	const ratingsData = await addRatings(FolderModel, req.body.data, req.user._id, next);
 	res.status(200).json({ success: true, ratingsData });
 });
 
-exports.watchFolders = asyncHandler(async (req, res, next) => {
+exports.watchFolders = asyncHandler(async (req, res) => {
 	const manipulated = await watchAction('folders', req.body, req.user);
 	res.status(200).json({ success: true, data: manipulated });
 });

@@ -52,7 +52,9 @@ REST.use(errorHandler);
 const { REST_PORT = 5000 } = process.env;
 
 const REST_SERVER = REST.listen(REST_PORT, () => {
-	console.log(colors.blue.bold(`REST Server running in ${process.env.NODE_ENV} mode on port ${REST_PORT}`));
+	console.log(
+		colors.blue.bold(`REST Server running in ${process.env.NODE_ENV} mode on port http://localhost:${REST_PORT}`)
+	);
 });
 
 // GRAPHQL Server
@@ -97,10 +99,14 @@ const { GRAPHQL_PORT = 5002 } = process.env;
 GRAPHQL_SERVER.applyMiddleware({ app: GRAPHQL });
 
 GRAPHQL.listen(GRAPHQL_PORT, () => {
-	console.log(colors.magenta.bold(`Graphql Server running in ${process.env.NODE_ENV} mode on port ${GRAPHQL_PORT}`));
+	console.log(
+		colors.magenta.bold(
+			`Graphql Server running in ${process.env.NODE_ENV} mode on port http://localhost:${GRAPHQL_PORT}/graphql`
+		)
+	);
 });
 
-process.on('unhandledRejection', (err, promise) => {
+process.on('unhandledRejection', (err) => {
 	console.log(`Error: ${err.message}`.red);
 	REST_SERVER.close(() => process.exit(1));
 });

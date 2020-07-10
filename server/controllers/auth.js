@@ -12,7 +12,7 @@ const { registerHandler, checkPasswordHandler, loginHandler } = require('../hand
 // @route    POST /api/v1/auth/register
 // @access   Public
 
-exports.register = asyncHandler(async (req, res, next) => {
+exports.register = asyncHandler(async (req, res) => {
 	const { token, id } = await registerHandler(req.body);
 	res.status(200).json({ token, id });
 });
@@ -33,7 +33,7 @@ exports.checkPassword = asyncHandler(async (req, res, next) => {
 // @desc     Logout user
 // @route    GET /api/v1/auth/logout
 // @access   Private
-exports.logout = asyncHandler(async (req, res, next) => {
+exports.logout = asyncHandler(async (req, res) => {
 	res.cookie('token', 'none', {
 		expires: new Date(Date.now() + 10 * 1000),
 		httpOnly: true

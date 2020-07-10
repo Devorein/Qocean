@@ -1,7 +1,3 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const path = require('path');
-
 const ErrorResponse = require('../errorResponse');
 
 module.exports = async function(Model, datas, userId, next) {

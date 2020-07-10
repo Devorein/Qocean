@@ -1,5 +1,4 @@
 const axios = require('axios');
-const colors = require('colors');
 const fs = require('fs');
 
 const { createUsers } = require('./simulate/Users');
