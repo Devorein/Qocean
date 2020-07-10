@@ -16,7 +16,6 @@ const { ApolloServer } = require('apollo-server-express');
 let mode = null;
 process.argv.forEach((arg) => {
 	if (arg.startsWith('--MODE')) mode = arg.split('=')[1];
-	else if (arg.startsWith('server')) mode = arg.split(':')[1];
 });
 
 dotenv.config({ path: `./config/${mode}.env` });
