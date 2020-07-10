@@ -5,9 +5,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "server:test": "nodemon ./server.js --MODE=test",
+    "server:test": "nodemon ../server/server.js --MODE=test",
     "server:dev": "nodemon ./server.js --MODE=dev",
-    "server:prod": "nodemon ./server.js --MODE=prod"
+    "server:prod": "nodemon ./server.js --MODE=prod",
+    "test": "../node_modules/.bin/env-cmd -f ./config/test.env node ./experiment/index.js"
   },
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",
@@ -47,5 +48,8 @@
   "graphdoc": {
     "endpoint": "http://localhost:5002/graphql",
     "output": "./docs/api/Graphql"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
   }
 }

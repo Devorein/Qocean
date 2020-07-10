@@ -12,9 +12,6 @@
   "license": "MIT",
   "scripts": {
     "client": "cd ./client && npm start",
-    "server:test": "cd ./server && npm run server:test",
-    "server:dev": "cd ./server && npm run server:dev",
-    "server:prod": "cd ./server && npm run server:prod",
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
   "husky": {
@@ -23,6 +20,7 @@
     }
   },
   "devDependencies": {
+    "@babel/register": "^7.10.4",
     "concurrently": "^5.2.0",
     "eslint": "^7.4.0",
     "husky": "^4.2.5",
