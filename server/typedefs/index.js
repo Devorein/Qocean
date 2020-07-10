@@ -1,5 +1,10 @@
 const { resolvers } = require('graphql-scalars');
-const { gql } = require('apollo-server-express');
+
+const {
+	transformTypedefTypesAST,
+	transformTypedefQueryAST,
+	transformTypedefMutationAST
+} = require('../utils/ast/transformGraphqlAST');
 
 const Password = require('../types/password');
 const Username = require('../types/username');
@@ -9,6 +14,7 @@ const Validators = {};
 Object.entries(resolvers).forEach(([ key, value ]) => {
 	Validators[key] = value.serialize;
 });
+
 Validators.Password = Password.serialize;
 Validators.Username = Username.serialize;
 Object.freeze(Validators);
@@ -16,27 +22,6 @@ Object.freeze(Validators);
 const generateTypedefQueryStr = require('../utils/graphql/generateTypedefQueryStr');
 const generateTypedefMutationStr = require('../utils/graphql/generateTypedefMutationStr');
 const generateTypedefTypeStr = require('../utils/graphql/generateTypedefTypeStr');
-
-function transformTypedefTypesAST(typedefsAST, typedefTypeStr) {
-	typedefsAST.definitions.unshift(...gql`${typedefTypeStr}`.definitions);
-}
-
-function transformTypedefQueryAST(typedefsAST, typedefsQueryStr) {
-	const queryObjTypeExtension = typedefsAST.definitions.find((definition) => {
-		return definition.kind === 'ObjectTypeExtension' && definition.name.value === 'Query';
-	});
-	if (queryObjTypeExtension) queryObjTypeExtension.fields.push(...gql`${typedefsQueryStr}`.definitions[0].fields);
-	else typedefsAST.definitions.push(gql`${typedefsQueryStr}`);
-}
-
-function transformTypedefMutationAST(typedefsAST, typedefsMutationStr) {
-	const mutationObjTypeExtension = typedefsAST.definitions.find((definition) => {
-		return definition.kind === 'ObjectTypeExtension' && definition.name.value === 'Mutation';
-	});
-	if (mutationObjTypeExtension)
-		mutationObjTypeExtension.fields.push(...gql`${typedefsMutationStr}`.definitions[0].fields);
-	else typedefsAST.definitions.push(gql`${typedefsMutationStr}`);
-}
 
 function transformTypeDefs(typedefsAST, generate, resource) {
 	if (generate !== false) {

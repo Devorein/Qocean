@@ -1,10 +1,11 @@
 const pluralize = require('pluralize');
 const S = require('String');
 
-module.exports = function(resource, transformedSchema) {
+module.exports = function(resource /* transformedSchema */) {
 	const capitalizedResource = S(resource).capitalize().s;
+	const pluralizedResource = pluralize(resource, 2);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
-	const target = transformedSchema.options;
+	// const target = transformedSchema.options;
 	let mutations = `
     "Create a new ${resource}"
     create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}Type!
@@ -12,13 +13,13 @@ module.exports = function(resource, transformedSchema) {
     "Update single ${resource}"
     update${capitalizedResource}(data: ${capitalizedResource}Input!,id: ID!): Self${capitalizedResource}Type!
 
-    "Update multiple ${pluralize(resource, 2)}"
+    "Update multiple ${pluralizedResource}"
     update${pluralizedcapitalizedResource}(data: [${capitalizedResource}Input!],ids: [ID!]!): [Self${capitalizedResource}Type!]!
 
     "Delete single ${resource}"
     delete${capitalizedResource}(id: ID!): Self${capitalizedResource}Type!
 
-    "Delete multiple ${pluralize(resource, 2)}"
+    "Delete multiple ${pluralizedResource}"
     delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}Type!]!
   `;
 	if (resource.match(/(quiz|folder)/)) {

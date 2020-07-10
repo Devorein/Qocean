@@ -168,7 +168,7 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 		if (isAnyEmpty) return [ false, 'Your cant have any empty answers' ];
 		const isAnyOverflow = question.answers.some((answer) => answer.length > 3);
 		if (isAnyOverflow) return [ false, 'You provided too many alternatives' ];
-		const count = (question.name.match(/\$\{\_\}/g) || []).length;
+		const count = (question.name.match(/\$\{_\}/g) || []).length;
 		if (count !== question.answers.length) return [ false, 'You provided incorrect number of answers' ];
 	}
 	return [ true ];

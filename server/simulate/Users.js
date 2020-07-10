@@ -45,7 +45,7 @@ const createUser = async ({ users, loginData }) => {
 };
 
 async function createUsers({ count, users, loginData }) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const userInterval = setInterval(async () => {
 			if (users.length < count) await createUser({ users, loginData });
 			else {

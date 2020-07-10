@@ -7,19 +7,19 @@ const {
 
 const UserResolvers = {
 	Query: {
-		async getAllMixedUsersTags(parent, { config }, { user, User }) {
+		async getAllMixedUsersTags(parent, { config }) {
 			return await getUsersTagsHandler({}, config);
 		},
 
-		async getAllOthersUsersTags(parent, { config }, { user, User }) {
+		async getAllOthersUsersTags(parent, { config }, { user }) {
 			return await getUsersTagsHandler({ _id: { $ne: user.id } }, config);
 		},
 
-		async getAllSelfUsersTags(parent, { config }, { user, User }) {
+		async getAllSelfUsersTags(parent, { config }, { user }) {
 			return await getUsersTagsHandler({ _id: user.id }, config);
 		},
 
-		async getOthersUsersByIdTags(parent, { id, config }, { user }) {
+		async getOthersUsersByIdTags(parent, { id, config }) {
 			return await getUsersTagsHandler({ _id: id }, config);
 		},
 
@@ -28,15 +28,15 @@ const UserResolvers = {
 		}
 	},
 	Mutation: {
-		async updateUserDetails(parent, { data }, { user, User }) {
+		async updateUserDetails(parent, { data }, { user }) {
 			return await updateUserDetailsHandler(data, user.id);
 		},
-		async updateUserPassword(parent, { data }, { user, User }) {
+		async updateUserPassword(parent, { data }, { user }) {
 			return await updateUserPasswordHandler(user.id, data, (err) => {
 				throw err;
 			});
 		},
-		async deleteUser(parent, data, { user, User }) {
+		async deleteUser(parent, data, { user }) {
 			return await deleteUserHandler(user.id);
 		}
 	}

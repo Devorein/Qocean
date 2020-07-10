@@ -1,9 +1,5 @@
 const axios = require('axios');
-const mongoose = require('mongoose');
-const colors = require('colors');
-const dotenv = require('dotenv');
 const fs = require('fs');
-const path = require('path');
 
 const { createUsers } = require('./simulate/Users');
 const { createQuizzes } = require('./simulate/Quizzes');
@@ -17,8 +13,6 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-dotenv.config({ path: path.join(__dirname, 'config', 'config.env') });
-
 const { QuizModel } = require('./models/Quiz');
 const { QuestionModel } = require('./models/Question');
 const { UserModel } = require('./models/User');
@@ -29,14 +23,6 @@ const { InboxModel } = require('./models/Inbox');
 const { ReportModel } = require('./models/Report');
 const { WatchlistModel } = require('./models/Watchlist');
 const { FilterSortModel } = require('./models/FilterSort');
-
-// Connect to db
-mongoose.connect(process.env.MONGO_URI, {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
-	useUnifiedTopology: true
-});
 
 (async function() {
 	const args = process.argv.slice(2);

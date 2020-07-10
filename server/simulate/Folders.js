@@ -44,7 +44,7 @@ const createFolder = async ({ folders, total_users, users }) => {
 
 async function createFolders({ count, folders, total_users, users }) {
 	let created = 1;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const folderInterval = setInterval(async () => {
 			if (created <= count) {
 				await createFolder({ folders, total_users, users });

@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const S = require('string');
 const mongoose = require('mongoose');
 
@@ -62,15 +60,9 @@ module.exports = function(resource, baseSchema, Validators) {
 			else type = target.type[0].name;
 		} else if (target.type) type = target.type.name;
 		else type = target.name;
-		switch (type) {
-			case 'Int32':
-			case 'Number':
-				type = 'Int';
-				break;
-			case 'Double':
-				type = 'Float';
-				break;
-		}
+
+		if (type.match(/(Int32|Number)/)) type = 'Int';
+		else if (type === 'Double') type = 'Float';
 
 		if (type === 'ObjectId') type = 'ID';
 		type = isArray || Array.isArray(value.type) ? `[${type}${graphql.type[1] ? '!' : ''}]` : type;
@@ -92,15 +84,14 @@ module.exports = function(resource, baseSchema, Validators) {
 	const enums = {};
 	const types = {};
 	const fields = {};
-	const interfaces = generateInterface
-		? {
-				[capitalizedResource]: {
-					id: {
-						value: 'ID!'
-					}
-				}
+	const interfaces = {};
+	if (generateInterface) {
+		interfaces[capitalizedResource] = {
+			id: {
+				value: 'ID!'
 			}
-		: {};
+		};
+	}
 	if (global_inputs.base) inputs[capitalizedResource + 'Input'] = {};
 	if (global_excludePartitions.base !== true) {
 		types.base = {};

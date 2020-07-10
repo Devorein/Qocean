@@ -55,7 +55,7 @@ module.exports = function(resource, transformedSchema) {
 			const count = await ctx[capitalizedResource].countDocuments({ ...JSON.parse(filter), user: ctx.user.id });
 			return count;
 		},
-		[`getAllSelf${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
+		[`getAllSelf${pluralizedcapitalizedResource}`]: async function(parent, args, ctx) {
 			return await ctx[capitalizedResource].find({ user: ctx.user.id });
 		},
 		[`getAllSelf${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
@@ -71,7 +71,7 @@ module.exports = function(resource, transformedSchema) {
 	};
 
 	let QueryResolvers = {
-		[`getAllMixed${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
+		[`getAllMixed${pluralizedcapitalizedResource}`]: async function(parent, args, ctx) {
 			return await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
 		},
 		[`getAllMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
@@ -84,7 +84,7 @@ module.exports = function(resource, transformedSchema) {
 		[`getAllMixed${pluralizedcapitalizedResource}Count`]: async function(parent, args, ctx) {
 			return await ctx[capitalizedResource].countDocuments({ ...nonUserFilter });
 		},
-		[`getAllOthers${pluralizedcapitalizedResource}`]: async function(parent, args, ctx, info) {
+		[`getAllOthers${pluralizedcapitalizedResource}`]: async function(parent, args, ctx) {
 			return await ctx[capitalizedResource]
 				.find({ ...nonUserFilter, user: { $ne: ctx.user.id } })
 				.select(exlcudedOthersFieldsStr);

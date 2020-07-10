@@ -12,7 +12,7 @@ const {
 // @desc: Get current environment
 // @route: GET /api/v1/environments/current
 // @access: Private
-exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
+exports.getCurrentEnvironment = asyncHandler(async (req, res) => {
 	const environment = await EnvironmentModel.findById(req.user.current_environment);
 	res.status(200).json({ success: true, data: environment });
 });
@@ -21,7 +21,7 @@ exports.getCurrentEnvironment = asyncHandler(async (req, res, next) => {
 // @route: POST /api/v1/environments/setcurrent
 // @access: Private
 
-exports.setCurrentEnvironment = asyncHandler(async (req, res, next) => {
+exports.setCurrentEnvironment = asyncHandler(async (req, res) => {
 	const environment = await setCurrentEnvironmentHandler(req.user._id, req.body.id);
 	res.status(200).json({ success: true, data: environment });
 });

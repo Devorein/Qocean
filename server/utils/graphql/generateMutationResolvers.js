@@ -6,7 +6,7 @@ const deleteResource = require('../resource/deleteResource');
 const watchAction = require('../resource/watchAction');
 const addRatings = require('../resource/addRatings');
 
-module.exports = function(resource, transformedSchema) {
+module.exports = function(resource) {
 	const pluralizedResource = pluralize(resource, 2);
 	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
@@ -37,15 +37,15 @@ module.exports = function(resource, transformedSchema) {
 	};
 
 	if (resource.match(/(quiz|folder)/)) {
-		(MutationResolvers[`update${capitalizedResource}Ratings`] = async function(parent, { data }, ctx) {
+		MutationResolvers[`update${capitalizedResource}Ratings`] = async function(parent, { data }, ctx) {
 			return await addRatings(ctx[capitalizedResource], data, ctx.user.id, (err) => {
 				throw err;
 			});
-		}),
-			(MutationResolvers[`update${capitalizedResource}Watch`] = async function(parent, { ids }, ctx) {
-				user = await User.findById(ctx.user.id);
-				return await watchAction(pluralizedResource, { [pluralizedResource]: ids }, user);
-			});
+		};
+
+		MutationResolvers[`update${capitalizedResource}Watch`] = async function(parent, { ids }, { User, user }) {
+			return await watchAction(pluralizedResource, { [pluralizedResource]: ids }, await User.findById(user.id));
+		};
 	}
 
 	return MutationResolvers;

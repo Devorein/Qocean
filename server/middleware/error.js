@@ -1,6 +1,6 @@
 const ErrorResponse = require('../utils/errorResponse');
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, req, res) {
 	console.log(err.stack.red);
 
 	let error = { ...err };

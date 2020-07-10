@@ -11,7 +11,7 @@ const {
 // @desc     Update current user details
 // @route    PUT /api/v1/users/updateDetails
 // @access   Private
-exports.updateUserDetails = asyncHandler(async function(req, res, next) {
+exports.updateUserDetails = asyncHandler(async function(req, res) {
 	const user = await updateUserDetailsHandler(req.body, req.user._id);
 	res.status(200).json({
 		success: true,
@@ -22,11 +22,11 @@ exports.updateUserDetails = asyncHandler(async function(req, res, next) {
 // @desc: Upload user photo
 // @route: PUT /api/v1/users/:id/photo
 // @access: Private
-exports.userPhotoUpload = asyncHandler(async (req, res, next) => {
+exports.userPhotoUpload = asyncHandler(async (req, res) => {
 	res.status(200).json(res.imageUpload);
 });
 
-exports.getAllUsers = asyncHandler(async (req, res, next) => {
+exports.getAllUsers = asyncHandler(async (req, res) => {
 	const users = await UserModel.find({}).select('username');
 	res.status(200).json({ success: true, data: users });
 });
@@ -42,7 +42,7 @@ exports.updateUserPassword = asyncHandler(async function(req, res, next) {
 // @desc     Delete current user
 // @route    DELETE /api/v1/users
 // @access   Private
-exports.deleteUser = asyncHandler(async function(req, res, next) {
+exports.deleteUser = asyncHandler(async function(req, res) {
 	const user = await deleteUserHandler(req.user._id);
 	res.status(200).json({
 		success: true,
@@ -53,7 +53,7 @@ exports.deleteUser = asyncHandler(async function(req, res, next) {
 // @desc     Get current user
 // @route    GET /api/v1/users/me
 // @access   Private
-exports.getMe = asyncHandler(async (req, res, next) => {
+exports.getMe = asyncHandler(async (req, res) => {
 	const query = UserModel.findById(req.user._id);
 	populateQuery(query, req);
 	const user = await query;
@@ -63,7 +63,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 	});
 });
 
-exports.getUserTags = asyncHandler(async (req, res, next) => {
+exports.getUserTags = asyncHandler(async (req, res) => {
 	const data = await getUsersTagsHandler({ _id: req.params.id }, req.body);
 	res.status(200).json({
 		success: true,
@@ -71,7 +71,7 @@ exports.getUserTags = asyncHandler(async (req, res, next) => {
 	});
 });
 
-exports.getAllTags = asyncHandler(async (req, res, next) => {
+exports.getAllTags = asyncHandler(async (req, res) => {
 	const data = await getUsersTagsHandler({}, req.body);
 	res.status(200).json({
 		success: true,

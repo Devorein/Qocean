@@ -21,20 +21,17 @@ const TypedefsObj = {};
 const ResolversArr = [];
 const ResolversObj = {};
 
-TypedefsObj.Auth = AuthTypedef;
-TypedefsArr.push(AuthTypedef);
-ResolversObj.Auth = AuthResolvers;
-ResolversArr.push(AuthResolvers);
-
-TypedefsObj.Base = BaseTypedef;
-TypedefsArr.push(BaseTypedef);
-ResolversObj.Base = BaseResolvers;
-ResolversArr.push(BaseResolvers);
-
-TypedefsObj.External = ExternalTypeDef;
-TypedefsArr.push(...ExternalTypeDef);
-ResolversObj.External = ExternalResolvers;
-ResolversArr.push(ExternalResolvers);
+[
+	[ 'Auth', AuthTypedef, AuthResolvers ],
+	[ 'Base', BaseTypedef, BaseResolvers ],
+	[ 'External', ExternalTypeDef, ExternalResolvers ]
+].forEach(([ key, typedef, resolver ]) => {
+	TypedefsObj[key] = typedef;
+	if (Array.isArray(typedef)) TypedefsArr.push(...typedef);
+	else TypedefsArr.push(typedef);
+	ResolversObj[key] = resolver;
+	ResolversArr.push(resolver);
+});
 
 Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
 	ModelsObj[S(resource).capitalize().s] = model;

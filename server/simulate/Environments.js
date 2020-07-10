@@ -80,7 +80,7 @@ const createEnvironment = async ({ envs, users, total_users }) => {
 
 async function createEnvironments({ count, envs, users, total_users }) {
 	let created = 1;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const environmentsInterval = setInterval(async () => {
 			if (created <= count) {
 				await createEnvironment({ envs, users, total_users });

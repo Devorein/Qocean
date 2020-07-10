@@ -10,11 +10,11 @@ module.exports = function(resource, transformedSchema) {
 	const result = {};
 	Object.entries(target).forEach(([ basekey, value ]) => {
 		result[basekey] = {};
-		Object.entries(value).forEach(([ key, { value, variant, baseType, excludePartitions } ]) => {
+		Object.entries(value).forEach(([ key, { /* value, */ variant, baseType /* excludePartitions */ } ]) => {
 			if (variant.match(/(ref|refs)/)) {
 				result[basekey][key] = async function(parent, args, ctx) {
 					const model = ctx[baseType];
-					const auth_level = basekey.replace(resource, '');
+					// const auth_level = basekey.replace(resource, '');
 					const ids = parent[key];
 					const resources = [];
 					for (let i = 0; i < ids.length; i++) {

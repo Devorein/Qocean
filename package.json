@@ -12,12 +12,26 @@
   "license": "MIT",
   "scripts": {
     "client": "cd ./client && npm start",
-    "server": "cd ./server && npm start",
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "cd ./server && eslint ."
+    }
+  },
   "devDependencies": {
+    "@babel/register": "^7.10.4",
     "concurrently": "^5.2.0",
+    "eslint": "^7.4.0",
     "husky": "^4.2.5",
+    "jest": "^26.1.0",
     "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.0.0-rc.12",
+    "axios": "^0.19.2",
+    "colors": "^1.4.0",
+    "graphql": "^15.3.0",
+    "lodash": "^4.17.19"
   }
 }

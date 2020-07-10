@@ -47,11 +47,11 @@ exports.deleteQuizzes = asyncHandler(async (req, res, next) => {
 // @desc: Upload a single quiz photo
 // @route: PUT /api/v1/quizzes/:id/photo
 // @access: Private
-exports.quizPhotoUpload = asyncHandler(async (req, res, next) => {
+exports.quizPhotoUpload = asyncHandler(async (req, res) => {
 	res.status(200).json(res.imageUpload);
 });
 
-exports.updatePlayedTimes = asyncHandler(async (req, res, next) => {
+exports.updatePlayedTimes = asyncHandler(async (req, res) => {
 	const total_updated = await updatePlayedTimesHandler(req.body, req.user._id);
 	res.status(200).json({ success: true, total_updated });
 });
@@ -61,7 +61,7 @@ exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, ratingsData });
 });
 
-exports.playPageQuiz = asyncHandler(async (req, res, next) => {
+exports.playPageQuiz = asyncHandler(async (req, res) => {
 	const quizzes = await QuizModel.find({ user: req.user._id })
 		.populate({
 			path: 'questions',
@@ -71,7 +71,7 @@ exports.playPageQuiz = asyncHandler(async (req, res, next) => {
 	res.status(200).json({ success: true, data: quizzes });
 });
 
-exports.watchQuizzes = asyncHandler(async (req, res, next) => {
+exports.watchQuizzes = asyncHandler(async (req, res) => {
 	const manipulated = await watchAction('quizzes', req.body, req.user);
 	res.status(200).json({ success: true, data: manipulated });
 });
