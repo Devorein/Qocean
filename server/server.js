@@ -13,6 +13,14 @@ const mongoSanitize = require('express-mongo-sanitize');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { ApolloServer } = require('apollo-server-express');
 
+let mode = null;
+process.argv.forEach((arg) => {
+	if (arg.startsWith('--MODE')) mode = arg.split('=')[1];
+	else if (arg.startsWith('server')) mode = arg.split(':')[1];
+});
+
+dotenv.config({ path: `./config/${mode}.env` });
+
 const { Models, Typedefs, Resolvers, Routes } = require('./resource');
 
 const errorHandler = require('./middleware/error');
@@ -20,8 +28,6 @@ const connectDB = require('./config/db');
 const { validate } = require('./middleware/auth');
 const reportGraphql = require('./utils/reportGraphql');
 const generateLimiter = require('./utils/generateLimiter');
-
-dotenv.config({ path: './config/config.env' });
 
 connectDB();
 

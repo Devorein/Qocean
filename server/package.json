@@ -5,7 +5,9 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "nodemon ./server.js"
+    "server:test": "nodemon ./server.js --MODE=test",
+    "server:dev": "nodemon ./server.js --MODE=dev",
+    "server:prod": "nodemon ./server.js --MODE=prod"
   },
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",

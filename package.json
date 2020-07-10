@@ -12,7 +12,9 @@
   "license": "MIT",
   "scripts": {
     "client": "cd ./client && npm start",
-    "server": "cd ./server && npm start",
+    "server:test": "cd ./server && npm start server:test",
+    "server:dev": "cd ./server && npm start server:dev",
+    "server:prod": "cd ./server && npm start server:prod",
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
   "devDependencies": {
