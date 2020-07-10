@@ -17,6 +17,11 @@
     "server:prod": "cd ./server && npm run server:prod",
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "cd ./server && eslint ."
+    }
+  },
   "devDependencies": {
     "concurrently": "^5.2.0",
     "eslint": "^7.4.0",
