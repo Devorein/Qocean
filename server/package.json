@@ -8,7 +8,7 @@
     "server:test": "npx nodemon ./server.js --MODE=test",
     "server:dev": "npx nodemon ./server.js --MODE=dev",
     "server:prod": "npx nodemon ./server.js --MODE=prod",
-    "test": "npx env-cmd -f ./config/test.env ./node_modules/.bin/parent/node_modules/.bin/jest --runInBand"
+    "test": "npx env-cmd -f ./config/test.env npx jest --runInBand"
   },
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",
