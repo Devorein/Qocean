@@ -3,5 +3,7 @@ module.exports = {
 	displayName: {
 		name: 'SERVER',
 		color: 'green'
-	}
+	},
+	globalSetup: './tests/globalSetup.js',
+	globalTeardown: './tests/globalTeardown.js'
 };
