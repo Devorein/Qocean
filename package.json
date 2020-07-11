@@ -1,7 +1,7 @@
 {
   "name": "qocean",
   "version": "1.0.0",
-  "description": "MERN App for creating killer quizzes",
+  "description": "MERN App for creating awesome quizzes",
   "repository": {
     "type": "git",
     "url": "git+https://github.com:Devorein/Qocean.git"
@@ -11,12 +11,13 @@
   "author": "Devon Reid <devorein00@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "postinstall": "node ./utils/linkParentBin.js",
     "client": "cd ./client && npm start",
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
   "husky": {
     "hooks": {
-      "pre-commit": "cd ./server && eslint ."
+      "pre-commit": "cd ./server && npx eslint ."
     }
   },
   "devDependencies": {
@@ -25,13 +26,17 @@
     "eslint": "^7.4.0",
     "husky": "^4.2.5",
     "jest": "^26.1.0",
-    "nodemon": "^2.0.4"
+    "link-parent-bin": "^1.0.2"
   },
   "dependencies": {
     "@apollo/client": "^3.0.0-rc.12",
     "axios": "^0.19.2",
     "colors": "^1.4.0",
+    "fs-extra": "^9.0.1",
     "graphql": "^15.3.0",
-    "lodash": "^4.17.19"
+    "lodash": "^4.17.19",
+    "mkdirp": "^1.0.4",
+    "move-file": "^2.0.0",
+    "rimraf": "^3.0.2"
   }
 }
