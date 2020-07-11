@@ -1,14 +1,14 @@
 {
   "name": "qocean-server",
   "version": "1.0.0",
-  "description": "MERN App for creating killer quizzes",
+  "description": "",
   "main": "index.js",
   "private": true,
   "scripts": {
     "server:test": "npx nodemon ./server.js --MODE=test",
     "server:dev": "npx nodemon ./server.js --MODE=dev",
     "server:prod": "npx nodemon ./server.js --MODE=prod",
-    "test": "npx env-cmd -f ./config/test.env node ./experiment/index.js"
+    "test": "npx env-cmd -f ./config/test.env ./node_modules/.bin/parent/node_modules/.bin/jest --runInBand"
   },
   "keywords": [],
   "author": "Devon Reid <devorein00@gmail.com>",

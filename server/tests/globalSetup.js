@@ -1,8 +1,7 @@
-require('@babel/register');
+const GRAPHQL_SERVER = require('../servers/graphql');
 
-const server = require('../server');
-
+console.log('Test started');
 module.exports = async () => {
-	global.httpServer = server;
-	await global.httpServer.listen();
+	global.GRAPHQL_SERVER = GRAPHQL_SERVER;
+	await global.GRAPHQL_SERVER.listen();
 };
