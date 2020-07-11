@@ -16,7 +16,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "cd ./server && eslint ."
+      "pre-commit": "cd ./server && npx eslint ."
     }
   },
   "devDependencies": {
@@ -24,8 +24,7 @@
     "concurrently": "^5.2.0",
     "eslint": "^7.4.0",
     "husky": "^4.2.5",
-    "jest": "^26.1.0",
-    "nodemon": "^2.0.4"
+    "jest": "^26.1.0"
   },
   "dependencies": {
     "@apollo/client": "^3.0.0-rc.12",

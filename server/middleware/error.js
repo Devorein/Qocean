@@ -1,7 +1,8 @@
 const ErrorResponse = require('../utils/errorResponse');
+const colors = require('colors');
 
 function errorHandler(err, req, res) {
-	console.log(err.stack.red);
+	colors.red(console.log(err.stack));
 
 	let error = { ...err };
 	error.message = err.message;
