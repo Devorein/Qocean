@@ -12,6 +12,9 @@ const AuthResolvers = require('./resolvers/auth');
 const BaseTypedef = require('./typedefs/Base');
 const BaseResolvers = require('./resolvers/base');
 
+const PreTransformedTypeDefsASTs = require('./typedefs');
+const PreTransformedResolvers = require('./resolvers');
+
 const ModelsArr = [];
 const ModelsObj = {};
 const SchemasArr = [];
@@ -25,19 +28,12 @@ Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
 });
 
 const mongql = new Mongql({
-	Schemas: SchemasArr
+	Schemas: SchemasArr,
+	Typedefs: PreTransformedTypeDefsASTs,
+	Resolvers: PreTransformedResolvers
 });
 
-const resources = mongql.getResources();
-const typedefsASTs = {};
-const PreTransformedResolvers = {};
-
-resources.forEach((resource) => {
-	typedefsASTs[resource] = require(`./typedefs/${resource}.js`);
-	PreTransformedResolvers[resource] = require(`./resolvers/${resource}`);
-});
-
-const { TransformedResolvers, TransformedTypedefs } = mongql.generate(typedefsASTs, PreTransformedResolvers);
+const { TransformedResolvers, TransformedTypedefs } = mongql.generate();
 
 const TypedefsArr = TransformedTypedefs.arr;
 const TypedefsObj = TransformedTypedefs.obj;

@@ -1,5 +1,5 @@
 const generateTypedefs = require('./generateTypedefs');
-const generateResolvers = require('../../resolvers');
+const generateResolvers = require('./generateResolvers');
 
 class Mongql {
   #resources = [];
@@ -15,16 +15,16 @@ class Mongql {
 	}
 
   getResources = () => this.#resources;
-	generate(typedefsASTs) {
+	generate() {
 		const TransformedTypedefs = { obj: {}, arr: [] },
     TransformedResolvers = { obj: {}, arr: [] };
-		const { Schemas } = this.options;
+    const { Typedefs,Resolvers,Schemas } = this.options;
 		Schemas.forEach((schema) => {
 			const { mongql: { generate, resource } } = schema;
-			const { typedefsAST, transformedSchema } = generateTypedefs(resource, generate,typedefsASTs[resource]);
+			const { typedefsAST, transformedSchema } = generateTypedefs(resource, generate,Typedefs[resource]);
 			TransformedTypedefs.obj[resource] = typedefsAST;
 			TransformedTypedefs.arr.push(typedefsAST);
-			const resolver = generateResolvers(resource, generate, transformedSchema);
+			const resolver = generateResolvers(resource, generate, transformedSchema,Resolvers[resource]);
 			TransformedResolvers.obj[resource] = resolver;
 			TransformedResolvers.arr.push(resolver);
 		});

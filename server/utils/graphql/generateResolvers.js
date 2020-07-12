@@ -1,7 +1,7 @@
-const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
-const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-const resolverCompose = require('../utils/resolverCompose');
+const generateQueryResolvers = require('./generateQueryResolvers');
+const generateMutationResolvers = require('./generateMutationResolvers');
+const generateTypeResolvers = require('./generateTypeResolvers');
+const resolverCompose = require('../resolverCompose');
 
 function transformResolvers(resolver, generate, resource, transformedSchema) {
 	if (generate !== false) {
