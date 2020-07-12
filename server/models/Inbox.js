@@ -4,14 +4,14 @@ const InboxSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -29,15 +29,17 @@ const InboxSchema = new mongoose.Schema({
 	// ]
 });
 
-InboxSchema.global_configs = {
-	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
-	}
-};
 InboxSchema.mongql = {
 	generate: {
 		type: true
+	},
+	resource: 'inbox',
+	global_configs: {
+		global_excludePartitions: {
+			base: [ 'Others', 'Mixed' ]
+		}
 	}
 };
+
 module.exports.InboxSchema = InboxSchema;
 module.exports.InboxModel = mongoose.model('Inbox', InboxSchema);

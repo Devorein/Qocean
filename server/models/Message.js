@@ -5,21 +5,21 @@ const MessageSchema = new mongoose.Schema({
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	inbox: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox',
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -32,15 +32,15 @@ const MessageSchema = new mongoose.Schema({
 	// }
 });
 
-MessageSchema.global_configs = {
-	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
-	}
-};
-
 MessageSchema.mongql = {
 	generate: {
 		type: true
+	},
+	resource: 'message',
+	global_configs: {
+		global_excludePartitions: {
+			base: [ 'Others', 'Mixed' ]
+		}
 	}
 };
 

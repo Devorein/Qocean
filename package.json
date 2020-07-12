@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@babel/register": "^7.10.4",
+    "babel-eslint": "^10.1.0",
     "concurrently": "^5.2.0",
     "eslint": "^7.4.0",
     "husky": "^4.2.5",

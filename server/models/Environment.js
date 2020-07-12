@@ -6,7 +6,7 @@ const PageInfo = {
 	default_ipp: {
 		type: Number,
 		default: 15,
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	},
@@ -40,7 +40,7 @@ const QuestionInfo = new mongoose.Schema({
 		default: 30,
 		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
 		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	},
@@ -49,7 +49,7 @@ const QuestionInfo = new mongoose.Schema({
 		default: 1,
 		min: [ 1, 'Weight cant be less than 1' ],
 		max: [ 10, 'Weight cant be less than 10' ],
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	}
@@ -104,28 +104,28 @@ const envSchema = {
 		default: 2500,
 		min: 1000,
 		max: 5000,
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	},
 	default_tag_color: {
 		type: String,
 		default: '#000',
-		graphql: {
+		mongql: {
 			scalar: 'HexColorCode'
 		}
 	},
 	primary_color: {
 		type: String,
 		default: '#3f51b5',
-		graphql: {
+		mongql: {
 			scalar: 'HexColorCode'
 		}
 	},
 	secondary_color: {
 		type: String,
 		default: '#f50057',
-		graphql: {
+		mongql: {
 			scalar: 'HexColorCode'
 		}
 	},
@@ -181,7 +181,8 @@ EnvironmentSchema.pre('remove', async function(next) {
 });
 
 EnvironmentSchema.mongql = {
-	generate: true
+	generate: true,
+	resource: 'environment'
 };
 
 exports.EnvironmentSchema = EnvironmentSchema;

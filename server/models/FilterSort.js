@@ -38,7 +38,7 @@ const FilterSortSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		required: true,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -60,11 +60,13 @@ FilterSortSchema.mongql = {
 	generate: {
 		mutation: true,
 		type: true
+	},
+	resource: 'filtersort',
+	global_configs: {
+		global_excludePartitions: {
+			base: [ 'Others', 'Mixed' ]
+		}
 	}
 };
-FilterSortSchema.global_configs = {
-	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
-	}
-};
+
 module.exports.FilterSortModel = mongoose.model('Filtersort', FilterSortSchema);

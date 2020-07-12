@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
 		minlength: [ 3, 'User name cant be less than 3 characters long' ],
 		maxlength: [ 18, 'User name cant be more than 18 characters long' ],
 		unique: true,
-		graphql: {
+		mongql: {
 			scalar: 'Username'
 		}
 	},
@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: [ true, 'Please add an email' ],
 		unique: true,
-		graphql: {
+		mongql: {
 			scalar: 'EmailAddress'
 		}
 	},
@@ -31,33 +31,33 @@ const UserSchema = new mongoose.Schema({
 		required: [ true, 'Please add a password' ],
 		minlength: [ 6, 'Password must be greater than six characters' ],
 		select: false,
-		graphql: {
+		mongql: {
 			scalar: 'Password'
 		}
 	},
 	resetPasswordToken: {
 		type: String,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	resetPasswordExpire: {
 		type: Date,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	joined_at: {
 		type: Date,
 		default: Date.now,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	total_folders: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -65,7 +65,7 @@ const UserSchema = new mongoose.Schema({
 	total_questions: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -73,7 +73,7 @@ const UserSchema = new mongoose.Schema({
 	total_quizzes: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -81,7 +81,7 @@ const UserSchema = new mongoose.Schema({
 	total_environments: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -90,7 +90,7 @@ const UserSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'Environment',
 		required: true,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -103,7 +103,7 @@ const UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Environment',
-			graphql: {
+			mongql: {
 				writable: false
 			}
 		}
@@ -112,7 +112,7 @@ const UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Quiz',
-			graphql: {
+			mongql: {
 				writable: false
 			}
 		}
@@ -121,7 +121,7 @@ const UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Question',
-			graphql: {
+			mongql: {
 				writable: false
 			}
 		}
@@ -130,7 +130,7 @@ const UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Folder',
-			graphql: {
+			mongql: {
 				writable: false
 			}
 		}
@@ -139,7 +139,7 @@ const UserSchema = new mongoose.Schema({
 	inbox: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox',
-		graphql: {
+		mongql: {
 			excludePartitions: [ 'Mixed', 'Others' ],
 			writable: false
 		}
@@ -148,7 +148,7 @@ const UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Report',
-			graphql: {
+			mongql: {
 				excludePartitions: [ 'Mixed', 'Others' ],
 				writable: false
 			}
@@ -157,7 +157,7 @@ const UserSchema = new mongoose.Schema({
 	watchlist: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Watchlist',
-		graphql: {
+		mongql: {
 			excludePartitions: [ 'Mixed', 'Others' ],
 			writable: false
 		}
@@ -166,7 +166,7 @@ const UserSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Filtersort',
-			graphql: {
+			mongql: {
 				excludePartitions: [ 'Mixed', 'Others' ],
 				writable: false
 			}
@@ -178,7 +178,8 @@ UserSchema.mongql = {
 	generate: {
 		type: true,
 		query: true
-	}
+	},
+	resource: 'user'
 };
 
 UserSchema.methods.getSignedJwtToken = function() {

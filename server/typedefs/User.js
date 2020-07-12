@@ -15,7 +15,7 @@ module.exports = gql`
     image: String
   }
 
-  input updateUserPasswordInput{
+  input UpdateUserPasswordInput{
     currentPassword: Password!
     newPassword: Password!
   }
@@ -50,7 +50,7 @@ module.exports = gql`
     updateUserDetails(data: UpdateUserDetailsInput!): SelfUserType!
 
     "Update user password"
-    updateUserPassword(data:updateUserPasswordInput!): AuthPayload!
+    updateUserPassword(data:UpdateUserPasswordInput!): AuthPayload!
 
     "Delete user"
     deleteUser: SelfUserType!

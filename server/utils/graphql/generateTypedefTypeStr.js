@@ -12,8 +12,8 @@ function populateObjDefaultValue(obj, fields) {
 }
 
 function createDefaultConfigs(baseSchema) {
-	if (!baseSchema.global_configs) baseSchema.global_configs = {};
-	const { global_configs } = baseSchema;
+	if (!baseSchema.mongql.global_configs) baseSchema.mongql.global_configs = {};
+	const { global_configs } = baseSchema.mongql;
 
 	if (global_configs.global_excludePartitions === undefined) {
 		global_configs.global_excludePartitions = {
@@ -45,12 +45,12 @@ function createDefaultConfigs(baseSchema) {
 module.exports = function(resource, baseSchema, Validators) {
 	const capitalizedResource = S(resource).capitalize().s;
 
-	function parseScalarType(value, { graphql }, path) {
+	function parseScalarType(value, { mongql }, path) {
 		const isArray = Array.isArray(value);
 		const target = isArray ? value[0] : value;
 		let type = null;
-		if (graphql.scalar) {
-			type = graphql.scalar;
+		if (mongql.scalar) {
+			type = mongql.scalar;
 			baseSchema.path(path).validate((v) => {
 				const value = Validators[type](v);
 				return value !== null && value !== undefined;
@@ -65,7 +65,7 @@ module.exports = function(resource, baseSchema, Validators) {
 		else if (type === 'Double') type = 'Float';
 
 		if (type === 'ObjectId') type = 'ID';
-		type = isArray || Array.isArray(value.type) ? `[${type}${graphql.type[1] ? '!' : ''}]` : type;
+		type = isArray || Array.isArray(value.type) ? `[${type}${mongql.type[1] ? '!' : ''}]` : type;
 		return type;
 	}
 
@@ -78,7 +78,7 @@ module.exports = function(resource, baseSchema, Validators) {
 		global_excludePartitions,
 		generateInterface,
 		appendRTypeToEmbedTypesKey
-	} = baseSchema.global_configs;
+	} = baseSchema.mongql.global_configs;
 
 	const inputs = {};
 	const enums = {};
@@ -111,8 +111,8 @@ module.exports = function(resource, baseSchema, Validators) {
 	types.extra = {};
 
 	// ? Combine base and extra type functions
-	function populateBaseTypes(key, value, { variant, baseType = null, graphql, isArray }) {
-		const { excludePartitions, partitionMapper } = graphql;
+	function populateBaseTypes(key, value, { variant, baseType = null, mongql, isArray }) {
+		const { excludePartitions, partitionMapper } = mongql;
 		function populate(part) {
 			let new_value =
 				global_excludePartitions.base !== true && excludePartitions !== true && variant.match(/(ref)/)
@@ -156,8 +156,8 @@ module.exports = function(resource, baseSchema, Validators) {
 	}
 
 	function extractFieldOptions(value, parentKey, isArray) {
-		const { graphql = {}, required = false } = value;
-		populateObjDefaultValue(graphql, {
+		const { mongql = {}, required = false } = value;
+		populateObjDefaultValue(mongql, {
 			type: isArray ? [ true, true ] : [ true ],
 			input: isArray ? [ true, true ] : [ true ],
 			writable: global_inputs.base,
@@ -169,13 +169,13 @@ module.exports = function(resource, baseSchema, Validators) {
 			Mixed: 'Mixed',
 			Others: 'Others',
 			Self: 'Self',
-			...graphql.partitionMapper
+			...mongql.partitionMapper
 		};
 
-		graphql.partitionMapper = newPartitionMapper;
+		mongql.partitionMapper = newPartitionMapper;
 
 		return {
-			graphql,
+			mongql,
 			required
 		};
 	}
@@ -213,7 +213,7 @@ module.exports = function(resource, baseSchema, Validators) {
 	}
 
 	function transformTypes([ field_type, input_type ], extractedFieldOptions) {
-		const { graphql: { input }, isArray, required } = extractedFieldOptions;
+		const { mongql: { input }, isArray, required } = extractedFieldOptions;
 		const transformed_field_type = isArray
 			? `[${field_type}${input[1] ? '!' : ''}]${input[0] ? '!' : ''}`
 			: `${field_type}${input[0] ? '!' : ''}`;
@@ -231,7 +231,7 @@ module.exports = function(resource, baseSchema, Validators) {
 			value = isArray ? value[0] : value;
 			const extractedFieldOptions = extractFieldOptions(value, parentKey, isArray);
 			const variant = generateVariant(value, isArray);
-			const { graphql: { writable } } = extractedFieldOptions;
+			const { mongql: { writable } } = extractedFieldOptions;
 			let { field_type, input_type, baseType } = generateType(variant, value, extractedFieldOptions, key, path);
 			let input_key = parentKey ? parentKey.replace('Type', 'Input') : capitalizedResource + 'Input';
 
@@ -279,7 +279,7 @@ module.exports = function(resource, baseSchema, Validators) {
 
 	let typedefTypeStr = ``;
 	typeArrs.forEach((typeArr) => (typedefTypeStr += generateTypeStr(typeArr)));
-	// fs.writeFile(path.join(dirname, `${resource}.graphql`), `# ${Date.now()}\n${typedefTypeStr}`, 'UTF-8', () => {});
+	// fs.writeFile(path.join(dirname, `${resource}.mongql`), `# ${Date.now()}\n${typedefTypeStr}`, 'UTF-8', () => {});
 	// fs.writeFile(path.join(dirname, `${resource}.json`), JSON.stringify(schemaObj, null, 2), 'UTF-8', () => {});
 	return {
 		typedefTypeStr,

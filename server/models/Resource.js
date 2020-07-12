@@ -4,7 +4,7 @@ const ResourceSchema = new mongoose.Schema({
 	favourite: {
 		type: Boolean,
 		default: false,
-		graphql: {
+		mongql: {
 			excludePartitions: [ 'Others', 'Mixed' ]
 		}
 	},
@@ -12,21 +12,21 @@ const ResourceSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		required: [ true, 'Please provide an user' ],
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	public: {
 		type: Boolean,
 		default: true,
-		graphql: {
+		mongql: {
 			excludePartitions: [ 'Others', 'Mixed' ]
 		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now,
-		graphql: {
+		mongql: {
 			writable: false,
 			excludePartitions: [ 'Others', 'Mixed' ]
 		}
@@ -34,7 +34,7 @@ const ResourceSchema = new mongoose.Schema({
 	updated_at: {
 		type: Date,
 		default: Date.now,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	}

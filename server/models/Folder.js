@@ -12,7 +12,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	ratings: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -25,7 +25,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	total_quizzes: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -33,7 +33,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	total_questions: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -52,7 +52,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
-			graphql: {
+			mongql: {
 				partitionMapper: {
 					Self: 'Others'
 				},
@@ -65,7 +65,8 @@ const FolderSchema = extendSchema(ResourceSchema, {
 
 exports.FolderSchema = FolderSchema;
 FolderSchema.mongql = {
-	generate: true
+	generate: true,
+	resource: 'folder'
 };
 
 FolderSchema.methods.manipulateQuiz = async function(shouldAdd, quizId) {
