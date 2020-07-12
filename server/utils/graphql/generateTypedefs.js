@@ -4,10 +4,10 @@ const {
 	transformTypedefTypesAST,
 	transformTypedefQueryAST,
 	transformTypedefMutationAST
-} = require('../utils/ast/transformGraphqlAST');
+} = require('../ast/transformGraphqlAST');
 
-const Password = require('../types/password');
-const Username = require('../types/username');
+const Password = require('../../types/password');
+const Username = require('../../types/username');
 
 const Validators = {};
 
@@ -19,9 +19,9 @@ Validators.Password = Password.serialize;
 Validators.Username = Username.serialize;
 Object.freeze(Validators);
 
-const generateTypedefQueryStr = require('../utils/graphql/generateTypedefQueryStr');
-const generateTypedefMutationStr = require('../utils/graphql/generateTypedefMutationStr');
-const generateTypedefTypeStr = require('../utils/graphql/generateTypedefTypeStr');
+const generateTypedefQueryStr = require('./generateTypedefQueryStr');
+const generateTypedefMutationStr = require('./generateTypedefMutationStr');
+const generateTypedefTypeStr = require('./generateTypedefTypeStr');
 
 function transformTypeDefs(typedefsAST, generate, resource) {
 	if (generate !== false) {
@@ -45,8 +45,7 @@ function transformTypeDefs(typedefsAST, generate, resource) {
 	} else return { typedefsAST, transformedSchema: {} };
 }
 
-module.exports = function(resource, generate) {
-	let typedefsAST = require(`./${resource}.js`);
+module.exports = function(resource, generate, typedefsAST) {
 	if (typedefsAST === null)
 		typedefsAST = {
 			kind: 'Document',
