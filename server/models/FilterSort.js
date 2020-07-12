@@ -60,7 +60,8 @@ FilterSortSchema.mongql = {
 	generate: {
 		mutation: true,
 		type: true
-	}
+	},
+	resource: 'filtersort'
 };
 FilterSortSchema.global_configs = {
 	global_excludePartitions: {

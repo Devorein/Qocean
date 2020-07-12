@@ -33,7 +33,8 @@ exports.WatchlistSchema = WatchlistSchema;
 WatchlistSchema.mongql = {
 	generate: {
 		type: true
-	}
+	},
+	resource: 'watchlist'
 };
 
 WatchlistSchema.global_configs = {

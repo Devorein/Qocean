@@ -94,7 +94,8 @@ const ReportSchema = new mongoose.Schema({
 ReportSchema.mongql = {
 	generate: {
 		type: true
-	}
+	},
+	resource: 'report'
 };
 
 ReportSchema.global_configs = {

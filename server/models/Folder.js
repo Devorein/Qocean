@@ -65,7 +65,8 @@ const FolderSchema = extendSchema(ResourceSchema, {
 
 exports.FolderSchema = FolderSchema;
 FolderSchema.mongql = {
-	generate: true
+	generate: true,
+	resource: 'folder'
 };
 
 FolderSchema.methods.manipulateQuiz = async function(shouldAdd, quizId) {

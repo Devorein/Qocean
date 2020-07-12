@@ -117,7 +117,8 @@ const QuizSchema = extendSchema(ResourceSchema, {
 });
 
 QuizSchema.mongql = {
-	generate: true
+	generate: true,
+	resource: 'quiz'
 };
 
 QuizSchema.statics.validate = async function(quiz) {

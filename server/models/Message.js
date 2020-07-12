@@ -41,7 +41,8 @@ MessageSchema.global_configs = {
 MessageSchema.mongql = {
 	generate: {
 		type: true
-	}
+	},
+	resource: 'message'
 };
 
 module.exports.MessageSchema = MessageSchema;

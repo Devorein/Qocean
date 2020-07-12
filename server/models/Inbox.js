@@ -37,7 +37,8 @@ InboxSchema.global_configs = {
 InboxSchema.mongql = {
 	generate: {
 		type: true
-	}
+	},
+	resource: 'inbox'
 };
 module.exports.InboxSchema = InboxSchema;
 module.exports.InboxModel = mongoose.model('Inbox', InboxSchema);

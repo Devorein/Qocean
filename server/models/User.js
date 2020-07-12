@@ -178,7 +178,8 @@ UserSchema.mongql = {
 	generate: {
 		type: true,
 		query: true
-	}
+	},
+	resource: 'user'
 };
 
 UserSchema.methods.getSignedJwtToken = function() {
