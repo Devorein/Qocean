@@ -4,6 +4,7 @@ module.exports = {
 		name: 'SERVER',
 		color: 'green'
 	},
+	testEnvironment: 'node',
 	globalSetup: './tests/globalSetup.js',
 	globalTeardown: './tests/globalTeardown.js'
 };
