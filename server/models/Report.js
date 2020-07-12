@@ -26,7 +26,7 @@ const ReportSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
-		graphql: {
+		mongql: {
 			type: [ false ]
 		}
 	},
@@ -34,49 +34,49 @@ const ReportSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		required: true,
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	average_points: {
 		type: Number,
 		required: true,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt'
 		}
 	},
 	average_time: {
 		type: Number,
 		required: true,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt'
 		}
 	},
 	correct: {
 		type: Number,
 		required: true,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt'
 		}
 	},
 	incorrect: {
 		type: Number,
 		required: true,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt'
 		}
 	},
 	total: {
 		type: Number,
 		required: true,
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -95,12 +95,11 @@ ReportSchema.mongql = {
 	generate: {
 		type: true
 	},
-	resource: 'report'
-};
-
-ReportSchema.global_configs = {
-	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
+	resource: 'report',
+	global_configs: {
+		global_excludePartitions: {
+			base: [ 'Others', 'Mixed' ]
+		}
 	}
 };
 

@@ -16,7 +16,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		max: 10,
 		min: 0,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -25,7 +25,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 0,
 		min: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -33,7 +33,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	average_quiz_time: {
 		type: Number,
 		default: 30,
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt',
 			writable: false
 		}
@@ -42,7 +42,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		type: String,
 		default: 'Beginner',
 		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -65,7 +65,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	total_questions: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -73,7 +73,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	total_folders: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -82,7 +82,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Question',
-			graphql: {
+			mongql: {
 				writable: false
 			}
 		}
@@ -96,7 +96,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	total_played: {
 		type: Number,
 		default: 0,
-		graphql: {
+		mongql: {
 			scalar: 'NonNegativeInt',
 			writable: false
 		}
@@ -105,7 +105,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'User',
-			graphql: {
+			mongql: {
 				partitionMapper: {
 					Self: 'Others'
 				},

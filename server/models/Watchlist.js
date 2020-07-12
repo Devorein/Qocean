@@ -4,14 +4,14 @@ const WatchlistSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		graphql: {
+		mongql: {
 			writable: false
 		}
 	},
@@ -34,15 +34,15 @@ WatchlistSchema.mongql = {
 	generate: {
 		type: true
 	},
-	resource: 'watchlist'
-};
-
-WatchlistSchema.global_configs = {
-	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
-	},
-	global_inputs: {
-		base: false
+	resource: 'watchlist',
+	global_configs: {
+		global_excludePartitions: {
+			base: [ 'Others', 'Mixed' ]
+		},
+		global_inputs: {
+			base: false
+		}
 	}
 };
+
 module.exports.WatchlistModel = mongoose.model('Watchlist', WatchlistSchema);

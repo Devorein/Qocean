@@ -25,7 +25,7 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		default: 1,
 		min: [ 1, 'Weight cannot be less than 1' ],
 		max: [ 10, 'Weight cannot be more than 10' ],
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	},
@@ -43,7 +43,7 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		default: 30,
 		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
 		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
-		graphql: {
+		mongql: {
 			scalar: 'PositiveInt'
 		}
 	},
