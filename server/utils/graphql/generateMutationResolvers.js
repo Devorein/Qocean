@@ -9,6 +9,9 @@ module.exports = function(resource, transformedSchema, MutationResolversTransfor
 	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
 
+	const { mongql } = transformedSchema;
+	console.log(mongql.mutations);
+
 	const MutationResolvers = {
 		[`create${capitalizedResource}`]: async function(parent, { data }, ctx) {
 			return await createResource(ctx[capitalizedResource], ctx.user.id, data);

@@ -4,11 +4,11 @@ const {
 	transformTypedefMutationAST
 } = require('../ast/transformGraphqlAST');
 
-const generateTypedefQueryStr = require('./generateTypedefQueryStr');
-const generateTypedefMutationStr = require('./generateTypedefMutationStr');
-const generateTypedefTypeStr = require('./generateTypedefTypeStr');
+const generateQueryTypedefs = require('./generateQueryTypedefs');
+const generateMutationTypedefs = require('./generateMutationTypedefs');
+const generateTypeTypedefs = require('./generateTypeTypedefs');
 
-function transformTypeDefs(typedefsAST, generate, resource, TypedefsTransformers, mutationOpt, Validators) {
+function transformTypeDefs(schema, typedefsAST, generate, resource, TypedefsTransformers, mutationOpt, Validators) {
 	if (generate !== false) {
 		if (generate === true)
 			generate = {
@@ -19,22 +19,30 @@ function transformTypeDefs(typedefsAST, generate, resource, TypedefsTransformers
 		const { type = false, query = false, mutation = false } = generate;
 		let transformedSchema = {};
 		if (type) {
-			const generatedTypeTypedef = generateTypedefTypeStr(resource, null, Validators);
+			const generatedTypeTypedef = generateTypeTypedefs(resource, schema, Validators);
 			const { typedefTypeStr } = generatedTypeTypedef;
 			transformedSchema = generatedTypeTypedef.transformedSchema;
 			transformTypedefTypesAST(typedefsAST, typedefTypeStr);
 		}
-		if (query) transformTypedefQueryAST(typedefsAST, generateTypedefQueryStr(resource, transformedSchema));
+		if (query) transformTypedefQueryAST(typedefsAST, generateQueryTypedefs(resource, transformedSchema));
 		if (mutation)
 			transformTypedefMutationAST(
 				typedefsAST,
-				generateTypedefMutationStr(resource, transformedSchema, TypedefsTransformers.mutations, mutationOpt)
+				generateMutationTypedefs(resource, transformedSchema, TypedefsTransformers.mutations, mutationOpt)
 			);
 		return { typedefsAST, transformedSchema };
 	} else return { typedefsAST, transformedSchema: {} };
 }
 
-module.exports = function(resource, generate, typedefsAST, TypedefsTransformers, TypeDefMutationOptions, Validators) {
+module.exports = function(
+	resource,
+	schema,
+	generate,
+	typedefsAST,
+	TypedefsTransformers,
+	TypeDefMutationOptions,
+	Validators
+) {
 	let mutationOpt = {
 		create: true,
 		creates: true,
@@ -54,6 +62,7 @@ module.exports = function(resource, generate, typedefsAST, TypedefsTransformers,
 			definitions: []
 		};
 	return transformTypeDefs(
+		schema,
 		typedefsAST,
 		generate,
 		resource.toLowerCase(),

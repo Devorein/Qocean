@@ -182,7 +182,10 @@ EnvironmentSchema.pre('remove', async function(next) {
 
 EnvironmentSchema.mongql = {
 	generate: true,
-	resource: 'environment'
+	resource: 'environment',
+	mutations: {
+		create: false
+	}
 };
 
 exports.EnvironmentSchema = EnvironmentSchema;
