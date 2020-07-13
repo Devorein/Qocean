@@ -289,7 +289,7 @@ module.exports = function(resource, baseSchema, Validators) {
 			types,
 			enums,
 			fields,
-			options: baseSchema.global_configs
+			mongql: baseSchema.mongql
 		}
 	};
 };

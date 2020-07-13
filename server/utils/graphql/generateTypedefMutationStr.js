@@ -1,11 +1,10 @@
 const pluralize = require('pluralize');
 const S = require('String');
 
-module.exports = function(resource /* transformedSchema */) {
+module.exports = function(resource, transformedSchema, TypedefsMutationTransformers) {
 	const capitalizedResource = S(resource).capitalize().s;
 	const pluralizedResource = pluralize(resource, 2);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
-	// const target = transformedSchema.options;
 	let mutations = `
     "Create a new ${resource}"
     create${capitalizedResource}(data: ${capitalizedResource}Input!): Self${capitalizedResource}Type!
@@ -22,15 +21,8 @@ module.exports = function(resource /* transformedSchema */) {
     "Delete multiple ${pluralizedResource}"
     delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}Type!]!
   `;
-	if (resource.match(/(quiz|folder)/)) {
-		mutations += `
-    "Update ${resource} ratings"
-    update${capitalizedResource}Ratings(data:RatingsInput!): [RatingsOutput!]!
 
-    "Update ${resource} watch"
-    update${capitalizedResource}Watch(ids: [ID!]!): NonNegativeInt!
-    `;
-	}
+	if (TypedefsMutationTransformers) mutations += TypedefsMutationTransformers(resource, capitalizedResource);
 
 	return `extend type Mutation {\n${mutations}\n}`;
 };

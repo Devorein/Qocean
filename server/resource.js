@@ -12,6 +12,9 @@ const AuthResolvers = require('./resolvers/auth');
 const BaseTypedef = require('./typedefs/Base');
 const BaseResolvers = require('./resolvers/base');
 
+const Password = require('./types/password');
+const Username = require('./types/Username');
+
 const PreTransformedTypeDefsASTs = require('./typedefs');
 const PreTransformedResolvers = require('./resolvers');
 
@@ -29,8 +32,29 @@ Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
 
 const mongql = new Mongql({
 	Schemas: SchemasArr,
-	Typedefs: PreTransformedTypeDefsASTs,
-	Resolvers: PreTransformedResolvers
+	Typedefs: {
+		init: PreTransformedTypeDefsASTs,
+		transformer: {
+			mutations: (resource, capitalizedResource) => {
+				if (resource.match(/(quiz|folder)/)) {
+					return `
+          "Update ${resource} ratings"
+          update${capitalizedResource}Ratings(data:RatingsInput!): [RatingsOutput!]!
+      
+          "Update ${resource} watch"
+          update${capitalizedResource}Watch(ids: [ID!]!): NonNegativeInt!
+          `;
+				} else return '';
+			}
+		},
+		custom: {
+			Password,
+			Username
+		}
+	},
+	Resolvers: {
+		init: PreTransformedResolvers
+	}
 });
 
 const { TransformedResolvers, TransformedTypedefs } = mongql.generate();

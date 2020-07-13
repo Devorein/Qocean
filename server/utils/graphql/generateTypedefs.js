@@ -1,29 +1,14 @@
-const { resolvers } = require('graphql-scalars');
-
 const {
 	transformTypedefTypesAST,
 	transformTypedefQueryAST,
 	transformTypedefMutationAST
 } = require('../ast/transformGraphqlAST');
 
-const Password = require('../../types/password');
-const Username = require('../../types/username');
-
-const Validators = {};
-
-Object.entries(resolvers).forEach(([ key, value ]) => {
-	Validators[key] = value.serialize;
-});
-
-Validators.Password = Password.serialize;
-Validators.Username = Username.serialize;
-Object.freeze(Validators);
-
 const generateTypedefQueryStr = require('./generateTypedefQueryStr');
 const generateTypedefMutationStr = require('./generateTypedefMutationStr');
 const generateTypedefTypeStr = require('./generateTypedefTypeStr');
 
-function transformTypeDefs(typedefsAST, generate, resource) {
+function transformTypeDefs(typedefsAST, generate, resource, TypedefsTransformers, mutationOpt, Validators) {
 	if (generate !== false) {
 		if (generate === true)
 			generate = {
@@ -40,16 +25,40 @@ function transformTypeDefs(typedefsAST, generate, resource) {
 			transformTypedefTypesAST(typedefsAST, typedefTypeStr);
 		}
 		if (query) transformTypedefQueryAST(typedefsAST, generateTypedefQueryStr(resource, transformedSchema));
-		if (mutation) transformTypedefMutationAST(typedefsAST, generateTypedefMutationStr(resource, transformedSchema));
+		if (mutation)
+			transformTypedefMutationAST(
+				typedefsAST,
+				generateTypedefMutationStr(resource, transformedSchema, TypedefsTransformers.mutations, mutationOpt)
+			);
 		return { typedefsAST, transformedSchema };
 	} else return { typedefsAST, transformedSchema: {} };
 }
 
-module.exports = function(resource, generate, typedefsAST) {
+module.exports = function(resource, generate, typedefsAST, TypedefsTransformers, TypeDefMutationOptions, Validators) {
+	let mutationOpt = {
+		create: true,
+		creates: true,
+		delete: true,
+		deletes: true,
+		update: true,
+		updates: true
+	};
+	mutationOpt = {
+		...mutationOpt,
+		...TypeDefMutationOptions
+	};
+
 	if (typedefsAST === null)
 		typedefsAST = {
 			kind: 'Document',
 			definitions: []
 		};
-	return transformTypeDefs(typedefsAST, generate, resource.toLowerCase());
+	return transformTypeDefs(
+		typedefsAST,
+		generate,
+		resource.toLowerCase(),
+		TypedefsTransformers,
+		mutationOpt,
+		Validators
+	);
 };
