@@ -12,8 +12,14 @@ const AuthResolvers = require('./resolvers/auth');
 const BaseTypedef = require('./typedefs/Base');
 const BaseResolvers = require('./resolvers/base');
 
+const Password = require('./types/password');
+const Username = require('./types/Username');
+
 const PreTransformedTypeDefsASTs = require('./typedefs');
 const PreTransformedResolvers = require('./resolvers');
+
+const watchAction = require('./utils/resource/watchAction');
+const addRatings = require('./utils/resource/addRatings');
 
 const ModelsArr = [];
 const ModelsObj = {};
@@ -29,8 +35,44 @@ Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
 
 const mongql = new Mongql({
 	Schemas: SchemasArr,
-	Typedefs: PreTransformedTypeDefsASTs,
-	Resolvers: PreTransformedResolvers
+	Typedefs: {
+		init: PreTransformedTypeDefsASTs,
+		transformer: {
+			mutations: (resource, capitalizedResource) => {
+				if (resource.match(/(quiz|folder)/)) {
+					return `
+          "Update ${resource} ratings"
+          update${capitalizedResource}Ratings(data:RatingsInput!): [RatingsOutput!]!
+      
+          "Update ${resource} watch"
+          update${capitalizedResource}Watch(ids: [ID!]!): NonNegativeInt!
+          `;
+				} else return '';
+			}
+		},
+		custom: {
+			Password,
+			Username
+		}
+	},
+	Resolvers: {
+		init: PreTransformedResolvers,
+		transformer: {
+			mutations(resource, { capitalized, pluralized }) {
+				if (resource.match(/(quiz|folder)/))
+					return {
+						[`update${capitalized}Ratings`]: async function(parent, { data }, ctx) {
+							return await addRatings(ctx[capitalized], data, ctx.user.id, (err) => {
+								throw err;
+							});
+						},
+						[`update${capitalized}Watch`]: async function(parent, { ids }, { User, user }) {
+							return await watchAction(pluralized, { [pluralized]: ids }, await User.findById(user.id));
+						}
+					};
+			}
+		}
+	}
 });
 
 const { TransformedResolvers, TransformedTypedefs } = mongql.generate();

@@ -3,50 +3,51 @@ const pluralize = require('pluralize');
 const createResource = require('../resource/createResource');
 const updateResource = require('../resource/updateResource');
 const deleteResource = require('../resource/deleteResource');
-const watchAction = require('../resource/watchAction');
-const addRatings = require('../resource/addRatings');
 
-module.exports = function(resource) {
+module.exports = function(resource, transformedSchema, MutationResolversTransformers) {
 	const pluralizedResource = pluralize(resource, 2);
 	const capitalizedResource = resource.charAt(0).toUpperCase() + resource.substr(1);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
 
-	const MutationResolvers = {
-		[`create${capitalizedResource}`]: async function(parent, { data }, ctx) {
+	const { mongql: { mutations } } = transformedSchema;
+
+	const MutationResolvers = {};
+	if (mutations.create[0])
+		MutationResolvers[`create${capitalizedResource}`] = async function(parent, { data }, ctx) {
 			return await createResource(ctx[capitalizedResource], ctx.user.id, data);
-		},
-		[`update${capitalizedResource}`]: async function(parent, { data, id }, ctx) {
+		};
+	if (mutations.update[0])
+		MutationResolvers[`update${capitalizedResource}`] = async function(parent, { data, id }, ctx) {
 			data.id = id;
 			return (await updateResource(ctx[capitalizedResource], [ data ], ctx.user.id, (err) => {
 				throw err;
 			}))[0];
-		},
-
-		[`update${pluralizedcapitalizedResource}`]: async function(parent, { data, ids }, ctx) {
+		};
+	if (mutations.update[1])
+		MutationResolvers[`update${pluralizedcapitalizedResource}`] = async function(parent, { data, ids }, ctx) {
 			ids.forEach((id, i) => (data[i].id = id));
 			return await updateResource(ctx[capitalizedResource], data, ctx.user.id, (err) => {
 				throw err;
 			});
-		},
-		[`delete${capitalizedResource}`]: async function(parent, { id }, ctx) {
+		};
+	if (mutations.delete[0])
+		MutationResolvers[`delete${capitalizedResource}`] = async function(parent, { id }, ctx) {
 			return (await deleteResource(ctx[capitalizedResource], [ id ], ctx.user.id))[0];
-		},
-		[`delete${pluralizedcapitalizedResource}`]: async function(parent, { ids }, ctx) {
+		};
+	if (mutations.delete[1])
+		MutationResolvers[`delete${pluralizedcapitalizedResource}`] = async function(parent, { ids }, ctx) {
 			return await deleteResource(ctx[capitalizedResource], ids, ctx.user.id);
-		}
-	};
-
-	if (resource.match(/(quiz|folder)/)) {
-		MutationResolvers[`update${capitalizedResource}Ratings`] = async function(parent, { data }, ctx) {
-			return await addRatings(ctx[capitalizedResource], data, ctx.user.id, (err) => {
-				throw err;
-			});
 		};
-
-		MutationResolvers[`update${capitalizedResource}Watch`] = async function(parent, { ids }, { User, user }) {
-			return await watchAction(pluralizedResource, { [pluralizedResource]: ids }, await User.findById(user.id));
-		};
-	}
+	let extraResolvers = {};
+	if (MutationResolversTransformers)
+		extraResolvers = MutationResolversTransformers(resource, {
+			capitalized: capitalizedResource,
+			pluralized: pluralizedResource
+		});
+	extraResolvers = extraResolvers !== undefined ? extraResolvers : {};
+	Object.entries(extraResolvers).forEach(([ key, resolver ]) => {
+		MutationResolvers[key] = resolver;
+	});
 
 	return MutationResolvers;
 };

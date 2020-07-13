@@ -1,45 +1,12 @@
 const S = require('string');
 const mongoose = require('mongoose');
 
-const ModelSchemas = require('../../models');
-
 const generateTypeStr = require('./generateTypeStr');
 
 function populateObjDefaultValue(obj, fields) {
 	Object.entries(fields).forEach(([ key, value ]) => {
 		if (obj[key] === undefined) obj[key] = value;
 	});
-}
-
-function createDefaultConfigs(baseSchema) {
-	if (!baseSchema.mongql.global_configs) baseSchema.mongql.global_configs = {};
-	const { global_configs } = baseSchema.mongql;
-
-	if (global_configs.global_excludePartitions === undefined) {
-		global_configs.global_excludePartitions = {
-			base: [],
-			extra: true
-		};
-	} else {
-		const { base, extra } = global_configs.global_excludePartitions;
-		global_configs.global_excludePartitions = {
-			base: base === undefined ? [] : base,
-			extra: extra === undefined ? true : extra
-		};
-	}
-
-	populateObjDefaultValue(global_configs, {
-		generateInterface: true,
-		appendRTypeToEmbedTypesKey: true,
-		global_inputs: {
-			base: true,
-			extra: true
-		}
-	});
-
-	global_configs.global_inputs = {
-		...global_configs.global_inputs
-	};
 }
 
 module.exports = function(resource, baseSchema, Validators) {
@@ -69,16 +36,7 @@ module.exports = function(resource, baseSchema, Validators) {
 		return type;
 	}
 
-	if (!baseSchema) baseSchema = ModelSchemas[resource][1];
-
-	createDefaultConfigs(baseSchema);
-
-	const {
-		global_inputs,
-		global_excludePartitions,
-		generateInterface,
-		appendRTypeToEmbedTypesKey
-	} = baseSchema.mongql.global_configs;
+	const { global_inputs, global_excludePartitions, generateInterface, appendRTypeToEmbedTypesKey } = baseSchema.mongql;
 
 	const inputs = {};
 	const enums = {};
@@ -289,7 +247,7 @@ module.exports = function(resource, baseSchema, Validators) {
 			types,
 			enums,
 			fields,
-			options: baseSchema.global_configs
+			mongql: baseSchema.mongql
 		}
 	};
 };
