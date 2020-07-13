@@ -96,10 +96,8 @@ ReportSchema.mongql = {
 		type: true
 	},
 	resource: 'report',
-	global_configs: {
-		global_excludePartitions: {
-			base: [ 'Others', 'Mixed' ]
-		}
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
 	}
 };
 

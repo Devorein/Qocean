@@ -5,8 +5,9 @@ const generateTypedefs = require('./generateTypedefs');
 const generateResolvers = require('./generateResolvers');
 
 function populateObjDefaultValue(obj, fields) {
-	Object.entries(fields).forEach(([ key, value ]) => {
-		if (obj[key] === undefined) obj[key] = value;
+	Object.entries(fields).forEach(([ key, defvalue ]) => {
+    if (obj[key] === undefined) obj[key] = defvalue;
+    else obj[key] = {...defvalue,...obj[key]};
 	});
 }
 
@@ -35,34 +36,34 @@ class Mongql {
 
 
 	#createDefaultConfigs = function(baseSchema) {
-		if (!baseSchema.mongql.global_configs) baseSchema.mongql.global_configs = {};
-		const { global_configs } = baseSchema.mongql;
+    const {mongql} = baseSchema;
 
-		if (global_configs.global_excludePartitions === undefined) {
-			global_configs.global_excludePartitions = {
+		if (mongql.global_excludePartitions === undefined) {
+			mongql.global_excludePartitions = {
 				base: [],
 				extra: true
 			};
 		} else {
-			const { base, extra } = global_configs.global_excludePartitions;
-			global_configs.global_excludePartitions = {
+			const { base, extra } = mongql.global_excludePartitions;
+			mongql.global_excludePartitions = {
 				base: base === undefined ? [] : base,
 				extra: extra === undefined ? true : extra
 			};
 		}
 
-		populateObjDefaultValue(global_configs, {
+		populateObjDefaultValue(mongql, {
 			generateInterface: true,
 			appendRTypeToEmbedTypesKey: true,
 			global_inputs: {
 				base: true,
 				extra: true
-			}
+      },
+      mutations:{
+        create: [true,true],
+        delete: [true,true],
+        update: [true,true]
+      }
 		});
-
-		global_configs.global_inputs = {
-			...global_configs.global_inputs
-		};
 	}
 
 	generate() {

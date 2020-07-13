@@ -62,10 +62,8 @@ FilterSortSchema.mongql = {
 		type: true
 	},
 	resource: 'filtersort',
-	global_configs: {
-		global_excludePartitions: {
-			base: [ 'Others', 'Mixed' ]
-		}
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
 	}
 };
 

@@ -36,12 +36,7 @@ module.exports = function(resource, baseSchema, Validators) {
 		return type;
 	}
 
-	const {
-		global_inputs,
-		global_excludePartitions,
-		generateInterface,
-		appendRTypeToEmbedTypesKey
-	} = baseSchema.mongql.global_configs;
+	const { global_inputs, global_excludePartitions, generateInterface, appendRTypeToEmbedTypesKey } = baseSchema.mongql;
 
 	const inputs = {};
 	const enums = {};

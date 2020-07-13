@@ -35,13 +35,11 @@ WatchlistSchema.mongql = {
 		type: true
 	},
 	resource: 'watchlist',
-	global_configs: {
-		global_excludePartitions: {
-			base: [ 'Others', 'Mixed' ]
-		},
-		global_inputs: {
-			base: false
-		}
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	},
+	global_inputs: {
+		base: false
 	}
 };
 

@@ -184,7 +184,7 @@ EnvironmentSchema.mongql = {
 	generate: true,
 	resource: 'environment',
 	mutations: {
-		create: false
+		create: [ false, true ]
 	}
 };
 
