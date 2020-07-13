@@ -21,8 +21,6 @@ module.exports = function(resource, transformedSchema, TypedefsMutationTransform
     "Delete multiple ${pluralizedResource}"
     delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}Type!]!
   `;
-
 	if (TypedefsMutationTransformers) mutations += TypedefsMutationTransformers(resource, capitalizedResource);
-
 	return `extend type Mutation {\n${mutations}\n}`;
 };
