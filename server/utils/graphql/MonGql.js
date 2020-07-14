@@ -62,7 +62,7 @@ class Mongql {
         create: [true,true],
         delete: [true,true],
         update: [true,true]
-      }
+      },
 		});
 	}
 

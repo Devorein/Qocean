@@ -9,6 +9,9 @@ module.exports = function(resource, transformedSchema) {
 	const selfFields = [],
 		mixedFields = [],
 		othersFields = [];
+
+	const { mongql: { queries } } = transformedSchema;
+
 	Object.entries(transformedSchema.fields).forEach(([ key, { excludePartitions } ]) => {
 		if (excludePartitions === undefined) excludePartitions = [];
 		if (!excludePartitions.includes('Mixed')) mixedFields.push(key);
@@ -23,190 +26,245 @@ module.exports = function(resource, transformedSchema) {
 
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
 	const nonUserFilter = {};
-	if (resource !== 'user') nonUserFilter.public = true;
-	const selfQueries = {
-		// ? Id Self
-		[`getSelf${pluralizedcapitalizedResource}ById`]: async function(parent, { id }, ctx) {
-			const [ folder ] = await ctx[capitalizedResource].find({ _id: id, user: ctx.user.id });
-			if (!folder) throw new Error('Resource with that Id doesnt exist');
-			return folder;
-		},
-		// ? Paginated Self
-		[`getPaginatedSelf${pluralizedcapitalizedResource}`]: async function(parent, { pagination }, ctx) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource].find({ ...filter, user: ctx.user.id }).sort(sort).skip(page).limit(limit);
-		},
+	const QueryResolvers = {};
 
-		[`getPaginatedSelf${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			{ pagination },
-			ctx
-		) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, user: ctx.user.id })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('name');
-		},
-
-		[`getFilteredSelf${pluralizedcapitalizedResource}Count`]: async function(parent, { filter = '{}' }, ctx) {
-			const count = await ctx[capitalizedResource].countDocuments({ ...JSON.parse(filter), user: ctx.user.id });
-			return count;
-		},
-		[`getAllSelf${pluralizedcapitalizedResource}`]: async function(parent, args, ctx) {
-			return await ctx[capitalizedResource].find({ user: ctx.user.id });
-		},
-		[`getAllSelf${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			args,
-			ctx
-		) {
-			return await ctx[capitalizedResource].find({ user: ctx.user.id }).select('name');
-		},
-		[`getAllSelf${pluralizedcapitalizedResource}Count`]: async function(parent, args, ctx) {
-			return await ctx[capitalizedResource].countDocuments({ user: ctx.user.id });
-		}
+	// ? All
+	QueryResolvers[`getAllSelf${pluralizedcapitalizedResource}Whole`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].find({ user: ctx.user.id });
+	};
+	QueryResolvers[`getAllSelf${pluralizedcapitalizedResource}NameAndId`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].find({ user: ctx.user.id }).select('name');
+	};
+	QueryResolvers[`getAllSelf${pluralizedcapitalizedResource}Count`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].countDocuments({ user: ctx.user.id });
 	};
 
-	let QueryResolvers = {
-		[`getAllMixed${pluralizedcapitalizedResource}`]: async function(parent, args, ctx) {
-			return await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
-		},
-		[`getAllMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			args,
-			ctx
-		) {
-			return await ctx[capitalizedResource].find({ ...nonUserFilter }).select('name');
-		},
-		[`getAllMixed${pluralizedcapitalizedResource}Count`]: async function(parent, args, ctx) {
-			return await ctx[capitalizedResource].countDocuments({ ...nonUserFilter });
-		},
-		[`getAllOthers${pluralizedcapitalizedResource}`]: async function(parent, args, ctx) {
-			return await ctx[capitalizedResource]
-				.find({ ...nonUserFilter, user: { $ne: ctx.user.id } })
-				.select(exlcudedOthersFieldsStr);
-		},
-		[`getAllOthers${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			args,
-			ctx
-		) {
-			return await ctx[capitalizedResource].find({ ...nonUserFilter, user: { $ne: ctx.user.id } }).select('name');
-		},
-		[`getAllOthers${pluralizedcapitalizedResource}Count`]: async function(parent, args, ctx) {
-			return await ctx[capitalizedResource].countDocuments({ ...nonUserFilter, user: { $ne: ctx.user.id } });
-		},
-
-		[`getPaginatedMixed${pluralizedcapitalizedResource}`]: async function(parent, { pagination }, ctx) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, ...nonUserFilter })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select(exlcudedMixedFieldsStr);
-		},
-
-		[`getPaginatedMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			{ pagination },
-			ctx
-		) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, ...nonUserFilter })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('name');
-		},
-
-		[`getFilteredMixed${pluralizedcapitalizedResource}Count`]: async function(parent, { filter = '{}' }, ctx) {
-			return await ctx[capitalizedResource].countDocuments({ ...JSON.parse(filter), ...nonUserFilter });
-		},
-		[`getPaginatedMixed${pluralizedcapitalizedResource}`]: async function(parent, { pagination }, ctx) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, ...nonUserFilter })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('-public -favourite');
-		},
-
-		[`getPaginatedMixed${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			{ pagination },
-			ctx
-		) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, ...nonUserFilter })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('name');
-		},
-
-		[`getFilteredMixed${pluralizedcapitalizedResource}Count`]: async function(parent, { filter = '{}' }, ctx) {
-			return await ctx[capitalizedResource].countDocuments({ ...JSON.parse(filter), ...nonUserFilter });
-		},
-
-		// ? Paginated Others
-		[`getPaginatedOthers${pluralizedcapitalizedResource}`]: async function(parent, { pagination }, ctx) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, user: { $ne: ctx.user.id }, ...nonUserFilter })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select(exlcudedOthersFieldsStr);
-		},
-
-		[`getPaginatedOthers${pluralizedcapitalizedResource}${resource === 'user' ? 'Username' : 'Name'}`]: async function(
-			parent,
-			{ pagination },
-			ctx
-		) {
-			const { page, limit, sort, filter } = parsePagination(pagination);
-			return await ctx[capitalizedResource]
-				.find({ ...filter, user: { $ne: ctx.user.id }, ...nonUserFilter })
-				.sort(sort)
-				.skip(page)
-				.limit(limit)
-				.select('name');
-		},
-
-		[`getFilteredOthers${pluralizedcapitalizedResource}Count`]: async function(parent, { filter = '{}' }, ctx) {
-			const count = await ctx[capitalizedResource].countDocuments({
-				...JSON.parse(filter),
-				user: { $ne: ctx.user.id },
-				...nonUserFilter
-			});
-			return count;
-		},
-
-		// ? Id mixed
-		[`getMixed${pluralizedcapitalizedResource}ById`]: async function(parent, { id }, ctx) {
-			const [ folder ] = await ctx[capitalizedResource]
-				.find({ _id: id, ...nonUserFilter })
-				.select(exlcudedMixedFieldsStr);
-			if (!folder) throw new Error('Resource with that Id doesnt exist');
-			return folder;
-		},
-
-		// ? Id Others
-		[`getOthers${pluralizedcapitalizedResource}ById`]: async function(parent, { id }, ctx) {
-			const [ folder ] = await ctx[capitalizedResource]
-				.find({ _id: id, user: { $ne: ctx.user.id }, ...nonUserFilter })
-				.select(exlcudedOthersFieldsStr);
-			if (!folder) throw new Error('Resource with that Id doesnt exist');
-			return folder;
-		}
+	QueryResolvers[`getAllOthers${pluralizedcapitalizedResource}Whole`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource]
+			.find({ ...nonUserFilter, user: { $ne: ctx.user.id } })
+			.select(exlcudedOthersFieldsStr);
 	};
-	if (resource !== 'user') QueryResolvers = { ...QueryResolvers, ...selfQueries };
+	QueryResolvers[`getAllOthers${pluralizedcapitalizedResource}NameAndId`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].find({ ...nonUserFilter, user: { $ne: ctx.user.id } }).select('name');
+	};
+	QueryResolvers[`getAllOthers${pluralizedcapitalizedResource}Count`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].countDocuments({ ...nonUserFilter, user: { $ne: ctx.user.id } });
+	};
+
+	QueryResolvers[`getAllMixed${pluralizedcapitalizedResource}Whole`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].find({ ...nonUserFilter }).select(exlcudedMixedFieldsStr);
+	};
+	QueryResolvers[`getAllMixed${pluralizedcapitalizedResource}NameAndId`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].find({ ...nonUserFilter }).select('name');
+	};
+	QueryResolvers[`getAllMixed${pluralizedcapitalizedResource}Count`] = async function(parent, args, ctx) {
+		return await ctx[capitalizedResource].countDocuments({ ...nonUserFilter });
+	};
+
+	// ? Paginated
+
+	QueryResolvers[`getPaginatedSelf${pluralizedcapitalizedResource}Whole`] = async function(
+		parent,
+		{ pagination },
+		ctx
+	) {
+		const { page, limit, sort, filter } = parsePagination(pagination);
+		return await ctx[capitalizedResource]
+			.find({ ...filter, user: { $ne: ctx.user.id } })
+			.sort(sort)
+			.skip(page)
+			.limit(limit)
+			.select(exlcudedMixedFieldsStr);
+	};
+	QueryResolvers[`getPaginatedSelf${pluralizedcapitalizedResource}NameAndId`] = async function(
+		parent,
+		{ pagination },
+		ctx
+	) {
+		const { page, limit, sort, filter } = parsePagination(pagination);
+		return await ctx[capitalizedResource]
+			.find({ ...filter, user: { $ne: ctx.user.id } })
+			.sort(sort)
+			.skip(page)
+			.limit(limit)
+			.select('name');
+	};
+
+	QueryResolvers[`getPaginatedOthers${pluralizedcapitalizedResource}Whole`] = async function(
+		parent,
+		{ pagination },
+		ctx
+	) {
+		const { page, limit, sort, filter } = parsePagination(pagination);
+		return await ctx[capitalizedResource]
+			.find({ ...filter, user: { $ne: ctx.user.id }, ...nonUserFilter })
+			.sort(sort)
+			.skip(page)
+			.limit(limit)
+			.select(exlcudedOthersFieldsStr);
+	};
+
+	QueryResolvers[`getPaginatedOthers${pluralizedcapitalizedResource}NameAndId`] = async function(
+		parent,
+		{ pagination },
+		ctx
+	) {
+		const { page, limit, sort, filter } = parsePagination(pagination);
+		return await ctx[capitalizedResource]
+			.find({ ...filter, user: { $ne: ctx.user.id }, ...nonUserFilter })
+			.sort(sort)
+			.skip(page)
+			.limit(limit)
+			.select('name');
+	};
+
+	QueryResolvers[`getPaginatedMixed${pluralizedcapitalizedResource}Whole`] = async function(
+		parent,
+		{ pagination },
+		ctx
+	) {
+		const { page, limit, sort, filter } = parsePagination(pagination);
+		return await ctx[capitalizedResource]
+			.find({ ...filter, ...nonUserFilter })
+			.sort(sort)
+			.skip(page)
+			.limit(limit)
+			.select(exlcudedMixedFieldsStr);
+	};
+	QueryResolvers[`getPaginatedMixed${pluralizedcapitalizedResource}NameAndId`] = async function(
+		parent,
+		{ pagination },
+		ctx
+	) {
+		const { page, limit, sort, filter } = parsePagination(pagination);
+		return await ctx[capitalizedResource]
+			.find({ ...filter, ...nonUserFilter })
+			.sort(sort)
+			.skip(page)
+			.limit(limit)
+			.select('name');
+	};
+
+	// ? Filtered
+	QueryResolvers[`getFilteredSelf${pluralizedcapitalizedResource}Whole`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].find({
+			...JSON.parse(filter),
+			user: { $eq: ctx.user.id },
+			...nonUserFilter
+		});
+	};
+	QueryResolvers[`getFilteredSelf${pluralizedcapitalizedResource}NameAndId`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource]
+			.find({ ...filter, user: { $eq: ctx.user.id }, ...nonUserFilter })
+			.select('name');
+	};
+	QueryResolvers[`getFilteredSelf${pluralizedcapitalizedResource}Count`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].countDocuments({
+			...JSON.parse(filter),
+			user: { $eq: ctx.user.id },
+			...nonUserFilter
+		});
+	};
+
+	QueryResolvers[`getFilteredOthers${pluralizedcapitalizedResource}Whole`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].find({
+			...JSON.parse(filter),
+			user: { $neq: ctx.user.id },
+			...nonUserFilter
+		});
+	};
+	QueryResolvers[`getFilteredOthers${pluralizedcapitalizedResource}NameAndId`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource]
+			.find({ ...filter, user: { $neq: ctx.user.id }, ...nonUserFilter })
+			.select('name');
+	};
+	QueryResolvers[`getFilteredOthers${pluralizedcapitalizedResource}Count`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].countDocuments({
+			...JSON.parse(filter),
+			user: { $neq: ctx.user.id },
+			...nonUserFilter
+		});
+	};
+
+	QueryResolvers[`getFilteredMixed${pluralizedcapitalizedResource}Whole`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].find({ ...filter, ...nonUserFilter }).select(exlcudedMixedFieldsStr);
+	};
+	QueryResolvers[`getFilteredMixed${pluralizedcapitalizedResource}NameAndId`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].find({ ...filter, ...nonUserFilter }).select('name');
+	};
+	QueryResolvers[`getFilteredMixed${pluralizedcapitalizedResource}Count`] = async function(
+		parent,
+		{ filter = '{}' },
+		ctx
+	) {
+		return await ctx[capitalizedResource].countDocuments({ ...JSON.parse(filter), ...nonUserFilter });
+	};
+
+	// ? Id
+	QueryResolvers[`getIdSelf${pluralizedcapitalizedResource}Whole`] = async function(parent, { id }, ctx) {
+		const [ resource ] = await ctx[capitalizedResource].find({ _id: id, user: ctx.user.id });
+		if (!resource) throw new Error('Resource with that Id doesnt exist');
+		return resource;
+	};
+	QueryResolvers[`getIdSelf${pluralizedcapitalizedResource}NameAndId`] = async function(parent, { id }, ctx) {
+		const [ resource ] = await ctx[capitalizedResource].find({ _id: id, user: ctx.user.id }).select('name');
+		if (!resource) throw new Error('Resource with that Id doesnt exist');
+		return resource;
+	};
+
+	QueryResolvers[`getIdOthers${pluralizedcapitalizedResource}Whole`] = async function(parent, { id }, ctx) {
+		const [ resource ] = await ctx[capitalizedResource].find({ _id: id, user: { $ne: ctx.user.id } });
+		if (!resource) throw new Error('Resource with that Id doesnt exist');
+		return resource;
+	};
+	QueryResolvers[`getIdOthers${pluralizedcapitalizedResource}NameAndId`] = async function(parent, { id }, ctx) {
+		const [ resource ] = await ctx[capitalizedResource].find({ _id: id, user: { $ne: ctx.user.id } }).select('name');
+		if (!resource) throw new Error('Resource with that Id doesnt exist');
+		return resource;
+	};
+
+	QueryResolvers[`getIdMixed${pluralizedcapitalizedResource}Whole`] = async function(parent, { id }, ctx) {
+		const [ resource ] = await ctx[capitalizedResource].find({ _id: id }).select(exlcudedMixedFieldsStr);
+		if (!resource) throw new Error('Resource with that Id doesnt exist');
+		return resource;
+	};
+	QueryResolvers[`getIdMixed${pluralizedcapitalizedResource}NameAndId`] = async function(parent, { id }, ctx) {
+		const [ resource ] = await ctx[capitalizedResource].find({ _id: id }).select('name');
+		if (!resource) throw new Error('Resource with that Id doesnt exist');
+		return resource;
+	};
+
 	return QueryResolvers;
 };
