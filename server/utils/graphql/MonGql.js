@@ -62,6 +62,11 @@ class Mongql {
         create: [true,true],
         delete: [true,true],
         update: [true,true]
+      },
+      query:{
+        all: true,
+        paginated: true,
+        filtered: true
       }
 		});
 	}

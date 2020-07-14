@@ -7,7 +7,6 @@ const { ApolloServer } = require('apollo-server-express');
 
 const { validate } = require('../middleware/auth');
 const { Models, Typedefs, Resolvers } = require('../resource');
-const errorHandler = require('../middleware/error');
 const reportGraphql = require('../utils/reportGraphql');
 
 // GRAPHQL Server
@@ -16,7 +15,6 @@ GRAPHQL.use(cors());
 GRAPHQL.use(validate);
 GRAPHQL.use(hpp());
 GRAPHQL.use(mongoSanitize());
-GRAPHQL.use(errorHandler);
 
 const GRAPHQL_SERVER = new ApolloServer({
 	schema: makeExecutableSchema({
