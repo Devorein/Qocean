@@ -24,10 +24,15 @@ module.exports = function(resource, transformedSchema) {
 	const exlcudedMixedFieldsStr = exlcudedMixedFields.map((item) => `-${item}`).join(' ');
 	const exlcudedOthersFieldsStr = exlcudedOthersFields.map((item) => `-${item}`).join(' ');
 
-	const excludeStrs = {
+	const AuthSelection = {
 		Self: '',
 		Others: exlcudedOthersFieldsStr,
 		Mixed: exlcudedMixedFieldsStr
+	};
+
+	const Selection = (auth, part) => {
+		if (part === 'NameAndId') return 'name';
+		else if (part === 'Whole') return AuthSelection[auth];
 	};
 
 	const AuthFilters = {
@@ -77,8 +82,7 @@ module.exports = function(resource, transformedSchema) {
 					else if (range === 'Filter') query = Filter(auth, args, ctx);
 					else if (range === 'Id') query = ctx[capitalizedResource].find({ ...AuthFilter, _id: args.id });
 
-					if (part === 'NameAndId') query = query.select('name');
-					else query = query.select(excludeStrs[auth]);
+					query = query.select(Selection(auth, part));
 					const res = await query;
 					return range === 'Id' ? res[0] : res;
 				};
