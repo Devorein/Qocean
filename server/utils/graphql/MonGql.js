@@ -3,17 +3,13 @@ const colors = require('colors');
 
 const generateTypedefs = require('./generateTypedefs');
 const generateResolvers = require('./generateResolvers');
-
-function populateObjDefaultValue(obj, fields) {
-	Object.entries(fields).forEach(([ key, defvalue ]) => {
-    if (obj[key] === undefined) obj[key] = defvalue;
-    else obj[key] = {...defvalue,...obj[key]};
-	});
-}
+const populateObjDefaultValue = require('../populateObjDefaultValue');
 
 class Mongql {
   #resources = [];
   #Validators = {};
+  #globalConfigs = {};
+  #schemaConfigs = {};
 
 	constructor(options) {
 		this.options = options;
@@ -22,7 +18,8 @@ class Mongql {
       if (schema.mongql === undefined) throw new Error(colors.red.bold`Resource doesnt have a mongql key on the schema`);
 			const { resource } = schema.mongql;
 			if (resource === undefined) throw new Error('Provide the mongoose schema resource type for mongql');
-			else this.#resources.push(resource);
+      else this.#resources.push(resource);
+      this.#createDefaultConfigs(schema);
     });
 
     Object.entries({...resolvers,...custom}).forEach(([ key, value ]) => {
@@ -38,13 +35,8 @@ class Mongql {
 	#createDefaultConfigs = function(baseSchema) {
     const {mongql} = baseSchema;
 
-		if (mongql.global_excludePartitions === undefined) {
-			mongql.global_excludePartitions = {
-				base: [],
-				extra: true
-			};
-		} else {
-			const { base, extra } = mongql.global_excludePartitions;
+		if (mongql.global_excludePartitions !== undefined) {
+      const { base, extra } = mongql.global_excludePartitions;
 			mongql.global_excludePartitions = {
 				base: base === undefined ? [] : base,
 				extra: extra === undefined ? true : extra
@@ -67,8 +59,15 @@ class Mongql {
         all: true,
         paginated: true,
         filtered: true
-      }
-		});
+      },
+      output: false,
+      global_excludePartitions: {
+				base: [],
+				extra: true
+			}
+    });
+    
+    this.#schemaConfigs[mongql.resource] = mongql;
 	}
 
 	generate() {
@@ -76,7 +75,6 @@ class Mongql {
     TransformedResolvers = { obj: {}, arr: [] };
     const { Typedefs:{init:InitTypedefs, transformer: TypedefsTransformer,mutation:TypeDefMutationOptions},Resolvers:{init: InitResolvers,transformer: ResolverTransformer},Schemas } = this.options;
 		Schemas.forEach((schema) => {
-      this.#createDefaultConfigs(schema);
 			const { mongql: { generate, resource } } = schema;
 			const { typedefsAST, transformedSchema } = generateTypedefs(resource, schema,generate,InitTypedefs[resource],TypedefsTransformer,TypeDefMutationOptions);
 			TransformedTypedefs.obj[resource] = typedefsAST;
