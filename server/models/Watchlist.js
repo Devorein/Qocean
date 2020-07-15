@@ -36,7 +36,7 @@ WatchlistSchema.mongql = {
 	},
 	resource: 'watchlist',
 	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
+		base: ['Others', 'Mixed']
 	},
 	global_inputs: {
 		base: false

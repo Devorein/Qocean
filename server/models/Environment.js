@@ -28,18 +28,18 @@ const QuestionInfo = new mongoose.Schema({
 	default_type: {
 		type: String,
 		default: 'MCQ',
-		enum: [ 'FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF' ]
+		enum: ['FIB', 'Snippet', 'MCQ', 'MS', 'FC', 'TF']
 	},
 	default_difficulty: {
 		type: String,
 		default: 'Beginner',
-		enum: [ 'Beginner', 'Intermediate', 'Advanced' ]
+		enum: ['Beginner', 'Intermediate', 'Advanced']
 	},
 	default_timing: {
 		type: Number,
 		default: 30,
-		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
+		min: [15, 'Time allocated cant be less than 15 seconds'],
+		max: [120, 'Time allocated cant be more than 120 seconds'],
 		mongql: {
 			scalar: 'PositiveInt'
 		}
@@ -47,8 +47,8 @@ const QuestionInfo = new mongoose.Schema({
 	default_weight: {
 		type: Number,
 		default: 1,
-		min: [ 1, 'Weight cant be less than 1' ],
-		max: [ 10, 'Weight cant be less than 10' ],
+		min: [1, 'Weight cant be less than 1'],
+		max: [10, 'Weight cant be less than 10'],
 		mongql: {
 			scalar: 'PositiveInt'
 		}
@@ -58,17 +58,17 @@ const QuestionInfo = new mongoose.Schema({
 const envSchema = {
 	name: {
 		type: String,
-		required: [ true, 'Please provide the name of the environment' ]
+		required: [true, 'Please provide the name of the environment']
 	},
 	icon: {
 		type: String,
-		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ],
+		enum: ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple'],
 		default: 'Red'
 	},
 	theme: {
 		type: String,
 		default: 'Dark',
-		enum: [ 'Light', 'Dark', 'Navy' ]
+		enum: ['Light', 'Dark', 'Navy']
 	},
 	animation: {
 		type: Boolean,
@@ -150,32 +150,34 @@ const keybindings = {
 	}
 };
 
-Array(5).fill(0).forEach((_, i) => {
-	keybindings[`LOCAL_ACTION_${i + 1}`] = {
-		type: String,
-		default: `${i + 1}`
-	};
-	keybindings[`GLOBAL_ACTION_${i + 1}`] = {
-		type: String,
-		default: `shift+${i + 1}`
-	};
-});
+Array(5)
+	.fill(0)
+	.forEach((_, i) => {
+		keybindings[`LOCAL_ACTION_${i + 1}`] = {
+			type: String,
+			default: `${i + 1}`
+		};
+		keybindings[`GLOBAL_ACTION_${i + 1}`] = {
+			type: String,
+			default: `shift+${i + 1}`
+		};
+	});
 
 envSchema.keybindings = new mongoose.Schema(keybindings);
 
-[ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
+['explore', 'self', 'watchlist', 'play'].forEach((page) => {
 	envSchema[`${page}_page`] = new mongoose.Schema(PageInfo);
 	envSchema[`${page}_page`].type = 'PageInfo';
 });
 
 const EnvironmentSchema = extendSchema(ResourceSchema, envSchema);
 
-EnvironmentSchema.pre('save', async function(next) {
+EnvironmentSchema.pre('save', async function (next) {
 	await this.model('User').add(this.user, 'environments', this._id);
 	next();
 });
 
-EnvironmentSchema.pre('remove', async function(next) {
+EnvironmentSchema.pre('remove', async function (next) {
 	// await this.model('User').remove(this.user, 'environments', this._id);
 	next();
 });
@@ -184,7 +186,7 @@ EnvironmentSchema.mongql = {
 	generate: true,
 	resource: 'environment',
 	mutations: {
-		create: [ false, true ]
+		create: [false, true]
 	}
 };
 

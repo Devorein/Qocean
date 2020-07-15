@@ -1,6 +1,13 @@
 module.exports = function filterQuery(req, model) {
 	const filters = { ...req.query };
-	const excludeFields = [ 'select', 'sort', 'page', 'limit', 'populateFields', 'populate' ];
+	const excludeFields = [
+		'select',
+		'sort',
+		'page',
+		'limit',
+		'populateFields',
+		'populate'
+	];
 	excludeFields.forEach((param) => delete filters[param]);
 	if (model.modelName === 'User') {
 		if (req.route.path === '/others') filters._id = { $ne: req.user._id };
@@ -12,6 +19,7 @@ module.exports = function filterQuery(req, model) {
 		} else if (req.route.path === '/') filters.public = true;
 	}
 	if (!req.user && !req.baseUrl.includes('users')) filters.public = true;
-	if (req.baseUrl.includes('watchlist')) filters.watchers = { $in: [ req.user._id ] };
+	if (req.baseUrl.includes('watchlist'))
+		filters.watchers = { $in: [req.user._id] };
 	return filters;
 };

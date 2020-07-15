@@ -32,7 +32,9 @@ router
 	.delete(protect, deleteQuizzes);
 
 router.route('/:id').put(protect, updateQuiz).delete(protect, deleteQuiz);
-router.route('/:id/photo').put(protect, imageUpload(QuizModel, 'Quiz'), quizPhotoUpload);
+router
+	.route('/:id/photo')
+	.put(protect, imageUpload(QuizModel, 'Quiz'), quizPhotoUpload);
 router.route('/_/watchQuizzes').put(protect, watchQuizzes);
 router.route('/playPageQuiz').get(protect, playPageQuiz);
 router.route('/_/ratings').put(protect, updateQuizRatings);

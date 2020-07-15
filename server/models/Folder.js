@@ -5,9 +5,9 @@ const ResourceSchema = require('./Resource');
 const FolderSchema = extendSchema(ResourceSchema, {
 	name: {
 		type: String,
-		required: [ true, 'Please provide folder name' ],
-		minlength: [ 3, 'Folder name must be greater than 3 characters' ],
-		maxlength: [ 20, 'Folder name must be less than 20 characters' ]
+		required: [true, 'Please provide folder name'],
+		minlength: [3, 'Folder name must be greater than 3 characters'],
+		maxlength: [20, 'Folder name must be less than 20 characters']
 	},
 	ratings: {
 		type: Number,
@@ -19,7 +19,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	},
 	icon: {
 		type: String,
-		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ],
+		enum: ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple'],
 		default: 'Red'
 	},
 	total_quizzes: {
@@ -42,7 +42,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 		{
 			type: mongoose.Schema.ObjectId,
 			ref: 'Quiz',
-			set: function(quizzes) {
+			set: function (quizzes) {
 				this._quizzes = this.quizzes;
 				return quizzes;
 			}
@@ -56,7 +56,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 				partitionMapper: {
 					Self: 'Others'
 				},
-				excludePartitions: [ 'Mixed' ],
+				excludePartitions: ['Mixed'],
 				writable: false
 			}
 		}
@@ -69,14 +69,16 @@ FolderSchema.mongql = {
 	resource: 'folder'
 };
 
-FolderSchema.methods.manipulateQuiz = async function(shouldAdd, quizId) {
+FolderSchema.methods.manipulateQuiz = async function (shouldAdd, quizId) {
 	const quiz = await this.model('Quiz').findById(quizId);
 	if (shouldAdd) {
 		quiz.folders.push(this._id);
 		quiz.total_folders++;
 		this.total_questions += quiz.total_questions;
 	} else {
-		quiz.folders = quiz.folders.filter((_folderId) => _folderId.toString() !== this._id.toString());
+		quiz.folders = quiz.folders.filter(
+			(_folderId) => _folderId.toString() !== this._id.toString()
+		);
 		quiz.total_folders--;
 		this.total_questions -= quiz.total_questions;
 	}
@@ -84,8 +86,9 @@ FolderSchema.methods.manipulateQuiz = async function(shouldAdd, quizId) {
 	await quiz.save();
 };
 
-FolderSchema.pre('save', async function(next) {
-	if (this.isModified('user')) await this.model('User').add(this.user, 'quizzes', this._id);
+FolderSchema.pre('save', async function (next) {
+	if (this.isModified('user'))
+		await this.model('User').add(this.user, 'quizzes', this._id);
 	if (this.isModified('quizzes')) {
 		const manip = [];
 		if (this._quizzes)
@@ -113,7 +116,7 @@ FolderSchema.pre('save', async function(next) {
 	next();
 });
 
-FolderSchema.pre('remove', async function(next) {
+FolderSchema.pre('remove', async function (next) {
 	await this.model('User').remove(this.user, 'folders', this._id);
 	next();
 });

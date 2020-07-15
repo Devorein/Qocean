@@ -10,14 +10,14 @@ const { InboxModel, InboxSchema } = require('./Inbox');
 const { MessageModel, MessageSchema } = require('./Message');
 
 module.exports = {
-	user: [ UserModel, UserSchema ],
-	quiz: [ QuizModel, QuizSchema ],
-	question: [ QuestionModel, QuestionSchema ],
-	folder: [ FolderModel, FolderSchema ],
-	environment: [ EnvironmentModel, EnvironmentSchema ],
-	report: [ ReportModel, ReportSchema ],
-	filtersort: [ FilterSortModel, FilterSortSchema ],
-	watchlist: [ WatchlistModel, WatchlistSchema ],
-	inbox: [ InboxModel, InboxSchema ],
-	message: [ MessageModel, MessageSchema ]
+	user: [UserModel, UserSchema],
+	quiz: [QuizModel, QuizSchema],
+	question: [QuestionModel, QuestionSchema],
+	folder: [FolderModel, FolderSchema],
+	environment: [EnvironmentModel, EnvironmentSchema],
+	report: [ReportModel, ReportSchema],
+	filtersort: [FilterSortModel, FilterSortSchema],
+	watchlist: [WatchlistModel, WatchlistSchema],
+	inbox: [InboxModel, InboxSchema],
+	message: [MessageModel, MessageSchema]
 };

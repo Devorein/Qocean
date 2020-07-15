@@ -4,7 +4,10 @@ const QuizResolvers = {
 	Query: {
 		async getAllSelfQuizzesQuestionsStats(parent, args, { user, Quiz }) {
 			return await Quiz.find({ user: user.id })
-				.populate({ path: 'questions', select: 'difficulty time_allocated name type' })
+				.populate({
+					path: 'questions',
+					select: 'difficulty time_allocated name type'
+				})
 				.select('name questions');
 		}
 	},

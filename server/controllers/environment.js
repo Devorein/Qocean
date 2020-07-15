@@ -13,7 +13,9 @@ const {
 // @route: GET /api/v1/environments/current
 // @access: Private
 exports.getCurrentEnvironment = asyncHandler(async (req, res) => {
-	const environment = await EnvironmentModel.findById(req.user.current_environment);
+	const environment = await EnvironmentModel.findById(
+		req.user.current_environment
+	);
 	res.status(200).json({ success: true, data: environment });
 });
 
@@ -22,7 +24,10 @@ exports.getCurrentEnvironment = asyncHandler(async (req, res) => {
 // @access: Private
 
 exports.setCurrentEnvironment = asyncHandler(async (req, res) => {
-	const environment = await setCurrentEnvironmentHandler(req.user._id, req.body.id);
+	const environment = await setCurrentEnvironmentHandler(
+		req.user._id,
+		req.body.id
+	);
 	res.status(200).json({ success: true, data: environment });
 });
 
@@ -31,7 +36,11 @@ exports.setCurrentEnvironment = asyncHandler(async (req, res) => {
 // @access: Private
 
 exports.createEnvironment = asyncHandler(async (req, res, next) => {
-	const environment = await createEnvironmentHandler(req.user._id, req.body, next);
+	const environment = await createEnvironmentHandler(
+		req.user._id,
+		req.body,
+		next
+	);
 	res.status(201).json({ success: true, data: environment });
 });
 
@@ -40,12 +49,22 @@ exports.createEnvironment = asyncHandler(async (req, res, next) => {
 // @access: Private
 exports.updateEnvironment = asyncHandler(async (req, res, next) => {
 	req.body.id = req.params.id;
-	const environment = await updateResource(EnvironmentModel, req.body, req.user._id, next);
+	const environment = await updateResource(
+		EnvironmentModel,
+		req.body,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: environment });
 });
 
 exports.updateEnvironments = asyncHandler(async (req, res, next) => {
-	const environments = await updateResource(EnvironmentModel, req.body.data, req.user._id, next);
+	const environments = await updateResource(
+		EnvironmentModel,
+		req.body.data,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: environments });
 });
 
@@ -54,8 +73,8 @@ exports.updateEnvironments = asyncHandler(async (req, res, next) => {
 // @access: Private
 
 exports.deleteEnvironment = asyncHandler(async (req, res, next) => {
-	const [ deleted_environment ] = await deleteEnvironmentHandler(
-		[ req.params.id ],
+	const [deleted_environment] = await deleteEnvironmentHandler(
+		[req.params.id],
 		req.user._id,
 		req.user.current_environment,
 		next

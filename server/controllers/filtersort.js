@@ -4,7 +4,10 @@ const updateResource = require('../utils/resource/updateResource');
 const { deleteFilterSortHandler } = require('../handlers/filtersort');
 
 exports.getMyFilterSorts = asyncHandler(async (req, res) => {
-	const filtersorts = await FilterSortModel.find({ user: req.user._id, ...req.query });
+	const filtersorts = await FilterSortModel.find({
+		user: req.user._id,
+		...req.query
+	});
 	res.status(200).json({ success: true, data: filtersorts });
 });
 
@@ -21,6 +24,10 @@ exports.updateFilterSort = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteFilterSort = asyncHandler(async (req, res, next) => {
-	const filtersort = await deleteFilterSortHandler(req.params.id, req.user._id, next);
+	const filtersort = await deleteFilterSortHandler(
+		req.params.id,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: filtersort });
 });

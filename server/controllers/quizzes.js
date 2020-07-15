@@ -5,7 +5,11 @@ const updateResource = require('../utils/resource/updateResource');
 const watchAction = require('../utils/resource/watchAction');
 const addRatings = require('../utils/resource/addRatings');
 
-const { createQuizHandler, deleteQuizHandler, updatePlayedTimesHandler } = require('../handlers/quiz');
+const {
+	createQuizHandler,
+	deleteQuizHandler,
+	updatePlayedTimesHandler
+} = require('../handlers/quiz');
 
 // @desc: Create single quiz
 // @route: POST /api/v1/quizzes
@@ -21,12 +25,22 @@ exports.createQuiz = asyncHandler(async (req, res, next) => {
 
 exports.updateQuiz = asyncHandler(async (req, res, next) => {
 	req.body.id = req.params.id;
-	const [ quiz ] = await updateResource(QuizModel, [ req.body ], req.user._id, next);
+	const [quiz] = await updateResource(
+		QuizModel,
+		[req.body],
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: quiz });
 });
 
 exports.updateQuizzes = asyncHandler(async (req, res, next) => {
-	const quizzes = await updateResource(QuizModel, req.body.data, req.user._id, next);
+	const quizzes = await updateResource(
+		QuizModel,
+		req.body.data,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: quizzes });
 });
 
@@ -35,7 +49,7 @@ exports.updateQuizzes = asyncHandler(async (req, res, next) => {
 // @access: Private
 
 exports.deleteQuiz = asyncHandler(async (req, res, next) => {
-	const [ quiz ] = await deleteQuizHandler([ req.params.id ], req.user._id, next);
+	const [quiz] = await deleteQuizHandler([req.params.id], req.user._id, next);
 	res.status(200).json({ success: true, data: quiz });
 });
 
@@ -57,7 +71,12 @@ exports.updatePlayedTimes = asyncHandler(async (req, res) => {
 });
 
 exports.updateQuizRatings = asyncHandler(async (req, res, next) => {
-	const ratingsData = await addRatings(QuizModel, req.body.data, req.user._id, next);
+	const ratingsData = await addRatings(
+		QuizModel,
+		req.body.data,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, ratingsData });
 });
 

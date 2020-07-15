@@ -33,91 +33,96 @@ Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
 	SchemasArr.push(schema);
 });
 
-const mongql = new Mongql({
-	Schemas: SchemasArr,
-	Typedefs: {
-		init: PreTransformedTypeDefsASTs,
-		transformer: {
-			mutations: (resource, capitalizedResource) => {
-				if (resource.match(/(quiz|folder)/)) {
-					return `
-          "Update ${resource} ratings"
-          update${capitalizedResource}Ratings(data:RatingsInput!): [RatingsOutput!]!
-      
-          "Update ${resource} watch"
-          update${capitalizedResource}Watch(ids: [ID!]!): NonNegativeInt!
-          `;
-				} else return '';
-			}
-		},
-		custom: {
-			Password,
-			Username
-		}
-	},
-	Resolvers: {
-		init: PreTransformedResolvers,
-		transformer: {
-			mutations(resource, { capitalized, pluralized }) {
-				if (resource.match(/(quiz|folder)/))
-					return {
-						[`update${capitalized}Ratings`]: async function(parent, { data }, ctx) {
-							return await addRatings(ctx[capitalized], data, ctx.user.id, (err) => {
-								throw err;
-							});
-						},
-						[`update${capitalized}Watch`]: async function(parent, { ids }, { User, user }) {
-							return await watchAction(pluralized, { [pluralized]: ids }, await User.findById(user.id));
-						}
-					};
-			}
-		}
-	}
-});
-
-const { TransformedResolvers, TransformedTypedefs } = mongql.generate();
-
-const TypedefsArr = TransformedTypedefs.arr;
-const TypedefsObj = TransformedTypedefs.obj;
-const ResolversArr = TransformedResolvers.arr;
-const ResolversObj = TransformedResolvers.obj;
-
-[
-	[ 'Auth', AuthTypedef, AuthResolvers ],
-	[ 'Base', BaseTypedef, BaseResolvers ],
-	[ 'External', ExternalTypeDef, ExternalResolvers ]
-].forEach(([ key, typedef, resolver ]) => {
-	TypedefsObj[key] = typedef;
-	if (Array.isArray(typedef)) TypedefsArr.push(...typedef);
-	else TypedefsArr.push(typedef);
-	ResolversObj[key] = resolver;
-	ResolversArr.push(resolver);
-});
-
 const RoutesArr = [];
 Object.values(routes).forEach((route) => {
 	RoutesArr.push(route);
 });
 
 module.exports = {
+	generateTypedefsAndResolvers: async function () {
+		const mongql = new Mongql({
+			Schemas: SchemasArr,
+			Typedefs: {
+				init: PreTransformedTypeDefsASTs,
+				transformer: {
+					mutations: (resource, capitalizedResource) => {
+						if (resource.match(/(quiz|folder)/)) {
+							return `
+              "Update ${resource} ratings"
+              update${capitalizedResource}Ratings(data:RatingsInput!): [RatingsOutput!]!
+          
+              "Update ${resource} watch"
+              update${capitalizedResource}Watch(ids: [ID!]!): NonNegativeInt!
+              `;
+						} else return '';
+					}
+				},
+				custom: {
+					Password,
+					Username
+				}
+			},
+			Resolvers: {
+				init: PreTransformedResolvers,
+				transformer: {
+					mutations (resource, { capitalized, pluralized }) {
+						if (resource.match(/(quiz|folder)/))
+							return {
+								[`update${capitalized}Ratings`]: async function (parent, { data }, ctx) {
+									return await addRatings(ctx[capitalized], data, ctx.user.id, (err) => {
+										throw err;
+									});
+								},
+								[`update${capitalized}Watch`]: async function (parent, { ids }, { User, user }) {
+									return await watchAction(pluralized, { [pluralized]: ids }, await User.findById(user.id));
+								}
+							};
+					}
+				}
+			},
+			output: false
+		});
+
+		const { TransformedResolvers, TransformedTypedefs } = await mongql.generate();
+
+		const TypedefsArr = TransformedTypedefs.arr;
+		const TypedefsObj = TransformedTypedefs.obj;
+		const ResolversArr = TransformedResolvers.arr;
+		const ResolversObj = TransformedResolvers.obj;
+
+		[
+			[ 'Auth', AuthTypedef, AuthResolvers ],
+			[ 'Base', BaseTypedef, BaseResolvers ],
+			[ 'External', ExternalTypeDef, ExternalResolvers ]
+		].forEach(([ key, typedef, resolver ]) => {
+			TypedefsObj[key] = typedef;
+			if (Array.isArray(typedef)) TypedefsArr.push(...typedef);
+			else TypedefsArr.push(typedef);
+			ResolversObj[key] = resolver;
+			ResolversArr.push(resolver);
+		});
+
+		return {
+			Typedefs: {
+				obj: TypedefsObj,
+				arr: TypedefsArr
+			},
+			Resolvers: {
+				obj: ResolversObj,
+				arr: ResolversArr
+			}
+		};
+	},
 	Models: {
 		obj: ModelsObj,
 		arr: ModelsArr
 	},
-	Schemas: {
-		obj: SchemasObj,
-		arr: SchemasArr
-	},
-	Typedefs: {
-		obj: TypedefsObj,
-		arr: TypedefsArr
-	},
-	Resolvers: {
-		obj: ResolversObj,
-		arr: ResolversArr
-	},
 	Routes: {
 		obj: routes,
 		arr: RoutesArr
+	},
+	Schemas: {
+		obj: SchemasObj,
+		arr: SchemasArr
 	}
 };

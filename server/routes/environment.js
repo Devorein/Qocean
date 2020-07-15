@@ -31,6 +31,9 @@ router
 	.put(protect, updateEnvironments)
 	.delete(protect, deleteEnvironments);
 
-router.route('/:id').put(protect, updateEnvironment).delete(protect, deleteEnvironment);
+router
+	.route('/:id')
+	.put(protect, updateEnvironment)
+	.delete(protect, deleteEnvironment);
 
 module.exports = router;

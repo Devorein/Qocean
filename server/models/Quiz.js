@@ -6,10 +6,10 @@ const validateColor = require('validate-color');
 const QuizSchema = extendSchema(ResourceSchema, {
 	name: {
 		type: String,
-		required: [ true, 'Quiz name is required' ],
+		required: [true, 'Quiz name is required'],
 		trim: true,
-		minlength: [ 3, 'Name can not be less than 3 characters' ],
-		maxlength: [ 50, 'Name can not be more than 50 characters' ]
+		minlength: [3, 'Name can not be less than 3 characters'],
+		maxlength: [50, 'Name can not be more than 50 characters']
 	},
 	ratings: {
 		type: Number,
@@ -41,18 +41,18 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	average_difficulty: {
 		type: String,
 		default: 'Beginner',
-		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
+		enum: ['Beginner', 'Intermediate', 'Advanced'],
 		mongql: {
 			writable: false
 		}
 	},
 	tags: {
-		type: [ String ],
+		type: [String],
 		default: []
 	},
 	subject: {
 		type: String,
-		required: [ true, 'Please provide a subject' ]
+		required: [true, 'Please provide a subject']
 	},
 	source: {
 		type: String,
@@ -109,7 +109,7 @@ const QuizSchema = extendSchema(ResourceSchema, {
 				partitionMapper: {
 					Self: 'Others'
 				},
-				excludePartitions: [ 'Mixed' ],
+				excludePartitions: ['Mixed'],
 				writable: false
 			}
 		}
@@ -121,44 +121,49 @@ QuizSchema.mongql = {
 	resource: 'quiz'
 };
 
-QuizSchema.statics.validate = async function(quiz) {
+QuizSchema.statics.validate = async function (quiz) {
 	let message = '',
 		success = true;
-	if (quiz.tags.length > 5) return [ false, 'Tags cannot be more than 5' ];
+	if (quiz.tags.length > 5) return [false, 'Tags cannot be more than 5'];
 	else {
-		const isAllValid = quiz.tags.every((tag) => validateColor.default(tag.toString().split(':')[1]));
-		if (!isAllValid) return [ false, 'All tags are not valid' ];
+		const isAllValid = quiz.tags.every((tag) =>
+			validateColor.default(tag.toString().split(':')[1])
+		);
+		if (!isAllValid) return [false, 'All tags are not valid'];
 	}
-	return [ success, message ];
+	return [success, message];
 };
 
-QuizSchema.statics.add = async function(quizId, field, id) {
+QuizSchema.statics.add = async function (quizId, field, id) {
 	const quiz = await this.findById(quizId);
 	quiz[field].push(id);
 	quiz[`total_${field}`] = quiz[field].length;
 	await quiz.save();
 };
 
-QuizSchema.statics.remove = async function(quizId, field, id) {
+QuizSchema.statics.remove = async function (quizId, field, id) {
 	const quiz = await this.findById(quizId);
 	quiz[field] = quiz[field].filter((_id) => _id.toString() !== id.toString());
 	quiz[`total_${field}`] = quiz[field].length;
 	await quiz.save();
 };
 
-QuizSchema.pre('save', async function(next) {
-	if (this.isModified('user')) await this.model('User').add(this.user, 'quizzes', this._id);
+QuizSchema.pre('save', async function (next) {
+	if (this.isModified('user'))
+		await this.model('User').add(this.user, 'quizzes', this._id);
 	next();
 });
 
-QuizSchema.pre('remove', async function(next) {
+QuizSchema.pre('remove', async function (next) {
 	await this.model('User').remove(this.user, 'quizzes', this._id);
 	const questions = await this.model('Question').find({ quiz: this._id });
 	for (let i = 0; i < questions.length; i++) await questions[i].remove();
 	const folders = await this.model('Folder').find({ quizzes: this._id });
 	for (let i = 0; i < folders.length; i++) {
 		const folder = folders[i];
-		folder.quizzes = folder.quizzes.filter((quizId) => quizId.toString() !== this._id.toString());
+		folder.quizzes = folder.quizzes.filter(
+			(quizId) => quizId.toString() !== this._id.toString()
+		);
 		folder.total_quizzes--;
 		await folder.save();
 	}

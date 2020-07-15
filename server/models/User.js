@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
@@ -179,47 +180,50 @@ UserSchema.mongql = {
 		type: true,
 		query: true
 	},
-	resource: 'user'
+	resource: 'user',
+	output: {
+		dir: path.resolve(__dirname, '../SDL')
+	}
 };
 
-UserSchema.methods.getSignedJwtToken = function() {
+UserSchema.methods.getSignedJwtToken = function () {
 	return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
 		expiresIn: process.env.JWT_EXPIRE
 	});
 };
 
-UserSchema.methods.matchPassword = async function(enteredPass) {
+UserSchema.methods.matchPassword = async function (enteredPass) {
 	return await bcrypt.compare(enteredPass, this.password);
 };
 
-UserSchema.methods.getResetPasswordToken = function() {
+UserSchema.methods.getResetPasswordToken = function () {
 	const resetToken = crypto.randomBytes(20).toString('hex');
 	this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 	this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 	return resetToken;
 };
 
-UserSchema.statics.add = async function(userId, field, id) {
+UserSchema.statics.add = async function (userId, field, id) {
 	const user = await this.findById(userId);
 	user[field].push(id);
 	user[`total_${field}`] = user[field].length;
 	await user.save();
 };
 
-UserSchema.statics.remove = async function(userId, field, id) {
+UserSchema.statics.remove = async function (userId, field, id) {
 	const user = await this.findById(userId);
 	user[field] = user[field].filter((_id) => _id.toString() !== id.toString());
 	user[`total_${field}`] = user[field].length;
 	await user.save();
 };
 
-UserSchema.pre('save', async function(next) {
+UserSchema.pre('save', async function (next) {
 	if (!this.isModified('password')) next();
 	const salt = await bcrypt.genSalt(10);
 	this.password = await bcrypt.hash(this.password, salt);
 });
 
-UserSchema.pre('remove', async function(next) {
+UserSchema.pre('remove', async function (next) {
 	await this.model('Quiz').deleteMany({ user: this._id });
 	await this.model('Question').deleteMany({ user: this._id });
 	await this.model('Environment').deleteMany({ user: this._id });

@@ -7,10 +7,16 @@ const { QuizModel } = require('../models/Quiz');
 
 async function createQuizHandler(userId, body, next) {
 	body.user = userId;
-	const prevQuiz = await QuizModel.countDocuments({ name: body.name.trim(), user: userId });
-	if (prevQuiz >= 1) return next(new ErrorResponse(`You already have a quiz named ${body.name}`, 400));
+	const prevQuiz = await QuizModel.countDocuments({
+		name: body.name.trim(),
+		user: userId
+	});
+	if (prevQuiz >= 1)
+		return next(
+			new ErrorResponse(`You already have a quiz named ${body.name}`, 400)
+		);
 
-	const [ success, message ] = await QuizModel.validate(body);
+	const [success, message] = await QuizModel.validate(body);
 	if (!success) return next(new ErrorResponse(message, 400));
 	return await QuizModel.create(body);
 }
@@ -22,11 +28,21 @@ async function deleteQuizHandler(quizIds, userId, next) {
 	for (let i = 0; i < quizIds.length; i++) {
 		const quizId = quizIds[i];
 		const quiz = await QuizModel.findById(quizId);
-		if (!quiz) return next(new ErrorResponse(`Quiz not found with id of ${quizId}`, 404));
+		if (!quiz)
+			return next(
+				new ErrorResponse(`Quiz not found with id of ${quizId}`, 404)
+			);
 		if (quiz.user.toString() !== userId.toString())
 			return next(new ErrorResponse(`User not authorized to delete quiz`, 401));
-		if (quiz.image && (!quiz.image.match(/^(http|data:)/) && quiz.image !== 'none.png')) {
-			const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${quiz.image}`);
+		if (
+			quiz.image &&
+			!quiz.image.match(/^(http|data:)/) &&
+			quiz.image !== 'none.png'
+		) {
+			const location = path.join(
+				path.dirname(__dirname),
+				`${process.env.FILE_UPLOAD_PATH}/${quiz.image}`
+			);
 			if (fs.existsSync(location)) fs.unlinkSync(location);
 		}
 		const { questions } = quiz;

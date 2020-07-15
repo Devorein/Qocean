@@ -1,49 +1,63 @@
 const { resolvers } = require('graphql-scalars');
 const colors = require('colors');
+const { documentApi } = require("graphql-extra");
+const mkdirp = require('mkdirp');
+const fs = require('fs-extra');
 
 const generateTypedefs = require('./generateTypedefs');
 const generateResolvers = require('./generateResolvers');
-
-function populateObjDefaultValue(obj, fields) {
-	Object.entries(fields).forEach(([ key, defvalue ]) => {
-    if (obj[key] === undefined) obj[key] = defvalue;
-    else obj[key] = {...defvalue,...obj[key]};
-	});
-}
+const populateObjDefaultValue = require('../populateObjDefaultValue');
 
 class Mongql {
-  #resources = [];
-  #Validators = {};
+	#globalConfigs = {};
+	#schemaConfigs = {};
 
 	constructor(options) {
-		this.options = options;
-		const { Schemas,Typedefs:{custom} } = options;
+    this.#globalConfigs = {
+      ...options,
+      Validators: [],
+      resources: [],
+      schemas: {}
+    };
+    this.#createDefaultGlobalConfigs();
+    
+		const {
+			Schemas,
+			Typedefs: { custom }
+    } = options;
+    
 		Schemas.forEach((schema) => {
-      if (schema.mongql === undefined) throw new Error(colors.red.bold`Resource doesnt have a mongql key on the schema`);
+			if (schema.mongql === undefined)
+				throw new Error(
+					colors.red.bold`Resource doesnt have a mongql key on the schema`
+				)
 			const { resource } = schema.mongql;
-			if (resource === undefined) throw new Error('Provide the mongoose schema resource type for mongql');
-			else this.#resources.push(resource);
-    });
+			if (resource === undefined)
+				throw new Error('Provide the mongoose schema resource type for mongql');
+			else this.#globalConfigs.resources.push(resource);
+			this.#createDefaultSchemaConfigs(schema);
+		})
 
-    Object.entries({...resolvers,...custom}).forEach(([ key, value ]) => {
-      this.#Validators[key] = value.serialize;
-    });
+		Object.entries({ ...resolvers, ...custom }).forEach(([key, value]) => {
+			this.#globalConfigs.Validators[key] = value.serialize;
+		});
 
-    Object.freeze(this.#Validators);
+		Object.freeze(this.#globalConfigs);
 	}
 
-  getResources = () => this.#resources;
+	getResources = () => this.#globalConfigs.resources;
 
+  #createDefaultGlobalConfigs = ()=>{
+    const temp = this.#globalConfigs;
+    populateObjDefaultValue(temp,{
+      output: false
+    });
+  }
 
-	#createDefaultConfigs = function(baseSchema) {
-    const {mongql} = baseSchema;
+	#createDefaultSchemaConfigs = (baseSchema) => {
+		const { mongql } = baseSchema;
 
-		if (mongql.global_excludePartitions === undefined) {
-			mongql.global_excludePartitions = {
-				base: [],
-				extra: true
-			};
-		} else {
+		if (mongql.global_excludePartitions !== undefined) {
 			const { base, extra } = mongql.global_excludePartitions;
 			mongql.global_excludePartitions = {
 				base: base === undefined ? [] : base,
@@ -57,34 +71,79 @@ class Mongql {
 			global_inputs: {
 				base: true,
 				extra: true
-      },
-      mutations:{
-        create: [true,true],
-        delete: [true,true],
-        update: [true,true]
-      },
-      query:{
-        all: true,
-        paginated: true,
-        filtered: true
-      }
+			},
+			mutations: {
+				create: [true, true],
+				delete: [true, true],
+				update: [true, true]
+			},
+			query: {
+				all: true,
+				paginated: true,
+				filtered: true
+			},
+			output: false,
+			global_excludePartitions: {
+				base: [],
+				extra: true
+			}
 		});
-	}
-
-	generate() {
+    
+    this.#schemaConfigs[mongql.resource] = mongql;
+  };
+  
+	async generate() {
 		const TransformedTypedefs = { obj: {}, arr: [] },
-    TransformedResolvers = { obj: {}, arr: [] };
-    const { Typedefs:{init:InitTypedefs, transformer: TypedefsTransformer,mutation:TypeDefMutationOptions},Resolvers:{init: InitResolvers,transformer: ResolverTransformer},Schemas } = this.options;
-		Schemas.forEach((schema) => {
-      this.#createDefaultConfigs(schema);
-			const { mongql: { generate, resource } } = schema;
-			const { typedefsAST, transformedSchema } = generateTypedefs(resource, schema,generate,InitTypedefs[resource],TypedefsTransformer,TypeDefMutationOptions);
-			TransformedTypedefs.obj[resource] = typedefsAST;
-			TransformedTypedefs.arr.push(typedefsAST);
-			const resolver = generateResolvers(resource, generate, transformedSchema,InitResolvers[resource],ResolverTransformer);
-			TransformedResolvers.obj[resource] = resolver;
-			TransformedResolvers.arr.push(resolver);
-		});
+			TransformedResolvers = { obj: {}, arr: [] };
+		const {
+			Typedefs: {
+				init: InitTypedefs,
+				transformer: TypedefsTransformer,
+				mutation: TypeDefMutationOptions
+			},
+			Resolvers: { init: InitResolvers, transformer: ResolverTransformer },
+			Schemas
+    } = this.#globalConfigs;
+    for(let i = 0;i<Schemas.length;i++){
+      const Schema = Schemas[i];
+      const {
+        mongql
+      } = Schema;
+      const { generate, resource } = mongql;
+      const { typedefsAST, transformedSchema } = generateTypedefs(
+        resource,
+        Schema,
+        generate,
+        InitTypedefs[resource],
+        TypedefsTransformer,
+        TypeDefMutationOptions
+      );
+      const output = (!mongql.__undefineds.includes('output') && mongql.output) || ( mongql.__undefineds.includes('output') && this.#globalConfigs.output);
+      if(output) {
+        console.log(process.cwd())
+        populateObjDefaultValue(output,{
+          dir: process.cwd()+"/SDL"
+        });
+        try{
+          const ast = documentApi().addSDL(typedefsAST);
+          await mkdirp(output.dir);
+          await fs.writeFile(`${output.dir}\\${resource}.graphql`,ast.toSDLString(),'UTF-8');
+        }catch(err){
+          console.log(err)
+        }
+      }
+      TransformedTypedefs.obj[resource] = typedefsAST;
+      TransformedTypedefs.arr.push(typedefsAST);
+      const resolver = generateResolvers(
+        resource,
+        generate,
+        transformedSchema,
+        InitResolvers[resource],
+        ResolverTransformer
+      );
+      TransformedResolvers.obj[resource] = resolver;
+      TransformedResolvers.arr.push(resolver);
+    }
 		return {
 			TransformedTypedefs,
 			TransformedResolvers

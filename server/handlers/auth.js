@@ -23,7 +23,11 @@ async function registerHandler(body) {
 	};
 	if (image) data.image = image;
 	const user = await UserModel.create(data);
-	await EnvironmentModel.create({ user: user._id, _id: env_id, name: 'Default Environment' });
+	await EnvironmentModel.create({
+		user: user._id,
+		_id: env_id,
+		name: 'Default Environment'
+	});
 	await InboxModel.create({ user: user._id, _id: inbox_id });
 	await WatchlistModel.create({ user: user._id, _id: watchlist_id });
 	return sendTokenResponse(user);
@@ -34,7 +38,8 @@ exports.registerHandler = registerHandler;
 async function loginHandler(body, next) {
 	const { email, password } = body;
 
-	if (!email || !password) return next(new ErrorResponse(`Please provide an email and password`, 400));
+	if (!email || !password)
+		return next(new ErrorResponse(`Please provide an email and password`, 400));
 	const user = await UserModel.findOne({ email }).select('+password');
 	if (!user) return next(new ErrorResponse(`Invalid credentials`, 401));
 	const isMatch = await user.matchPassword(password);

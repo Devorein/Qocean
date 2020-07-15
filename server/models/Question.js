@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
+const path = require('path');
 
 const QuestionSchema = extendSchema(ResourceSchema, {
 	name: {
@@ -69,10 +70,13 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 
 QuestionSchema.mongql = {
 	generate: true,
-	resource: 'question'
+	resource: 'question',
+	output: {
+		dir: path.resolve(__dirname, '../SDL')
+	}
 };
 
-QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
+QuestionSchema.statics.getAverageTimeAllocated = async function (quizId) {
 	const obj = await this.aggregate([
 		{
 			$match: { quiz: quizId }
@@ -93,7 +97,7 @@ QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
 	}
 };
 
-QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
+QuestionSchema.statics.getAverageDifficulty = async function (quizId) {
 	const obj = await this.aggregate([
 		{
 			$match: { quiz: quizId }
@@ -105,7 +109,11 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 						if: { $eq: [ '$difficulty', 'Beginner' ] },
 						then: 3.33,
 						else: {
-							$cond: { if: { $eq: [ '$difficulty', 'Intermediate' ] }, then: 6.66, else: 10 }
+							$cond: {
+								if: { $eq: [ '$difficulty', 'Intermediate' ] },
+								then: 6.66,
+								else: 10
+							}
 						}
 					}
 				}
@@ -128,7 +136,7 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 	}
 };
 
-QuestionSchema.statics.validateQuestion = async function(question) {
+QuestionSchema.statics.validateQuestion = async function (question) {
 	const { type } = question;
 	question.options = question.options ? question.options : [];
 	if (!question.answers) return [ false, 'Provide the answers for the question' ];
@@ -175,7 +183,7 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 	return [ true ];
 };
 
-function typedChecker(correct_answers, user_answer) {
+function typedChecker (correct_answers, user_answer) {
 	let original_answer = user_answer;
 	return correct_answers.some((correct_answer) => {
 		const hasMod = correct_answer.match(/^\[(\w{1,3}[,|\]])+/);
@@ -195,7 +203,7 @@ function typedChecker(correct_answers, user_answer) {
 	});
 }
 
-QuestionSchema.methods.validateAnswer = async function(answers) {
+QuestionSchema.methods.validateAnswer = async function (answers) {
 	const { type } = this;
 	let isCorrect = false,
 		message = 'Wrong answer';
@@ -220,7 +228,7 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 	return [ isCorrect, message ];
 };
 
-QuestionSchema.post('save', async function() {
+QuestionSchema.post('save', async function () {
 	await this.model('User').add(this.user, 'questions', this._id);
 	await this.model('Quiz').add(this.quiz, 'questions', this._id);
 	if (this.isModified('quiz')) {
@@ -235,7 +243,7 @@ QuestionSchema.post('save', async function() {
 	if (this.isModified('difficulty')) this.constructor.getAverageDifficulty(this.quiz);
 });
 
-QuestionSchema.pre('remove', async function() {
+QuestionSchema.pre('remove', async function () {
 	await this.model('User').remove(this.user, 'questions', this._id);
 	await this.model('Quiz').remove(this.quiz, 'questions', this._id);
 	const folders = await this.model('Folder').find({ quizzes: this.quiz });

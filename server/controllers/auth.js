@@ -6,7 +6,11 @@ const asyncHandler = require('../middleware/async');
 const sendEmail = require('../utils/sendEmail');
 const sendTokenResponse = require('../utils/sendTokenResponse');
 
-const { registerHandler, checkPasswordHandler, loginHandler } = require('../handlers/auth');
+const {
+	registerHandler,
+	checkPasswordHandler,
+	loginHandler
+} = require('../handlers/auth');
 
 // @desc     Register
 // @route    POST /api/v1/auth/register
@@ -50,18 +54,25 @@ exports.logout = asyncHandler(async (req, res) => {
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
 	const user = await UserModel.findOne({ email: req.body.email });
 
-	if (!user) return next(new ErrorResponse(`There is no user with that email`, 404));
+	if (!user)
+		return next(new ErrorResponse(`There is no user with that email`, 404));
 
 	// Get reset token
 	const resetToken = user.getResetPasswordToken();
 	await user.save({ validateBeforeSave: false });
 
-	const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/resetpassword/${resetToken}`;
+	const resetUrl = `${req.protocol}://${req.get(
+		'host'
+	)}/api/v1/auth/resetpassword/${resetToken}`;
 
 	const message = `Please make a PUT request to ${resetUrl}`;
 
 	try {
-		await sendEmail({ email: user.email, subject: 'Password reset token', message });
+		await sendEmail({
+			email: user.email,
+			subject: 'Password reset token',
+			message
+		});
 		res.status(200).json({ success: true, data: `Email sent` });
 	} catch (err) {
 		console.log(err);
@@ -76,9 +87,15 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 // @route    PUT /api/v1/auth/resetpassword/:resetToken
 // @access   Public
 exports.resetPassword = asyncHandler(async (req, res, next) => {
-	const resetPasswordToken = crypto.createHash('sha256').update(req.params.resetToken).digest('hex');
+	const resetPasswordToken = crypto
+		.createHash('sha256')
+		.update(req.params.resetToken)
+		.digest('hex');
 
-	const user = await UserModel.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
+	const user = await UserModel.findOne({
+		resetPasswordToken,
+		resetPasswordExpire: { $gt: Date.now() }
+	});
 
 	if (!user) return next(new ErrorResponse(`Invalid token`, 400));
 
