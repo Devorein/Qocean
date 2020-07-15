@@ -79,7 +79,8 @@ module.exports = {
 							};
 					}
 				}
-			}
+			},
+			output: false
 		});
 
 		const { TransformedResolvers, TransformedTypedefs } = await mongql.generate();

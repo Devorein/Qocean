@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
@@ -181,7 +182,7 @@ UserSchema.mongql = {
 	},
 	resource: 'user',
 	output: {
-		dir: process.cwd()
+		dir: path.resolve(__dirname, '../SDL')
 	}
 };
 

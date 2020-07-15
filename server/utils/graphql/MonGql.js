@@ -1,5 +1,8 @@
 const { resolvers } = require('graphql-scalars');
 const colors = require('colors');
+const { documentApi } = require("graphql-extra");
+const mkdirp = require('mkdirp');
+const fs = require('fs-extra');
 
 const generateTypedefs = require('./generateTypedefs');
 const generateResolvers = require('./generateResolvers');
@@ -104,8 +107,9 @@ class Mongql {
     for(let i = 0;i<Schemas.length;i++){
       const Schema = Schemas[i];
       const {
-        mongql: { generate, resource }
+        mongql
       } = Schema;
+      const { generate, resource } = mongql;
       const { typedefsAST, transformedSchema } = generateTypedefs(
         resource,
         Schema,
@@ -114,7 +118,20 @@ class Mongql {
         TypedefsTransformer,
         TypeDefMutationOptions
       );
-  
+      const output = (!mongql.__undefineds.includes('output') && mongql.output) || ( mongql.__undefineds.includes('output') && this.#globalConfigs.output);
+      if(output) {
+        console.log(process.cwd())
+        populateObjDefaultValue(output,{
+          dir: process.cwd()+"/SDL"
+        });
+        try{
+          const ast = documentApi().addSDL(typedefsAST);
+          await mkdirp(output.dir);
+          await fs.writeFile(`${output.dir}\\${resource}.graphql`,ast.toSDLString(),'UTF-8');
+        }catch(err){
+          console.log(err)
+        }
+      }
       TransformedTypedefs.obj[resource] = typedefsAST;
       TransformedTypedefs.arr.push(typedefsAST);
       const resolver = generateResolvers(
