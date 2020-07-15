@@ -35,7 +35,7 @@ InboxSchema.mongql = {
 	},
 	resource: 'inbox',
 	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
+		base: ['Others', 'Mixed']
 	}
 };
 

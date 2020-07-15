@@ -7,7 +7,9 @@ const connectDB = async () => {
 		useFindAndModify: false,
 		useUnifiedTopology: true
 	});
-	console.log(`MongoDB Connected: ${conn.connection.host}`.green.underline.bold);
+	console.log(
+		`MongoDB Connected: ${conn.connection.host}`.green.underline.bold
+	);
 };
 
 module.exports = connectDB;

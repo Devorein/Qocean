@@ -1,6 +1,6 @@
 const rateLimiter = require('express-rate-limit');
 
-module.exports = function() {
+module.exports = function () {
 	let limiter = null;
 	if (process.env.NODE_ENV === 'development') {
 		limiter = rateLimiter({

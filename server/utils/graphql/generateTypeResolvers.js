@@ -1,5 +1,5 @@
 const S = require('String');
-module.exports = function(resource, transformedSchema) {
+module.exports = function (resource, transformedSchema) {
 	resource = S(resource).capitalize().s;
 	let target = transformedSchema;
 	target = {
@@ -8,25 +8,29 @@ module.exports = function(resource, transformedSchema) {
 	};
 
 	const result = {};
-	Object.entries(target).forEach(([ basekey, value ]) => {
+	Object.entries(target).forEach(([basekey, value]) => {
 		result[basekey] = {};
-		Object.entries(value).forEach(([ key, { /* value, */ variant, baseType /* excludePartitions */ } ]) => {
-			if (variant.match(/(ref|refs)/)) {
-				result[basekey][key] = async function(parent, args, ctx) {
-					const model = ctx[baseType];
-					// const auth_level = basekey.replace(resource, '');
-					const ids = parent[key];
-					const resources = [];
-					for (let i = 0; i < ids.length; i++) {
-						const [ resource ] = await model.find({ _id: ids[i] }).select('name');
-						resources.push(resource);
-					}
-					return resources;
-				};
-			} else if (variant.match(/(enum|type)/)) {
-				result[basekey][key] = (parent) => parent[key];
+		Object.entries(value).forEach(
+			([key, { /* value, */ variant, baseType /* excludePartitions */ }]) => {
+				if (variant.match(/(ref|refs)/)) {
+					result[basekey][key] = async function (parent, args, ctx) {
+						const model = ctx[baseType];
+						// const auth_level = basekey.replace(resource, '');
+						const ids = parent[key];
+						const resources = [];
+						for (let i = 0; i < ids.length; i++) {
+							const [resource] = await model
+								.find({ _id: ids[i] })
+								.select('name');
+							resources.push(resource);
+						}
+						return resources;
+					};
+				} else if (variant.match(/(enum|type)/)) {
+					result[basekey][key] = (parent) => parent[key];
+				}
 			}
-		});
+		);
 	});
 	return result;
 };

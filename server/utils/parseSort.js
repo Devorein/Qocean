@@ -1,4 +1,4 @@
-module.exports = function(sort) {
+module.exports = function (sort) {
 	const transformed_sort = {};
 	if (sort && sort !== '') {
 		sort.split(',').forEach((field) => {

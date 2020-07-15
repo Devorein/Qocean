@@ -1,9 +1,12 @@
-const { validateQuestionHandler, sendAnswerHandler } = require('../handlers/question');
+const {
+	validateQuestionHandler,
+	sendAnswerHandler
+} = require('../handlers/question');
 
 const QuestionResolvers = {
 	Query: {
 		async getMixedQuestionsByIdAnswers(parent, { id }) {
-			const [ questions ] = await sendAnswerHandler([ id ], (err) => {
+			const [questions] = await sendAnswerHandler([id], (err) => {
 				throw err;
 			});
 			return questions;
@@ -16,7 +19,7 @@ const QuestionResolvers = {
 		},
 
 		async getMixedQuestionsByIdValidation(parent, { data }) {
-			return await validateQuestionHandler([ data ], (err) => {
+			return await validateQuestionHandler([data], (err) => {
 				throw err;
 			});
 		},

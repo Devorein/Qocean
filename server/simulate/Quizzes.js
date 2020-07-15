@@ -9,15 +9,21 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-casual.define('quiz', function() {
+casual.define('quiz', function () {
 	const len = getRandomInt(0, 5);
 	const width = 100 * getRandomInt(3, 6);
 	const height = Math.floor(width / 1.66);
 	return {
-		image: `https://picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
+		image: `https://picsum.photos/id/${getRandomInt(
+			0,
+			1000
+		)}/${width}/${height}.jpg`,
 		name: casual.title,
 		subject: casual.word,
-		tags: len === 0 ? [] : casual.array_of_words(len).map((word) => `${word}:${randomColor()}`),
+		tags:
+			len === 0
+				? []
+				: casual.array_of_words(len).map((word) => `${word}:${randomColor()}`),
 		source: faker.internet.url(),
 		favourite: casual.boolean,
 		public: casual.boolean
@@ -28,7 +34,11 @@ const createQuiz = async ({ quizzes, total_users, users }) => {
 	const quiz = casual.quiz;
 	try {
 		const user = users[getRandomInt(0, total_users - 1)];
-		const { data: { data: { _id } } } = await axios.post(
+		const {
+			data: {
+				data: { _id }
+			}
+		} = await axios.post(
 			`http://localhost:5001/api/v1/quizzes`,
 			{ ...quiz },
 			{

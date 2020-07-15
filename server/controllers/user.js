@@ -11,7 +11,7 @@ const {
 // @desc     Update current user details
 // @route    PUT /api/v1/users/updateDetails
 // @access   Private
-exports.updateUserDetails = asyncHandler(async function(req, res) {
+exports.updateUserDetails = asyncHandler(async function (req, res) {
 	const user = await updateUserDetailsHandler(req.body, req.user._id);
 	res.status(200).json({
 		success: true,
@@ -34,15 +34,19 @@ exports.getAllUsers = asyncHandler(async (req, res) => {
 // @desc     Update current user password
 // @route    PUT /api/v1/users/updatePassword
 // @access   Private
-exports.updateUserPassword = asyncHandler(async function(req, res, next) {
-	const { token, id } = await updateUserPasswordHandler(req.user._id, req.body, next);
+exports.updateUserPassword = asyncHandler(async function (req, res, next) {
+	const { token, id } = await updateUserPasswordHandler(
+		req.user._id,
+		req.body,
+		next
+	);
 	res.status(200).json({ token, id });
 });
 
 // @desc     Delete current user
 // @route    DELETE /api/v1/users
 // @access   Private
-exports.deleteUser = asyncHandler(async function(req, res) {
+exports.deleteUser = asyncHandler(async function (req, res) {
 	const user = await deleteUserHandler(req.user._id);
 	res.status(200).json({
 		success: true,

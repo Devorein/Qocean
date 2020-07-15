@@ -8,7 +8,15 @@ const generateQueryTypedefs = require('./generateQueryTypedefs');
 const generateMutationTypedefs = require('./generateMutationTypedefs');
 const generateTypeTypedefs = require('./generateTypeTypedefs');
 
-function transformTypeDefs(schema, typedefsAST, generate, resource, TypedefsTransformers, mutationOpt, Validators) {
+function transformTypeDefs(
+	schema,
+	typedefsAST,
+	generate,
+	resource,
+	TypedefsTransformers,
+	mutationOpt,
+	Validators
+) {
 	if (generate !== false) {
 		if (generate === true)
 			generate = {
@@ -19,22 +27,35 @@ function transformTypeDefs(schema, typedefsAST, generate, resource, TypedefsTran
 		const { type = false, query = false, mutation = false } = generate;
 		let transformedSchema = {};
 		if (type) {
-			const generatedTypeTypedef = generateTypeTypedefs(resource, schema, Validators);
+			const generatedTypeTypedef = generateTypeTypedefs(
+				resource,
+				schema,
+				Validators
+			);
 			const { typedefTypeStr } = generatedTypeTypedef;
 			transformedSchema = generatedTypeTypedef.transformedSchema;
 			transformTypedefTypesAST(typedefsAST, typedefTypeStr);
 		}
-		if (query) transformTypedefQueryAST(typedefsAST, generateQueryTypedefs(resource, transformedSchema));
+		if (query)
+			transformTypedefQueryAST(
+				typedefsAST,
+				generateQueryTypedefs(resource, transformedSchema)
+			);
 		if (mutation)
 			transformTypedefMutationAST(
 				typedefsAST,
-				generateMutationTypedefs(resource, transformedSchema, TypedefsTransformers.mutations, mutationOpt)
+				generateMutationTypedefs(
+					resource,
+					transformedSchema,
+					TypedefsTransformers.mutations,
+					mutationOpt
+				)
 			);
 		return { typedefsAST, transformedSchema };
 	} else return { typedefsAST, transformedSchema: {} };
 }
 
-module.exports = function(
+module.exports = function (
 	resource,
 	schema,
 	generate,

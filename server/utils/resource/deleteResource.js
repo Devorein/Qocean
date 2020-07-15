@@ -12,8 +12,12 @@ module.exports = async function deleteResource(model, ids, userId) {
 	const { modelName } = model;
 
 	if (modelName === 'Quiz') return await deleteQuizHandler(ids, userId, next);
-	else if (modelName === 'Question') return await deleteQuestionHandler(ids, userId, next);
-	else if (modelName === 'Folder') return await deleteFolderHandler(ids, userId, next);
-	else if (modelName === 'Environment') return await deleteEnvironmentHandler(ids, userId, next);
-	else if (modelName === 'Filtersort') return await deleteFilterSortHandler(ids, userId, next);
+	else if (modelName === 'Question')
+		return await deleteQuestionHandler(ids, userId, next);
+	else if (modelName === 'Folder')
+		return await deleteFolderHandler(ids, userId, next);
+	else if (modelName === 'Environment')
+		return await deleteEnvironmentHandler(ids, userId, next);
+	else if (modelName === 'Filtersort')
+		return await deleteFilterSortHandler(ids, userId, next);
 };

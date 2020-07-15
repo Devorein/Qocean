@@ -1,12 +1,18 @@
 const pluralize = require('pluralize');
 const S = require('String');
 
-module.exports = function(resource, transformedSchema, TypedefsMutationTransformers) {
+module.exports = function (
+	resource,
+	transformedSchema,
+	TypedefsMutationTransformers
+) {
 	const capitalizedResource = S(resource).capitalize().s;
 	const pluralizedResource = pluralize(resource, 2);
 	const pluralizedcapitalizedResource = pluralize(capitalizedResource, 2);
 
-	const { mongql: { mutations } } = transformedSchema;
+	const {
+		mongql: { mutations }
+	} = transformedSchema;
 
 	let mutationsStr = ``;
 	if (mutations.create[0])
@@ -38,6 +44,7 @@ module.exports = function(resource, transformedSchema, TypedefsMutationTransform
     "Delete multiple ${pluralizedResource}"
     delete${pluralizedcapitalizedResource}(ids: [ID!]): [Self${capitalizedResource}Type!]!
   `;
-	if (TypedefsMutationTransformers) mutationsStr += TypedefsMutationTransformers(resource, capitalizedResource);
+	if (TypedefsMutationTransformers)
+		mutationsStr += TypedefsMutationTransformers(resource, capitalizedResource);
 	return `extend type Mutation {\n${mutationsStr}\n}`;
 };

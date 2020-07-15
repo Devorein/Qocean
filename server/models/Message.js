@@ -38,7 +38,7 @@ MessageSchema.mongql = {
 	},
 	resource: 'message',
 	global_excludePartitions: {
-		base: [ 'Others', 'Mixed' ]
+		base: ['Others', 'Mixed']
 	}
 };
 

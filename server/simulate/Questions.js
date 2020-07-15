@@ -7,10 +7,10 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-casual.define('question', function() {
-	const types = [ 'MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC' ];
+casual.define('question', function () {
+	const types = ['MCQ', 'MS', 'TF', 'Snippet', 'FIB', 'FC'];
 	const type = types[getRandomInt(0, types.length - 1)];
-	const times = [ 15, 30, 45, 60, 75, 90, 105, 120 ];
+	const times = [15, 30, 45, 60, 75, 90, 105, 120];
 	const time = times[getRandomInt(0, times.length - 1)];
 	let options,
 		answers = [],
@@ -18,11 +18,15 @@ casual.define('question', function() {
 
 	if (type === 'MCQ') {
 		const total_options = getRandomInt(3, 6);
-		options = Array(total_options).fill(0).map(() => casual.sentence);
+		options = Array(total_options)
+			.fill(0)
+			.map(() => casual.sentence);
 		answers.push(getRandomInt(1, total_options - 1));
 	} else if (type === 'MS') {
 		const total_options = getRandomInt(3, 6);
-		options = Array(total_options).fill(0).map(() => casual.sentence);
+		options = Array(total_options)
+			.fill(0)
+			.map(() => casual.sentence);
 		const total_answers = getRandomInt(1, total_options - 1);
 
 		while (answers.length < total_answers) {
@@ -31,10 +35,14 @@ casual.define('question', function() {
 		}
 	} else if (type === 'TF') {
 		options = [];
-		answers.push([ 0, 1 ][getRandomInt(0, 1)]);
+		answers.push([0, 1][getRandomInt(0, 1)]);
 	} else if (type === 'FC') {
 		options = [];
-		answers = [ Array(getRandomInt(1, 3)).fill(0).map(() => casual.sentence) ];
+		answers = [
+			Array(getRandomInt(1, 3))
+				.fill(0)
+				.map(() => casual.sentence)
+		];
 	} else if (type === 'FIB') {
 		options = [];
 		const blanks = getRandomInt(1, 6);
@@ -50,7 +58,7 @@ casual.define('question', function() {
 		name = name.join(' ');
 	} else if (type === 'Snippet') {
 		options = [];
-		answers = [ casual.array_of_words(getRandomInt(1, 3)) ];
+		answers = [casual.array_of_words(getRandomInt(1, 3))];
 	}
 	const width = 100 * getRandomInt(3, 6);
 	const height = Math.floor(width / 1.66);
@@ -60,25 +68,33 @@ casual.define('question', function() {
 		weight: getRandomInt(1, 10),
 		add_to_score: casual.boolean,
 		time_allocated: time,
-		difficulty: [ 'Beginner', 'Intermediate', 'Advanced' ][getRandomInt(0, 2)],
-		image: `https://picsum.photos/id/${getRandomInt(0, 1000)}/${width}/${height}.jpg`,
+		difficulty: ['Beginner', 'Intermediate', 'Advanced'][getRandomInt(0, 2)],
+		image: `https://picsum.photos/id/${getRandomInt(
+			0,
+			1000
+		)}/${width}/${height}.jpg`,
 		options,
 		answers,
 		favourite: casual.boolean,
 		public: casual.boolean,
-		format: [ 'md', 'regular' ][getRandomInt(0, 1)]
+		format: ['md', 'regular'][getRandomInt(0, 1)]
 	};
 });
 
 const createQuestion = async ({ quizzes, questions, total_users, users }) => {
 	const question = casual.question;
 	let user = users[getRandomInt(0, total_users - 1)];
-	while (user.quizzes.length === 0) user = users[getRandomInt(0, total_users - 1)];
+	while (user.quizzes.length === 0)
+		user = users[getRandomInt(0, total_users - 1)];
 	const quizId = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
 	const quiz = quizzes.find(({ _id }) => quizId === _id);
 	try {
 		question.quiz = quizId;
-		const { data: { data: { _id } } } = await axios.post(
+		const {
+			data: {
+				data: { _id }
+			}
+		} = await axios.post(
 			`http://localhost:5001/api/v1/questions`,
 			{ ...question },
 			{
@@ -95,7 +111,13 @@ const createQuestion = async ({ quizzes, questions, total_users, users }) => {
 	}
 };
 
-async function createQuestions({ count, questions, quizzes, total_users, users }) {
+async function createQuestions({
+	count,
+	questions,
+	quizzes,
+	total_users,
+	users
+}) {
 	let created = 1;
 	return new Promise((resolve) => {
 		const questionInterval = setInterval(async () => {

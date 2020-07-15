@@ -4,13 +4,15 @@ const { difference } = require('lodash');
 
 const parsePagination = require('../parsePagination');
 
-module.exports = function(resource, transformedSchema) {
+module.exports = function (resource, transformedSchema) {
 	const capitalizedResource = S(resource).capitalize().s;
 	const selfFields = [],
 		mixedFields = [],
 		othersFields = [];
 
-	const { mongql: { queries } } = transformedSchema;
+	/* 	const {
+		mongql: { queries }
+	} = transformedSchema; */
 
 	Object.entries(transformedSchema.fields).forEach(([ key, { excludePartitions } ]) => {
 		if (excludePartitions === undefined) excludePartitions = [];
@@ -63,16 +65,22 @@ module.exports = function(resource, transformedSchema) {
 		[ 'Mixed', 'Others', 'Self' ].forEach((auth) => {
 			const parts = range.match(/(Id|Paginated)/) ? [ 'Whole', 'NameAndId' ] : [ 'Whole', 'NameAndId', 'Count' ];
 			parts.forEach((part) => {
-				QueryResolvers[`get${range}${auth}${pluralizedcapitalizedResource}${part}`] = async function(
+				QueryResolvers[`get${range}${auth}${pluralizedcapitalizedResource}${part}`] = async function (
 					parent,
 					args,
 					ctx
 				) {
 					const AuthFilter = AuthFilters[auth](ctx);
 					if (part === 'Count') {
-						if (range === 'All') return await ctx[capitalizedResource].countDocuments({ ...AuthFilter });
+						if (range === 'All')
+							return await ctx[capitalizedResource].countDocuments({
+								...AuthFilter
+							});
 						else if (range === 'Filtered')
-							return await ctx[capitalizedResource].countDocuments({ ...AuthFilter, ...(args.filter || '{}') });
+							return await ctx[capitalizedResource].countDocuments({
+								...AuthFilter,
+								...(args.filter || '{}')
+							});
 					}
 
 					let query = null;
@@ -80,7 +88,11 @@ module.exports = function(resource, transformedSchema) {
 					if (range === 'All') query = ctx[capitalizedResource].find({ ...AuthFilter });
 					else if (range === 'Paginated') query = Pagination(auth, args, ctx);
 					else if (range === 'Filter') query = Filter(auth, args, ctx);
-					else if (range === 'Id') query = ctx[capitalizedResource].find({ ...AuthFilter, _id: args.id });
+					else if (range === 'Id')
+						query = ctx[capitalizedResource].find({
+							...AuthFilter,
+							_id: args.id
+						});
 
 					query = query.select(Selection(auth, part));
 					const res = await query;

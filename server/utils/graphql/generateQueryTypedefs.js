@@ -1,13 +1,15 @@
 const pluralize = require('pluralize');
 const S = require('string');
 
-module.exports = function(resource) {
+module.exports = function (resource) {
 	const cResource = S(resource).capitalize().s;
 	const cpResource = pluralize(cResource, 2);
 	const res = [];
-	[ 'All', 'Paginated', 'Filtered', 'Id' ].forEach((range) => {
-		[ 'Mixed', 'Others', 'Self' ].forEach((auth) => {
-			const parts = range.match(/(Id|Paginated)/) ? [ 'Whole', 'NameAndId' ] : [ 'Whole', 'NameAndId', 'Count' ];
+	['All', 'Paginated', 'Filtered', 'Id'].forEach((range) => {
+		['Mixed', 'Others', 'Self'].forEach((auth) => {
+			const parts = range.match(/(Id|Paginated)/)
+				? ['Whole', 'NameAndId']
+				: ['Whole', 'NameAndId', 'Count'];
 			parts.forEach((part) => {
 				let input = '',
 					output = `[${auth}${cResource}Type!]!`;
@@ -24,7 +26,9 @@ module.exports = function(resource) {
 				}
 				if (part === 'Count') output = 'NonNegativeInt!';
 				const commonComment = `"Get ${range.toLowerCase()} ${auth.toLowerCase()} ${resource.toLowerCase()} ${part.toLowerCase()}`;
-				res.push(`${commonComment}"\n get${range}${auth}${cpResource}${part}${input}: ${output}`);
+				res.push(
+					`${commonComment}"\n get${range}${auth}${cpResource}${part}${input}: ${output}`
+				);
 			});
 		});
 	});

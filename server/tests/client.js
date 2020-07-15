@@ -1,4 +1,8 @@
-const { ApolloClient, InMemoryCache, createHttpLink } = require('@apollo/client');
+const {
+	ApolloClient,
+	InMemoryCache,
+	createHttpLink
+} = require('@apollo/client');
 require('cross-fetch/polyfill');
 
 const httpLink = createHttpLink({ uri: 'http://localhost:5002/graphql' });
