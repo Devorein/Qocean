@@ -31,11 +31,12 @@ const InboxSchema = new mongoose.Schema({
 
 InboxSchema.mongql = {
 	generate: {
-		type: true
+		query: false,
+		mutation: false
 	},
 	resource: 'inbox',
 	global_excludePartitions: {
-		base: ['Others', 'Mixed']
+		base: [ 'Others', 'Mixed' ]
 	}
 };
 

@@ -32,11 +32,12 @@ const WatchlistSchema = new mongoose.Schema({
 exports.WatchlistSchema = WatchlistSchema;
 WatchlistSchema.mongql = {
 	generate: {
-		type: true
+		query: false,
+		mutation: false
 	},
 	resource: 'watchlist',
 	global_excludePartitions: {
-		base: ['Others', 'Mixed']
+		base: [ 'Others', 'Mixed' ]
 	},
 	global_inputs: {
 		base: false

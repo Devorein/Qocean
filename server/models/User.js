@@ -176,8 +176,7 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.mongql = {
 	generate: {
-		type: true,
-		query: true
+		mutation: false
 	},
 	resource: 'user'
 };

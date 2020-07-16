@@ -18,5 +18,9 @@ module.exports = gql`
 	extend type Mutation {
 		"Update quiz played times"
 		updateQuizPlayedTimes(ids: [ID!]!): NonNegativeInt!
+    "Update quiz ratings"
+    updateQuizzesRatings(data:RatingsInput!): [RatingsOutput!]!
+    "Update quiz watch"
+    updateQuizzesWatch(ids: [ID!]!): NonNegativeInt!
 	}
 `;
