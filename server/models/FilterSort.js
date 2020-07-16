@@ -9,7 +9,7 @@ const filterItem = {
 	value: String,
 	cond: {
 		type: String,
-		enum: ['and', 'or']
+		enum: [ 'and', 'or' ]
 	},
 	type: {
 		type: String
@@ -20,7 +20,7 @@ const FiltersSchema = new mongoose.Schema({
 	...filterItem
 });
 
-FiltersSchema.add({ children: [FiltersSchema] });
+FiltersSchema.add({ children: [ FiltersSchema ] });
 
 const SortsSchema = new mongoose.Schema({
 	target: {
@@ -29,7 +29,7 @@ const SortsSchema = new mongoose.Schema({
 	},
 	order: {
 		type: String,
-		enum: ['asc', 'desc', 'none']
+		enum: [ 'asc', 'desc', 'none' ]
 	}
 });
 
@@ -44,26 +44,25 @@ const FilterSortSchema = new mongoose.Schema({
 	},
 	type: {
 		type: String,
-		enum: ['User', 'Folder', 'Quiz', 'Question', 'Environment'],
-		required: [true, 'Provide the filtersort type']
+		enum: [ 'User', 'Folder', 'Quiz', 'Question', 'Environment' ],
+		required: [ true, 'Provide the filtersort type' ]
 	},
 	name: {
 		type: String,
-		required: [true, 'Name is required']
+		required: [ true, 'Name is required' ]
 	},
-	filters: [FiltersSchema],
-	sorts: [SortsSchema]
+	filters: [ FiltersSchema ],
+	sorts: [ SortsSchema ]
 });
 
 exports.FilterSortSchema = FilterSortSchema;
 FilterSortSchema.mongql = {
 	generate: {
-		mutation: true,
-		type: true
+		query: false
 	},
 	resource: 'filtersort',
 	global_excludePartitions: {
-		base: ['Others', 'Mixed']
+		base: [ 'Others', 'Mixed' ]
 	}
 };
 

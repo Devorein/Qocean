@@ -34,11 +34,12 @@ const MessageSchema = new mongoose.Schema({
 
 MessageSchema.mongql = {
 	generate: {
-		type: true
+		query: false,
+		mutation: false
 	},
 	resource: 'message',
 	global_excludePartitions: {
-		base: ['Others', 'Mixed']
+		base: [ 'Others', 'Mixed' ]
 	}
 };
 

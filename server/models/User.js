@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const path = require('path');
 const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
@@ -177,13 +176,9 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.mongql = {
 	generate: {
-		type: true,
-		query: true
+		mutation: false
 	},
-	resource: 'user',
-	output: {
-		dir: path.resolve(__dirname, '../SDL')
-	}
+	resource: 'user'
 };
 
 UserSchema.methods.getSignedJwtToken = function () {

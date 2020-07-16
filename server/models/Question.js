@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
-const path = require('path');
 
 const QuestionSchema = extendSchema(ResourceSchema, {
 	name: {
@@ -70,10 +69,7 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 
 QuestionSchema.mongql = {
 	generate: true,
-	resource: 'question',
-	output: {
-		dir: path.resolve(__dirname, '../SDL')
-	}
+	resource: 'question'
 };
 
 QuestionSchema.statics.getAverageTimeAllocated = async function (quizId) {

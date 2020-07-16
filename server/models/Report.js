@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const ReportDisabledSchema = new mongoose.Schema({
 	type: {
-		type: [String]
+		type: [ String ]
 	},
 	difficulty: {
-		type: [String]
+		type: [ String ]
 	}
 });
 
@@ -16,7 +16,7 @@ const ReportQuestionsSchema = new mongoose.Schema({
 		required: true
 	},
 	user_answers: {
-		type: [String]
+		type: [ String ]
 	},
 	result: { type: Boolean, required: true },
 	time_taken: { type: Number, required: true }
@@ -27,7 +27,7 @@ const ReportSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 		mongql: {
-			type: [false]
+			type: [ false ]
 		}
 	},
 	user: {
@@ -87,17 +87,18 @@ const ReportSchema = new mongoose.Schema({
 			required: true
 		}
 	],
-	questions: [ReportQuestionsSchema],
+	questions: [ ReportQuestionsSchema ],
 	disabled: ReportDisabledSchema
 });
 
 ReportSchema.mongql = {
 	generate: {
-		type: true
+		query: false,
+		mutation: false
 	},
 	resource: 'report',
 	global_excludePartitions: {
-		base: ['Others', 'Mixed']
+		base: [ 'Others', 'Mixed' ]
 	}
 };
 
