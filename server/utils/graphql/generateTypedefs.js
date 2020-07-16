@@ -1,22 +1,11 @@
-const {
-	transformTypedefTypesAST,
-	transformTypedefQueryAST,
-	transformTypedefMutationAST
-} = require('../ast/transformGraphqlAST');
+const { transformTypedefTypesAST, transformTypedefObjExtAST } = require('../ast/transformGraphqlAST');
 
 const generateQueryTypedefs = require('./generateQueryTypedefs');
 const generateMutationTypedefs = require('./generateMutationTypedefs');
 const generateTypeTypedefs = require('./generateTypeTypedefs');
 
-function transformTypeDefs(
-	schema,
-	typedefsAST,
-	generate,
-	resource,
-	TypedefsTransformers,
-	mutationOpt,
-	Validators
-) {
+function transformTypeDefs (schema, typedefsAST, generate, resource, TypedefsTransformers, mutationOpt, Validators) {
+	let typedefTypeStr = '';
 	if (generate !== false) {
 		if (generate === true)
 			generate = {
@@ -27,32 +16,21 @@ function transformTypeDefs(
 		const { type = false, query = false, mutation = false } = generate;
 		let transformedSchema = {};
 		if (type) {
-			const generatedTypeTypedef = generateTypeTypedefs(
-				resource,
-				schema,
-				Validators
-			);
-			const { typedefTypeStr } = generatedTypeTypedef;
+			const generatedTypeTypedef = generateTypeTypedefs(resource, schema, Validators);
+			typedefTypeStr = generatedTypeTypedef.typedefTypeStr;
 			transformedSchema = generatedTypeTypedef.transformedSchema;
 			transformTypedefTypesAST(typedefsAST, typedefTypeStr);
 		}
-		if (query)
-			transformTypedefQueryAST(
-				typedefsAST,
-				generateQueryTypedefs(resource, transformedSchema)
-			);
+		if (query) transformTypedefObjExtAST('Query', typedefsAST, generateQueryTypedefs(resource, transformedSchema));
 		if (mutation)
-			transformTypedefMutationAST(
+			transformTypedefObjExtAST(
+				'Mutation',
 				typedefsAST,
-				generateMutationTypedefs(
-					resource,
-					transformedSchema,
-					TypedefsTransformers.mutations,
-					mutationOpt
-				)
+				generateMutationTypedefs(resource, transformedSchema, TypedefsTransformers.mutations, mutationOpt),
+				resource
 			);
-		return { typedefsAST, transformedSchema };
-	} else return { typedefsAST, transformedSchema: {} };
+		return { typedefsAST, typedefTypeStr, transformedSchema };
+	} else return { typedefsAST, typedefTypeStr, transformedSchema: {} };
 }
 
 module.exports = function (

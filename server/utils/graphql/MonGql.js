@@ -110,7 +110,7 @@ class Mongql {
         mongql
       } = Schema;
       const { generate, resource } = mongql;
-      const { typedefsAST, transformedSchema } = generateTypedefs(
+      const { typedefsAST,transformedSchema } = generateTypedefs(
         resource,
         Schema,
         generate,
@@ -120,7 +120,6 @@ class Mongql {
       );
       const output = (!mongql.__undefineds.includes('output') && mongql.output) || ( mongql.__undefineds.includes('output') && this.#globalConfigs.output);
       if(output) {
-        console.log(process.cwd())
         populateObjDefaultValue(output,{
           dir: process.cwd()+"/SDL"
         });
