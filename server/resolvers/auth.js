@@ -1,4 +1,8 @@
-const { registerHandler, loginHandler, checkPasswordHandler } = require('../handlers/auth');
+const {
+	registerHandler,
+	loginHandler,
+	checkPasswordHandler
+} = require('../handlers/auth');
 
 module.exports = {
 	Query: {
@@ -11,19 +15,19 @@ module.exports = {
 		}
 	},
 	Mutation: {
-		async register(parent, { data }, ctx, info) {
+		async register(parent, { data }) {
 			return registerHandler(data);
 		},
-		async login(parent, { data }, ctx, info) {
+		async login(parent, { data }) {
 			return loginHandler(data, (err) => {
 				throw err;
 			});
 		},
 		async logout(parent, data, { res }) {
-			// res.cookie('token', 'none', {
-			// 	expires: new Date(Date.now() + 10 * 1000),
-			// 	httpOnly: true
-			// });
+			res.cookie('token', 'none', {
+				expires: new Date(Date.now() + 10 * 1000),
+				httpOnly: true
+			});
 			return { succes: true };
 		}
 	}

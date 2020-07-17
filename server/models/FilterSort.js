@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const filterItem = {
 	target: {
 		type: String,
-		required: 'Target is required'
+		required: true
 	},
 	mod: String,
 	value: String,
@@ -16,11 +16,31 @@ const filterItem = {
 	}
 };
 
+const FiltersSchema = new mongoose.Schema({
+	...filterItem
+});
+
+FiltersSchema.add({ children: [ FiltersSchema ] });
+
+const SortsSchema = new mongoose.Schema({
+	target: {
+		type: String,
+		required: true
+	},
+	order: {
+		type: String,
+		enum: [ 'asc', 'desc', 'none' ]
+	}
+});
+
 const FilterSortSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		required: true
+		required: true,
+		mongql: {
+			writable: false
+		}
 	},
 	type: {
 		type: String,
@@ -31,23 +51,19 @@ const FilterSortSchema = new mongoose.Schema({
 		type: String,
 		required: [ true, 'Name is required' ]
 	},
-	filters: [
-		{
-			...filterItem,
-			children: [ { ...filterItem } ]
-		}
-	],
-	sorts: [
-		{
-			target: {
-				type: String,
-				required: 'Target is required'
-			},
-			order: {
-				type: String,
-				enum: [ 'asc', 'desc', 'none' ]
-			}
-		}
-	]
+	filters: [ FiltersSchema ],
+	sorts: [ SortsSchema ]
 });
-module.exports = mongoose.model('FilterSort', FilterSortSchema);
+
+exports.FilterSortSchema = FilterSortSchema;
+FilterSortSchema.mongql = {
+	generate: {
+		query: false
+	},
+	resource: 'filtersort',
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	}
+};
+
+module.exports.FilterSortModel = mongoose.model('Filtersort', FilterSortSchema);

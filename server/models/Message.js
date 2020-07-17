@@ -2,21 +2,46 @@ const mongoose = require('mongoose');
 
 const MessageSchema = new mongoose.Schema({
 	message: String,
+	created_at: {
+		type: Date,
+		default: Date.now(),
+		mongql: {
+			writable: false
+		}
+	},
 	inbox: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'Inbox'
+		ref: 'Inbox',
+		mongql: {
+			writable: false
+		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		mongql: {
+			writable: false
+		}
 	},
 	time: { type: Date, default: Date.now },
 	read: { type: Boolean, default: false },
-	status: String,
-	sentUser: {
-		type: mongoose.Schema.ObjectId,
-		ref: 'User'
-	}
+	status: String
+	// sentUser: {
+	// 	type: mongoose.Schema.ObjectId,
+	// 	ref: 'User'
+	// }
 });
 
-module.exports = mongoose.model('Message', MessageSchema);
+MessageSchema.mongql = {
+	generate: {
+		query: false,
+		mutation: false
+	},
+	resource: 'message',
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	}
+};
+
+module.exports.MessageSchema = MessageSchema;
+module.exports.MessageModel = mongoose.model('Message', MessageSchema);

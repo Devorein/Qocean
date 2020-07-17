@@ -12,7 +12,7 @@ module.exports = gql`
 		username: Username!
 		password: Password!
 		image: String
-		version: USER_VERSION
+		# version: USER_VERSION
 	}
 
 	input UserSigninInput {

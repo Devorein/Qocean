@@ -31,5 +31,7 @@ router.route('/').delete(protect, deleteUser).get(advancedResults(UserModel));
 router.put('/updatedetails', protect, updateUserDetails);
 router.put('/updatepassword', protect, updateUserPassword);
 router.route('/me').get(protect, getMe);
-router.route('/:id/photo').put(protect, imageUpload(UserModel, 'User'), userPhotoUpload);
+router
+	.route('/:id/photo')
+	.put(protect, imageUpload(UserModel, 'User'), userPhotoUpload);
 module.exports = router;

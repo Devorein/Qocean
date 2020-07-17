@@ -1,8 +1,9 @@
 node_modules
-/server/config/config.env
+/server/config/*.env
 feature.md
 public/uploads
 /server/store
 .vscode
 debug.log
 /server/experiment
+SDL

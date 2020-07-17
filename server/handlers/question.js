@@ -9,7 +9,9 @@ async function sendAnswerHandler(ids, next) {
 	const all_answers = [];
 	for (let i = 0; i < ids.length; i++) {
 		const id = ids[i];
-		const { answers } = await QuestionModel.findOne({ _id: id }).select('+answers');
+		const { answers } = await QuestionModel.findOne({ _id: id }).select(
+			'+answers'
+		);
 		if (!answers) return next(new ErrorResponse(`Question doesnt exist`, 400));
 		all_answers.push({ id, answers });
 	}
@@ -25,7 +27,7 @@ async function validateQuestionHandler(ids, next) {
 		const question = await QuestionModel.findById(id).select('+answers');
 		if (!answers) return next(new ErrorResponse(`Provide the answers`, 400));
 		if (question) {
-			let [ isCorrect ] = await question.validateAnswer(answers);
+			let [isCorrect] = await question.validateAnswer(answers);
 			if (isCorrect) responses.correct.push(id);
 			else responses.incorrect.push(id);
 		} else return next(new ErrorResponse(`Question doesn't exist`, 404));
@@ -38,10 +40,18 @@ exports.validateQuestionHandler = validateQuestionHandler;
 async function createQuestionHandler(body, userId, next) {
 	if (!body.quiz) return next(new ErrorResponse(`Provide the quiz id`, 400));
 	const quiz = await QuizModel.findById(body.quiz);
-	if (!quiz) return next(new ErrorResponse(`No quiz with the id ${body.quiz} found`, 404));
+	if (!quiz)
+		return next(
+			new ErrorResponse(`No quiz with the id ${body.quiz} found`, 404)
+		);
 	if (quiz.user.toString() !== userId.toString())
-		return next(new ErrorResponse(`User not authorized to add a question to this quiz`, 401));
-	const [ isValidQuestion, message ] = await QuestionModel.validateQuestion(body);
+		return next(
+			new ErrorResponse(
+				`User not authorized to add a question to this quiz`,
+				401
+			)
+		);
+	const [isValidQuestion, message] = await QuestionModel.validateQuestion(body);
 	if (isValidQuestion) {
 		body.user = userId;
 		const question = await QuestionModel.create(body);
@@ -51,7 +61,14 @@ async function createQuestionHandler(body, userId, next) {
 
 exports.createQuestionHandler = createQuestionHandler;
 
-async function getOthersQuestionsHandler({ filters = {}, sort, limit, page, onlyCount = false, project }) {
+async function getOthersQuestionsHandler({
+	filters = {},
+	sort,
+	limit,
+	page,
+	onlyCount = false,
+	project
+}) {
 	const additional = [];
 	if (!sort) {
 		sort = {};
@@ -80,7 +97,10 @@ async function getOthersQuestionsHandler({ filters = {}, sort, limit, page, only
 					{
 						$match: {
 							$expr: {
-								$and: [ { $eq: [ '$_id', '$$quizId' ] }, { $eq: [ '$public', true ] } ]
+								$and: [
+									{ $eq: ['$_id', '$$quizId'] },
+									{ $eq: ['$public', true] }
+								]
 							}
 						}
 					},
@@ -114,11 +134,23 @@ async function deleteQuestionHandler(questionIds, userId, next) {
 	for (let i = 0; i < questionIds.length; i++) {
 		const questionId = questionIds[i];
 		const question = await QuestionModel.findById(questionId);
-		if (!question) return next(new ErrorResponse(`Question not found with id of ${questionId}`, 404));
+		if (!question)
+			return next(
+				new ErrorResponse(`Question not found with id of ${questionId}`, 404)
+			);
 		if (question.user.toString() !== userId.toString())
-			return next(new ErrorResponse(`User not authorized to delete question`, 401));
-		if (question.image && (!question.image.match(/^(http|data:)/) && question.image !== 'none.png')) {
-			const location = path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${question.image}`);
+			return next(
+				new ErrorResponse(`User not authorized to delete question`, 401)
+			);
+		if (
+			question.image &&
+			!question.image.match(/^(http|data:)/) &&
+			question.image !== 'none.png'
+		) {
+			const location = path.join(
+				path.dirname(__dirname),
+				`${process.env.FILE_UPLOAD_PATH}/${question.image}`
+			);
 			if (fs.existsSync(location)) fs.unlinkSync(location);
 		}
 		await question.remove();

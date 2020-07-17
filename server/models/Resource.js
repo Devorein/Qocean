@@ -4,29 +4,39 @@ const ResourceSchema = new mongoose.Schema({
 	favourite: {
 		type: Boolean,
 		default: false,
-		onlySelf: true
+		mongql: {
+			excludePartitions: ['Others', 'Mixed']
+		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		required: [ true, 'Please provide an user' ],
-		writable: false
+		required: [true, 'Please provide an user'],
+		mongql: {
+			writable: false
+		}
 	},
 	public: {
 		type: Boolean,
 		default: true,
-		onlySelf: true
+		mongql: {
+			excludePartitions: ['Others', 'Mixed']
+		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now,
-		writable: false,
-		onlySelf: true
+		mongql: {
+			writable: false,
+			excludePartitions: ['Others', 'Mixed']
+		}
 	},
 	updated_at: {
 		type: Date,
 		default: Date.now,
-		writable: false
+		mongql: {
+			writable: false
+		}
 	}
 });
 

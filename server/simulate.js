@@ -1,9 +1,5 @@
 const axios = require('axios');
-const mongoose = require('mongoose');
-const colors = require('colors');
-const dotenv = require('dotenv');
 const fs = require('fs');
-const path = require('path');
 
 const { createUsers } = require('./simulate/Users');
 const { createQuizzes } = require('./simulate/Quizzes');
@@ -11,32 +7,24 @@ const { createQuestions } = require('./simulate/Questions');
 const { createFolders } = require('./simulate/Folders');
 const { createEnvironments } = require('./simulate/Environments');
 
-function getRandomInt(min, max) {
+function getRandomInt (min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-dotenv.config({ path: path.join(__dirname, 'config', 'config.env') });
 
 const { QuizModel } = require('./models/Quiz');
 const { QuestionModel } = require('./models/Question');
 const { UserModel } = require('./models/User');
 const { EnvironmentModel } = require('./models/Environment');
 const { FolderModel } = require('./models/Folder');
-const Message = require('./models/Message');
-const Inbox = require('./models/Inbox');
-const Report = require('./models/Report');
+const { MessageModel } = require('./models/Message');
+const { InboxModel } = require('./models/Inbox');
+const { ReportModel } = require('./models/Report');
+const { WatchlistModel } = require('./models/Watchlist');
+const { FilterSortModel } = require('./models/FilterSort');
 
-// Connect to db
-mongoose.connect(process.env.MONGO_URI, {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
-	useUnifiedTopology: true
-});
-
-(async function() {
+(async function () {
 	const args = process.argv.slice(2);
 	const deletePrev = args.includes('-d');
 	const userArg = args.indexOf('-u');
@@ -50,9 +38,11 @@ mongoose.connect(process.env.MONGO_URI, {
 		await UserModel.deleteMany();
 		await EnvironmentModel.deleteMany();
 		await FolderModel.deleteMany();
-		await Inbox.deleteMany();
-		await Message.deleteMany();
-		await Report.deleteMany();
+		await MessageModel.deleteMany();
+		await InboxModel.deleteMany();
+		await ReportModel.deleteMany();
+		await WatchlistModel.deleteMany();
+		await FilterSortModel.deleteMany();
 		console.log(`User destroyed ...`.red.inverse);
 		console.log(`Quizzes destroyed ...`.red.inverse);
 		console.log(`Questions destroyed ...`.red.inverse);
@@ -119,7 +109,10 @@ mongoose.connect(process.env.MONGO_URI, {
 				...headers
 			});
 
-			quizzes = quizzes.map(({ _id, questions }) => ({ _id, questions: questions.map(({ _id }) => _id) }));
+			quizzes = quizzes.map(({ _id, questions }) => ({
+				_id,
+				questions: questions.map(({ _id }) => _id)
+			}));
 			questions = questions.map(({ _id }) => _id);
 			folders = folders.map(({ _id }) => _id);
 			envs = envs.map(({ _id }) => _id);
@@ -223,7 +216,12 @@ mongoose.connect(process.env.MONGO_URI, {
 			total_users
 		});
 
-		const data = loginData.map(({ password, username, email, token }) => ({ password, username, email, token }));
+		const data = loginData.map(({ password, username, email, token }) => ({
+			password,
+			username,
+			email,
+			token
+		}));
 		if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(data), 'UTF-8');
 		else {
 			const new_data = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8'));

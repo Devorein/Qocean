@@ -24,7 +24,10 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 1,
 		min: [ 1, 'Weight cannot be less than 1' ],
-		max: [ 10, 'Weight cannot be more than 10' ]
+		max: [ 10, 'Weight cannot be more than 10' ],
+		mongql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	quiz: {
 		type: mongoose.Schema.ObjectId,
@@ -39,7 +42,10 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 		type: Number,
 		default: 30,
 		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
+		mongql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	difficulty: {
 		type: String,
@@ -61,7 +67,12 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	}
 });
 
-QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
+QuestionSchema.mongql = {
+	generate: true,
+	resource: 'question'
+};
+
+QuestionSchema.statics.getAverageTimeAllocated = async function (quizId) {
 	const obj = await this.aggregate([
 		{
 			$match: { quiz: quizId }
@@ -82,7 +93,7 @@ QuestionSchema.statics.getAverageTimeAllocated = async function(quizId) {
 	}
 };
 
-QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
+QuestionSchema.statics.getAverageDifficulty = async function (quizId) {
 	const obj = await this.aggregate([
 		{
 			$match: { quiz: quizId }
@@ -94,7 +105,11 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 						if: { $eq: [ '$difficulty', 'Beginner' ] },
 						then: 3.33,
 						else: {
-							$cond: { if: { $eq: [ '$difficulty', 'Intermediate' ] }, then: 6.66, else: 10 }
+							$cond: {
+								if: { $eq: [ '$difficulty', 'Intermediate' ] },
+								then: 6.66,
+								else: 10
+							}
 						}
 					}
 				}
@@ -117,7 +132,7 @@ QuestionSchema.statics.getAverageDifficulty = async function(quizId) {
 	}
 };
 
-QuestionSchema.statics.validateQuestion = async function(question) {
+QuestionSchema.statics.validateQuestion = async function (question) {
 	const { type } = question;
 	question.options = question.options ? question.options : [];
 	if (!question.answers) return [ false, 'Provide the answers for the question' ];
@@ -158,13 +173,13 @@ QuestionSchema.statics.validateQuestion = async function(question) {
 		if (isAnyEmpty) return [ false, 'Your cant have any empty answers' ];
 		const isAnyOverflow = question.answers.some((answer) => answer.length > 3);
 		if (isAnyOverflow) return [ false, 'You provided too many alternatives' ];
-		const count = (question.name.match(/\$\{\_\}/g) || []).length;
+		const count = (question.name.match(/\$\{_\}/g) || []).length;
 		if (count !== question.answers.length) return [ false, 'You provided incorrect number of answers' ];
 	}
 	return [ true ];
 };
 
-function typedChecker(correct_answers, user_answer) {
+function typedChecker (correct_answers, user_answer) {
 	let original_answer = user_answer;
 	return correct_answers.some((correct_answer) => {
 		const hasMod = correct_answer.match(/^\[(\w{1,3}[,|\]])+/);
@@ -184,7 +199,7 @@ function typedChecker(correct_answers, user_answer) {
 	});
 }
 
-QuestionSchema.methods.validateAnswer = async function(answers) {
+QuestionSchema.methods.validateAnswer = async function (answers) {
 	const { type } = this;
 	let isCorrect = false,
 		message = 'Wrong answer';
@@ -209,7 +224,7 @@ QuestionSchema.methods.validateAnswer = async function(answers) {
 	return [ isCorrect, message ];
 };
 
-QuestionSchema.post('save', async function() {
+QuestionSchema.post('save', async function () {
 	await this.model('User').add(this.user, 'questions', this._id);
 	await this.model('Quiz').add(this.quiz, 'questions', this._id);
 	if (this.isModified('quiz')) {
@@ -224,7 +239,7 @@ QuestionSchema.post('save', async function() {
 	if (this.isModified('difficulty')) this.constructor.getAverageDifficulty(this.quiz);
 });
 
-QuestionSchema.pre('remove', async function() {
+QuestionSchema.pre('remove', async function () {
 	await this.model('User').remove(this.user, 'questions', this._id);
 	await this.model('Quiz').remove(this.quiz, 'questions', this._id);
 	const folders = await this.model('Folder').find({ quizzes: this.quiz });

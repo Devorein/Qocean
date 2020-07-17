@@ -7,9 +7,9 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const icons = [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ];
+const icons = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple'];
 
-casual.define('folder', function() {
+casual.define('folder', function () {
 	let name = casual.array_of_words(2).join('');
 	while (name.length > 20) name = casual.array_of_words(2).join('');
 	return {
@@ -26,7 +26,11 @@ const createFolder = async ({ folders, total_users, users }) => {
 		const user = users[getRandomInt(0, total_users - 1)];
 		const quiz = user.quizzes[getRandomInt(0, user.quizzes.length - 1)];
 		folder.quizzes = quiz;
-		const { data: { data: { _id } } } = await axios.post(
+		const {
+			data: {
+				data: { _id }
+			}
+		} = await axios.post(
 			`http://localhost:5001/api/v1/folders`,
 			{ ...folder },
 			{
@@ -44,7 +48,7 @@ const createFolder = async ({ folders, total_users, users }) => {
 
 async function createFolders({ count, folders, total_users, users }) {
 	let created = 1;
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const folderInterval = setInterval(async () => {
 			if (created <= count) {
 				await createFolder({ folders, total_users, users });

@@ -14,10 +14,9 @@
   "author": "Devon Reid <devorein00@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@apollo/client": "^3.0.0-rc.10",
     "@apollo/link-context": "^2.0.0-beta.3",
-    "@apollo/react-components": "^4.0.0-beta.1",
-    "@date-io/moment": "^2.6.0",
+    "@apollo/react-components": "^4.0.0-beta.2",
+    "@date-io/moment": "^2.7.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.29",
     "@fortawesome/free-solid-svg-icons": "^5.13.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
@@ -28,17 +27,12 @@
     "@nivo/bar": "^0.62.0",
     "@nivo/heatmap": "^0.62.0",
     "@testing-library/jest-dom": "^5.11.0",
-    "@testing-library/react": "^10.4.3",
+    "@testing-library/react": "^10.4.6",
     "@testing-library/user-event": "^12.0.11",
-    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
-    "bson": "^4.0.4",
-    "casual": "^1.6.2",
     "clsx": "^1.1.1",
     "color-convert": "^2.0.1",
     "formik": "^2.1.4",
-    "graphql": "^15.2.0",
-    "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "node-fetch": "^2.6.0",
     "node-sass": "^4.14.1",
@@ -48,7 +42,7 @@
     "react-color": "^2.18.1",
     "react-composer": "^5.0.1",
     "react-dom": "^16.13.1",
-    "react-dropzone": "^11.0.1",
+    "react-dropzone": "^11.0.2",
     "react-fast-compare": "^3.2.0",
     "react-hotkeys": "^2.0.0",
     "react-redux": "^7.2.0",
@@ -79,5 +73,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-plugin-react": "^7.20.3"
   }
 }

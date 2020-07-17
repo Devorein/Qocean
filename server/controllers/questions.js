@@ -10,8 +10,8 @@ const {
 	getOthersQuestionsHandler
 } = require('../handlers/question');
 
-exports.sendAnswer = asyncHandler(async (req, res, next) => {
-	const [ answers ] = await sendAnswerHandler([ req.params.id ]);
+exports.sendAnswer = asyncHandler(async (req, res) => {
+	const [answers] = await sendAnswerHandler([req.params.id]);
 	res.status(200).json({ success: true, data: answers });
 });
 
@@ -21,7 +21,7 @@ exports.sendAnswers = asyncHandler(async (req, res, next) => {
 });
 
 exports.validateQuestion = asyncHandler(async (req, res, next) => {
-	const [ response ] = await validateQuestionHandler([ req.body.id ], next);
+	const [response] = await validateQuestionHandler([req.body.id], next);
 	res.status(200).json({ success: true, data: response });
 });
 
@@ -33,7 +33,7 @@ exports.validateQuestions = asyncHandler(async (req, res, next) => {
 // @desc: Create a question
 // @route: POST /api/v1/questions
 // @access: Private
-exports.createQuestion = asyncHandler(async function(req, res, next) {
+exports.createQuestion = asyncHandler(async function (req, res, next) {
 	const question = await createQuestionHandler(req.body, req.user._id, next);
 	res.status(200).json({ success: true, data: question });
 });
@@ -41,7 +41,7 @@ exports.createQuestion = asyncHandler(async function(req, res, next) {
 // @desc: Update a question
 // @route: PUT /api/v1/questions/:id
 // @access: Private
-exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
+exports.getOthersQuestions = asyncHandler(async function (req, res) {
 	const page = parseInt(req.body.page) || 1;
 	const limit = parseInt(req.body.limit) || 10;
 	const startIndex = (page - 1) * limit;
@@ -92,14 +92,24 @@ exports.getOthersQuestions = asyncHandler(async function(req, res, next) {
 	res.status(200).json(res.advancedResults);
 });
 
-exports.updateQuestion = asyncHandler(async function(req, res, next) {
+exports.updateQuestion = asyncHandler(async function (req, res, next) {
 	req.body.id = req.params.id;
-	const question = await updateResource(Question, req.body, req.user._id, next);
+	const question = await updateResource(
+		QuestionModel,
+		req.body,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: question });
 });
 
 exports.updateQuestions = asyncHandler(async (req, res, next) => {
-	const questions = await updateResource(Question, req.body.data, req.user._id, next);
+	const questions = await updateResource(
+		QuestionModel,
+		req.body.data,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: questions });
 });
 
@@ -107,19 +117,27 @@ exports.updateQuestions = asyncHandler(async (req, res, next) => {
 // @route: DELETE /api/v1/questions/:id
 // @access: Private
 
-exports.deleteQuestion = asyncHandler(async function(req, res, next) {
-	const [ question ] = await deleteQuestionHandler([ req.params.id ], req.user._id, next);
+exports.deleteQuestion = asyncHandler(async function (req, res, next) {
+	const [question] = await deleteQuestionHandler(
+		[req.params.id],
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: question });
 });
 
-exports.deleteQuestions = asyncHandler(async function(req, res, next) {
-	const questions = await deleteQuestionHandler(req.body.data, req.user._id, next);
+exports.deleteQuestions = asyncHandler(async function (req, res, next) {
+	const questions = await deleteQuestionHandler(
+		req.body.data,
+		req.user._id,
+		next
+	);
 	res.status(200).json({ success: true, data: questions });
 });
 
 // @desc: Upload a single question photo
 // @route: PUT /api/v1/questions/:id/photo
 // @access: Private
-exports.questionPhotoUpload = asyncHandler(async (req, res, next) => {
+exports.questionPhotoUpload = asyncHandler(async (req, res) => {
 	res.status(200).json(res.imageUpload);
 });

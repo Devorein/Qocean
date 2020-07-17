@@ -36,8 +36,13 @@ router
 	.put(protect, updateQuestions)
 	.delete(protect, deleteQuestions);
 
-router.route('/:id').put(protect, updateQuestion).delete(protect, deleteQuestion);
+router
+	.route('/:id')
+	.put(protect, updateQuestion)
+	.delete(protect, deleteQuestion);
 
-router.route('/:id/photo').put(protect, imageUpload(QuestionModel, 'Question'), questionPhotoUpload);
+router
+	.route('/:id/photo')
+	.put(protect, imageUpload(QuestionModel, 'Question'), questionPhotoUpload);
 
 module.exports = router;

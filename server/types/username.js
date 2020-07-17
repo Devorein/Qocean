@@ -10,7 +10,12 @@ module.exports = new GraphQLScalarType({
 	serialize: (value) => value,
 	parseLiteral(ast) {
 		if (ast.kind === Kind.STRING) {
-			if (isAlphaNumericOnly(ast.value) && ast.value.length >= 3 && ast.value.length <= 18) return ast.value;
+			if (
+				isAlphaNumericOnly(ast.value) &&
+				ast.value.length >= 3 &&
+				ast.value.length <= 18
+			)
+				return ast.value;
 			else throw new GraphQLError('Not a well formatted username');
 		}
 		return null;

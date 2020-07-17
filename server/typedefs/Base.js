@@ -1,6 +1,6 @@
 const { gql } = require('apollo-server-express');
 
-exports.typeDefs = gql`
+module.exports = gql`
 	scalar Password
 
 	scalar Username

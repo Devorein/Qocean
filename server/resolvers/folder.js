@@ -1,17 +1,15 @@
-const resolverCompose = require('../utils/resolverCompose');
+const watchAction = require('../utils/resource/watchAction');
+const addRatings = require('../utils/resource/addRatings');
 
-const generateQueryResolvers = require('../utils/graphql/generateQueryResolvers');
-const generateMutationResolvers = require('../utils/graphql/generateMutationResolvers');
-const generateTypeResolvers = require('../utils/graphql/generateTypeResolvers');
-
-const FolderResolvers = {
-	Query: {
-		...generateQueryResolvers('folder')
-	},
+module.exports = {
 	Mutation: {
-		...generateMutationResolvers('folder')
-	},
-	...generateTypeResolvers('folder')
+		async updateFoldersRatings (parent, { data }, ctx) {
+			return await addRatings(ctx.folder, data, ctx.user.id, (err) => {
+				throw err;
+			});
+		},
+		async updateFoldersWatch (parent, { ids }, { User, user }) {
+			return await watchAction('folders', { folders: ids }, await User.findById(user.id));
+		}
+	}
 };
-
-module.exports = resolverCompose(FolderResolvers);

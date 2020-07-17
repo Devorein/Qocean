@@ -3,11 +3,17 @@ const mongoose = require('mongoose');
 const WatchlistSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		mongql: {
+			writable: false
+		}
 	},
 	created_at: {
 		type: Date,
-		default: Date.now()
+		default: Date.now(),
+		mongql: {
+			writable: false
+		}
 	},
 	watched_folders: [
 		{
@@ -23,4 +29,19 @@ const WatchlistSchema = new mongoose.Schema({
 	]
 });
 
-module.exports = mongoose.model('Watchlist', WatchlistSchema);
+exports.WatchlistSchema = WatchlistSchema;
+WatchlistSchema.mongql = {
+	generate: {
+		query: false,
+		mutation: false
+	},
+	resource: 'watchlist',
+	global_excludePartitions: {
+		base: [ 'Others', 'Mixed' ]
+	},
+	global_inputs: {
+		base: false
+	}
+};
+
+module.exports.WatchlistModel = mongoose.model('Watchlist', WatchlistSchema);

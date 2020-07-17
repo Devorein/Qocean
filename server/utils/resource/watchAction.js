@@ -1,15 +1,4 @@
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const path = require('path');
-
-dotenv.config({ path: path.join(path.dirname(__dirname), 'config', 'config.env') });
-
-mongoose.connect(process.env.MONGO_URI, {
-	useNewUrlParser: true,
-	useCreateIndex: true,
-	useFindAndModify: false,
-	useUnifiedTopology: true
-});
 
 module.exports = async function watchAction(rtype, body, user) {
 	const resources = body[rtype];
@@ -31,9 +20,12 @@ module.exports = async function watchAction(rtype, body, user) {
 	}
 
 	function removeFromWatched(resource) {
-		resource.watchers = resource.watchers.filter((watcher) => watcher === user._id.toString());
+		resource.watchers = resource.watchers.filter(
+			(watcher) => watcher === user._id.toString()
+		);
 		watchlist[`watched_${rtype}`] = watchlist[`watched_${rtype}`].filter(
-			(watched_resource) => watched_resource.toString() !== resource._id.toString()
+			(watched_resource) =>
+				watched_resource.toString() !== resource._id.toString()
 		);
 		manipulated++;
 	}
@@ -46,9 +38,10 @@ module.exports = async function watchAction(rtype, body, user) {
 
 	for (let i = 0; i < resources.length; i++) {
 		const resourceId = resources[i];
-		const resource = await (rtype === 'quizzes' ? mongoose.model('Quiz') : mongoose.model('Folder')).findById(
-			resourceId
-		);
+		const resource = await (rtype === 'quizzes'
+			? mongoose.model('Quiz')
+			: mongoose.model('Folder')
+		).findById(resourceId);
 
 		const status = detectWatchStatus(resource);
 		if (status === 'remove') removeFromWatched(resource);

@@ -5,7 +5,10 @@ const ResourceSchema = require('./Resource');
 const PageInfo = {
 	default_ipp: {
 		type: Number,
-		default: 15
+		default: 15,
+		mongql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	default_view: {
 		type: String,
@@ -36,13 +39,19 @@ const QuestionInfo = new mongoose.Schema({
 		type: Number,
 		default: 30,
 		min: [ 15, 'Time allocated cant be less than 15 seconds' ],
-		max: [ 120, 'Time allocated cant be more than 120 seconds' ]
+		max: [ 120, 'Time allocated cant be more than 120 seconds' ],
+		mongql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	default_weight: {
 		type: Number,
 		default: 1,
 		min: [ 1, 'Weight cant be less than 1' ],
-		max: [ 10, 'Weight cant be less than 10' ]
+		max: [ 10, 'Weight cant be less than 10' ],
+		mongql: {
+			scalar: 'PositiveInt'
+		}
 	}
 });
 
@@ -94,19 +103,31 @@ const envSchema = {
 		type: Number,
 		default: 2500,
 		min: 1000,
-		max: 5000
+		max: 5000,
+		mongql: {
+			scalar: 'PositiveInt'
+		}
 	},
 	default_tag_color: {
 		type: String,
-		default: '#000'
+		default: '#000',
+		mongql: {
+			scalar: 'HexColorCode'
+		}
 	},
 	primary_color: {
 		type: String,
-		default: '#3f51b5'
+		default: '#3f51b5',
+		mongql: {
+			scalar: 'HexColorCode'
+		}
 	},
 	secondary_color: {
 		type: String,
-		default: '#f50057'
+		default: '#f50057',
+		mongql: {
+			scalar: 'HexColorCode'
+		}
 	},
 	display_font: {
 		type: String,
@@ -149,15 +170,24 @@ envSchema.keybindings = new mongoose.Schema(keybindings);
 
 const EnvironmentSchema = extendSchema(ResourceSchema, envSchema);
 
-EnvironmentSchema.pre('save', async function(next) {
+EnvironmentSchema.pre('save', async function (next) {
 	await this.model('User').add(this.user, 'environments', this._id);
 	next();
 });
 
-EnvironmentSchema.pre('remove', async function(next) {
+EnvironmentSchema.pre('remove', async function (next) {
 	// await this.model('User').remove(this.user, 'environments', this._id);
 	next();
 });
+
+EnvironmentSchema.mongql = {
+	generate: {
+		mutation: {
+			create: [ true, false ]
+		}
+	},
+	resource: 'environment'
+};
 
 exports.EnvironmentSchema = EnvironmentSchema;
 exports.EnvironmentModel = mongoose.model('Environment', EnvironmentSchema);
