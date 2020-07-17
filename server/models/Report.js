@@ -94,7 +94,11 @@ const ReportSchema = new mongoose.Schema({
 ReportSchema.mongql = {
 	generate: {
 		query: false,
-		mutation: false
+		mutation: {
+      create: [true,false],
+      update: false,
+      delete: false
+    }
 	},
 	resource: 'report',
 	global_excludePartitions: {

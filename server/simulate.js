@@ -7,7 +7,7 @@ const { createQuestions } = require('./simulate/Questions');
 const { createFolders } = require('./simulate/Folders');
 const { createEnvironments } = require('./simulate/Environments');
 
-function getRandomInt(min, max) {
+function getRandomInt (min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -28,8 +28,7 @@ const { FilterSortModel } = require('./models/FilterSort');
 	const args = process.argv.slice(2);
 	const deletePrev = args.includes('-d');
 	const userArg = args.indexOf('-u');
-	const createMode =
-		args[userArg + 1] && !args[userArg + 1].includes('-') ? 'specified' : 'all';
+	const createMode = args[userArg + 1] && !args[userArg + 1].includes('-') ? 'specified' : 'all';
 
 	/* const fileArg = args.indexOf('-f'); 
   const file = fileArg */
@@ -58,9 +57,7 @@ const { FilterSortModel } = require('./models/FilterSort');
 		const amounts = args[amountsIndex + 1];
 		if (!amounts.startsWith('-')) {
 			counts = amounts.split(',').map((count) => parseInt(count));
-			counts = counts.concat(
-				Array(5 - counts.length).fill(counts[counts.length - 1])
-			);
+			counts = counts.concat(Array(5 - counts.length).fill(counts[counts.length - 1]));
 		}
 	} else {
 		counts = [
@@ -74,15 +71,13 @@ const { FilterSortModel } = require('./models/FilterSort');
 
 	if (createMode === 'specified') {
 		const username = args[userArg + 1];
-		const selectedUser = JSON.parse(
-			fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8')
-		).find((user) => user.username === username);
+		const selectedUser = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8')).find(
+			(user) => user.username === username
+		);
 		if (selectedUser) {
 			const { email, password } = selectedUser;
 
-			const {
-				data: { token, _id }
-			} = await axios.post(`http://localhost:5001/api/v1/auth/login`, {
+			const { data: { token, _id } } = await axios.post(`http://localhost:5001/api/v1/auth/login`, {
 				email,
 				password
 			});
@@ -102,32 +97,17 @@ const { FilterSortModel } = require('./models/FilterSort');
 				}
 			);
 
-			let {
-				data: { data: questions }
-			} = await axios.get(
-				`http://localhost:5001/api/v1/questions/me?select=_id`,
-				{
-					...headers
-				}
-			);
+			let { data: { data: questions } } = await axios.get(`http://localhost:5001/api/v1/questions/me?select=_id`, {
+				...headers
+			});
 
-			let {
-				data: { data: folders }
-			} = await axios.get(
-				`http://localhost:5001/api/v1/folders/me?select=_id`,
-				{
-					...headers
-				}
-			);
+			let { data: { data: folders } } = await axios.get(`http://localhost:5001/api/v1/folders/me?select=_id`, {
+				...headers
+			});
 
-			let {
-				data: { data: envs }
-			} = await axios.get(
-				`http://localhost:5001/api/v1/environments/me?select=_id`,
-				{
-					...headers
-				}
-			);
+			let { data: { data: envs } } = await axios.get(`http://localhost:5001/api/v1/environments/me?select=_id`, {
+				...headers
+			});
 
 			quizzes = quizzes.map(({ _id, questions }) => ({
 				_id,
@@ -139,8 +119,7 @@ const { FilterSortModel } = require('./models/FilterSort');
 
 			let resources_tb_created = [];
 			const resourceType = args[args.indexOf('-rt') + 1];
-			if (!resourceType || resourceType.startsWith('-'))
-				resources_tb_created = [2, 3, 4, 5];
+			if (!resourceType || resourceType.startsWith('-')) resources_tb_created = [ 2, 3, 4, 5 ];
 			else
 				resources_tb_created = resourceType
 					.split(',')
@@ -243,22 +222,11 @@ const { FilterSortModel } = require('./models/FilterSort');
 			email,
 			token
 		}));
-		if (deletePrev)
-			fs.writeFileSync(
-				`${__dirname}/store/loginData.json`,
-				JSON.stringify(data),
-				'UTF-8'
-			);
+		if (deletePrev) fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(data), 'UTF-8');
 		else {
-			const new_data = JSON.parse(
-				fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8')
-			);
+			const new_data = JSON.parse(fs.readFileSync(`${__dirname}/store/loginData.json`, 'UTF-8'));
 			new_data.push(...data);
-			fs.writeFileSync(
-				`${__dirname}/store/loginData.json`,
-				JSON.stringify(new_data),
-				'UTF-8'
-			);
+			fs.writeFileSync(`${__dirname}/store/loginData.json`, JSON.stringify(new_data), 'UTF-8');
 		}
 	}
 

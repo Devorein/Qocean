@@ -38,7 +38,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.24",
     "mongoose-int32": "^0.4.0",
-    "mongql": "^1.0.2",
+    "mongql": "^1.0.6",
     "morgan": "^1.10.0",
     "nodemailer": "^6.4.10",
     "pluralize": "^8.0.0",
@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
+    "eslint-plugin-jest": "^23.18.0",
     "nodemon": "^2.0.4"
   },
   "graphdoc": {

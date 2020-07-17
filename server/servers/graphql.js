@@ -12,7 +12,6 @@ const reportGraphql = require('../utils/reportGraphql');
 
 module.exports = async function generateGraphqlServer () {
 	const { Typedefs, Resolvers } = await generateTypedefsAndResolvers();
-
 	// GRAPHQL Server
 	const GRAPHQL = express();
 	GRAPHQL.use(cors());
@@ -65,6 +64,12 @@ module.exports = async function generateGraphqlServer () {
 					)
 				);
 			});
+		},
+		getTypedefsAndResolvers: () => {
+			return {
+				Typedefs,
+				Resolvers
+			};
 		}
 	};
 };

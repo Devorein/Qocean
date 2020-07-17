@@ -26,7 +26,6 @@ Object.entries(modelschema).forEach(([ resource, [ model, schema ] ]) => {
 	SchemasObj[S(resource).capitalize().s] = schema;
 	SchemasArr.push(schema);
 });
-
 const RoutesArr = [];
 Object.values(routes).forEach((route) => {
 	RoutesArr.push(route);
@@ -47,20 +46,11 @@ module.exports = {
 			}
 		});
 
-		// mutations (resource, { capitalized, pluralized }) {
-		//   if (resource.match(/(quiz|folder)/))
-		//     return {
-
-		//     };
-		// }
-
 		const { TransformedResolvers, TransformedTypedefs } = await mongql.generate();
-
 		const TypedefsArr = TransformedTypedefs.arr;
 		const TypedefsObj = TransformedTypedefs.obj;
 		const ResolversArr = TransformedResolvers.arr;
 		const ResolversObj = TransformedResolvers.obj;
-
 		[
 			[ 'Auth', AuthTypedef, AuthResolvers ],
 			[ 'Base', BaseTypedef, BaseResolvers ],
@@ -72,7 +62,6 @@ module.exports = {
 			ResolversObj[key] = resolver;
 			ResolversArr.push(resolver);
 		});
-
 		return {
 			Typedefs: {
 				obj: TypedefsObj,

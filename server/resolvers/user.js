@@ -36,9 +36,6 @@ const UserResolvers = {
 				throw err;
 			});
 		},
-		async deleteUser(parent, data, { user }) {
-			return await deleteUserHandler(user.id);
-		}
 	}
 };
 

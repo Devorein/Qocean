@@ -50,8 +50,5 @@ module.exports = gql`
 
 		"Update user password"
 		updateUserPassword(data: UpdateUserPasswordInput!): AuthPayload!
-
-		"Delete user"
-		deleteUser: SelfUserType!
 	}
 `;
