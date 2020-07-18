@@ -1,6 +1,22 @@
 const { gql } = require('apollo-server-express');
 
 module.exports = gql`
+  type RatingsOutput {
+		id: ID!
+		prevRatings: Float!
+		newRatings: Float!
+		raters: Int!
+	}
+
+	input RatingsInput {
+		id: ID!
+		ratings: Float!
+	}
+
+	type Status {
+		success: Boolean!
+	}
+
 	type QuizQuestionStats {
 		questions: [QuestionStats!]!
 	}

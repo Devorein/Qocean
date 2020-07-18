@@ -2,16 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const hpp = require('hpp');
 const mongoSanitize = require('express-mongo-sanitize');
-const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { ApolloServer } = require('apollo-server-express');
 const colors = require('colors');
+const { makeExecutableSchema } = require('@graphql-tools/schema');
 
 const { validate } = require('../middleware/auth');
-const { Models, generateTypedefsAndResolvers } = require('../resource');
+const { generateTypedefsAndResolvers } = require('../resource');
 const reportGraphql = require('../utils/reportGraphql');
 
 module.exports = async function generateGraphqlServer () {
-	const { Typedefs, Resolvers } = await generateTypedefsAndResolvers();
+	const { TransformedTypedefs, TransformedResolvers, generatedModels } = await generateTypedefsAndResolvers();
 	// GRAPHQL Server
 	const GRAPHQL = express();
 	GRAPHQL.use(cors());
@@ -21,23 +21,20 @@ module.exports = async function generateGraphqlServer () {
 
 	const GRAPHQL_SERVER = new ApolloServer({
 		schema: makeExecutableSchema({
-			typeDefs: Typedefs.arr,
-			resolvers: Resolvers.arr,
+			typeDefs: TransformedTypedefs.arr,
+			resolvers: TransformedResolvers.arr,
 			resolverValidationOptions: {
-				requireResolversForNonScalar: false
+				requireResolversForResolveType: false,
+				requireResolversForArgs: true,
+				requireResolversForNonScalar: true
 			},
-			// resolverValidationOptions: {
-			// 	requireResolversForResolveType: false,
-			// 	requireResolversForArgs: true,
-			// 	requireResolversForNonScalar: true
-			// },
 			allowUndefinedInResolve: false
 		}),
 		context: ({ req, res }) => {
 			reportGraphql(res);
 			return {
 				user: req.user,
-				...Models.obj,
+				...generatedModels,
 				req,
 				res
 			};
@@ -64,12 +61,6 @@ module.exports = async function generateGraphqlServer () {
 					)
 				);
 			});
-		},
-		getTypedefsAndResolvers: () => {
-			return {
-				Typedefs,
-				Resolvers
-			};
 		}
 	};
 };
