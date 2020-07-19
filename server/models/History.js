@@ -12,4 +12,9 @@ const HistorySchema = new mongoose.Schema({
 	time: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('History', HistorySchema);
+HistorySchema.mongql = {
+	skip: true,
+	resource: 'history'
+};
+
+module.exports = HistorySchema;

@@ -20,13 +20,13 @@ module.exports = gql`
 		password: Password!
 	}
 
-	extend type Query {
-		checkPassword(password: Password!): Status!
-	}
+	# extend type Query {
+	# 	checkPassword(password: Password!): Status!
+	# }
 
-	extend type Mutation {
-		register(data: UserRegisterInput!): AuthPayload!
-		login(data: UserSigninInput!): AuthPayload!
-		logout: Status!
-	}
+	# extend type Mutation {
+	# 	register(data: UserRegisterInput!): AuthPayload!
+	# 	login(data: UserSigninInput!): AuthPayload!
+	# 	logout: Status!
+	# }
 `;

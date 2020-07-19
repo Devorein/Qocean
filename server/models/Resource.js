@@ -5,13 +5,13 @@ const ResourceSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 		mongql: {
-			excludePartitions: ['Others', 'Mixed']
+			excludePartitions: [ 'Others', 'Mixed' ]
 		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
-		required: [true, 'Please provide an user'],
+		required: [ true, 'Please provide an user' ],
 		mongql: {
 			writable: false
 		}
@@ -20,7 +20,7 @@ const ResourceSchema = new mongoose.Schema({
 		type: Boolean,
 		default: true,
 		mongql: {
-			excludePartitions: ['Others', 'Mixed']
+			excludePartitions: [ 'Others', 'Mixed' ]
 		}
 	},
 	created_at: {
@@ -28,7 +28,7 @@ const ResourceSchema = new mongoose.Schema({
 		default: Date.now,
 		mongql: {
 			writable: false,
-			excludePartitions: ['Others', 'Mixed']
+			excludePartitions: [ 'Others', 'Mixed' ]
 		}
 	},
 	updated_at: {
@@ -39,5 +39,9 @@ const ResourceSchema = new mongoose.Schema({
 		}
 	}
 });
+
+ResourceSchema.mongql = {
+	skip: true
+};
 
 module.exports = ResourceSchema;

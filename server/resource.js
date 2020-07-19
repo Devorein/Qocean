@@ -1,23 +1,12 @@
-const S = require('string');
 const Mongql = require('mongql');
-
-const modelschema = require('./models');
+const path = require('path');
 
 const routes = require('./routes');
 
 const AuthTypedef = require('./typedefs/Auth');
 const AuthResolvers = require('./resolvers/auth');
 
-const PreTransformedTypeDefsASTs = require('./typedefs');
 const PreTransformedResolvers = require('./resolvers');
-
-const SchemasArr = [];
-const SchemasObj = {};
-
-Object.entries(modelschema).forEach(([ resource, value ]) => {
-	SchemasObj[S(resource).capitalize().s] = value[1];
-	SchemasArr.push(value[1]);
-});
 
 const RoutesArr = [];
 
@@ -28,13 +17,9 @@ Object.values(routes).forEach((route) => {
 module.exports = {
 	generateTypedefsAndResolvers: async function () {
 		const mongql = new Mongql({
-			Schemas: SchemasArr,
-			Typedefs: {
-				init: PreTransformedTypeDefsASTs
-			},
-			Resolvers: {
-				init: PreTransformedResolvers
-			},
+			Schemas: path.resolve(__dirname, './models'),
+			Typedefs: path.resolve(__dirname, './typedefs'),
+			Resolvers: path.resolve(__dirname, './resolvers'),
 			output: {
 				dir: process.cwd() + '\\SDL'
 			}
@@ -50,9 +35,5 @@ module.exports = {
 	Routes: {
 		obj: routes,
 		arr: RoutesArr
-	},
-	Schemas: {
-		obj: SchemasObj,
-		arr: SchemasArr
 	}
 };
