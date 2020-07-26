@@ -43,7 +43,7 @@
     "nodemailer": "^6.4.10",
     "pluralize": "^8.0.0",
     "qs": "^6.9.4",
-    "randomcolor": "^0.5.4",
+    "randomcolor": "^0.6.2",
     "string": "^3.3.3",
     "validate-color": "^2.1.0",
     "xss-clean": "^0.1.1"
