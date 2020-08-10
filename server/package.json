@@ -21,7 +21,7 @@
     "bcryptjs": "^2.4.3",
     "bson": "^4.0.4",
     "casual": "^1.6.2",
-    "concurrently": "^5.2.0",
+    "concurrently": "^5.3.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "cross-fetch": "^3.0.5",
