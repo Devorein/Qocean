@@ -19,7 +19,7 @@
     "@mongoosejs/double": "^0.2.0",
     "apollo-server-express": "^2.16.1",
     "bcryptjs": "^2.4.3",
-    "bson": "^4.0.4",
+    "bson": "^4.1.0",
     "casual": "^1.6.2",
     "concurrently": "^5.2.0",
     "cookie-parser": "^1.4.5",
