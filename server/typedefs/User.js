@@ -41,12 +41,12 @@ module.exports = gql`
 		getOthersUsersByIdTags(id: ID!, config: TagConfigInput): TagOutput!
 
 		"Get self User"
-		getSelfUser: SelfUserType!
+		getSelfUser: SelfUserObject!
 	}
 
 	extend type Mutation {
 		"Update user Details"
-		updateUserDetails(data: UpdateUserDetailsInput!): SelfUserType!
+		updateUserDetails(data: UpdateUserDetailsInput!): SelfUserObject!
 
 		"Update user password"
 		updateUserPassword(data: UpdateUserPasswordInput!): AuthPayload!

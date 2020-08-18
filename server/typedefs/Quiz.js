@@ -22,8 +22,8 @@ module.exports = gql`
 	}
 
 	type QuestionStats {
-		difficulty: QUESTION_DIFFICULTY!
-		type: QUESTION_TYPE!
+		difficulty: QuestionDifficultyEnum!
+		type: QuestionTypeEnum!
 	}
 
 	extend type Query {

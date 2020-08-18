@@ -12,7 +12,7 @@ module.exports = gql`
 		username: Username!
 		password: Password!
 		image: String
-		# version: USER_VERSION
+		version: UserVersionEnum
 	}
 
 	input UserSigninInput {
@@ -20,13 +20,13 @@ module.exports = gql`
 		password: Password!
 	}
 
-	# extend type Query {
-	# 	checkPassword(password: Password!): Status!
-	# }
+	extend type Query {
+		checkPassword(password: Password!): Status!
+	}
 
-	# extend type Mutation {
-	# 	register(data: UserRegisterInput!): AuthPayload!
-	# 	login(data: UserSigninInput!): AuthPayload!
-	# 	logout: Status!
-	# }
+	extend type Mutation {
+		register(data: UserRegisterInput!): AuthPayload!
+		login(data: UserSigninInput!): AuthPayload!
+		logout: Status!
+	}
 `;

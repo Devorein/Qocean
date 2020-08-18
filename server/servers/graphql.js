@@ -21,10 +21,9 @@ module.exports = async function generateGraphqlServer () {
 
 	const GRAPHQL_SERVER = new ApolloServer({
 		schema: makeExecutableSchema({
-			typeDefs: TransformedTypedefs.arr,
+			typeDefs: TransformedTypedefs.DocumentNode,
 			resolvers: TransformedResolvers.arr,
 			resolverValidationOptions: {
-				requireResolversForResolveType: false,
 				requireResolversForArgs: true,
 				requireResolversForNonScalar: true
 			},
