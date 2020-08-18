@@ -8,22 +8,6 @@ const EnvironmentResolvers = {
 			await _user.save();
 			return environment;
 		},
-		async createEnvironment (_, { data }, { Environment, User, user }) {
-			data.user = user.id;
-			let _user;
-			const prevEnv = await Environment.countDocuments({
-				name: data.name,
-				user: user.id
-			});
-			if (prevEnv >= 1) throw new Error(`You already have an environment named ${data.name}`);
-			const environment = await Environment.create(data);
-			if (data.set_as_current) {
-				_user = await User.findById(user.id);
-				_user.current_environment = environment._id;
-				await user.save();
-			}
-			return environment;
-		},
 		async deleteEnvironments (_, { ids }, { Environment, User, user }) {
 			const deleted_environments = [];
 			const totalDocs = await Environment.countDocuments({ user: user.id });
