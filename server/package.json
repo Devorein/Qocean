@@ -5,8 +5,8 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "server:test": "npx nodemon ./index.js --MODE=test",
-    "server:dev": "npx nodemon ./index.js --MODE=dev",
+    "server:test": "npx nodemon ./index.js --watch ./index.js --MODE=test ",
+    "server:dev": "npx nodemon ./index.js --watch ./index.js --MODE=dev",
     "server:prod": "npx nodemon ./index.js --MODE=prod",
     "test": "npx env-cmd -f ./config/test.env npx jest --runInBand"
   },

@@ -28,5 +28,7 @@ module.exports = gql`
 		register(data: UserRegisterInput!): AuthPayload!
 		login(data: UserSigninInput!): AuthPayload!
 		logout: Status!
+		resetPassword(resetToken: String!, password: String): AuthPayload!
+		forgotPassword(email: EmailAddress): Status!
 	}
 `;
