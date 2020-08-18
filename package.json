@@ -44,7 +44,7 @@
     "colors": "^1.4.0",
     "fs-extra": "^9.0.1",
     "graphql": "^15.3.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.20",
     "mkdirp": "^1.0.4",
     "move-file": "^2.0.0",
     "rimraf": "^3.0.2",
