@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -219,10 +221,13 @@ UserSchema.pre('save', async function (next) {
 });
 
 UserSchema.pre('remove', async function (next) {
-	await this.model('Quiz').deleteMany({ user: this._id });
-	await this.model('Question').deleteMany({ user: this._id });
-	await this.model('Environment').deleteMany({ user: this._id });
-	await this.model('Folder').deleteMany({ user: this._id });
+	const { _id, image } = this;
+	await this.model('Quiz').deleteMany({ user: _id });
+	await this.model('Question').deleteMany({ user: _id });
+	await this.model('Environment').deleteMany({ user: _id });
+	await this.model('Folder').deleteMany({ user: _id });
+	if (!image.startsWith('http') && image !== 'none.png' && image !== '')
+		fs.unlinkSync(path.join(path.dirname(__dirname), `${process.env.FILE_UPLOAD_PATH}/${image}`));
 	next();
 });
 
