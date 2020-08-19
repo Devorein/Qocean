@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const hpp = require('hpp');
+const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 const { ApolloServer } = require('apollo-server-express');
 const colors = require('colors');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
+const fileupload = require('express-fileupload');
 
 const { validate } = require('../middleware/auth');
 const { generateTypedefsAndResolvers } = require('../resource');
@@ -18,6 +20,8 @@ module.exports = async function generateGraphqlServer () {
 	GRAPHQL.use(validate);
 	GRAPHQL.use(hpp());
 	GRAPHQL.use(mongoSanitize());
+	GRAPHQL.use(express.static(path.join(__dirname, 'public')));
+	GRAPHQL.use(fileupload());
 
 	const GRAPHQL_SERVER = new ApolloServer({
 		schema: makeExecutableSchema({

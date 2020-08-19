@@ -28,6 +28,20 @@ async function deleteQuiz (ids, userId, Quiz, Question) {
 }
 
 const QuizResolvers = {
+	QuizQuestionStats: {
+		async questions (parent, args, { Question, user }) {
+			return await Question.find({ user: user.id }).select('difficulty type');
+		}
+	},
+	QuestionStats: {
+		difficulty: (parent) => parent.difficulty,
+		type: (parent) => parent.type
+	},
+	QuizNameAndQuestions: {
+		async questions (parent, args, { Question, user }) {
+			return await Question.find({ user: user.id, quiz: parent.id });
+		}
+	},
 	Query: {
 		async getAllSelfQuizzesQuestionsStats (parent, args, { user, Quiz }) {
 			return await Quiz.find({ user: user.id })
