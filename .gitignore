@@ -7,3 +7,4 @@ public/uploads
 debug.log
 /server/experiment
 SDL
+/client/src/operations/Operations.js

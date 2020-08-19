@@ -30,10 +30,8 @@ import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import GlobalCss from './Utils/Globalcss';
-import getPageQueries from './Utils/getPageQueries';
 import { AppContext } from './context/AppContext';
 import { setPageQueries } from './actions/queries';
-import FRAGMENTS from './Utils/generateFragments';
 import reducers from './reducers';
 import middlewares from './middlewares';
 
@@ -41,15 +39,13 @@ import './App.scss';
 import './index.css';
 import './pages/Pages.scss';
 
-console.log(FRAGMENTS);
-
 const store = createStore(reducers, middlewares);
 
 class App extends Component {
-	componentDidMount() {
-		this.props.dispatch(setPageQueries(getPageQueries()));
+	componentDidMount () {
+		this.props.dispatch(setPageQueries({}));
 	}
-	render() {
+	render () {
 		const { session, location, refetch } = this.props;
 		return (
 			<Fragment>
@@ -59,7 +55,7 @@ class App extends Component {
 						value={{
 							user: session.user,
 							refetchUser: this.props.refetch,
-							pageQueries: getPageQueries()
+							pageQueries: {}
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />

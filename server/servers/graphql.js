@@ -7,6 +7,7 @@ const { ApolloServer } = require('apollo-server-express');
 const colors = require('colors');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const fileupload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
 
 const { validate } = require('../middleware/auth');
 const { generateTypedefsAndResolvers } = require('../resource');
@@ -22,6 +23,7 @@ module.exports = async function generateGraphqlServer () {
 	GRAPHQL.use(mongoSanitize());
 	GRAPHQL.use(express.static(path.join(__dirname, 'public')));
 	GRAPHQL.use(fileupload());
+	GRAPHQL.use(cookieParser);
 
 	const GRAPHQL_SERVER = new ApolloServer({
 		schema: makeExecutableSchema({

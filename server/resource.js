@@ -16,7 +16,10 @@ module.exports = {
 				init: path.resolve(__dirname, './resolvers'),
 				base: AuthResolvers
 			},
-			sort: false
+			sort: false,
+			output: {
+				Operation: path.resolve(__dirname, '../client/src/operations')
+			}
 		});
 		const { TransformedTypedefs, TransformedResolvers } = await mongql.generate();
 		const generatedModels = await mongql.generateModels();

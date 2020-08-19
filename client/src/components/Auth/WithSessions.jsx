@@ -2,10 +2,9 @@ import React from 'react';
 import { useQuery } from '@apollo/react-components';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { getSelfUser } from '../../operations/graphql/user';
 import { setAuthedUser } from '../../actions/authedUser';
 
-export default function WithSessions(props) {
+export default function WithSessions (props) {
 	const dispatch = useDispatch();
 	const authedUser = useSelector(({ authedUser }) => authedUser);
 	const { loading, error, data, refetch } = useQuery(getSelfUser);
