@@ -36,6 +36,15 @@ const QuizResolvers = {
 					select: 'difficulty time_allocated name type'
 				})
 				.select('name questions');
+		},
+		async getAllSelfQuizzesForPlaypage (_, __, { user, Quiz }) {
+			const quizzes = await Quiz.find({ user: user.id })
+				.populate({
+					path: 'questions',
+					select: 'difficulty time_allocated name type'
+				})
+				.select('name questions');
+			return quizzes;
 		}
 	},
 	Mutation: {

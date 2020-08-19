@@ -13,10 +13,6 @@ module.exports = gql`
 		ratings: Float!
 	}
 
-	type Status {
-		success: Boolean!
-	}
-
 	type QuizQuestionStats {
 		questions: [QuestionStats!]!
 	}
@@ -26,9 +22,16 @@ module.exports = gql`
 		type: QuestionTypeEnum!
 	}
 
+  type QuizNameAndQuestions{
+    name: String!
+    questions: [SelfQuestionObject!]!
+  }
+
 	extend type Query {
 		"Get all self quizzes questions stats"
 		getAllSelfQuizzesQuestionsStats: [QuizQuestionStats!]
+
+    getAllSelfQuizzesForPlaypage: [QuizNameAndQuestions!]!
 	}
 
 	extend type Mutation {

@@ -30,6 +30,10 @@ module.exports = gql`
 		getMixedQuestionsByIdsValidation(
 			data: [IdAnswer!]!
 		): QuestionValidationOutput!
+    
+    sendAnswer(id: ID!): [String]
+    
+    sendAnswers(id: ID!): [String]
 
     getOthersQuestions(pagination: PaginationInput!): [OthersQuestionObject!]!
 	}

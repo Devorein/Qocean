@@ -16,12 +16,29 @@ async function validateQuestionHandler (ids, QuestionModel) {
 	return responses;
 }
 
+async function sendAnswerHandler (ids, QuestionModel) {
+	const all_answers = [];
+	for (let i = 0; i < ids.length; i++) {
+		const id = ids[i];
+		const { answers } = await QuestionModel.findOne({ _id: id }).select('+answers');
+		if (!answers) throw new Error(`Question doesnt exist`);
+		all_answers.push({ id, answers });
+	}
+	return all_answers;
+}
+
 module.exports = {
 	Query: {
 		async getMixedQuestionsByIdAnswers (parent, { id }, { Question }) {
 			const { answers } = await Question.findOne({ _id: id }).select('+answers');
 			if (!answers) throw new Error(`Question doesnt exist`);
 			return answers;
+		},
+		async sendAnswer (_, { id }, { QuestionModel }) {
+			return await sendAnswerHandler([ id ], QuestionModel);
+		},
+		async sendAnswers (_, { ids }, { QuestionModel }) {
+			return await sendAnswerHandler(ids, QuestionModel);
 		},
 		async getOthersQuestions (_, { filters = {}, sort, limit, page }, { Question }) {
 			const additional = [];
