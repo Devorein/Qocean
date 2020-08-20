@@ -8,10 +8,10 @@ import Operations from '../../operations/Operations';
 export default function WithSessions (props) {
 	const dispatch = useDispatch();
 	const authedUser = useSelector(({ authedUser }) => authedUser);
-	const { loading, error, data, refetch } = useQuery(gql(Operations.GetSelfUser_ScalarsOnly));
+	const { loading, error, data, refetch } = useQuery(gql(Operations.GetSelfUser_ObjectsNone));
 	React.useEffect(
 		() => {
-			if (!loading && !error) dispatch(setAuthedUser(data.GetSelfUser_ScalarsOnly));
+			if (!loading && !error) dispatch(setAuthedUser(data.GetSelfUser_ObjectsNone));
 		},
 		[ dispatch, data, error, loading ]
 	);

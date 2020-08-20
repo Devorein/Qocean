@@ -34,23 +34,24 @@ const UserSchema = new mongoose.Schema({
 		minlength: [ 6, 'Password must be greater than six characters' ],
 		select: false,
 		mongql: {
-			scalar: 'Password'
+			scalar: 'Password',
+      attach: false
 		}
 	},
 	resetPasswordToken: {
 		type: String,
 		mongql: {
 			attach: {
-				input: false
+				input: false,
+        fragment: false
 			}
 		}
 	},
 	resetPasswordExpire: {
 		type: Date,
 		mongql: {
-			attach: {
-				input: false
-			}
+			attach: false,
+      fragment: false
 		}
 	},
 	joined_at: {
