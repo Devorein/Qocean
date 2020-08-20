@@ -6,7 +6,9 @@ const HistorySchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		graphql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	time: { type: Date, default: Date.now }

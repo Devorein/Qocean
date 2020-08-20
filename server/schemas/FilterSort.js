@@ -39,7 +39,9 @@ const FilterSortSchema = new mongoose.Schema({
 		ref: 'User',
 		required: true,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	type: {
@@ -55,7 +57,6 @@ const FilterSortSchema = new mongoose.Schema({
 	sorts: [ SortsSchema ]
 });
 
-exports.FilterSortSchema = FilterSortSchema;
 FilterSortSchema.mongql = {
 	generate: {
 		query: false
@@ -65,5 +66,4 @@ FilterSortSchema.mongql = {
 		base: [ 'Others', 'Mixed' ]
 	}
 };
-
-module.exports.FilterSortModel = mongoose.model('Filtersort', FilterSortSchema);
+exports.FiltersortSchema = FilterSortSchema;

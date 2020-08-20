@@ -15,17 +15,6 @@
     "client": "cd ./client && npm start",
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": [
-      "npx eslint --fix",
-      "git add"
-    ]
-  },
   "devDependencies": {
     "@babel/register": "^7.10.5",
     "babel-eslint": "^10.1.0",

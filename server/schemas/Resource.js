@@ -13,7 +13,9 @@ const ResourceSchema = new mongoose.Schema({
 		ref: 'User',
 		required: [ true, 'Please provide an user' ],
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	public: {
@@ -27,7 +29,9 @@ const ResourceSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 		mongql: {
-			writable: false,
+			attach: {
+				input: false
+			},
 			excludePartitions: [ 'Others', 'Mixed' ]
 		}
 	},
@@ -35,7 +39,9 @@ const ResourceSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	}
 });

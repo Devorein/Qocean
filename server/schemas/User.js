@@ -40,20 +40,26 @@ const UserSchema = new mongoose.Schema({
 	resetPasswordToken: {
 		type: String,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	resetPasswordExpire: {
 		type: Date,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	joined_at: {
 		type: Date,
 		default: Date.now,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	total_folders: {
@@ -61,7 +67,9 @@ const UserSchema = new mongoose.Schema({
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	total_questions: {
@@ -69,7 +77,9 @@ const UserSchema = new mongoose.Schema({
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	total_quizzes: {
@@ -77,7 +87,9 @@ const UserSchema = new mongoose.Schema({
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	total_environments: {
@@ -85,7 +97,9 @@ const UserSchema = new mongoose.Schema({
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	current_environment: {
@@ -93,7 +107,9 @@ const UserSchema = new mongoose.Schema({
 		ref: 'Environment',
 		required: true,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	version: {
@@ -106,7 +122,9 @@ const UserSchema = new mongoose.Schema({
 			type: mongoose.Schema.ObjectId,
 			ref: 'Environment',
 			mongql: {
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	],
@@ -115,7 +133,9 @@ const UserSchema = new mongoose.Schema({
 			type: mongoose.Schema.ObjectId,
 			ref: 'Quiz',
 			mongql: {
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	],
@@ -124,7 +144,9 @@ const UserSchema = new mongoose.Schema({
 			type: mongoose.Schema.ObjectId,
 			ref: 'Question',
 			mongql: {
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	],
@@ -133,7 +155,9 @@ const UserSchema = new mongoose.Schema({
 			type: mongoose.Schema.ObjectId,
 			ref: 'Folder',
 			mongql: {
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	],
@@ -143,7 +167,9 @@ const UserSchema = new mongoose.Schema({
 		ref: 'Inbox',
 		mongql: {
 			excludePartitions: [ 'Mixed', 'Others' ],
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	reports: [
@@ -152,7 +178,9 @@ const UserSchema = new mongoose.Schema({
 			ref: 'Report',
 			mongql: {
 				excludePartitions: [ 'Mixed', 'Others' ],
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	],
@@ -161,7 +189,9 @@ const UserSchema = new mongoose.Schema({
 		ref: 'Watchlist',
 		mongql: {
 			excludePartitions: [ 'Mixed', 'Others' ],
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	filtersort: [
@@ -170,7 +200,9 @@ const UserSchema = new mongoose.Schema({
 			ref: 'Filtersort',
 			mongql: {
 				excludePartitions: [ 'Mixed', 'Others' ],
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	]

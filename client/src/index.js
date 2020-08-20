@@ -12,7 +12,7 @@ import client from './client';
 import theme from './theme';
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
-import SignIn from './pages/Signin/SignIn.jsx';
+/* import SignIn from './pages/Signin/SignIn.jsx';
 import SignUp from './pages/Signup/SignUp.jsx';
 import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
@@ -27,7 +27,7 @@ import Report from './pages/Report/Report';
 import Inbox from './pages/Inbox/Inbox';
 import Upgrade from './pages/Upgrade/Upgrade';
 import Unauthorized from './pages/401/Unauthorized';
-import NotFound from './pages/404/NotFound';
+import NotFound from './pages/404/NotFound'; */
 import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
@@ -59,7 +59,7 @@ class App extends Component {
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />
-						<Switch location={location}>
+						{/* <Switch location={location}>
 							<Route path="/" exact component={Home} />
 							<Route
 								path="/explore/:type"
@@ -145,7 +145,7 @@ class App extends Component {
 							<Route path="/401" component={Unauthorized} />
 							<Route path="/404" component={NotFound} />
 							<Redirect to="/404" />
-						</Switch>
+						</Switch> */}
 					</AppContext.Provider>
 				</div>
 			</Fragment>

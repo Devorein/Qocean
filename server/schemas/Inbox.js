@@ -5,14 +5,18 @@ const InboxSchema = new mongoose.Schema({
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	created_at: {
 		type: Date,
 		default: Date.now(),
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	messages: [

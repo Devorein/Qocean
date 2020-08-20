@@ -6,21 +6,27 @@ const MessageSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now(),
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	inbox: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox',
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	user: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'User',
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	time: { type: Date, default: Date.now },

@@ -6,10 +6,10 @@ const validateColor = require('validate-color');
 const QuizSchema = extendSchema(ResourceSchema, {
 	name: {
 		type: String,
-		required: [true, 'Quiz name is required'],
+		required: [ true, 'Quiz name is required' ],
 		trim: true,
-		minlength: [3, 'Name can not be less than 3 characters'],
-		maxlength: [50, 'Name can not be more than 50 characters']
+		minlength: [ 3, 'Name can not be less than 3 characters' ],
+		maxlength: [ 50, 'Name can not be more than 50 characters' ]
 	},
 	ratings: {
 		type: Number,
@@ -18,7 +18,9 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	raters: {
@@ -27,7 +29,9 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		min: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	average_quiz_time: {
@@ -35,24 +39,28 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		default: 30,
 		mongql: {
 			scalar: 'PositiveInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	average_difficulty: {
 		type: String,
 		default: 'Beginner',
-		enum: ['Beginner', 'Intermediate', 'Advanced'],
+		enum: [ 'Beginner', 'Intermediate', 'Advanced' ],
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	tags: {
-		type: [String],
+		type: [ String ],
 		default: []
 	},
 	subject: {
 		type: String,
-		required: [true, 'Please provide a subject']
+		required: [ true, 'Please provide a subject' ]
 	},
 	source: {
 		type: String,
@@ -67,7 +75,9 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	total_folders: {
@@ -75,7 +85,9 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	questions: [
@@ -83,7 +95,9 @@ const QuizSchema = extendSchema(ResourceSchema, {
 			type: mongoose.Schema.ObjectId,
 			ref: 'Question',
 			mongql: {
-				writable: false
+				attach: {
+					input: false
+				}
 			}
 		}
 	],
@@ -98,7 +112,9 @@ const QuizSchema = extendSchema(ResourceSchema, {
 		default: 0,
 		mongql: {
 			scalar: 'NonNegativeInt',
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	watchers: [
@@ -109,8 +125,10 @@ const QuizSchema = extendSchema(ResourceSchema, {
 				partitionMapper: {
 					Self: 'Others'
 				},
-				excludePartitions: ['Mixed'],
-				writable: false
+				excludePartitions: [ 'Mixed' ],
+				attach: {
+					input: false
+				}
 			}
 		}
 	]
@@ -124,14 +142,12 @@ QuizSchema.mongql = {
 QuizSchema.statics.validate = async function (quiz) {
 	let message = '',
 		success = true;
-	if (quiz.tags.length > 5) return [false, 'Tags cannot be more than 5'];
+	if (quiz.tags.length > 5) return [ false, 'Tags cannot be more than 5' ];
 	else {
-		const isAllValid = quiz.tags.every((tag) =>
-			validateColor.default(tag.toString().split(':')[1])
-		);
-		if (!isAllValid) return [false, 'All tags are not valid'];
+		const isAllValid = quiz.tags.every((tag) => validateColor.default(tag.toString().split(':')[1]));
+		if (!isAllValid) return [ false, 'All tags are not valid' ];
 	}
-	return [success, message];
+	return [ success, message ];
 };
 
 QuizSchema.statics.add = async function (quizId, field, id) {
@@ -149,8 +165,7 @@ QuizSchema.statics.remove = async function (quizId, field, id) {
 };
 
 QuizSchema.pre('save', async function (next) {
-	if (this.isModified('user'))
-		await this.model('User').add(this.user, 'quizzes', this._id);
+	if (this.isModified('user')) await this.model('User').add(this.user, 'quizzes', this._id);
 	next();
 });
 
@@ -161,9 +176,7 @@ QuizSchema.pre('remove', async function (next) {
 	const folders = await this.model('Folder').find({ quizzes: this._id });
 	for (let i = 0; i < folders.length; i++) {
 		const folder = folders[i];
-		folder.quizzes = folder.quizzes.filter(
-			(quizId) => quizId.toString() !== this._id.toString()
-		);
+		folder.quizzes = folder.quizzes.filter((quizId) => quizId.toString() !== this._id.toString());
 		folder.total_quizzes--;
 		await folder.save();
 	}

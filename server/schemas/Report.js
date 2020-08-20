@@ -35,7 +35,9 @@ const ReportSchema = new mongoose.Schema({
 		ref: 'User',
 		required: true,
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	average_points: {
@@ -77,7 +79,9 @@ const ReportSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now(),
 		mongql: {
-			writable: false
+			attach: {
+				input: false
+			}
 		}
 	},
 	quizzes: [
@@ -95,10 +99,10 @@ ReportSchema.mongql = {
 	generate: {
 		query: false,
 		mutation: {
-      create: [true,false],
-      update: false,
-      delete: false
-    }
+			create: [ true, false ],
+			update: false,
+			delete: false
+		}
 	},
 	resource: 'report',
 	global_excludePartitions: {
