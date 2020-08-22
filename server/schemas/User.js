@@ -35,23 +35,19 @@ const UserSchema = new mongoose.Schema({
 		select: false,
 		mongql: {
 			scalar: 'Password',
-      attach: false
+			attach: false
 		}
 	},
 	resetPasswordToken: {
 		type: String,
 		mongql: {
-			attach: {
-				input: false,
-        fragment: false
-			}
+			attach: false
 		}
 	},
 	resetPasswordExpire: {
 		type: Date,
 		mongql: {
-			attach: false,
-      fragment: false
+			attach: false
 		}
 	},
 	joined_at: {
@@ -213,7 +209,10 @@ UserSchema.mongql = {
 	generate: {
 		mutation: false
 	},
-	resource: 'user'
+	resource: 'user',
+	Fragments: {
+		Info: [ [ 'current_environment', 'RefsNone' ], 'name', 'username', 'email' ]
+	}
 };
 
 UserSchema.methods.getSignedJwtToken = function () {

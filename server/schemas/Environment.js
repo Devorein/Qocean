@@ -24,6 +24,11 @@ const PageInfo = {
 	}
 };
 
+const PageInfoSchema = new mongoose.Schema(PageInfo);
+PageInfoSchema.mongql = {
+	type: 'PageInfo'
+};
+
 const QuestionInfo = new mongoose.Schema({
 	default_type: {
 		type: String,
@@ -56,6 +61,9 @@ const QuestionInfo = new mongoose.Schema({
 });
 
 const envSchema = {
+	_id: {
+		type: mongoose.Schema.Types.ObjectId
+	},
 	name: {
 		type: String,
 		required: [ true, 'Please provide the name of the environment' ]
@@ -82,7 +90,7 @@ const envSchema = {
 		type: Boolean,
 		default: true
 	},
-	question_info: QuestionInfo,
+	questioninfo: QuestionInfo,
 	default_create_landing: {
 		type: String,
 		default: 'Quiz'
@@ -164,8 +172,7 @@ Array(5).fill(0).forEach((_, i) => {
 envSchema.keybindings = new mongoose.Schema(keybindings);
 
 [ 'explore', 'self', 'watchlist', 'play' ].forEach((page) => {
-	envSchema[`${page}_page`] = new mongoose.Schema(PageInfo);
-	envSchema[`${page}_page`].type = 'PageInfo';
+	envSchema[`${page}_page`] = PageInfoSchema;
 });
 
 const EnvironmentSchema = extendSchema(ResourceSchema, envSchema);
@@ -186,7 +193,10 @@ EnvironmentSchema.mongql = {
 			create: [ true, false ]
 		}
 	},
-	resource: 'environment'
+	resource: 'environment',
+	Fragments: {
+		Info: [ '_id', 'name' ]
+	}
 };
 
 exports.EnvironmentSchema = EnvironmentSchema;

@@ -17,8 +17,11 @@ module.exports = {
 				base: AuthResolvers
 			},
 			sort: false,
-      output: {
+			output: {
 				Operation: path.resolve(__dirname, '../client/src/operations')
+			},
+			Operations: {
+				importGql: true
 			}
 		});
 		const { TransformedTypedefs, TransformedResolvers } = await mongql.generate();

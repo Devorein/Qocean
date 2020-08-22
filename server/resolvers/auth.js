@@ -32,11 +32,18 @@ module.exports = {
 			};
 			if (image) body.image = image;
 			const user = await User.create(body);
-			await Environment.create({
+			const environment = new Environment({
 				user: user._id,
 				_id: env_id,
-				name: 'Default Environment'
+				name: 'Default Environment',
+				questioninfo: {},
+				keybindings: {},
+				self_page: {},
+				watchlist_page: {},
+				play_page: {},
+				explore_page: {}
 			});
+			await environment.save();
 			await Inbox.create({ user: user._id, _id: inbox_id });
 			await Watchlist.create({ user: user._id, _id: watchlist_id });
 			return sendTokenResponse(user);
