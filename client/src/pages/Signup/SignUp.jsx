@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { useMutation } from '@apollo/react-components';
 import { withRouter } from 'react-router-dom';
-import InputForm from '../../components/Form/InputForm';
 import * as Yup from 'yup';
+
+import Operations from '../../operations/Operations';
+import InputForm from '../../components/Form/InputForm';
 import { isStrongPassword, isAlphaNumericOnly } from '../../Utils/validation';
 import FileInput from '../../RP/FileInput';
-import { AppContext } from '../../context/AppContext';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
+
 import './Signup.scss';
 
 const validationSchema = Yup.object({
@@ -26,10 +28,18 @@ const validationSchema = Yup.object({
 		.oneOf([ Yup.ref('password') ], 'Password does not match')
 });
 
-class SignIn extends Component {
-	static contextType = AppContext;
+const FormInput = [
+	{ name: 'name', startAdornment: 'person' },
+	{ name: 'username', startAdornment: 'person' },
+	{ name: 'email', startAdornment: 'email' },
+	{ name: 'password' },
+	{ name: 'confirm_password' }
+];
 
-	postSubmit = (_id, image, file) => {
+function SignIn ({ history, refetch }) {
+	const [ register ] = useMutation(Operations.Register_ObjectsNone);
+	const GLOBAL = {};
+	/* const postSubmit = (_id, image, file) => {
 		const fd = new FormData();
 		if (image === 'upload' && file) {
 			fd.append('file', file, file.name);
@@ -52,64 +62,57 @@ class SignIn extends Component {
 					}, 500);
 				});
 		} else this.props.refetch();
-	};
+	}; */
 
-	submitForm = (getFileData, values, { setSubmitting }) => {
+	const onSubmit = (values, { setSubmitting }) => {
 		const { name, email, username, password } = values;
-		const { file, src, image } = getFileData();
+		const { src, image } = GLOBAL.FileInputState;
 		if (image === 'link') values.image = src;
-		axios
-			.post(`http://localhost:5001/api/v1/auth/register`, {
-				name,
-				email,
-				username,
-				password
+		register({
+			variables: {
+				data: {
+					name,
+					email,
+					username,
+					password
+				}
+			}
+		})
+			.then(({ data }) => {
+				localStorage.setItem('token', data.register.token);
+				history.push('/');
+				// postSubmit(_id, image, file);
+				GLOBAL.changeResponse(`Success`, 'Successfully signed up', 'success');
+				refetch();
 			})
-			.then(({ data: { _id, token } }) => {
-				localStorage.setItem('token', token);
-				this.props.history.push('/');
-				this.postSubmit(_id, image, file);
-				this.changeResponse(`Success`, 'Successfully signed up', 'success');
-			})
-			.catch((err) => {
-				this.changeResponse(`An error occurred`, err.response.data.error, 'error');
+			.catch((error) => {
+				GLOBAL.changeResponse(`An error occurred`, error.message, 'error');
 				setTimeout(() => {
 					setSubmitting(false);
 				}, 2500);
 			});
 	};
 
-	render() {
-		return (
-			<CustomSnackbars>
-				{({ changeResponse }) => {
-					this.changeResponse = changeResponse;
-					return (
-						<FileInput src="">
-							{({ FileInput, getFileData }) => {
-								return (
-									<div className="signup pages">
-										<InputForm
-											onSubmit={this.submitForm.bind(null, getFileData)}
-											validationSchema={validationSchema}
-											inputs={[
-												{ name: 'name', startAdornment: 'person' },
-												{ name: 'username', startAdornment: 'person' },
-												{ name: 'email', startAdornment: 'email' },
-												{ name: 'password' },
-												{ name: 'confirm_password' }
-											]}
-										/>
-										{FileInput}
-									</div>
-								);
-							}}
-						</FileInput>
-					);
-				}}
-			</CustomSnackbars>
-		);
-	}
+	return (
+		<CustomSnackbars>
+			{({ changeResponse }) => {
+				GLOBAL.changeResponse = changeResponse;
+				return (
+					<FileInput src="">
+						{({ FileInput: FileInputComp, FileInputState }) => {
+							GLOBAL.FileInputState = FileInputState;
+							return (
+								<div className="signup pages">
+									<InputForm onSubmit={onSubmit} validationSchema={validationSchema} inputs={FormInput} />
+									{FileInputComp}
+								</div>
+							);
+						}}
+					</FileInput>
+				);
+			}}
+		</CustomSnackbars>
+	);
 }
 
 export default withRouter(SignIn);

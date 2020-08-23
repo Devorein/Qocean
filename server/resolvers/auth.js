@@ -17,6 +17,10 @@ module.exports = {
 	Mutation: {
 		async register (parent, { data }, { User, Inbox, Watchlist, Environment }) {
 			const { name, email, password, version, username, image } = data;
+			let _user = await User.findOne({ email });
+			if (_user) throw new Error(`User with the email ${email} already exists`);
+			_user = await User.findOne({ username });
+			if (_user) throw new Error(`User with the username ${username} already exists`);
 			const env_id = new ObjectID();
 			const inbox_id = new ObjectID();
 			const watchlist_id = new ObjectID();

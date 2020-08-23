@@ -53,6 +53,15 @@ const UserResolvers = {
 				runValidators: true
 			});
 		},
+		async deleteUser (_, __, { user, User }) {
+			const _user = await User.findById(user.id);
+			if (!_user) throw new Error('No user exists');
+			await _user.remove();
+			return {
+				success: true,
+				message: `User with id ${user.id} has been deleted`
+			};
+		},
 		async updateUserPassword (parent, { currentPassword, newPassword }, { user, User }) {
 			const _user = await User.findById(user.id).select('+password');
 
@@ -61,7 +70,7 @@ const UserResolvers = {
 
 			user.password = newPassword;
 			await _user.save();
-			return await sendTokenResponse(user);
+			return sendTokenResponse(user);
 		}
 	}
 };
