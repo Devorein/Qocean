@@ -46,7 +46,7 @@ class PageSwitcher extends Component {
 		else if (page === 'fileinput') return [ 'Link', 'Upload' ];
 	};
 
-	render() {
+	render () {
 		const { page, match: { params: { type } }, passTabsAsProps = true } = this.props;
 
 		const headers = this.decideHeaders().map((header) => {

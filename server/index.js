@@ -15,7 +15,3 @@ connectDB();
 	const GRAPHQL_SERVER = await generateGraphqlServer();
 	GRAPHQL_SERVER.start();
 })();
-
-process.on('unhandledRejection', (err) => {
-	console.log(`Error: ${err.message}`.red);
-});

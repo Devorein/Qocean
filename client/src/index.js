@@ -15,8 +15,8 @@ import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
 import SignIn from './pages/Signin/SignIn.jsx';
 import SignUp from './pages/Signup/SignUp.jsx';
-/* import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
+/* import Explore from './pages/Explore/Explore';
 import Self from './pages/Self/Self';
 import Watchlist from './pages/Watchlist/Watchlist';
 import Import from './pages/Import/Import';
@@ -24,8 +24,8 @@ import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
 import Play from './pages/Play/Play';
 import Report from './pages/Report/Report';
-import Inbox from './pages/Inbox/Inbox';
-import Upgrade from './pages/Upgrade/Upgrade'; */
+import Upgrade from './pages/Upgrade/Upgrade';
+import Inbox from './pages/Inbox/Inbox'; */
 import Home from './pages/Home/Home';
 import Unauthorized from './pages/401/Unauthorized';
 import NotFound from './pages/404/NotFound';
@@ -61,7 +61,7 @@ class App extends Component {
 								render={(e) => {
 									return <Explore user={session.user} />;
 								}}
-							/>
+							/> */}
 							<Route
 								path="/create/:type"
 								render={({ history, match }) => {
@@ -72,7 +72,7 @@ class App extends Component {
 									);
 								}}
 							/>
-							<Route
+							{/* <Route
 								path="/import/:type"
 								render={({ history, match }) => {
 									return session.user ? (

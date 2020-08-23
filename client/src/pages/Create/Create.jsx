@@ -1,30 +1,50 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+
+import CustomTabs from '../../components/Tab/Tabs';
 import FormFiller from '../../pages/FormFiller/FormFiller';
 import { AppContext } from '../../context/AppContext';
-import PageSwitcher from '../../components/PageSwitcher/PageSwitcher';
+
 import './Create.scss';
 
 class Create extends Component {
 	static contextType = AppContext;
-	render() {
+
+	state = {
+		resource: this.context.user.current_environment.default_create_landing || 'Quiz'
+	};
+
+	render () {
+		const headers = [ 'Quiz', 'Question', 'Folder', 'Environment' ].map((header) => {
+			return {
+				name: header,
+				link: `create/${header}`
+			};
+		});
+
 		return (
-			<PageSwitcher page="create">
-				{({ CustomTabs, type }) => (
-					<div className="Create page">
-						{CustomTabs}
-						<FormFiller
-							useModal={false}
-							user={this.props.user}
-							submitMsg={'Create'}
-							data={null}
-							type={type}
-							page={'Create'}
-						/>
-					</div>
-				)}
-			</PageSwitcher>
+			<div className="Create page">
+				<CustomTabs
+					against={this.state.resource}
+					onChange={(e, value) => {
+						this.setState({
+							resource: headers[value].name
+						});
+					}}
+					height={50}
+					headers={headers}
+				/>
+				<FormFiller
+					useModal={false}
+					user={this.props.user}
+					submitMsg={'Create'}
+					data={null}
+					type={this.state.resource}
+					page={'Create'}
+				/>
+			</div>
 		);
 	}
 }
 
-export default Create;
+export default withRouter(Create);

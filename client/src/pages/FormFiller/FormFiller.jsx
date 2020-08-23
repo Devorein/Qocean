@@ -6,11 +6,8 @@ import QuizForm from '../../resources/Form/QuizForm';
 import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
-import submitForm from '../../operations/submitForm';
-import setEnvAsCurrent from '../../operations/setEnvAsCurrent';
-import updateResource from '../../operations/updateResource';
 
-function formSubmitUtil({ reset, resetForm, setSubmitting, postSubmit, data }) {
+function formSubmitUtil ({ reset, resetForm, setSubmitting, postSubmit, data }) {
 	if (reset) resetForm();
 	setSubmitting(true);
 	setTimeout(() => {
@@ -33,23 +30,23 @@ class FormFiller extends Component {
 			canSubmit = shouldSubmit;
 		}
 		if (canSubmit) {
-			updateResource(type, id, values)
-				.then((data) => {
-					if (postSubmit) postSubmit(data, 'Update');
-					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
-					if (type.toLowerCase() === 'environment' && values.set_as_current) {
-						setEnvAsCurrent(data.data.data._id).then(() => {
-							if (refetchData) refetchData();
-						});
-					} else if (refetchData) refetchData();
-				})
-				.catch((err) => {
-					this.changeResponse(
-						`An error occurred`,
-						err.response.data ? err.response.data.error : `Failed to update ${type}`,
-						'error'
-					);
-				});
+			// 			updateResource(type, id, values)
+			// 				.then((data) => {
+			// 					if (postSubmit) postSubmit(data, 'Update');
+			// 					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
+			// 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
+			// 						setEnvAsCurrent(data.data.data._id).then(() => {
+			// 							if (refetchData) refetchData();
+			// 						});
+			// 					} else if (refetchData) refetchData();
+			// 				})
+			// 				.catch((err) => {
+			// 					this.changeResponse(
+			// 						`An error occurred`,
+			// 						err.response.data ? err.response.data.error : `Failed to update ${type}`,
+			// 						'error'
+			// 					);
+			// 				});
 		} else {
 			setSubmitting(true);
 			setTimeout(() => {
@@ -68,7 +65,7 @@ class FormFiller extends Component {
 			canSubmit = shouldSubmit;
 		}
 		if (canSubmit) {
-			submitForm(type, values)
+			/* submitForm(type, values)
 				.then((data) => {
 					formSubmitUtil({ reset: reset_on_success, resetForm, setSubmitting, postSubmit, data });
 					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
@@ -85,7 +82,7 @@ class FormFiller extends Component {
 						err.response.data ? err.response.data.error : `Failed to create ${type}`,
 						'error'
 					);
-				});
+				}); */
 		} else {
 			setSubmitting(true);
 			setTimeout(() => {
@@ -96,7 +93,7 @@ class FormFiller extends Component {
 
 	transformValue = (defaultInputs) => {
 		let { data: target } = this.props;
-		function recurse(defaultInputs) {
+		function recurse (defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
 				if (defaultInput) {
 					const { type, defaultValue, name } = defaultInput;
@@ -138,14 +135,13 @@ class FormFiller extends Component {
 				props.selected_folders = page === 'self' ? data.folders.map(({ _id }) => _id) : [];
 			}
 		}
-
 		if (type === 'folder') return <FolderForm {...props} />;
 		else if (type === 'question') return <QuestionForm {...props} />;
 		else if (type === 'quiz') return <QuizForm {...props} />;
 		else if (type === 'environment') return <EnvironmentForm {...props} />;
 	};
 
-	render() {
+	render () {
 		const { decideForm } = this;
 		const { isOpen, handleClose, useModal = true, onArrowClick } = this.props;
 

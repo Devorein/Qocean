@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const { ObjectID } = require('bson');
 
 const UserSchema = new mongoose.Schema({
 	name: {
@@ -31,7 +32,6 @@ const UserSchema = new mongoose.Schema({
 	password: {
 		type: String,
 		required: [ true, 'Please add a password' ],
-		minlength: [ 6, 'Password must be greater than six characters' ],
 		select: false,
 		mongql: {
 			scalar: 'Password',
@@ -158,7 +158,10 @@ const UserSchema = new mongoose.Schema({
 			}
 		}
 	],
-	image: { type: String, default: 'none.png' },
+	image: {
+		type: String,
+		default: 'none.png'
+	},
 	inbox: {
 		type: mongoose.Schema.ObjectId,
 		ref: 'Inbox',
