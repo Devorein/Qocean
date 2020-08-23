@@ -1,62 +1,62 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { useMutation } from '@apollo/react-components';
 import { withRouter } from 'react-router-dom';
+import * as Yup from 'yup';
+
 import InputForm from '../../components/Form/InputForm';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
-import './Signin.scss';
+import Operations from '../../operations/Operations';
 
-import * as Yup from 'yup';
+import './Signin.scss';
 
 const validationSchema = Yup.object({
 	email: Yup.string('Enter your email').email('Enter a valid email').required('Email is required'),
 	password: Yup.string('Enter your password').required('Password is required')
 });
 
-class SignIn extends Component {
-	submitForm = ({ email, password }, { setSubmitting }) => {
-		axios
-			.post(`http://localhost:5001/api/v1/auth/login`, {
-				email,
-				password
-			})
-			.then((res) => {
-				localStorage.setItem('token', res.data.token);
-				this.changeResponse('Success', 'Successfully signed in', 'success');
-				setTimeout(() => {
-					this.props.history.push('/');
-					this.props.refetch();
-				}, 2500);
-			})
-			.catch((err) => {
-				setSubmitting(false);
-				this.changeResponse('An error occurred', err.response.data.error, 'error');
-			});
-	};
-
-	render() {
-		return (
-			<CustomSnackbars>
-				{({ changeResponse }) => {
-					this.changeResponse = changeResponse;
-					return (
-						<div className="signin">
-							<InputForm
-								onSubmit={this.submitForm}
-								validationSchema={validationSchema}
-								inputs={[
-									{
-										name: 'email',
-										startAdornment: 'email'
-									},
-									{ name: 'password' }
-								]}
-							/>
-						</div>
-					);
-				}}
-			</CustomSnackbars>
-		);
-	}
+function SignIn (props) {
+	const [ signin ] = useMutation(Operations.Login_ObjectsNone);
+	return (
+		<CustomSnackbars>
+			{({ changeResponse }) => {
+				return (
+					<div className="signin">
+						<InputForm
+							onSubmit={({ email, password }, { setSubmitting }) => {
+								signin({
+									variables: {
+										data: {
+											email,
+											password
+										}
+									}
+								})
+									.then(({ data }) => {
+										localStorage.setItem('token', data.login.token);
+										changeResponse('Success', 'Successfully signed in', 'success');
+										setTimeout(() => {
+											props.history.push('/');
+											props.refetch();
+										}, 2500);
+									})
+									.catch((error) => {
+										setSubmitting(false);
+										changeResponse('An error occurred', error.message, 'error');
+									});
+							}}
+							validationSchema={validationSchema}
+							inputs={[
+								{
+									name: 'email',
+									startAdornment: 'email'
+								},
+								{ name: 'password' }
+							]}
+						/>
+					</div>
+				);
+			}}
+		</CustomSnackbars>
+	);
 }
-
 export default withRouter(SignIn);

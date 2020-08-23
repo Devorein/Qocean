@@ -7,31 +7,30 @@ import { SnackbarProvider } from 'notistack';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
 
 import client from './client';
 import theme from './theme';
 import Navbar from './components/Navbar/Navbar';
 import WithSessions from './components/Auth/WithSessions.jsx';
-/* import SignIn from './pages/Signin/SignIn.jsx';
+import SignIn from './pages/Signin/SignIn.jsx';
 import SignUp from './pages/Signup/SignUp.jsx';
-import Explore from './pages/Explore/Explore';
+/* import Explore from './pages/Explore/Explore';
 import Create from './pages/Create/Create';
 import Self from './pages/Self/Self';
 import Watchlist from './pages/Watchlist/Watchlist';
-import Home from './pages/Home/Home';
 import Import from './pages/Import/Import';
 import Profile from './pages/Profile/Profile';
 import Stats from './pages/Stats/Stats';
 import Play from './pages/Play/Play';
 import Report from './pages/Report/Report';
 import Inbox from './pages/Inbox/Inbox';
-import Upgrade from './pages/Upgrade/Upgrade';
+import Upgrade from './pages/Upgrade/Upgrade'; */
+import Home from './pages/Home/Home';
 import Unauthorized from './pages/401/Unauthorized';
-import NotFound from './pages/404/NotFound'; */
-import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from 'react-router-dom';
+import NotFound from './pages/404/NotFound';
 import GlobalCss from './Utils/Globalcss';
 import { AppContext } from './context/AppContext';
-import { setPageQueries } from './actions/queries';
 import reducers from './reducers';
 import middlewares from './middlewares';
 
@@ -42,9 +41,6 @@ import './pages/Pages.scss';
 const store = createStore(reducers, middlewares);
 
 class App extends Component {
-	componentDidMount () {
-		this.props.dispatch(setPageQueries({}));
-	}
 	render () {
 		const { session, location, refetch } = this.props;
 		return (
@@ -54,14 +50,13 @@ class App extends Component {
 					<AppContext.Provider
 						value={{
 							user: session.user,
-							refetchUser: this.props.refetch,
-							pageQueries: {}
+							refetchUser: this.props.refetch
 						}}
 					>
 						<Navbar session={session} refetch={refetch} />
-						{/* <Switch location={location}>
+						<Switch location={location}>
 							<Route path="/" exact component={Home} />
-							<Route
+							{/* <Route
 								path="/explore/:type"
 								render={(e) => {
 									return <Explore user={session.user} />;
@@ -139,13 +134,13 @@ class App extends Component {
 								render={() => {
 									return session.user ? <Self user={session.user} /> : <Redirect to="/401" />;
 								}}
-							/>
+							/> */}
 							<Route path="/signin" render={() => <SignIn refetch={refetch} />} />
 							<Route path="/signup" render={() => <SignUp refetch={refetch} />} />
 							<Route path="/401" component={Unauthorized} />
 							<Route path="/404" component={NotFound} />
 							<Redirect to="/404" />
-						</Switch> */}
+						</Switch>
 					</AppContext.Provider>
 				</div>
 			</Fragment>
