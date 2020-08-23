@@ -1,7 +1,8 @@
 const express = require('express');
+const { Mongql } = require('mongql');
+const path = require('path');
 const cors = require('cors');
 const hpp = require('hpp');
-const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 const { ApolloServer } = require('apollo-server-express');
 const colors = require('colors');
@@ -9,12 +10,32 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const fileupload = require('express-fileupload');
 // const cookieParser = require('cookie-parser');
 
-const { validate } = require('../middleware/auth');
-const { generateTypedefsAndResolvers } = require('../resource');
-const reportGraphql = require('../utils/reportGraphql');
+const AuthTypedef = require('./typedefs/Auth');
+const AuthResolvers = require('./resolvers/auth');
+const { validate } = require('./middleware/auth');
+const reportGraphql = require('./utils/reportGraphql');
 
 module.exports = async function generateGraphqlServer () {
-	const { TransformedTypedefs, TransformedResolvers, generatedModels } = await generateTypedefsAndResolvers();
+	const mongql = new Mongql({
+		Schemas: path.resolve(__dirname, './schemas'),
+		Typedefs: {
+			init: path.resolve(__dirname, './typedefs'),
+			base: AuthTypedef
+		},
+		Resolvers: {
+			init: path.resolve(__dirname, './resolvers'),
+			base: AuthResolvers
+		},
+		sort: false,
+		output: {
+			Operation: path.resolve(__dirname, '../client/src/operations/Operations.js')
+		},
+		Operations: {
+			importGql: true
+		}
+	});
+	const { TransformedTypedefs, TransformedResolvers } = await mongql.generate();
+	const generatedModels = await mongql.generateModels();
 	// GRAPHQL Server
 	const GRAPHQL = express();
 	GRAPHQL.use(cors());

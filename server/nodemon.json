@@ -1,0 +1,8 @@
+{
+  "ignore": [
+    "/utils",
+    "/servers",
+    "/tests",
+    "/middleware"
+  ]
+}

@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const generateGraphqlServer = require('./servers/graphql');
+const generateGraphqlServer = require('./server');
 
 let mode = null;
 process.argv.forEach((arg) => {
