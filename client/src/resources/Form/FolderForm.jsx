@@ -22,7 +22,7 @@ class FolderForm extends Component {
 		quizzes: []
 	};
 
-	UNSAFE_componentWillReceiveProps(props) {
+	UNSAFE_componentWillReceiveProps (props) {
 		let isAllSame = true;
 		if (props.selected_quizzes) {
 			if (props.selected_quizzes.length !== this.state.selected_quizzes.length) isAllSame = false;
@@ -35,7 +35,7 @@ class FolderForm extends Component {
 		}
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		axios
 			.get('http://localhost:5001/api/v1/quizzes/me?select=name&populate=false', {
 				headers: {
@@ -72,7 +72,7 @@ class FolderForm extends Component {
 		}
 	};
 
-	render() {
+	render () {
 		const { preSubmit, handleChange, postSubmit } = this;
 		const { onSubmit, transformInputs, submitMsg } = this.props;
 		const { quizzes, loading, selected_quizzes } = this.state;
@@ -86,25 +86,25 @@ class FolderForm extends Component {
 						const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
 						return {
 							text: capitalized,
-							value: `${capitalized}_folder.svg`,
+							value: `${capitalized}_folder`,
 							icon: getColoredIcons('Folder', color)
 						};
 					})
 				},
-				defaultValue: 'Red_folder.svg'
+				defaultValue: 'Red_folder'
 			},
 			{ name: 'favourite', label: 'Favourite', type: 'checkbox', defaultValue: false },
 			{ name: 'public', label: 'Public', type: 'checkbox', defaultValue: true },
 			{
 				type: 'component',
-				name: 'select_folder',
+				name: 'quizzes',
 				component: loading ? (
-					<FormHelperText key={'select_folder'}>Loading your quizzes</FormHelperText>
+					<FormHelperText key={'quizzes'}>Loading your quizzes</FormHelperText>
 				) : quizzes.length < 1 ? (
-					<FormHelperText key={'select_folder'}>You have not created any quizzes yet</FormHelperText>
+					<FormHelperText key={'quizzes'}>You have not created any quizzes yet</FormHelperText>
 				) : (
 					<MultiSelect
-						key={'select_folder'}
+						key={'quizzes'}
 						label={'Quizzes'}
 						selected={selected_quizzes}
 						handleChange={handleChange}

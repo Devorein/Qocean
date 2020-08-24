@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
+import { useMutation } from '@apollo/react-components';
+
 import CustomModal from '../../components/Modal/CustomModal';
 import FolderForm from '../../resources/Form/FolderForm';
 import QuestionForm from '../../resources/Form/QuestionForm';
@@ -6,6 +8,7 @@ import QuizForm from '../../resources/Form/QuizForm';
 import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
+import Operations from '../../operations/Operations';
 
 function formSubmitUtil ({ reset, resetForm, setSubmitting, postSubmit, data }) {
 	if (reset) resetForm();
@@ -16,12 +19,17 @@ function formSubmitUtil ({ reset, resetForm, setSubmitting, postSubmit, data }) 
 	if (postSubmit) postSubmit(data, 'Create');
 }
 
-class FormFiller extends Component {
-	static contextType = AppContext;
-
-	updateResource = ([ type, preSubmit, postSubmit ], values, { setSubmitting }) => {
-		type = type.toLowerCase();
-		const { refetchData, data } = this.props;
+function FormFiller (props) {
+	const { user } = useContext(AppContext);
+	const GLOBAL = {};
+	const page = props.page.toLowerCase();
+	const resource = props.resource.toLowerCase();
+	const c_resource = props.resource.charAt(0).toUpperCase() + props.resource.substr(1);
+	const [ create ] = useMutation(Operations[`Create${c_resource}_ObjectsNone`]);
+	const [ update ] = useMutation(Operations[`Update${c_resource}_ObjectsNone`]);
+	const updateResource = ([ resource, preSubmit, postSubmit ], values, { setSubmitting }) => {
+		resource = resource.toLowerCase();
+		const { refetchData, data } = props;
 		const id = data._id;
 		let canSubmit = true;
 		if (preSubmit) {
@@ -30,11 +38,11 @@ class FormFiller extends Component {
 			canSubmit = shouldSubmit;
 		}
 		if (canSubmit) {
-			// 			updateResource(type, id, values)
+			// 			updateResource(resource, id, values)
 			// 				.then((data) => {
 			// 					if (postSubmit) postSubmit(data, 'Update');
-			// 					this.changeResponse(`Success`, `Successsfully updated ${type} ${values.name}`, 'success');
-			// 					if (type.toLowerCase() === 'environment' && values.set_as_current) {
+			// 					this.changeResponse(`Success`, `Successsfully updated ${resource} ${values.name}`, 'success');
+			// 					if (resource.toLowerCase() === 'environment' && values.set_as_current) {
 			// 						setEnvAsCurrent(data.data.data._id).then(() => {
 			// 							if (refetchData) refetchData();
 			// 						});
@@ -43,7 +51,7 @@ class FormFiller extends Component {
 			// 				.catch((err) => {
 			// 					this.changeResponse(
 			// 						`An error occurred`,
-			// 						err.response.data ? err.response.data.error : `Failed to update ${type}`,
+			// 						err.response.data ? err.response.data.error : `Failed to update ${resource}`,
 			// 						'error'
 			// 					);
 			// 				});
@@ -55,9 +63,9 @@ class FormFiller extends Component {
 		}
 	};
 
-	createResource = ([ type, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
-		type = type.toLowerCase();
-		const { reset_on_success, reset_on_error } = this.context.user.current_environment;
+	const createResource = ([ resource, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
+		resource = resource.toLowerCase();
+		const { reset_on_success, reset_on_error } = user.current_environment;
 		let canSubmit = true;
 		if (preSubmit) {
 			let [ transformedValue, shouldSubmit ] = preSubmit(values);
@@ -65,24 +73,24 @@ class FormFiller extends Component {
 			canSubmit = shouldSubmit;
 		}
 		if (canSubmit) {
-			/* submitForm(type, values)
+			create({ variables: { data: values } })
 				.then((data) => {
 					formSubmitUtil({ reset: reset_on_success, resetForm, setSubmitting, postSubmit, data });
-					this.changeResponse(`Success`, `Successsfully created ${type} ${values.name}`, 'success');
-					if (type.toLowerCase() === 'environment' && values.set_as_current) {
-						setEnvAsCurrent(data.data.data._id).then(() => {
-							this.context.refetchUser();
-						});
-					}
+					GLOBAL.changeResponse(`Success`, `Successsfully created ${resource} ${values.name}`, 'success');
+					// if (resource.toLowerCase() === 'environment' && values.set_as_current) {
+					// 	setEnvAsCurrent(data.data.data._id).then(() => {
+					// 		this.context.refetchUser();
+					// 	});
+					// }
 				})
 				.catch((err) => {
 					formSubmitUtil({ reset: reset_on_error, resetForm, setSubmitting, postSubmit, data: err });
-					this.changeResponse(
+					GLOBAL.changeResponse(
 						`An error occurred`,
-						err.response.data ? err.response.data.error : `Failed to create ${type}`,
+						err.response.data ? err.response.data.error : `Failed to create ${resource}`,
 						'error'
 					);
-				}); */
+				});
 		} else {
 			setSubmitting(true);
 			setTimeout(() => {
@@ -91,8 +99,8 @@ class FormFiller extends Component {
 		}
 	};
 
-	transformValue = (defaultInputs) => {
-		let { data: target } = this.props;
+	const transformValue = (defaultInputs) => {
+		let { data: target } = props;
 		function recurse (defaultInputs) {
 			defaultInputs.forEach((defaultInput, index) => {
 				if (defaultInput) {
@@ -109,61 +117,57 @@ class FormFiller extends Component {
 		return defaultInputs;
 	};
 
-	decideForm = () => {
-		const { transformValue } = this;
-		const { data, submitMsg } = this.props;
-		const page = this.props.page.toLowerCase();
-		const type = this.props.type.toLowerCase();
-		const props = {
-			user: this.context.user,
+	const decideForm = () => {
+		const { data, submitMsg } = props;
+
+		const common_props = {
+			user,
 			submitMsg: submitMsg || page,
-			onSubmit: page !== 'self' ? this.createResource : this.updateResource,
+			onSubmit: page !== 'self' ? createResource : updateResource,
 			transformInputs: page !== 'create' ? transformValue : null,
-			changeResponse: this.changeResponse
+			changeResponse: GLOBAL.changeResponse
 		};
 		if (data) {
-			if (type === 'folder') props.selected_quizzes = page === 'self' ? data.quizzes.map(({ _id }) => _id) : [];
-			else if (type === 'question') {
-				props.defaultType = data.type;
-				props.selected_quiz = data.quiz ? data.quiz._id : '';
-				props.defaultAnswers = data.answers;
-				props.blank_count = data.type === 'FIB' ? data.name.match(/\$\{_\}/g).length : 0;
-				props.defaultOptions = data.options;
-			} else if (type === 'quiz') {
-				props.tags = data.tags;
-				props.src = data.image;
-				props.selected_folders = page === 'self' ? data.folders.map(({ _id }) => _id) : [];
+			if (resource === 'folder')
+				common_props.selected_quizzes = page === 'self' ? data.quizzes.map(({ _id }) => _id) : [];
+			else if (resource === 'question') {
+				common_props.defaultType = data.type;
+				common_props.selected_quiz = data.quiz ? data.quiz._id : '';
+				common_props.defaultAnswers = data.answers;
+				common_props.blank_count = data.type === 'FIB' ? data.name.match(/\$\{_\}/g).length : 0;
+				common_props.defaultOptions = data.options;
+			} else if (resource === 'quiz') {
+				common_props.tags = data.tags;
+				common_props.src = data.image;
+				common_props.selected_folders = page === 'self' ? data.folders.map(({ _id }) => _id) : [];
 			}
 		}
-		if (type === 'folder') return <FolderForm {...props} />;
-		else if (type === 'question') return <QuestionForm {...props} />;
-		else if (type === 'quiz') return <QuizForm {...props} />;
-		else if (type === 'environment') return <EnvironmentForm {...props} />;
+		if (resource === 'folder') return <FolderForm {...common_props} />;
+		else if (resource === 'question') return <QuestionForm {...common_props} />;
+		else if (resource === 'quiz') return <QuizForm {...common_props} />;
+		else if (resource === 'environment') return <EnvironmentForm {...common_props} />;
 	};
 
-	render () {
-		const { decideForm } = this;
-		const { isOpen, handleClose, useModal = true, onArrowClick } = this.props;
+	const { isOpen, handleClose, useModal = true, onArrowClick } = props;
 
-		return (
-			<CustomSnackbars>
-				{({ changeResponse }) => {
-					this.changeResponse = changeResponse;
-					return (
-						<div className="FormFiller">
-							{useModal ? (
-								<CustomModal handleClose={handleClose} isOpen={isOpen} onArrowClick={onArrowClick}>
-									{decideForm()}
-								</CustomModal>
-							) : (
-								decideForm()
-							)}
-						</div>
-					);
-				}}
-			</CustomSnackbars>
-		);
-	}
+	return (
+		<CustomSnackbars>
+			{({ changeResponse }) => {
+				GLOBAL.changeResponse = changeResponse;
+				return (
+					<div className="FormFiller">
+						{useModal ? (
+							<CustomModal handleClose={handleClose} isOpen={isOpen} onArrowClick={onArrowClick}>
+								{decideForm()}
+							</CustomModal>
+						) : (
+							decideForm()
+						)}
+					</div>
+				);
+			}}
+		</CustomSnackbars>
+	);
 }
 
 export default FormFiller;

@@ -21,7 +21,7 @@ const FolderSchema = extendSchema(ResourceSchema, {
 	},
 	icon: {
 		type: String,
-		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ],
+		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ].map((color) => color + '_folder'),
 		default: 'Red'
 	},
 	total_quizzes: {

@@ -39,7 +39,7 @@ class Create extends Component {
 					user={this.props.user}
 					submitMsg={'Create'}
 					data={null}
-					type={this.state.resource}
+					resource={this.state.resource}
 					page={'Create'}
 				/>
 			</div>
