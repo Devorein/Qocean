@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
-import axios from 'axios';
+
+import Operations from '../../operations/Operations';
 import InputForm from '../../components/Form/InputForm';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import MultiSelect from '../../components/Input/MultiSelect';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import { isEqual } from 'lodash';
+import client from '../../client';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter folder name').required('Folder name is required'),
@@ -36,15 +38,13 @@ class FolderForm extends Component {
 	}
 
 	componentDidMount () {
-		axios
-			.get('http://localhost:5001/api/v1/quizzes/me?select=name&populate=false', {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+		client
+			.query({
+				query: Operations.GetAllSelfQuizzesWhole_NameAndId
 			})
-			.then(({ data: { data: quizzes } }) => {
+			.then(({ data: { getAllSelfQuizzesWhole } }) => {
 				this.setState({
-					quizzes,
+					quizzes: getAllSelfQuizzesWhole,
 					loading: false
 				});
 			})

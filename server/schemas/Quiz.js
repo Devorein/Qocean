@@ -4,6 +4,16 @@ const ResourceSchema = require('./Resource');
 const validateColor = require('validate-color');
 
 const QuizSchema = extendSchema(ResourceSchema, {
+	_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		mongql: {
+			attach: {
+				input: {
+					create: false
+				}
+			}
+		}
+	},
 	name: {
 		type: String,
 		required: [ true, 'Quiz name is required' ],
@@ -136,7 +146,10 @@ const QuizSchema = extendSchema(ResourceSchema, {
 
 QuizSchema.mongql = {
 	generate: true,
-	resource: 'quiz'
+	resource: 'quiz',
+	Fragments: {
+		NameAndId: [ 'name', '_id' ]
+	}
 };
 
 QuizSchema.statics.validate = async function (quiz) {

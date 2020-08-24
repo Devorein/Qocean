@@ -23,7 +23,7 @@ class QuizForm extends Component {
 		selected_folders: this.props.selected_folders || []
 	};
 
-	UNSAFE_componentWillReceiveProps(props) {
+	UNSAFE_componentWillReceiveProps (props) {
 		let isAllSame = true;
 		if (props.selected_folders) {
 			isAllSame =
@@ -37,7 +37,7 @@ class QuizForm extends Component {
 		}
 	}
 
-	componentDidMount() {
+	componentDidMount () {
 		axios
 			.get('http://localhost:5001/api/v1/folders/me?select=name&populate=false', {
 				headers: {
@@ -118,7 +118,7 @@ class QuizForm extends Component {
 		);
 	};
 
-	render() {
+	render () {
 		const { preSubmit, handleChange, postSubmit } = this;
 		const { onSubmit, transformInputs, submitMsg, src, tags = [] } = this.props;
 		const { folders, loading, selected_folders } = this.state;
@@ -150,7 +150,7 @@ class QuizForm extends Component {
 								if (transformInputs) defaultInputs = transformInputs(defaultInputs);
 								defaultInputs[5] = {
 									type: 'component',
-									name: 'select_folder',
+									name: 'folders',
 									component: loading ? (
 										<FormHelperText key={'select_folder'}>Loading your folders</FormHelperText>
 									) : folders.length === 0 ? (

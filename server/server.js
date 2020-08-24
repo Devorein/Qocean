@@ -15,7 +15,7 @@ const AuthResolvers = require('./resolvers/auth');
 const { validate } = require('./middleware/auth');
 const reportGraphql = require('./utils/reportGraphql');
 
-module.exports = async function generateGraphqlServer () {
+module.exports = async function ervergenerateGraphqlServer () {
 	const mongql = new Mongql({
 		Schemas: path.resolve(__dirname, './schemas'),
 		Typedefs: {

@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const { ObjectID } = require('bson');
 
 const UserSchema = new mongoose.Schema({
 	name: {

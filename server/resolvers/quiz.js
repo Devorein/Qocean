@@ -62,17 +62,6 @@ const QuizResolvers = {
 		}
 	},
 	Mutation: {
-		async createQuiz (_, { data }, { user, Quiz }) {
-			data.user = user.id;
-			const prevQuiz = await Quiz.countDocuments({
-				name: data.name.trim(),
-				user: user.id
-			});
-			if (prevQuiz >= 1) throw new Error(`You already have a quiz named ${data.name}`);
-			const [ success, message ] = await Quiz.validate(data);
-			if (!success) throw new Error(message);
-			return await Quiz.create(data);
-		},
 		async updateQuizPlayedTimes (parent, { ids }, { user, Quiz }) {
 			let total_updated = 0;
 			if (ids) {
