@@ -3,6 +3,16 @@ const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
 
 const FolderSchema = extendSchema(ResourceSchema, {
+	_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		mongql: {
+			attach: {
+				input: {
+					create: false
+				}
+			}
+		}
+	},
 	name: {
 		type: String,
 		required: [ true, 'Please provide folder name' ],
@@ -74,7 +84,10 @@ const FolderSchema = extendSchema(ResourceSchema, {
 exports.FolderSchema = FolderSchema;
 FolderSchema.mongql = {
 	generate: true,
-	resource: 'folder'
+	resource: 'folder',
+	Fragments: {
+		NameAndId: [ 'name', '_id' ]
+	}
 };
 
 FolderSchema.methods.manipulateQuiz = async function (shouldAdd, quizId) {

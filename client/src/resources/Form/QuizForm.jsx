@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import * as Yup from 'yup';
+
 import InputForm from '../../components/Form/InputForm';
-import axios from 'axios';
 import MultiSelect from '../../components/Input/MultiSelect';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TagCreator from '../../RP/TagCreator';
 import FileInput from '../../RP/FileInput';
 import { isEqual } from 'lodash';
+import client from '../../client';
+import Operations from '../../operations/Operations';
 
 const validationSchema = Yup.object({
 	name: Yup.string('Enter quiz name')
@@ -38,15 +40,13 @@ class QuizForm extends Component {
 	}
 
 	componentDidMount () {
-		axios
-			.get('http://localhost:5001/api/v1/folders/me?select=name&populate=false', {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+		client
+			.query({
+				query: Operations.GetAllSelfFoldersWhole_NameAndId
 			})
-			.then(({ data: { data: folders } }) => {
+			.then(({ data: { getAllSelfFoldersWhole } }) => {
 				this.setState({
-					folders,
+					folders: getAllSelfFoldersWhole,
 					loading: false
 				});
 			})
@@ -74,7 +74,7 @@ class QuizForm extends Component {
 		if (type === 'upload' && file) {
 			const fd = new FormData();
 			fd.append('file', file, file.name);
-			axios
+			/* axios
 				.put(`http://localhost:5001/api/v1/quizzes/${data.data._id}/photo`, fd, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
@@ -98,7 +98,7 @@ class QuizForm extends Component {
 							}, this.props.user.current_environment.notification_timing + 500);
 						});
 					}
-				});
+				}); */
 		} else this.resetForm(reset, null);
 	};
 

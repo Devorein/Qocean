@@ -38,6 +38,7 @@ function FormFiller (props) {
 			canSubmit = shouldSubmit;
 		}
 		if (canSubmit) {
+			// Update in formfiller
 			// 			updateResource(resource, id, values)
 			// 				.then((data) => {
 			// 					if (postSubmit) postSubmit(data, 'Update');

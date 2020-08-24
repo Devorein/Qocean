@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { SketchPicker } from 'react-color';
-import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import { withStyles } from '@material-ui/core/styles';
 import { FormLabel, TextField } from '@material-ui/core';
 import validateColor from 'validate-color';
 
+import Operations from '../operations/Operations';
+import client from '../client';
 import DeletableChip from '../components/Chip/DeletableChip';
 import { AppContext } from '../context/AppContext';
 import MultiSelect from '../components/Input/MultiSelect';
 import RegularChip from '../components/Chip/RegularChip';
 import Icon from '../components/Icon/Icon';
+import CustomSnackbars from '../components/Snackbars/CustomSnackbars';
 
 const PrevTagSelection = styled.div`
 	width: 100%;
@@ -39,18 +41,13 @@ class TagCreator extends Component {
 	};
 
 	refetchTags = () => {
-		axios
-			.post(
-				`http://localhost:5001/api/v1/users/tags/_/me`,
-				{
-					uniqueWithColor: true
-				},
-				{
-					headers: {
-						Authorization: `Bearer ${localStorage.getItem('token')}`
-					}
+		client
+			.query({
+				query: Operations.GetAllSelfUsersTags_ObjectsNone,
+				variables: {
+					config: { uniqueWithColor: true }
 				}
-			)
+			})
 			.then(({ data: { data: prevTags } }) => {
 				this.setState({
 					prevTags
@@ -58,11 +55,11 @@ class TagCreator extends Component {
 			});
 	};
 
-	componentDidMount() {
+	componentDidMount () {
 		this.refetchTags();
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps (nextProps) {
 		if (
 			nextProps.tags.length === 0 ||
 			(nextProps.tags.length === this.state.tags.length &&
@@ -104,7 +101,7 @@ class TagCreator extends Component {
 	};
 
 	validateTags = (_tag) => {
-		const { changeResponse } = this.context;
+		const { changeResponse } = this;
 		const { tags } = this.state;
 		const isPresent = tags.find((tag) => tag.split(':')[0].toLowerCase() === _tag.split(':')[0].toLowerCase());
 		const tagsSeparator = _tag.split(':');
@@ -166,72 +163,79 @@ class TagCreator extends Component {
 		const { deleteTags, createTags, openCP } = this;
 		const { classes } = this.props;
 		return (
-			<div className={classes.root} key={'tag_creator'}>
-				<FormLabel>Tags</FormLabel>
-				<TextField
-					type={'text'}
-					value={input}
-					onChange={(e) => this.setState({ input: e.target.value })}
-					onKeyPress={createTags}
-					fullWidth
-				/>
-				<PrevTagSelection>
-					<MultiSelect
-						label={'Previous Tags'}
-						useColoredChip
-						selected={this.state.selectedTags}
-						handleChange={(e) => {
-							this.setState({
-								selectedTags: e.target.value
-							});
-						}}
-						items={
-							this.state.prevTags ? (
-								this.state.prevTags.uniqueWithColor.map((tag) => ({
-									name: tag.split(':')[0],
-									_id: tag,
-									customText: <RegularChip tag={tag} />,
-									disabled:
-										this.state.tags.includes(tag) ||
-										(this.state.tags.length + this.state.selectedTags.length >= 5 &&
-											!this.state.selectedTags.includes(tag))
-								}))
-							) : (
-								[]
-							)
-						}
-					/>
-					<Icon
-						icon={'addbox'}
-						onClick={() => {
-							this.setState({
-								tags: Array.from(new Set(this.state.tags.concat(this.state.selectedTags))),
-								selectedTags: []
-							});
-						}}
-						popoverText="Add selected tags"
-					/>
-				</PrevTagSelection>
-				<TagContainer>
-					{tags.map((tag, index) => {
-						return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
-					})}
-				</TagContainer>
-				<Button onClick={openCP}>{displayColorPicker ? 'Close' : 'Open'} picker</Button>
-				{displayColorPicker ? (
-					<SketchPicker
-						className={classes.sketchPicker}
-						disableAlpha
-						presetColors={this.state.prevTags.uniqueWithColor.map((tag) => `${tag.split(':')[1]}`)}
-						color={tagColor}
-						onChangeComplete={this.handleChangeComplete}
-					/>
-				) : null}
-			</div>
+			<CustomSnackbars key={'tag_creator'}>
+				{({ changeResponse }) => {
+					this.changeResponse = changeResponse;
+					return (
+						<div className={classes.root}>
+							<FormLabel>Tags</FormLabel>
+							<TextField
+								type={'text'}
+								value={input}
+								onChange={(e) => this.setState({ input: e.target.value })}
+								onKeyPress={createTags}
+								fullWidth
+							/>
+							<PrevTagSelection>
+								<MultiSelect
+									label={'Previous Tags'}
+									useColoredChip
+									selected={this.state.selectedTags}
+									handleChange={(e) => {
+										this.setState({
+											selectedTags: e.target.value
+										});
+									}}
+									items={
+										this.state.prevTags ? (
+											this.state.prevTags.uniqueWithColor.map((tag) => ({
+												name: tag.split(':')[0],
+												_id: tag,
+												customText: <RegularChip tag={tag} />,
+												disabled:
+													this.state.tags.includes(tag) ||
+													(this.state.tags.length + this.state.selectedTags.length >= 5 &&
+														!this.state.selectedTags.includes(tag))
+											}))
+										) : (
+											[]
+										)
+									}
+								/>
+								<Icon
+									icon={'addbox'}
+									onClick={() => {
+										this.setState({
+											tags: Array.from(new Set(this.state.tags.concat(this.state.selectedTags))),
+											selectedTags: []
+										});
+									}}
+									popoverText="Add selected tags"
+								/>
+							</PrevTagSelection>
+							<TagContainer>
+								{tags.map((tag, index) => {
+									return <DeletableChip key={tag} tag={tag} onDelete={deleteTags} />;
+								})}
+							</TagContainer>
+							<Button onClick={openCP}>{displayColorPicker ? 'Close' : 'Open'} picker</Button>
+							{displayColorPicker ? (
+								<SketchPicker
+									className={classes.sketchPicker}
+									disableAlpha
+									presetColors={this.state.prevTags.uniqueWithColor.map((tag) => `${tag.split(':')[1]}`)}
+									color={tagColor}
+									onChangeComplete={this.handleChangeComplete}
+								/>
+							) : null}
+						</div>
+					);
+				}}
+			</CustomSnackbars>
 		);
 	};
 
-	render() {
+	render () {
 		const { resetTags, renderTagCreator, refetchTags } = this;
 
 		return this.props.children({
