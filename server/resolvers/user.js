@@ -27,11 +27,11 @@ const UserResolvers = {
 		},
 
 		async getAllOthersUsersTags (parent, { config }, { user, User }) {
-			return await getUsersTagsHandler({ _id: { $ne: user.id } }, config, User);
+			return await getUsersTagsHandler({ _id: { $ne: user._id } }, config, User);
 		},
 
 		async getAllSelfUsersTags (parent, { config }, { user, User }) {
-			return await getUsersTagsHandler({ _id: user.id }, config, User);
+			return await getUsersTagsHandler({ _id: user._id }, config, User);
 		},
 
 		async getOthersUsersByIdTags (parent, { id, config }, { User }) {

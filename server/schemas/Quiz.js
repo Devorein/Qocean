@@ -78,7 +78,14 @@ const QuizSchema = extendSchema(ResourceSchema, {
 	},
 	image: {
 		type: String,
-		default: 'none.png'
+		default: 'none.png',
+		mongql: {
+			nullable: {
+				input: {
+					create: [ true ]
+				}
+			}
+		}
 	},
 	total_questions: {
 		type: Number,
@@ -175,6 +182,13 @@ QuizSchema.statics.remove = async function (quizId, field, id) {
 	quiz[field] = quiz[field].filter((_id) => _id.toString() !== id.toString());
 	quiz[`total_${field}`] = quiz[field].length;
 	await quiz.save();
+};
+
+QuizSchema.statics.precreate = async function (data, SchemaInfo, { User }) {
+	const user = await User.findById(data.user);
+	user.quizzes = [ ...user.quizzes, data._id ];
+	user.total_quizzes++;
+	await user.save();
 };
 
 QuizSchema.pre('save', async function (next) {

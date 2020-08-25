@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const extendSchema = require('../utils/extendSchema');
 const ResourceSchema = require('./Resource');
+const { ObjectID } = require('bson');
 
 const FolderSchema = extendSchema(ResourceSchema, {
 	_id: {
@@ -103,6 +104,13 @@ FolderSchema.methods.manipulateQuiz = async function (shouldAdd, quizId) {
 	}
 	this.total_quizzes = this.quizzes.length;
 	await quiz.save();
+};
+
+FolderSchema.statics.precreate = async function (data, SchemaInfo, { User }) {
+	const user = await User.findById(data.user);
+	user.folders = [ ...user.folders, data._id ];
+	user.total_folders++;
+	await user.save();
 };
 
 FolderSchema.pre('save', async function (next) {

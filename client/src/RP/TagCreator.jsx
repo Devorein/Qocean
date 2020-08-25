@@ -48,9 +48,9 @@ class TagCreator extends Component {
 					config: { uniqueWithColor: true }
 				}
 			})
-			.then(({ data: { data: prevTags } }) => {
+			.then(({ data: { getAllSelfUsersTags } }) => {
 				this.setState({
-					prevTags
+					prevTags: getAllSelfUsersTags
 				});
 			});
 	};

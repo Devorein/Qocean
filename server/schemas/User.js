@@ -6,6 +6,16 @@ const fs = require('fs');
 const path = require('path');
 
 const UserSchema = new mongoose.Schema({
+	_id: {
+		type: mongoose.Schema.Types.ObjectId,
+		mongql: {
+			attach: {
+				input: {
+					create: false
+				}
+			}
+		}
+	},
 	name: {
 		type: String,
 		required: [ true, 'Please add a name' ]
