@@ -24,6 +24,7 @@ module.exports = {
 			const env_id = new ObjectID();
 			const inbox_id = new ObjectID();
 			const watchlist_id = new ObjectID();
+			const user_id = new ObjectID();
 			const body = {
 				name,
 				email,
@@ -35,9 +36,10 @@ module.exports = {
 				watchlist: watchlist_id.toString()
 			};
 			if (image) body.image = image;
+			body._id = user_id;
 			const user = await User.create(body);
 			await Environment.create({
-				user: user._id,
+				user: user_id,
 				_id: env_id,
 				name: 'Default Environment',
 				questioninfo: {},

@@ -17,7 +17,11 @@ const validationSchema = Yup.object({
 });
 
 class EnvironmentForm extends Component {
-	render() {
+	preSubmit = (values) => {
+		delete values.set_as_current;
+		return [ values, true ];
+	};
+	render () {
 		const { onSubmit, transformInputs, submitMsg } = this.props;
 
 		let defaultInputs = [
@@ -30,12 +34,12 @@ class EnvironmentForm extends Component {
 						const capitalized = color.charAt(0).toUpperCase() + color.substr(1);
 						return {
 							text: capitalized,
-							value: `${capitalized}_env.svg`,
+							value: `${capitalized}_env`,
 							icon: getColoredIcons('Settings', color)
 						};
 					})
 				},
-				defaultValue: 'Red_env.svg'
+				defaultValue: 'Red_env'
 			},
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
@@ -52,10 +56,10 @@ class EnvironmentForm extends Component {
 			},
 			{ name: 'reset_on_success', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
-			createEnvGroups('explore'),
-			createEnvGroups('self'),
-			createEnvGroups('watchlist'),
-			createEnvGroups('play'),
+			createEnvGroups('explore_page'),
+			createEnvGroups('self_page'),
+			createEnvGroups('watchlist_page'),
+			createEnvGroups('play_page'),
 			{
 				name: 'default_create_landing',
 				type: 'select',
@@ -70,11 +74,11 @@ class EnvironmentForm extends Component {
 			},
 			{
 				type: 'group',
-				name: 'questions_group',
-				extra: { treeView: true },
+				name: 'questioninfo',
+				extra: { treeView: true, coalesce: true },
 				children: [
 					{
-						name: 'default_question_type',
+						name: 'default_type',
 						type: 'select',
 						extra: {
 							selectItems: [
@@ -89,7 +93,7 @@ class EnvironmentForm extends Component {
 						defaultValue: 'MCQ'
 					},
 					{
-						name: 'default_question_difficulty',
+						name: 'default_difficulty',
 						type: 'select',
 						extra: {
 							selectItems: [
@@ -107,7 +111,7 @@ class EnvironmentForm extends Component {
 						defaultValue: 'Beginner'
 					},
 					{
-						name: 'default_question_timing',
+						name: 'default_timing',
 						type: 'number',
 						inputProps: {
 							min: 15,
@@ -117,7 +121,7 @@ class EnvironmentForm extends Component {
 						defaultValue: 30
 					},
 					{
-						name: 'default_question_weight',
+						name: 'default_weight',
 						type: 'number',
 						inputProps: {
 							min: 1,
@@ -237,7 +241,7 @@ class EnvironmentForm extends Component {
 					submitMsg={submitMsg}
 					inputs={defaultInputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ 'environment' ])}
+					onSubmit={onSubmit.bind(null, [ 'environment', this.preSubmit ])}
 				/>
 			</div>
 		);

@@ -1,54 +1,60 @@
-export default function(group) {
+export default function (group) {
+	const capitalize = (word) => word.charAt(0).toUpperCase() + word.substr(1);
 	let selectItems = [];
-	if (group === 'explore') selectItems = [ 'user', 'quiz', 'question', 'folder', 'environment' ];
-	else if (group === 'self') selectItems = [ 'quiz', 'question', 'folder', 'environment' ];
-	else if (group === 'watchlist') selectItems = [ 'quiz', 'folder' ];
+	if (group === 'explore_page') selectItems = [ 'user', 'quiz', 'question', 'folder', 'environment' ];
+	else if (group === 'self_page') selectItems = [ 'quiz', 'question', 'folder', 'environment' ];
+	else if (group === 'watchlist_page') selectItems = [ 'quiz', 'folder' ];
+	else if (group === 'play_page') selectItems = [ 'quiz', 'folder' ];
 	const children = [
 		{
-			name: `default_${group}_ipp`,
+			name: `default_ipp`,
 			type: 'select',
 			extra: {
-				selectItems: [ 10, 15, 20, 30, 40, 50 ].map((ipp) => {
-					return {
-						text: ipp
-					};
-				})
+				selectItems: [ 10, 15, 20, 30, 40, 50 ].map((ipp) => ({
+					text: ipp
+				}))
 			},
 			defaultValue: 15
 		},
 		{
-			name: `default_${group}_view`,
+			name: `default_view`,
 			type: 'select',
 			extra: {
-				selectItems: [ 'List', 'Table', 'Board', 'Gallery' ].map((ipp) => {
-					return {
-						text: ipp
-					};
-				})
+				selectItems: [ 'List', 'Table', 'Board', 'Gallery' ].map((ipp) => ({
+					text: ipp
+				}))
 			},
 			defaultValue: 'List'
+		},
+		{
+			name: `default_layout`,
+			type: 'select',
+			extra: {
+				selectItems: [ 'Left', 'Right' ].map((ipp) => ({
+					text: ipp
+				}))
+			},
+			defaultValue: 'Left'
 		}
 	];
 
 	if (group !== 'play') {
 		children.unshift({
-			name: `default_${group}_landing`,
+			name: `default_landing`,
 			type: 'select',
 			extra: {
-				selectItems: selectItems.map((land) => {
-					return {
-						text: land.charAt(0).toUpperCase() + land.substr(1)
-					};
-				})
+				selectItems: selectItems.map((land) => ({
+					text: capitalize(land)
+				}))
 			},
-			defaultValue: selectItems[0].charAt(0).toUpperCase() + selectItems[0].substr(1)
+			defaultValue: capitalize(selectItems[0])
 		});
 	}
 
 	return {
 		type: 'group',
-		name: `${group.charAt(0).toUpperCase() + group.substr(1)}_group`,
-		extra: { treeView: true },
+		name: group,
+		extra: { treeView: true, coalesce: true },
 		children
 	};
 }

@@ -62,7 +62,14 @@ const QuestionInfo = new mongoose.Schema({
 
 const envSchema = {
 	_id: {
-		type: mongoose.Schema.Types.ObjectId
+		type: mongoose.Schema.Types.ObjectId,
+		mongql: {
+			attach: {
+				input: {
+					create: false
+				}
+			}
+		}
 	},
 	name: {
 		type: String,
@@ -70,8 +77,8 @@ const envSchema = {
 	},
 	icon: {
 		type: String,
-		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ],
-		default: 'Red'
+		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ].map((color) => color + '_env'),
+		default: 'Red_env'
 	},
 	theme: {
 		type: String,
