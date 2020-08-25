@@ -54,7 +54,14 @@ const QuestionSchema = extendSchema(ResourceSchema, {
 	},
 	image: {
 		type: String,
-		default: 'none.png'
+		default: 'none.png',
+		mongql: {
+			nullable: {
+				input: {
+					create: [ true ]
+				}
+			}
+		}
 	},
 	answers: {
 		type: [ [ String ] ],

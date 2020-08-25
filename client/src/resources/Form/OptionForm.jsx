@@ -374,7 +374,7 @@ class OptionForm extends Component {
 			Object.entries(source.additional_options).forEach(([ key, value ]) => {
 				if (value !== '') options.push(value);
 			});
-			if (type === 'MCQ') dest.answers = [ parseInt(source.answers.split('_')[1]) - 1 ];
+			if (type === 'MCQ') dest.answers = [ (parseInt(source.answers.split('_')[1]) - 1).toString() ];
 			else {
 				dest.answers = [];
 				source.answers.forEach((answer, index) => {
@@ -426,7 +426,7 @@ class OptionForm extends Component {
 		}
 	};
 
-	render() {
+	render () {
 		const { typeChangeHandler, decideValidation, decideInputs, transformValues, FIBHandler } = this;
 		const validationSchema = decideValidation();
 		const { options, answers } = decideInputs();

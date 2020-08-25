@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { withTheme } from '@material-ui/core';
 import * as Yup from 'yup';
+
 import InputForm from '../../components/Form/InputForm';
-import axios from 'axios';
 import OptionForm from './OptionForm';
 import FileInput from '../../RP/FileInput';
+import client from '../../client';
+import Operations from '../../operations/Operations';
 
 let defaultInputs = [
 	{ name: 'name' },
@@ -61,16 +63,14 @@ class QuestionForm extends Component {
 		loading: true
 	};
 
-	componentDidMount() {
-		axios
-			.get('http://localhost:5001/api/v1/quizzes/me?select=name&populate=false', {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+	componentDidMount () {
+		client
+			.query({
+				query: Operations.GetAllSelfQuizzesWhole_NameAndId
 			})
-			.then(({ data: { data: quizzes } }) => {
+			.then(({ data: { getAllSelfQuizzesWhole } }) => {
 				this.setState({
-					quizzes,
+					quizzes: getAllSelfQuizzesWhole,
 					loading: false
 				});
 			})
@@ -95,7 +95,8 @@ class QuestionForm extends Component {
 		const env = this.props.user.current_environment;
 		const { resetOptionInput } = formData;
 		if (!response instanceof Error) {
-			const { data: { data: { _id } } } = response;
+			/* 		Question photo upload	
+      const { data: { data: { _id } } } = response;
 			const { file, type } = FileInputState;
 			if (file && type === 'upload') {
 				const fd = new FormData();
@@ -128,14 +129,14 @@ class QuestionForm extends Component {
 			} else if (env.reset_on_success || env.reset_on_error) {
 				resetOptionInput();
 				resetFileInputState();
-			}
+			} */
 		} else if (env.reset_on_success || env.reset_on_error) {
 			resetOptionInput();
 			resetFileInputState();
 		}
 	};
 
-	render() {
+	render () {
 		const { preSubmit, postSubmit } = this;
 		const {
 			onSubmit,
