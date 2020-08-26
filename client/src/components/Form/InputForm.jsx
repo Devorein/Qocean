@@ -3,7 +3,34 @@ import { Formik } from 'formik';
 import Form from './Form';
 
 class InputForm extends Component {
-	render() {
+	populateInitialValue = (inputs, { validateOnChange, validationSchema }) => {
+		const initialValues = {};
+		const initialErrors = {};
+
+		function inner (input, parents = [], index) {
+			const { name, defaultValue, type } = input;
+			const full_key = parents.reduce((acc, parent) => acc.concat(parent.name), []).join('.');
+			const parent = parents[parents.length - 1] || {};
+			const { extra = {} } = parent;
+			if (type === 'group') input.children.forEach((child) => inner(child, parents.concat(input), index));
+			else {
+				const field_key = `${full_key ? full_key + '.' : ''}` + (extra.coalesce ? name : extra.useArray ? index : name);
+				input.name = field_key;
+				initialValues[field_key] = typeof defaultValue !== 'undefined' ? defaultValue : '';
+				try {
+					if (validateOnChange && validationSchema._nodes.includes(field_key))
+						validationSchema.validateSyncAt(field_key, initialValues[field_key], { abortEarly: true });
+				} catch (err) {
+					initialErrors[field_key] = err.message;
+				}
+			}
+		}
+
+		inputs.forEach((input) => (input ? inner(input, [], 0) : void 0));
+
+		return { initialValues, initialErrors };
+	};
+	render () {
 		const {
 			validationSchema,
 			inputs,
@@ -17,58 +44,10 @@ class InputForm extends Component {
 			children,
 			passFormAsProp = false,
 			initialTouched,
-			validateOnChange = false,
 			disabled
 		} = this.props;
-		const initialValues = {};
-		let initialErrors = {};
-		inputs.forEach((input) => {
-			if (input) {
-				const { name, defaultValue, extra = {}, type, children } = input;
-				if (name) {
-					if (type === 'group' && !extra.coalesce)
-						children.forEach((child) => {
-							if (child) {
-								const { name, defaultValue } = child;
-								initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
-								try {
-									if (validateOnChange && validationSchema._nodes.includes(name))
-										validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
-								} catch (err) {
-									initialErrors[name] = err.message;
-								}
-							}
-						});
-					else if (type === 'group' && extra.coalesce) {
-						const groupname = input.name;
-						if (extra.useArray) initialValues[groupname] = [];
-						else initialValues[groupname] = {};
-						children.forEach((child, index) => {
-							if (child) {
-								const { name, defaultValue } = child;
-								const inputvalue = typeof defaultValue !== 'undefined' ? defaultValue : '';
-								if (extra.useArray) initialValues[groupname][index] = inputvalue;
-								else initialValues[groupname][name] = inputvalue;
-							}
-						});
-						try {
-							if (validateOnChange && validationSchema._nodes.includes(groupname))
-								validationSchema.validateSyncAt(groupname, initialValues[groupname], { abortEarly: true });
-						} catch (err) {
-							initialErrors[groupname] = err.message;
-						}
-					} else {
-						initialValues[name] = typeof defaultValue !== 'undefined' ? defaultValue : '';
-						try {
-							if (validateOnChange && validationSchema._nodes.includes(name))
-								validationSchema.validateSyncAt(name, initialValues[name], { abortEarly: true });
-						} catch (err) {
-							initialErrors[name] = err.message;
-						}
-					}
-				}
-			}
-		});
+
+		const { initialValues, initialErrors } = this.populateInitialValue(inputs, this.props);
 		return (
 			<Formik
 				initialValues={initialValues}

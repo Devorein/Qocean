@@ -42,16 +42,23 @@ class Form extends React.Component {
 
 	decideLabel = (name, label) => {
 		if (label) return label;
-		else return name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ');
+		else {
+			let last_name = name.split('.');
+			return last_name[last_name.length - 1]
+				.split('_')
+				.map((name) => name.charAt(0).toUpperCase() + name.substr(1))
+				.join(' ');
+		}
 	};
 
-	change = (name, fieldHandler, e) => {
-		const { values, setValues, customHandler, handleChange, setFieldTouched } = this.props;
+	change = (fieldHandler, e) => {
+		const { values, setValues, customHandler, setFieldTouched } = this.props;
 		if (e.persist) e.persist();
-		handleChange(e);
+		values[e.target.name] = e.target.value || e.target.checked;
+		setValues({ ...values });
 		if (fieldHandler) fieldHandler(e.target.value);
 		if (customHandler) customHandler(values, setValues, e);
-		setFieldTouched(name, true, false);
+		setFieldTouched(e.target.name, true, false);
 	};
 
 	formikProps = (name, label, placeholder, controlled, { onkeyPress, fieldHandler } = {}) => {
@@ -60,7 +67,7 @@ class Form extends React.Component {
 			return {
 				name,
 				value: typeof values[name] === 'undefined' ? '' : values[name],
-				onChange: this.change.bind(null, name, fieldHandler),
+				onChange: this.change.bind(null, fieldHandler),
 				onBlur: handleBlur,
 				error: errorBeforeTouched ? Boolean(errors[name]) : touched[name] && Boolean(errors[name]),
 				helperText: errorBeforeTouched ? errors[name] : touched[name] ? errors[name] : '',
@@ -123,16 +130,14 @@ class Form extends React.Component {
 			extra = {}
 		} = input;
 		if (type === 'component') return component;
-		else if (type === 'component_') {
-			return React.createElement(component, { ...extra.props });
-		} else if (type === 'select')
+		else if (type === 'select')
 			return (
 				<Fragment key={name}>
 					<FormControl disabled={disabled ? disabled : false} fullWidth>
 						{!disabled ? (
 							<Fragment>
 								<InputLabel id={name}>{this.decideLabel(name, label)}</InputLabel>
-								<Select name={name} value={values[name]} onChange={this.change.bind(null, name, fieldHandler)}>
+								<Select name={name} value={values[name]} onChange={this.change.bind(null, fieldHandler)}>
 									{extra.selectItems.map(({ value, text, icon }) => {
 										return (
 											<MenuItem key={value ? value : text} value={value ? value : text}>
@@ -172,7 +177,7 @@ class Form extends React.Component {
 								color={'primary'}
 								checked={values[name] === true ? true : false}
 								name={name}
-								onChange={this.change.bind(null, name, fieldHandler)}
+								onChange={this.change.bind(null, fieldHandler)}
 								onBlur={handleBlur}
 								error={touched[name] && errors[name]}
 							/>
@@ -287,15 +292,15 @@ class Form extends React.Component {
 					return (
 						<TextInputGroup
 							key={groupName}
-							onChange={(itemName, e) => {
-								values[groupName][itemName] = e.target.value;
+							onChange={(childname, e) => {
+								values[childname] = e.target.value;
 								setValues({ ...values });
 							}}
 							extra={{ ...input.extra }}
-							errors={errors[groupName]}
+							errors={errors}
 							name={groupName}
 							children={input.children}
-							values={values[groupName]}
+							values={values}
 						/>
 					);
 				} else if (input.extra.treeView)
@@ -307,9 +312,7 @@ class Form extends React.Component {
 							defaultExpanded={[ input.extra.collapse ? null : '1' ]}
 						>
 							<TreeItem nodeId="1" label={this.decideLabel(input.name)}>
-								<FormGroup row={false}>
-									{input.children.map((child, index) => this.renderFormComponent(child))}
-								</FormGroup>
+								<FormGroup row={false}>{input.children.map((child) => this.renderFormComponent(child))}</FormGroup>
 							</TreeItem>
 						</TreeView>
 					);
@@ -323,7 +326,7 @@ class Form extends React.Component {
 		}
 	};
 
-	render() {
+	render () {
 		const {
 			handleSubmit,
 			isValid,

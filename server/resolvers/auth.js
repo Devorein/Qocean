@@ -47,7 +47,9 @@ module.exports = {
 				self_page: {},
 				watchlist_page: {},
 				play_page: {},
-				explore_page: {}
+				explore_page: {},
+				colors: {},
+				notifications: {}
 			});
 			await Inbox.create({ user: user._id, _id: inbox_id });
 			await Watchlist.create({ user: user._id, _id: watchlist_id });

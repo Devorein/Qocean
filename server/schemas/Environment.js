@@ -80,11 +80,6 @@ const envSchema = {
 		enum: [ 'Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Purple' ].map((color) => color + '_env'),
 		default: 'Red_env'
 	},
-	theme: {
-		type: String,
-		default: 'Dark',
-		enum: [ 'Light', 'Dark', 'Navy' ]
-	},
 	animation: {
 		type: Boolean,
 		default: true
@@ -110,40 +105,49 @@ const envSchema = {
 		type: Boolean,
 		default: false
 	},
-	max_notifications: {
-		type: Number,
-		default: 3
-	},
-	notification_timing: {
-		type: Number,
-		default: 2500,
-		min: 1000,
-		max: 5000,
-		mongql: {
-			scalar: 'PositiveInt'
+	notifications: new mongoose.Schema({
+		limit: {
+			type: Number,
+			default: 3
+		},
+		timing: {
+			type: Number,
+			default: 2500,
+			min: 1000,
+			max: 5000,
+			mongql: {
+				scalar: 'PositiveInt'
+			}
 		}
-	},
-	default_tag_color: {
-		type: String,
-		default: '#000',
-		mongql: {
-			scalar: 'HexColorCode'
+	}),
+	colors: new mongoose.Schema({
+		theme: {
+			type: String,
+			default: 'Dark',
+			enum: [ 'Light', 'Dark', 'Navy' ]
+		},
+		default_tag_color: {
+			type: String,
+			default: '#000',
+			mongql: {
+				scalar: 'HexColorCode'
+			}
+		},
+		primary_color: {
+			type: String,
+			default: '#3f51b5',
+			mongql: {
+				scalar: 'HexColorCode'
+			}
+		},
+		secondary_color: {
+			type: String,
+			default: '#f50057',
+			mongql: {
+				scalar: 'HexColorCode'
+			}
 		}
-	},
-	primary_color: {
-		type: String,
-		default: '#3f51b5',
-		mongql: {
-			scalar: 'HexColorCode'
-		}
-	},
-	secondary_color: {
-		type: String,
-		default: '#f50057',
-		mongql: {
-			scalar: 'HexColorCode'
-		}
-	},
+	}),
 	display_font: {
 		type: String,
 		default: 'Quantico'

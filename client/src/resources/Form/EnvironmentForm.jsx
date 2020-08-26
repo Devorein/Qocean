@@ -4,6 +4,7 @@ import InputForm from '../../components/Form/InputForm';
 import getColoredIcons from '../../Utils/getColoredIcons';
 import { validateHTMLColorHex } from 'validate-color';
 import createEnvGroups from '../../Utils/createEnvGroups';
+import { setNestedFields } from '../../Utils/obj';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -12,14 +13,22 @@ const validationSchema = Yup.object({
 	sound: Yup.bool().default(true),
 	favourite: Yup.bool().default(false),
 	public: Yup.bool().default(true),
-	primary_color: Yup.string().test('isHexOnly', 'Primary color can only be hex values', validateHTMLColorHex),
-	secondary_color: Yup.string().test('isHexOnly', 'Secondary color can only be hex values', validateHTMLColorHex)
+	'colors.primary_color': Yup.string().test('isHexOnly', 'Primary color can only be hex values', validateHTMLColorHex),
+	'colors.secondary_color': Yup.string().test(
+		'isHexOnly',
+		'Secondary color can only be hex values',
+		validateHTMLColorHex
+	)
 });
 
 class EnvironmentForm extends Component {
 	preSubmit = (values) => {
-		delete values.set_as_current;
-		return [ values, true ];
+		const obj = {};
+		Object.entries(values).forEach((entry) => {
+			setNestedFields(obj, entry[0], entry[1]);
+		});
+		delete obj.set_as_current;
+		return [ obj, true ];
 	};
 	render () {
 		const { onSubmit, transformInputs, submitMsg } = this.props;
@@ -44,16 +53,9 @@ class EnvironmentForm extends Component {
 			{ name: 'animation', type: 'checkbox', defaultValue: true },
 			{ name: 'sound', type: 'checkbox', defaultValue: true },
 			{ name: 'hovertips', type: 'checkbox', defaultValue: true },
-			{
-				type: 'group',
-				name: 'environment',
-				extra: { treeView: true },
-				children: [
-					{ name: 'favourite', type: 'checkbox', defaultValue: false },
-					{ name: 'public', type: 'checkbox', defaultValue: true },
-					{ name: 'set_as_current', type: 'checkbox', defaultValue: true }
-				]
-			},
+			{ name: 'favourite', type: 'checkbox', defaultValue: false },
+			{ name: 'public', type: 'checkbox', defaultValue: true },
+			{ name: 'set_as_current', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_success', type: 'checkbox', defaultValue: true },
 			{ name: 'reset_on_error', type: 'checkbox', defaultValue: false },
 			createEnvGroups('explore_page'),
@@ -133,7 +135,7 @@ class EnvironmentForm extends Component {
 				]
 			},
 			{
-				name: 'color_group',
+				name: 'colors',
 				type: 'group',
 				extra: { treeView: true },
 				children: [
@@ -203,11 +205,11 @@ class EnvironmentForm extends Component {
 			},
 			{
 				type: 'group',
-				name: 'notification_groups',
+				name: 'notifications',
 				extra: { treeView: true },
 				children: [
 					{
-						name: 'notification_timing',
+						name: 'timing',
 						type: 'number',
 						inputProps: {
 							min: 1000,
@@ -217,7 +219,7 @@ class EnvironmentForm extends Component {
 						defaultValue: 2500
 					},
 					{
-						name: 'max_notifications',
+						name: 'limit',
 						type: 'number',
 						inputProps: {
 							min: 3,

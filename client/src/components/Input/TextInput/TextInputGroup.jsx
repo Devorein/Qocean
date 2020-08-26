@@ -12,20 +12,21 @@ class TextInputGroup extends Component {
 		expanded: this.props.extra.collapsed ? [] : [ '1' ]
 	};
 
-	render() {
+	render () {
 		const { name, extra, children, onChange, values, errors = {} } = this.props;
-		const { useArray = false, row = false, helperText = '', errorText = '', className = '' } = extra;
+		const { row = false, helperText = '', errorText = '', className = '' } = extra;
 		const FORMGROUP = (
 			<FormGroup row={row}>
 				{children.map((child, index) => {
+					const child_name = child.name.split('.');
 					return (
 						<TextInput
-							errorText={errors[useArray ? index : child.name]}
+							errorText={errors[child.name]}
 							key={`${child.name}${index}`}
-							value={values[useArray ? index : child.name]}
+							value={values[child.name]}
 							label={child.label}
-							name={child.name}
-							onChange={useArray ? onChange.bind(null, index) : onChange.bind(null, child.name)}
+							name={child_name[child_name.length - 1]}
+							onChange={onChange.bind(null, child.name)}
 						/>
 					);
 				})}
