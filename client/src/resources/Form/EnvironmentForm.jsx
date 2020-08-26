@@ -5,6 +5,8 @@ import getColoredIcons from '../../Utils/getColoredIcons';
 import { validateHTMLColorHex } from 'validate-color';
 import createEnvGroups from '../../Utils/createEnvGroups';
 import { setNestedFields } from '../../Utils/obj';
+import Operations from '../../operations/Operations';
+import client from '../../client';
 
 const validationSchema = Yup.object({
 	name: Yup.string(`Enter environment name`).required(`environment name is required`),
@@ -22,14 +24,29 @@ const validationSchema = Yup.object({
 });
 
 class EnvironmentForm extends Component {
-	preSubmit = (values) => {
+	preSubmit = (data) => {
 		const obj = {};
-		Object.entries(values).forEach((entry) => {
+		Object.entries(data).forEach((entry) => {
 			setNestedFields(obj, entry[0], entry[1]);
 		});
 		delete obj.set_as_current;
-		return [ obj, true ];
+		return obj;
 	};
+
+	postSubmit = (values, { data }) => {
+		if (values.set_as_current)
+			client
+				.mutate({
+					mutation: Operations.SetCurrentEnvironment_ObjectsNone,
+					variables: {
+						id: data.createEnvironment._id
+					}
+				})
+				.then(() => {
+					this.props.refetchUser();
+				});
+	};
+
 	render () {
 		const { onSubmit, transformInputs, submitMsg } = this.props;
 
@@ -243,7 +260,7 @@ class EnvironmentForm extends Component {
 					submitMsg={submitMsg}
 					inputs={defaultInputs}
 					validationSchema={validationSchema}
-					onSubmit={onSubmit.bind(null, [ 'environment', this.preSubmit ])}
+					onSubmit={onSubmit.bind(null, [ 'environment', this.preSubmit, this.postSubmit ])}
 				/>
 			</div>
 		);

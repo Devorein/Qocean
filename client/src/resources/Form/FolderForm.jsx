@@ -61,7 +61,7 @@ class FolderForm extends Component {
 
 	preSubmit = (values) => {
 		values.quizzes = this.state.selected_quizzes;
-		return [ values, true ];
+		return values;
 	};
 
 	postSubmit = (data, operation) => {

@@ -10,13 +10,13 @@ import { AppContext } from '../../context/AppContext';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import Operations from '../../operations/Operations';
 
-function formSubmitUtil ({ reset, resetForm, setSubmitting, postSubmit, data }) {
+function formSubmitUtil ({ values, reset, resetForm, setSubmitting, postSubmit, data }) {
 	if (reset) resetForm();
 	setSubmitting(true);
 	setTimeout(() => {
 		setSubmitting(false);
 	}, 2500);
-	if (postSubmit) postSubmit(data, 'Create');
+	if (postSubmit) postSubmit(values, data, 'Create');
 }
 
 function FormFiller (props) {
@@ -67,32 +67,37 @@ function FormFiller (props) {
 	const createResource = ([ resource, preSubmit, postSubmit ], values, { setSubmitting, resetForm }) => {
 		resource = resource.toLowerCase();
 		const { reset_on_success, reset_on_error } = user.current_environment;
-		let canSubmit = true;
-		if (preSubmit) {
-			let [ transformedValue, shouldSubmit ] = preSubmit(values);
-			values = transformedValue;
-			canSubmit = shouldSubmit;
-		}
-		if (canSubmit) {
-			create({ variables: { data: values } })
+		try {
+			create({ variables: { data: preSubmit ? preSubmit(values) : values } })
 				.then((data) => {
-					formSubmitUtil({ reset: reset_on_success, resetForm, setSubmitting, postSubmit, data });
+					formSubmitUtil({
+						reset: reset_on_success,
+						resetForm,
+						setSubmitting,
+						postSubmit,
+						data,
+						values
+					});
 					GLOBAL.changeResponse(`Success`, `Successsfully created ${resource} ${values.name}`, 'success');
-					// if (resource.toLowerCase() === 'environment' && values.set_as_current) {
-					// 	setEnvAsCurrent(data.data.data._id).then(() => {
-					// 		this.context.refetchUser();
-					// 	});
-					// }
 				})
 				.catch((err) => {
-					formSubmitUtil({ reset: reset_on_error, resetForm, setSubmitting, postSubmit, data: err });
+					console.log(`Formfiller create error`);
+					formSubmitUtil({
+						reset: reset_on_error,
+						resetForm,
+						setSubmitting,
+						postSubmit,
+						data: err,
+						values
+					});
 					GLOBAL.changeResponse(
 						`An error occurred`,
 						err.response.data ? err.response.data.error : `Failed to create ${resource}`,
 						'error'
 					);
 				});
-		} else {
+		} catch (err) {
+			GLOBAL.changeResponse(`An error occurred`, err.message, 'error');
 			setSubmitting(true);
 			setTimeout(() => {
 				setSubmitting(false);
@@ -119,14 +124,15 @@ function FormFiller (props) {
 	};
 
 	const decideForm = () => {
-		const { data, submitMsg } = props;
+		const { data, submitMsg, refetchUser } = props;
 
 		const common_props = {
 			user,
 			submitMsg: submitMsg || page,
 			onSubmit: page !== 'self' ? createResource : updateResource,
 			transformInputs: page !== 'create' ? transformValue : null,
-			changeResponse: GLOBAL.changeResponse
+			changeResponse: GLOBAL.changeResponse,
+			refetchUser
 		};
 		if (data) {
 			if (resource === 'folder')

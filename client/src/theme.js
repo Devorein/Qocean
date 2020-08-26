@@ -10,7 +10,10 @@ const decideBackground = (theme) => {
 	else return [ '#212121', '#424242', '#616161' ];
 };
 const theme = (current_environment) => {
-	const { primary_color, secondary_color, display_font = 'Quantico', theme = 'dark' } = current_environment;
+	const {
+		colors: { primary_color, secondary_color, theme = 'dark' } = {},
+		display_font = 'Quantico'
+	} = current_environment;
 
 	window.WebFont.load({
 		google: {

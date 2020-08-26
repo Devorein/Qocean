@@ -66,7 +66,7 @@ class QuizForm extends Component {
 		values.tags = tags;
 		const { src, type } = FileInputState;
 		if (type === 'link') values.image = src;
-		return [ values, true ];
+		return values;
 	};
 
 	postSubmit = (FileInputState, reset, { data }, operation) => {

@@ -37,6 +37,7 @@ class Create extends Component {
 				<FormFiller
 					useModal={false}
 					user={this.props.user}
+					refetchUser={this.context.refetchUser}
 					submitMsg={'Create'}
 					data={null}
 					resource={this.state.resource}
