@@ -4,12 +4,12 @@ import { Query } from '@apollo/react-components';
 import Composer from 'react-composer';
 
 import { AppContext } from '../../context/AppContext';
-import detectCurrentEnvPageProp from '../../Utils/detectCurrentEnvPageProp';
+// import detectCurrentEnvPageProp from '../../Utils/detectCurrentEnvPageProp';
 
 class DataFetcher extends React.Component {
 	static contextType = AppContext;
 	state = {
-		type: detectCurrentEnvPageProp({ user: this.context.user, page: this.props.page, prop: 'landing' })
+		type: { user: this.context.user, page: this.props.page, prop: 'landing' }
 	};
 
 	render() {

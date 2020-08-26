@@ -10,7 +10,6 @@ import DataTransformer from '../../DataTransformer/DataTransformer';
 import DataDisplayer from '../../Visualizations/DataDisplayer/DataDisplayer';
 
 import sectorizeData from '../../../Utils/sectorizeData';
-import populateQueryParams from '../../../Utils/populateQueryParams';
 
 import './Detailer.scss';
 
@@ -28,7 +27,7 @@ class Detailer extends Component {
 		type = type.toLowerCase();
 		if (type === 'watchers') type = 'users';
 		else if (type === 'current_environments') type = 'environments';
-		populateQueryParams(type, queryParams, this.context.user);
+		// populateQueryParams(type, queryParams, this.context.user);
 		if (!type.match(/(user|users)/)) queryParams._id = id;
 		if (page !== 'self') queryParams._id = id;
 		const queryString = qs.stringify(queryParams);

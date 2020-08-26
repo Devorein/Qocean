@@ -84,11 +84,10 @@ class QuestionForm extends Component {
 		if (isValid) {
 			values = transformValues(formValues, values);
 			if (values) {
-				const { type, src } = FileInputState;
-				if (type === 'link') values.image = src;
-				return [ values, true ];
-			} else return [ values, false ];
-		} else return [ values, false ];
+				if (FileInputState.type === 'link') values.image = FileInputState.src;
+				return values;
+			}
+		} else throw new Error(Object.values(formData.errors)[0]);
 	};
 
 	postSubmit = ({ FileInputState, resetFileInputState }, formData, response) => {
