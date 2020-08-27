@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withTheme } from '@material-ui/core';
 import * as Yup from 'yup';
+import axios from 'axios';
 
 import InputForm from '../../components/Form/InputForm';
 import OptionForm from './OptionForm';
@@ -90,45 +91,40 @@ class QuestionForm extends Component {
 		} else throw new Error(Object.values(formData.errors)[0]);
 	};
 
-	postSubmit = ({ FileInputState, resetFileInputState }, formData, response) => {
+	postSubmit = ({ FileInputState, resetFileInputState }, formData, values, data, operation) => {
 		const env = this.props.user.current_environment;
 		const { resetOptionInput } = formData;
-		if (!response instanceof Error) {
-			/* 		Question photo upload	
-      const { data: { data: { _id } } } = response;
-			const { file, type } = FileInputState;
-			if (file && type === 'upload') {
-				const fd = new FormData();
-				fd.append('file', file, file.name);
-				axios
-					.put(`http://localhost:5001/api/v1/questions/${_id}/photo`, fd, {
-						headers: {
-							'Content-Type': 'multipart/form-data',
-							Authorization: `Bearer ${localStorage.getItem('token')}`
-						}
-					})
-					.then((data) => {
+		const { file, type } = FileInputState;
+		if (type === 'upload' && file) {
+			const fd = new FormData();
+			fd.append('file', file, file.name);
+			axios
+				.put(`http://localhost:5010/api/upload/question_${data.createQuestion._id}`, fd, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						Authorization: `Bearer ${localStorage.getItem('token')}`
+					}
+				})
+				.then((data) => {
+					if (operation === 'create')
 						if (env.reset_on_success) {
-							resetOptionInput();
 							resetFileInputState();
+							resetOptionInput();
+							setTimeout(() => {
+								this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
+							}, env.notifications.timing + 500);
 						}
-						setTimeout(() => {
-							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
-						}, env.notification_timing + 500);
-					})
-					.catch((err) => {
+				})
+				.catch((err) => {
+					if (operation === 'create')
 						if (env.reset_on_error) {
 							resetFileInputState();
 							resetOptionInput();
+							setTimeout(() => {
+								this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+							}, env.notifications.timing + 500);
 						}
-						setTimeout(() => {
-							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-						}, env.notification_timing + 500);
-					});
-			} else if (env.reset_on_success || env.reset_on_error) {
-				resetOptionInput();
-				resetFileInputState();
-			} */
+				});
 		} else if (env.reset_on_success || env.reset_on_error) {
 			resetOptionInput();
 			resetFileInputState();
