@@ -12,12 +12,15 @@ const authLink = setContext((_, { headers }) => {
 	};
 });
 
+const cache = new InMemoryCache();
 const client = new ApolloClient({
-	cache: new InMemoryCache(),
+	cache,
 	link: authLink.concat(httpLink),
-	onError({ networkError }) {
+	onError ({ networkError }) {
 		if (networkError) console.log('Network error', networkError);
 	}
 });
 
 export default client;
+
+export { cache };

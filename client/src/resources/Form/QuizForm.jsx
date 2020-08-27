@@ -7,7 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import TagCreator from '../../RP/TagCreator';
 import FileInput from '../../RP/FileInput';
 import { isEqual } from 'lodash';
-import client from '../../client';
+import client, { cache } from '../../client';
 import Operations from '../../operations/Operations';
 
 const validationSchema = Yup.object({

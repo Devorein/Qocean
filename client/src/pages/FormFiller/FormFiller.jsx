@@ -9,6 +9,7 @@ import EnvironmentForm from '../../resources/Form/EnvironmentForm';
 import { AppContext } from '../../context/AppContext';
 import CustomSnackbars from '../../components/Snackbars/CustomSnackbars';
 import Operations from '../../operations/Operations';
+import pluralize from 'pluralize';
 
 function formSubmitUtil ({ values, reset, resetForm, setSubmitting, postSubmit, data }) {
 	if (reset) resetForm();
@@ -25,7 +26,23 @@ function FormFiller (props) {
 	const page = props.page.toLowerCase();
 	const resource = props.resource.toLowerCase();
 	const c_resource = props.resource.charAt(0).toUpperCase() + props.resource.substr(1);
-	const [ create ] = useMutation(Operations[`Create${c_resource}_ObjectsNone`]);
+	const cp_resource = pluralize(c_resource, 2);
+	const op_fragment = Operations[`Create${c_resource}_ObjectsNone`];
+	const [ create ] = useMutation(op_fragment, {
+		update (cache, { data }) {
+			cache.modify({
+				fields: {
+					[`getAllSelf${cp_resource}Whole`] (existing_resources = []) {
+						const new_resource_ref = cache.writeFragment({
+							data: data[`create${c_resource}`],
+							fragment: Operations[`Self${c_resource}ObjectObjectsNoneFragment`]
+						});
+						return [ ...existing_resources, new_resource_ref ];
+					}
+				}
+			});
+		}
+	});
 	const [ update ] = useMutation(Operations[`Update${c_resource}_ObjectsNone`]);
 	const updateResource = ([ resource, preSubmit, postSubmit ], values, { setSubmitting }) => {
 		resource = resource.toLowerCase();
