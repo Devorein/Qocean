@@ -14,7 +14,7 @@ class InputForm extends Component {
 			if (input.type === 'group') input.children.forEach((child, index) => inner(child, [ ...parents, input ], index));
 			else {
 				const { name, defaultValue } = input;
-				const field_key = `${full_key && extra.append ? full_key + '.' : ''}` + (extra.useIndex ? index : name);
+				const field_key = `${full_key && extra.append ? full_key + '$' : ''}` + (extra.useIndex ? index : name);
 				input.name = field_key;
 				initialValues[field_key] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 				try {

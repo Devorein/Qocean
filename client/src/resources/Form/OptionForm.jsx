@@ -61,13 +61,14 @@ class OptionForm extends Component {
 			const opt_obj = {
 				type: 'group',
 				name: 'options',
+				label: opt_type.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ') + 's',
 				key: opt_type,
 				children: Array(3).fill(0).map((_, i) => ({ name: i + 1 + 3 * index, label: `${opt_type}_${i + 1}` })),
 				extra: {
 					treeView: true,
 					append: true,
 					groupType: 'text',
-					helperText: `Provide ${opt_type.split('_').join(' ')}`,
+					helperText: `Provide ${opt_type.split('_').join(' ')}s`,
 					className: `OptionForm_MS_${opt_type}s`
 				}
 			};
@@ -227,28 +228,26 @@ class OptionForm extends Component {
 
 		if (type === 'MCQ' || type === 'MS') {
 			const optionsObj = {};
-			[ 'option', 'additional_option' ].forEach((opt_type, i) => {
-				[ 1, 2, 3 ].forEach((opt_num) => {
-					const excluded = Arraydiff([ 1, 2, 3 ], [ opt_num ]).map((num) => Yup.ref(`${opt_type}_${num}`));
-					[ 1, 2, 3 ].forEach((num) => {
-						excluded.push(Yup.ref(`${i === 0 ? 'additional_option' : 'option'}_${num}`));
-					});
-					optionsObj[`${opt_type}_${opt_num}`] = Yup.string(`Enter ${opt_type.split('_').join(' ')} ${opt_num}`)
-						.notOneOf(excluded, 'Duplicate Option found')
-						.required(`${opt_type.split('_').join(' ')} ${opt_num} is required`);
+			Array(6).fill(0).map((_, i) => {
+				optionsObj[`options$${i + 1}`] = Yup.string(
+					`Enter Option ${i + 1}`
+				).test('Duplication test', 'Duplicate Option found', function (val) {
+					return val !== ''
+						? Arraydiff([ 1, 2, 3, 4, 5, 6 ], [ i + 1 ]).filter((num) => this.parent[`options$${num}`] === val)
+								.length === 0
+						: true;
 				});
+				if (i < 3)
+					optionsObj[`options$${i + 1}`] = optionsObj[`options$${i + 1}`].required(`Option ${i + 1} is required`);
 			});
-
-			if (type === 'MCQ')
+			if (type === 'MCQ') {
+				optionsObj.answers = Yup.string('Enter answer')
+					.oneOf(Array(6).fill(0).map((_, i) => `answer_${i + 1}`))
+					.required('An answer must be choosen');
+				return Yup.object(optionsObj);
+			} else if (type === 'MS')
 				return Yup.object({
-					// options: optionsObj,
-					answers: Yup.string('Enter answer')
-						.oneOf(Array(6).fill(0).map((_, i) => `answer_${i + 1}`))
-						.required('An answer must be choosen')
-				});
-			else if (type === 'MS')
-				return Yup.object({
-					// options: optionsObj,
+					...optionsObj,
 					answers: Yup.array()
 						.of(Yup.boolean())
 						.test(

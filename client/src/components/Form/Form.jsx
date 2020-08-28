@@ -286,6 +286,7 @@ class Form extends React.Component {
 								setValues({ ...values });
 							}}
 							values={values[groupName]}
+							label={input.label}
 						/>
 					);
 				} else if (groupType === 'text') {
@@ -301,6 +302,7 @@ class Form extends React.Component {
 							name={groupName}
 							children={input.children}
 							values={values}
+							label={input.label}
 						/>
 					);
 				} else if (input.extra.treeView)

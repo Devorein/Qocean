@@ -13,7 +13,7 @@ class TextInputGroup extends Component {
 	};
 
 	render () {
-		const { name, extra, children, onChange, values, errors = {} } = this.props;
+		const { name, extra, children, onChange, values, errors = {}, label } = this.props;
 		const { row = false, helperText = '', errorText = '', className = '' } = extra;
 		const FORMGROUP = (
 			<FormGroup row={row}>
@@ -35,7 +35,7 @@ class TextInputGroup extends Component {
 
 		return (
 			<div className={className}>
-				<div>{name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}</div>
+				<div>{label || name.split('_').map((chunk) => chunk.charAt(0).toUpperCase() + chunk.substr(1)).join(' ')}</div>
 				{helperText !== '' ? <FormHelperText>{helperText}</FormHelperText> : null}
 				{errorText !== '' ? <FormHelperText error={true}>{errorText}</FormHelperText> : null}
 				{extra.treeView ? (
