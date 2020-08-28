@@ -94,7 +94,7 @@ class EnvironmentForm extends Component {
 			{
 				type: 'group',
 				name: 'questioninfo',
-				extra: { treeView: true, coalesce: true },
+				extra: { treeView: true, append: true },
 				children: [
 					{
 						name: 'default_type',
@@ -191,7 +191,7 @@ class EnvironmentForm extends Component {
 			{
 				type: 'group',
 				name: 'keybindings',
-				extra: { treeView: true, coalesce: true, groupType: 'text', helperText: 'Provide Custom keybindings' },
+				extra: { treeView: true, append: true, groupType: 'text', helperText: 'Provide Custom keybindings' },
 				children: [
 					{
 						name: 'MOVE_UP',

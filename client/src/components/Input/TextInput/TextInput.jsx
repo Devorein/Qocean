@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TextField from '@material-ui/core/TextField';
 
 class TextInput extends Component {
-	render() {
+	render () {
 		const {
 			name,
 			value,
@@ -13,7 +13,8 @@ class TextInput extends Component {
 			type = 'text',
 			inputProps = {},
 			disabled = false,
-			className
+			className,
+			label
 		} = this.props;
 
 		return (
@@ -33,7 +34,7 @@ class TextInput extends Component {
 				error={Boolean(errorText)}
 				helperText={errorText}
 				className={className}
-				label={name.split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ')}
+				label={(label || name).split('_').map((name) => name.charAt(0).toUpperCase() + name.substr(1)).join(' ')}
 			/>
 		);
 	}

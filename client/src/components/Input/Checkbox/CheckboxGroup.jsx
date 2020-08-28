@@ -12,20 +12,20 @@ class CheckboxGroup extends Component {
 	state = {
 		expanded: this.props.extra.collapsed ? [] : [ '1' ]
 	};
-	render() {
+	render () {
 		const { name, extra, children, onChange, values } = this.props;
-		const { useArray = false, row = false, helperText = '', errorText = '', className = '' } = extra;
+		const { useIndex = false, row = false, helperText = '', errorText = '', className = '' } = extra;
 		const FORMGROUP = (
 			<FormGroup row={row}>
 				{children.map((child, index) => {
-					const value = values[useArray ? index : child.name];
+					const value = values[useIndex ? index : child.name];
 					return (
 						<CheckboxInput
 							key={`${child.name}${index}`}
 							checked={typeof value === 'boolean' ? value : false}
 							label={child.label}
 							name={child.name}
-							onChange={useArray ? onChange.bind(null, index) : onChange}
+							onChange={useIndex ? onChange.bind(null, index) : onChange}
 						/>
 					);
 				})}

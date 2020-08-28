@@ -17,73 +17,6 @@ const OptionFormContainer = styled.div`
 	}
 `;
 
-const options = [
-	{
-		type: 'group',
-		name: 'options',
-		children: Array(3).fill(0).map((_, index) => ({ name: `option_${index + 1}` })),
-		extra: {
-			treeView: true,
-			coalesce: true,
-			groupType: 'text',
-			helperText: 'Provide options',
-			className: 'OptionForm_MS_options'
-		}
-	},
-	{
-		type: 'group',
-		name: 'additional_options',
-		children: Array(3).fill(0).map((_, index) => ({ name: `additional_option_${index + 1}` })),
-		extra: {
-			treeView: true,
-			collapsed: true,
-			coalesce: true,
-			groupType: 'text',
-			helperText: 'Provide additional options(optional)',
-			className: 'OptionForm_MS_addoptions'
-		}
-	}
-];
-
-const INIT_MCQ_STATE = {
-	options: [ ...options ],
-	answers: [
-		{
-			name: 'answers',
-			type: 'radio',
-			extra: {
-				className: 'OptionForm_MS_answers',
-				radioItems: Array(6).fill(0).map((_, i) => ({ value: `answer_${i + 1}`, label: `Answer ${i + 1}` }))
-			},
-			defaultValue: 'answer_1'
-		}
-	]
-};
-
-const INIT_MS_STATE = {
-	options: [ ...options ],
-	answers: [
-		{
-			type: 'group',
-			name: 'answers',
-			extra: {
-				groupType: 'checkbox',
-				treeView: true,
-				coalesce: true,
-				useArray: true,
-				row: true,
-				helperText: 'Choose answers',
-				className: 'OptionForm_MS_answers'
-			},
-			children: Array(6).fill(0).map((_, index) => ({
-				name: `answer_${index + 1}`,
-				type: 'checkbox',
-				defaultValue: false
-			}))
-		}
-	]
-};
-
 class OptionForm extends Component {
 	state = {
 		type: this.props.defaultType || 'MCQ',
@@ -93,7 +26,7 @@ class OptionForm extends Component {
 				return Array(5).fill(0).map((_) => ({ answers: '', alternate1: '', alternate2: '' }));
 			else {
 				const { defaultAnswers } = this.props;
-				return defaultAnswers.map((defaultAnswer, index) => ({
+				return defaultAnswers.map((defaultAnswer) => ({
 					answers: defaultAnswer[0],
 					alternate1: defaultAnswer[1],
 					alternate2: defaultAnswer[2]
@@ -124,15 +57,68 @@ class OptionForm extends Component {
 	};
 
 	decideInputs = () => {
+		const options = [ 'option', 'additional_option' ].map((opt_type, index) => {
+			const opt_obj = {
+				type: 'group',
+				name: 'options',
+				key: opt_type,
+				children: Array(3).fill(0).map((_, i) => ({ name: i + 1 + 3 * index, label: `${opt_type}_${i + 1}` })),
+				extra: {
+					treeView: true,
+					append: true,
+					groupType: 'text',
+					helperText: `Provide ${opt_type.split('_').join(' ')}`,
+					className: `OptionForm_MS_${opt_type}s`
+				}
+			};
+			if (index === 1) opt_obj.extra.collapsed = true;
+			return opt_obj;
+		});
+
 		const { type } = this.state;
 		const { defaultAnswers, defaultOptions } = this.props;
 		if (type === 'MS' || type === 'MCQ') {
 			let ref = null;
 			if (type === 'MCQ') {
-				ref = INIT_MCQ_STATE;
-				ref.answers[0].defaultValue = `answer_${parseInt(defaultAnswers[0]) + 1}`;
+				ref = {
+					options: [ ...options ],
+					answers: [
+						{
+							name: 'answers',
+							type: 'radio',
+							extra: {
+								className: 'OptionForm_MS_answers',
+								radioItems: Array(6).fill(0).map((_, i) => ({ value: `answer_${i + 1}`, label: `Answer ${i + 1}` }))
+							},
+							defaultValue: 'answer_1'
+						}
+					]
+				};
+				ref.answers[0].defaultValue = `answer_${defaultAnswers[0] ? parseInt(defaultAnswers[0]) + 1 : '1'}`;
 			} else if (type === 'MS') {
-				ref = INIT_MS_STATE;
+				ref = {
+					options: [ ...options ],
+					answers: [
+						{
+							type: 'group',
+							name: 'answers',
+							extra: {
+								groupType: 'checkbox',
+								treeView: true,
+								coalesce: true,
+								useIndex: true,
+								row: true,
+								helperText: 'Choose answers',
+								className: 'OptionForm_MS_answers'
+							},
+							children: Array(6).fill(0).map((_, index) => ({
+								name: `answer_${index + 1}`,
+								type: 'checkbox',
+								defaultValue: false
+							}))
+						}
+					]
+				};
 				const answers = defaultAnswers.flat().map((answer) => parseInt(answer));
 				ref.answers[0].children = ref.answers[0].children.map((child, index) => {
 					return {
@@ -255,14 +241,14 @@ class OptionForm extends Component {
 
 			if (type === 'MCQ')
 				return Yup.object({
-					options: optionsObj,
+					// options: optionsObj,
 					answers: Yup.string('Enter answer')
 						.oneOf(Array(6).fill(0).map((_, i) => `answer_${i + 1}`))
 						.required('An answer must be choosen')
 				});
 			else if (type === 'MS')
 				return Yup.object({
-					options: optionsObj,
+					// options: optionsObj,
 					answers: Yup.array()
 						.of(Yup.boolean())
 						.test(
@@ -359,13 +345,11 @@ class OptionForm extends Component {
 
 	render () {
 		const { typeChangeHandler, decideValidation, decideInputs, transformValues, FIBHandler } = this;
-		const validationSchema = decideValidation();
 		const { options, answers } = decideInputs();
-
 		return (
 			<InputForm
 				passFormAsProp={true}
-				validationSchema={validationSchema}
+				validationSchema={decideValidation()}
 				errorBeforeTouched={true}
 				validateOnMount={true}
 				inputs={[ ...options, ...answers ]}

@@ -54,7 +54,7 @@ export default function (group) {
 	return {
 		type: 'group',
 		name: group,
-		extra: { treeView: true, coalesce: true },
+		extra: { treeView: true, append: true },
 		children
 	};
 }

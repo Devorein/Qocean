@@ -8,13 +8,13 @@ class InputForm extends Component {
 		const initialErrors = {};
 
 		function inner (input, parents = [], index) {
-			const { name, defaultValue, type } = input;
 			const full_key = parents.reduce((acc, parent) => acc.concat(parent.name), []).join('.');
 			const parent = parents[parents.length - 1] || {};
 			const { extra = {} } = parent;
-			if (type === 'group') input.children.forEach((child) => inner(child, parents.concat(input), index));
+			if (input.type === 'group') input.children.forEach((child, index) => inner(child, [ ...parents, input ], index));
 			else {
-				const field_key = `${full_key ? full_key + '.' : ''}` + (extra.coalesce ? name : extra.useArray ? index : name);
+				const { name, defaultValue } = input;
+				const field_key = `${full_key && extra.append ? full_key + '.' : ''}` + (extra.useIndex ? index : name);
 				input.name = field_key;
 				initialValues[field_key] = typeof defaultValue !== 'undefined' ? defaultValue : '';
 				try {
@@ -25,7 +25,6 @@ class InputForm extends Component {
 				}
 			}
 		}
-
 		inputs.forEach((input) => (input ? inner(input, [], 0) : void 0));
 
 		return { initialValues, initialErrors };

@@ -277,7 +277,7 @@ class Form extends React.Component {
 				if (groupType === 'checkbox') {
 					return (
 						<CheckboxGroup
-							key={groupName}
+							key={input.key || groupName}
 							name={groupName}
 							extra={{ ...input.extra, errorText: errors[groupName] }}
 							children={input.children}
@@ -291,7 +291,7 @@ class Form extends React.Component {
 				} else if (groupType === 'text') {
 					return (
 						<TextInputGroup
-							key={groupName}
+							key={input.key || groupName}
 							onChange={(childname, e) => {
 								values[childname] = e.target.value;
 								setValues({ ...values });
@@ -306,7 +306,7 @@ class Form extends React.Component {
 				} else if (input.extra.treeView)
 					return (
 						<TreeView
-							key={input.name}
+							key={input.key || input.name}
 							defaultCollapseIcon={<ExpandMoreIcon />}
 							defaultExpandIcon={<ChevronRightIcon />}
 							defaultExpanded={[ input.extra.collapse ? null : '1' ]}
