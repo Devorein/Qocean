@@ -106,24 +106,22 @@ class QuestionForm extends Component {
 					}
 				})
 				.then((data) => {
-					if (operation === 'create')
-						if (env.reset_on_success) {
-							resetFileInputState();
-							resetOptionInput();
-							setTimeout(() => {
-								this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
-							}, env.notifications.timing + 500);
-						}
+					if (operation === 'create' && env.reset_on_success) {
+						resetFileInputState();
+						resetOptionInput();
+						setTimeout(() => {
+							this.props.changeResponse(`Uploaded`, `Successsfully uploaded image for the question`, 'success');
+						}, env.notifications.timing + 500);
+					}
 				})
 				.catch((err) => {
-					if (operation === 'create')
-						if (env.reset_on_error) {
-							resetFileInputState();
-							resetOptionInput();
-							setTimeout(() => {
-								this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
-							}, env.notifications.timing + 500);
-						}
+					if (operation === 'create' && env.reset_on_error) {
+						resetFileInputState();
+						resetOptionInput();
+						setTimeout(() => {
+							this.props.changeResponse(`An error occurred`, err.response.data.error, 'error');
+						}, env.notifications.timing + 500);
+					}
 				});
 		} else if (env.reset_on_success || env.reset_on_error) {
 			resetOptionInput();
@@ -191,7 +189,7 @@ class QuestionForm extends Component {
 								blank_count={blank_count}
 								defaultAnswers={defaultAnswers}
 								defaultOptions={defaultOptions}
-								defaultType={this.props.defaultType ? this.props.defaultType : this.props.user.default_question_type}
+								defaultType={this.props.defaultType || this.props.user.current_environment.questioninfo.default_type}
 							>
 								{({ form, formData, select, type }) => {
 									if (type === 'FIB')

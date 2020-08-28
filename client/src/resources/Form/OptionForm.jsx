@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import InputSelect from '../../components/Input/InputSelect';
 import TextField from '@material-ui/core/TextField';
 
+const Arraydiff = (target, a) => target.filter((i) => a.indexOf(i) < 0);
+
 const OptionFormContainer = styled.div`
 	& .form {
 		height: 100%;
@@ -51,14 +53,7 @@ const INIT_MCQ_STATE = {
 			type: 'radio',
 			extra: {
 				className: 'OptionForm_MS_answers',
-				radioItems: [
-					{ value: 'answer_1', label: 'Answer 1' },
-					{ value: 'answer_2', label: 'Answer 2' },
-					{ value: 'answer_3', label: 'Answer 3' },
-					{ value: 'answer_4', label: 'Answer 4' },
-					{ value: 'answer_5', label: 'Answer 5' },
-					{ value: 'answer_6', label: 'Answer 6' }
-				]
+				radioItems: Array(6).fill(0).map((_, i) => ({ value: `answer_${i + 1}`, label: `Answer ${i + 1}` }))
 			},
 			defaultValue: 'answer_1'
 		}
@@ -243,95 +238,31 @@ class OptionForm extends Component {
 
 	decideValidation = () => {
 		const { type } = this.state;
+
 		if (type === 'MCQ' || type === 'MS') {
-			const optionObj = {
-				options: Yup.object({
-					option_1: Yup.string('Enter option 1')
-						.notOneOf(
-							[
-								Yup.ref('option_2'),
-								Yup.ref('option_3'),
-								Yup.ref('additional_options.additional_option_1'),
-								Yup.ref('additional_option_2'),
-								Yup.ref('additional_option_3')
-							],
-							'Duplicate Option found'
-						)
-						.required('Option 1 is required'),
-					option_2: Yup.string('Enter option 2')
-						.required('Option 2 is required')
-						.notOneOf(
-							[
-								Yup.ref('option_1'),
-								Yup.ref('option_3'),
-								Yup.ref('additional_option_1'),
-								Yup.ref('additional_option_2'),
-								Yup.ref('additional_option_3')
-							],
-							'Duplicate Option found'
-						),
-					option_3: Yup.string('Enter option 3')
-						.required('Option 3 is required')
-						.notOneOf(
-							[
-								Yup.ref('option_1'),
-								Yup.ref('option_2'),
-								Yup.ref('additional_option_1'),
-								Yup.ref('additional_option_2'),
-								Yup.ref('additional_option_3')
-							],
-							'Duplicate Option found'
-						)
-				}),
-				additional_options: Yup.object({
-					additional_option_1: Yup.string('Enter additional option 1')
-						.notOneOf(
-							[
-								Yup.ref('options.option_1'),
-								Yup.ref('options.option_2'),
-								Yup.ref('options.option_3'),
-								Yup.ref('additional_option_2'),
-								Yup.ref('additional_option_3')
-							],
-							'Duplicate Option found'
-						)
-						.default('additional_option_1'),
-					additional_option_2: Yup.string('Enter additional option 2')
-						.notOneOf(
-							[
-								Yup.ref('options.option_1'),
-								Yup.ref('options.option_2'),
-								Yup.ref('options.option_3'),
-								Yup.ref('additional_option_1'),
-								Yup.ref('additional_option_3')
-							],
-							'Duplicate Option found'
-						)
-						.default('additional_option_2'),
-					additional_option_3: Yup.string('Enter additional option 3')
-						.notOneOf(
-							[
-								Yup.ref('options.option_1'),
-								Yup.ref('options.option_2'),
-								Yup.ref('options.option_3'),
-								Yup.ref('additional_option_1'),
-								Yup.ref('additional_option_2')
-							],
-							'Duplicate Option found'
-						)
-						.default('additional_option_3')
-				})
-			};
+			const optionsObj = {};
+			[ 'option', 'additional_option' ].forEach((opt_type, i) => {
+				[ 1, 2, 3 ].forEach((opt_num) => {
+					const excluded = Arraydiff([ 1, 2, 3 ], [ opt_num ]).map((num) => Yup.ref(`${opt_type}_${num}`));
+					[ 1, 2, 3 ].forEach((num) => {
+						excluded.push(Yup.ref(`${i === 0 ? 'additional_option' : 'option'}_${num}`));
+					});
+					optionsObj[`${opt_type}_${opt_num}`] = Yup.string(`Enter ${opt_type.split('_').join(' ')} ${opt_num}`)
+						.notOneOf(excluded, 'Duplicate Option found')
+						.required(`${opt_type.split('_').join(' ')} ${opt_num} is required`);
+				});
+			});
+
 			if (type === 'MCQ')
 				return Yup.object({
-					...optionObj,
+					options: optionsObj,
 					answers: Yup.string('Enter answer')
-						.oneOf([ 'answer_1', 'answer_2', 'answer_3', 'answer_4', 'answer_5', 'answer_6' ])
+						.oneOf(Array(6).fill(0).map((_, i) => `answer_${i + 1}`))
 						.required('An answer must be choosen')
 				});
 			else if (type === 'MS')
 				return Yup.object({
-					...optionObj,
+					options: optionsObj,
 					answers: Yup.array()
 						.of(Yup.boolean())
 						.test(
