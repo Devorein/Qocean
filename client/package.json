@@ -28,7 +28,7 @@
     "@nivo/heatmap": "^0.62.0",
     "@testing-library/jest-dom": "^5.11.3",
     "@testing-library/react": "^10.4.8",
-    "@testing-library/user-event": "^12.1.1",
+    "@testing-library/user-event": "^12.1.5",
     "bcryptjs": "^2.4.3",
     "clsx": "^1.1.1",
     "color-convert": "^2.0.1",
