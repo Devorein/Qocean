@@ -23,7 +23,7 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
-    "@apollo/client": "^3.0.0-rc.12",
+    "@apollo/client": "^3.2.9",
     "axios": "^0.19.2",
     "colors": "^1.4.0",
     "fs-extra": "^9.0.1",
