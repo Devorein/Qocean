@@ -26,7 +26,7 @@
     "@material-ui/pickers": "^3.2.10",
     "@nivo/bar": "^0.62.0",
     "@nivo/heatmap": "^0.62.0",
-    "@testing-library/jest-dom": "^5.11.3",
+    "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^10.4.8",
     "@testing-library/user-event": "^12.1.1",
     "bcryptjs": "^2.4.3",
