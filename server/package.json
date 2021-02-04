@@ -36,7 +36,7 @@
     "helmet": "^3.23.3",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.9.28",
+    "mongoose": "^5.11.15",
     "mongoose-int32": "^0.4.1",
     "mongql": "^1.2.9",
     "morgan": "^1.10.0",
