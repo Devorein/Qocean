@@ -16,7 +16,7 @@
     "start": "concurrently -c green,blue --names \"server,client\" \"npm run server\" \"npm run client\""
   },
   "devDependencies": {
-    "@babel/register": "^7.10.5",
+    "@babel/register": "^7.16.5",
     "concurrently": "^5.3.0",
     "husky": "^4.2.5",
     "link-parent-bin": "^1.0.2",
