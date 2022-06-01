@@ -32,6 +32,6 @@
     "mkdirp": "^1.0.4",
     "move-file": "^2.0.0",
     "rimraf": "^3.0.2",
-    "lint-staged": "^10.4.0"
+    "lint-staged": "^12.5.0"
   }
 }
