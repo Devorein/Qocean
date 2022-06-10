@@ -34,7 +34,7 @@
     "color-convert": "^2.0.1",
     "formik": "^2.1.5",
     "moment": "^2.27.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.2.6",
     "node-sass": "^4.14.1",
     "notistack": "^0.9.17",
     "pluralize": "^8.0.0",
