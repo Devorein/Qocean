@@ -54,7 +54,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "shortid": "^2.2.15",
-    "styled-components": "^5.1.1",
+    "styled-components": "^5.3.6",
     "uifx": "^2.0.7",
     "validate-color": "^2.1.0",
     "yup": "^0.29.3"
