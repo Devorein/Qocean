@@ -35,7 +35,7 @@
     "graphql-scalars": "^1.2.6",
     "helmet": "^3.23.3",
     "hpp": "^0.2.3",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^5.9.28",
     "mongoose-int32": "^0.4.1",
     "mongql": "^1.2.9",
